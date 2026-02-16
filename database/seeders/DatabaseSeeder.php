@@ -52,7 +52,6 @@ class DatabaseSeeder extends Seeder
         // Run other seeders
         $this->call([
             PlanSeeder::class,
-            ListingSeeder::class,
         ]);
     }
 }
