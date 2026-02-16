@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#1B4F72" rx="12"/>
+  <g transform="translate(8, 16)">
+    <!-- Boat hull -->
+    <path d="M 4 24 L 44 24 L 40 32 L 8 32 Z" fill="#C9A961" stroke="#B89654" stroke-width="1"/>
+    <!-- Boat deck -->
+    <path d="M 8 12 L 12 8 L 28 8 L 44 24 L 4 24 Z" fill="#C9A961" stroke="#B89654" stroke-width="1"/>
+    <!-- Window line -->
+    <path d="M 10 10 L 14 8" stroke="#B89654" stroke-width="1.5" fill="none"/>
+    <!-- Wave -->
+    <path d="M 0 32 Q 12 28 24 32 T 48 32 L 48 36 L 0 36 Z" fill="#17A2B8" opacity="0.8"/>
+  </g>
+</svg>
