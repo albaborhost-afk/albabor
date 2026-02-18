@@ -188,13 +188,28 @@ class ListingController extends Controller
 
     public function edit(Listing $listing)
     {
-        $this->authorize('update', $listing);
+        try {
+            $this->authorize('update', $listing);
 
-        $listing->load('media');
-        $wilayas = $this->getWilayas();
-        $exchangeRate = Setting::getExchangeRate();
+            $listing->load('media');
+            $wilayas = $this->getWilayas();
+            $exchangeRate = Setting::getExchangeRate();
 
-        return view('listings.edit', compact('listing', 'wilayas', 'exchangeRate'));
+            return view('listings.edit', compact('listing', 'wilayas', 'exchangeRate'));
+        } catch (\Throwable $e) {
+            \Log::error('Edit page error: ' . $e->getMessage(), [
+                'listing_id' => $listing->id,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            // Temporary: show error details to debug production issue
+            return response('<h2>Debug Error</h2><pre>'
+                . 'Message: ' . $e->getMessage() . "\n"
+                . 'File: ' . $e->getFile() . ':' . $e->getLine() . "\n"
+                . 'Trace: ' . $e->getTraceAsString()
+                . '</pre>', 500);
+        }
     }
 
     public function update(Request $request, Listing $listing)
@@ -335,7 +350,13 @@ class ListingController extends Controller
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            throw $e;
+
+            // Temporary: show error details to debug production issue
+            return response('<h2>Debug Error</h2><pre>'
+                . 'Message: ' . $e->getMessage() . "\n"
+                . 'File: ' . $e->getFile() . ':' . $e->getLine() . "\n"
+                . 'Trace: ' . $e->getTraceAsString()
+                . '</pre>', 500);
         }
     }
 
