@@ -437,7 +437,7 @@
                         Equipements, Options & Electronique
                     </h2>
 
-                    <div class="mb-5">
+                    <div class="mb-5" x-data="{ customTags: [], newTag: '' }">
                         <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Equipement de securite</label>
                         <div class="flex flex-wrap gap-2">
                             @foreach(['Gilets de sauvetage', 'Extincteur', 'Fusees de detresse', 'Ancre', 'Bimini', 'Echelle de bain', 'Plateforme de bain', 'Douche de pont', 'Guindeau'] as $equip)
@@ -450,10 +450,25 @@
                                           :class="{ 'peer-checked:!border-[#17A2B8] peer-checked:!text-[#17A2B8] peer-checked:!bg-[#17A2B8]/10': true }">{{ $equip }}</span>
                                 </label>
                             @endforeach
+                            <template x-for="(tag, i) in customTags" :key="'ce-'+i">
+                                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium"
+                                      style="border: 1.5px solid #17A2B8; color: #17A2B8; background: rgba(23,162,184,0.1);">
+                                    <span x-text="tag"></span>
+                                    <button type="button" @click="customTags.splice(i, 1)" class="ml-0.5 hover:opacity-60 text-sm leading-none">&times;</button>
+                                    <input type="hidden" name="specs[tags][equipement][]" :value="tag">
+                                </span>
+                            </template>
+                        </div>
+                        <div class="mt-2.5 flex gap-2">
+                            <input type="text" x-model="newTag" @keydown.enter.prevent="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
+                                   class="glass-input flex-1 rounded-xl px-3 py-2 text-xs" placeholder="Ajouter un equipement..." style="min-width: 0;">
+                            <button type="button" @click="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
+                                    class="px-3 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:-translate-y-0.5"
+                                    style="background: linear-gradient(135deg, #1B4F72, #17A2B8); white-space: nowrap;">+ Ajouter</button>
                         </div>
                     </div>
 
-                    <div class="mb-5">
+                    <div class="mb-5" x-data="{ customTags: [], newTag: '' }">
                         <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Options de confort</label>
                         <div class="flex flex-wrap gap-2">
                             @foreach(['Taud de soleil', 'Glaciere', 'Table cockpit', 'Coffre de rangement', 'Porte-cannes', 'Vivier', 'Siege rabattable', 'Cabine'] as $opt)
@@ -465,10 +480,25 @@
                                           style="border: 1.5px solid #E0E6ED; color: #6B7B8D;">{{ $opt }}</span>
                                 </label>
                             @endforeach
+                            <template x-for="(tag, i) in customTags" :key="'co-'+i">
+                                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium"
+                                      style="border: 1.5px solid #17A2B8; color: #17A2B8; background: rgba(23,162,184,0.1);">
+                                    <span x-text="tag"></span>
+                                    <button type="button" @click="customTags.splice(i, 1)" class="ml-0.5 hover:opacity-60 text-sm leading-none">&times;</button>
+                                    <input type="hidden" name="specs[tags][options][]" :value="tag">
+                                </span>
+                            </template>
+                        </div>
+                        <div class="mt-2.5 flex gap-2">
+                            <input type="text" x-model="newTag" @keydown.enter.prevent="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
+                                   class="glass-input flex-1 rounded-xl px-3 py-2 text-xs" placeholder="Ajouter une option..." style="min-width: 0;">
+                            <button type="button" @click="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
+                                    class="px-3 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:-translate-y-0.5"
+                                    style="background: linear-gradient(135deg, #1B4F72, #17A2B8); white-space: nowrap;">+ Ajouter</button>
                         </div>
                     </div>
 
-                    <div>
+                    <div x-data="{ customTags: [], newTag: '' }">
                         <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Electronique</label>
                         <div class="flex flex-wrap gap-2">
                             @foreach(['GPS', 'Sondeur', 'VHF', 'Radar', 'Pilote automatique', 'Eclairage LED', 'Bluetooth / Audio', 'Chargeur de batterie'] as $elec)
@@ -480,6 +510,21 @@
                                           style="border: 1.5px solid #E0E6ED; color: #6B7B8D;">{{ $elec }}</span>
                                 </label>
                             @endforeach
+                            <template x-for="(tag, i) in customTags" :key="'cel-'+i">
+                                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium"
+                                      style="border: 1.5px solid #17A2B8; color: #17A2B8; background: rgba(23,162,184,0.1);">
+                                    <span x-text="tag"></span>
+                                    <button type="button" @click="customTags.splice(i, 1)" class="ml-0.5 hover:opacity-60 text-sm leading-none">&times;</button>
+                                    <input type="hidden" name="specs[tags][electronique][]" :value="tag">
+                                </span>
+                            </template>
+                        </div>
+                        <div class="mt-2.5 flex gap-2">
+                            <input type="text" x-model="newTag" @keydown.enter.prevent="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
+                                   class="glass-input flex-1 rounded-xl px-3 py-2 text-xs" placeholder="Ajouter un electronique..." style="min-width: 0;">
+                            <button type="button" @click="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
+                                    class="px-3 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:-translate-y-0.5"
+                                    style="background: linear-gradient(135deg, #1B4F72, #17A2B8); white-space: nowrap;">+ Ajouter</button>
                         </div>
                     </div>
                 </div>
