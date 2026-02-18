@@ -63,13 +63,13 @@
                 <div class="flex items-start">
                     <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0" style="background: #F0F4F8;">
                         @if($listing->media->first())
-                            <img src="{{ Storage::url($listing->media->first()->thumbnail_path ?? $listing->media->first()->path) }}"
+                            <img src="{{ asset('storage/' . ($listing->media->first()->thumbnail_path ?? $listing->media->first()->path)) }}"
                                  alt="" class="w-full h-full object-cover">
                         @endif
                     </div>
                     <div class="ml-4">
                         <h3 class="font-bold" style="color: #1B2A4A;">{{ $listing->title }}</h3>
-                        <p class="text-sm" style="color: #6B7B8D;">{{ $listing->category_label }} - {{ $listing->wilaya }}</p>
+                        <p class="text-sm" style="color: #6B7B8D;">{{ $listing->category_label }}{{ $listing->wilaya ? ' - ' . $listing->wilaya : '' }}</p>
                         <p class="text-lg font-black mt-1" style="color: #1B4F72;">{{ $listing->formatted_price }}</p>
                     </div>
                 </div>

@@ -316,16 +316,27 @@ class ListingController extends Controller
 
     public function payment(Listing $listing)
     {
-        $this->authorize('update', $listing);
+        try {
+            $this->authorize('update', $listing);
 
-        if (!in_array($listing->status, ['awaiting_payment', 'draft'])) {
-            return redirect()->route('listings.my')
-                ->with('error', __('messages.listing_already_paid'));
+            if (!in_array($listing->status, ['awaiting_payment', 'draft'])) {
+                return redirect()->route('listings.my')
+                    ->with('error', __('messages.listing_already_paid'));
+            }
+
+            $listing->load('media');
+            $amount = $this->getPublishPrice($listing->category);
+
+            return view('listings.payment', compact('listing', 'amount'));
+        } catch (\Throwable $e) {
+            \Log::error('Payment page error: ' . $e->getMessage(), [
+                'listing_id' => $listing->id,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
         }
-
-        $amount = $this->getPublishPrice($listing->category);
-
-        return view('listings.payment', compact('listing', 'amount'));
     }
 
     public function markAsSold(Listing $listing)
