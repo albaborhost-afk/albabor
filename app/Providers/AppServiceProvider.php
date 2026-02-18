@@ -31,7 +31,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Auto-create storage symlink if missing (for production/Laravel Cloud)
         if (!file_exists(public_path('storage'))) {
-            Artisan::call('storage:link');
+            try {
+                Artisan::call('storage:link');
+            } catch (\Throwable $e) {
+                // Silently fail - some environments don't support symlinks
+            }
         }
     }
 }

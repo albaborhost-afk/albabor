@@ -29,11 +29,11 @@ class ListingMedia extends Model
 
     public function getUrlAttribute(): string
     {
-        return Storage::url($this->path);
+        return asset('storage/' . $this->path);
     }
 
     public function getThumbnailUrlAttribute(): ?string
     {
-        return $this->thumbnail_path ? Storage::url($this->thumbnail_path) : null;
+        return $this->thumbnail_path ? asset('storage/' . $this->thumbnail_path) : null;
     }
 }
