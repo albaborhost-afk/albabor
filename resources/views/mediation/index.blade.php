@@ -65,7 +65,7 @@
                                     <div class="flex items-center">
                                         <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0" style="background: #F0F4F8;">
                                             @if($ticket->listing->media->first())
-                                                <img src="{{ Storage::url($ticket->listing->media->first()->thumbnail_path ?? $ticket->listing->media->first()->path) }}"
+                                                <img src="{{ asset('storage/' . ($ticket->listing->media->first()->thumbnail_path ?? $ticket->listing->media->first()->path)) }}"
                                                      alt="" class="w-full h-full object-cover">
                                             @endif
                                         </div>
@@ -116,7 +116,7 @@
                                     <div class="flex items-center">
                                         <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0" style="background: #F0F4F8;">
                                             @if($ticket->listing->media->first())
-                                                <img src="{{ Storage::url($ticket->listing->media->first()->thumbnail_path ?? $ticket->listing->media->first()->path) }}"
+                                                <img src="{{ asset('storage/' . ($ticket->listing->media->first()->thumbnail_path ?? $ticket->listing->media->first()->path)) }}"
                                                      alt="" class="w-full h-full object-cover">
                                             @endif
                                         </div>

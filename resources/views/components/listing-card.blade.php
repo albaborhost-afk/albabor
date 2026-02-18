@@ -37,7 +37,7 @@
         {{-- Image Section --}}
         <div class="relative aspect-[4/3] overflow-hidden" style="background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);">
             @if($firstMedia)
-                <img src="{{ Storage::url($firstMedia->path) }}"
+                <img src="{{ asset('storage/' . $firstMedia->path) }}"
                      alt="{{ $listing->title }}"
                      class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                      loading="lazy">

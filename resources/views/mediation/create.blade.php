@@ -57,7 +57,7 @@
                 <div class="flex items-start">
                     <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0" style="background: #F0F4F8;">
                         @if($listing->media->first())
-                            <img src="{{ Storage::url($listing->media->first()->thumbnail_path ?? $listing->media->first()->path) }}"
+                            <img src="{{ asset('storage/' . ($listing->media->first()->thumbnail_path ?? $listing->media->first()->path)) }}"
                                  alt="" class="w-full h-full object-cover">
                         @endif
                     </div>

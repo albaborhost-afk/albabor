@@ -6,6 +6,7 @@ use App\Models\Listing;
 use App\Models\Payment;
 use App\Policies\ListingPolicy;
 use App\Policies\PaymentPolicy;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,5 +28,10 @@ class AppServiceProvider extends ServiceProvider
         // Register policies
         Gate::policy(Listing::class, ListingPolicy::class);
         Gate::policy(Payment::class, PaymentPolicy::class);
+
+        // Auto-create storage symlink if missing (for production/Laravel Cloud)
+        if (!file_exists(public_path('storage'))) {
+            Artisan::call('storage:link');
+        }
     }
 }

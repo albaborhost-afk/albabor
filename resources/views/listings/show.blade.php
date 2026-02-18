@@ -66,7 +66,7 @@
                          x-data="{
                             currentIndex: 0,
                             imageCount: {{ $imageCount }},
-                            images: @js(collect($listing->images ?? $listing->media ?? [])->map(function($img) { if (is_string($img)) return $img; return isset($img['path']) ? Storage::url($img['path']) : (isset($img->path) ? Storage::url($img->path) : ''); })->filter()->values()),
+                            images: @js(collect($listing->images ?? $listing->media ?? [])->map(function($img) { if (is_string($img)) return $img; return isset($img['path']) ? asset('storage/' . $img['path']) : (isset($img->path) ? asset('storage/' . $img->path) : ''); })->filter()->values()),
                             zooming: false,
                             zoomX: 50,
                             zoomY: 50,
@@ -128,8 +128,8 @@
                                 <div class="flex gap-2 p-3 overflow-x-auto" style="background: #F8FAFC; scrollbar-width: thin;">
                                     @foreach((is_array($images) ? $images : $images->toArray()) as $index => $image)
                                         @php
-                                            $imageUrl = is_string($image) ? $image : (isset($image['path']) ? Storage::url($image['path']) : (isset($image->path) ? Storage::url($image->path) : ''));
-                                            $thumbUrl = is_string($image) ? $image : (isset($image['thumbnail_path']) ? Storage::url($image['thumbnail_path']) : (isset($image->thumbnail_path) ? Storage::url($image->thumbnail_path) : $imageUrl));
+                                            $imageUrl = is_string($image) ? $image : (isset($image['path']) ? asset('storage/' . $image['path']) : (isset($image->path) ? asset('storage/' . $image->path) : ''));
+                                            $thumbUrl = is_string($image) ? $image : (isset($image['thumbnail_path']) ? asset('storage/' . $image['thumbnail_path']) : (isset($image->thumbnail_path) ? asset('storage/' . $image->thumbnail_path) : $imageUrl));
                                         @endphp
                                         <button @click="goTo({{ $index }})"
                                                 class="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden transition-all duration-300 focus:outline-none"
@@ -709,7 +709,7 @@
     </style>
 
     <script>
-        const images = @json(collect($listing->images ?? $listing->media ?? [])->map(function($img) { if (is_string($img)) return $img; return isset($img['path']) ? Storage::url($img['path']) : (isset($img->path) ? Storage::url($img->path) : ''); })->filter()->values());
+        const images = @json(collect($listing->images ?? $listing->media ?? [])->map(function($img) { if (is_string($img)) return $img; return isset($img['path']) ? asset('storage/' . $img['path']) : (isset($img->path) ? asset('storage/' . $img->path) : ''); })->filter()->values());
         let currentLightboxIndex = 0;
 
         function openLightbox(index) {

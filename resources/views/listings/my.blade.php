@@ -83,7 +83,7 @@
                                         <div class="flex items-center">
                                             <div class="w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden" style="background: #E8EEF4;">
                                                 @if($listing->media->first())
-                                                    <img src="{{ Storage::url($listing->media->first()->thumbnail_path ?? $listing->media->first()->path) }}"
+                                                    <img src="{{ asset('storage/' . ($listing->media->first()->thumbnail_path ?? $listing->media->first()->path)) }}"
                                                          alt="" class="w-full h-full object-cover">
                                                 @else
                                                     <div class="w-full h-full flex items-center justify-center" style="color: #9BA8B7;">
@@ -237,7 +237,7 @@
                                 <!-- Image -->
                                 <div class="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden" style="background: #E8EEF4;">
                                     @if($listing->media->first())
-                                        <img src="{{ Storage::url($listing->media->first()->thumbnail_path ?? $listing->media->first()->path) }}"
+                                        <img src="{{ asset('storage/' . ($listing->media->first()->thumbnail_path ?? $listing->media->first()->path)) }}"
                                              alt="" class="w-full h-full object-cover">
                                     @else
                                         <div class="w-full h-full flex items-center justify-center" style="color: #9BA8B7;">
