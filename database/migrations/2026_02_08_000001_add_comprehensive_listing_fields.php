@@ -9,28 +9,59 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Step 1: Add new columns
-        Schema::table('listings', function (Blueprint $table) {
-            $table->string('type_offre', 20)->default('negociable')->after('currency');
-            $table->string('etat', 50)->default('bon_etat')->after('type_offre');
-            $table->string('remarque_echange', 20)->nullable()->after('etat');
-            $table->string('numero_whatsapp', 20)->nullable()->after('mediation_enabled');
-            $table->string('numero_mobile', 20)->nullable()->after('numero_whatsapp');
-            $table->string('contact_email', 255)->nullable()->after('numero_mobile');
-            $table->string('visible_a', 255)->nullable()->after('wilaya');
-            $table->string('pays', 100)->default('Algérie')->after('visible_a');
+        if (!Schema::hasTable('listings')) {
+            return;
+        }
 
-            $table->index('etat');
-            $table->index('type_offre');
+        // Step 1: Add new columns (only if they don't exist)
+        Schema::table('listings', function (Blueprint $table) {
+            if (!Schema::hasColumn('listings', 'type_offre')) {
+                $table->string('type_offre', 20)->default('negociable')->after('currency');
+            }
+            if (!Schema::hasColumn('listings', 'etat')) {
+                $table->string('etat', 50)->default('bon_etat')->after('type_offre');
+            }
+            if (!Schema::hasColumn('listings', 'remarque_echange')) {
+                $table->string('remarque_echange', 20)->nullable()->after('etat');
+            }
+            if (!Schema::hasColumn('listings', 'numero_whatsapp')) {
+                $table->string('numero_whatsapp', 20)->nullable()->after('mediation_enabled');
+            }
+            if (!Schema::hasColumn('listings', 'numero_mobile')) {
+                $table->string('numero_mobile', 20)->nullable()->after('numero_whatsapp');
+            }
+            if (!Schema::hasColumn('listings', 'contact_email')) {
+                $table->string('contact_email', 255)->nullable()->after('numero_mobile');
+            }
+            if (!Schema::hasColumn('listings', 'visible_a')) {
+                $table->string('visible_a', 255)->nullable()->after('wilaya');
+            }
+            if (!Schema::hasColumn('listings', 'pays')) {
+                $table->string('pays', 100)->default('Algérie')->after('visible_a');
+            }
         });
 
-        // Step 2: Migrate negotiable -> type_offre
-        DB::table('listings')->where('negotiable', true)->update(['type_offre' => 'negociable']);
-        DB::table('listings')->where('negotiable', false)->update(['type_offre' => 'fix']);
+        // Add indexes (only if columns exist and indexes don't)
+        try {
+            Schema::table('listings', function (Blueprint $table) {
+                $table->index('etat');
+                $table->index('type_offre');
+            });
+        } catch (\Throwable $e) {
+            // Indexes might already exist
+        }
 
-        // Step 3: Migrate condition -> etat
-        DB::table('listings')->where('condition', 'new')->update(['etat' => 'jamais_utilise']);
-        DB::table('listings')->where('condition', 'used')->update(['etat' => 'bon_etat']);
+        // Step 2: Migrate negotiable -> type_offre (only if old column exists)
+        if (Schema::hasColumn('listings', 'negotiable')) {
+            DB::table('listings')->where('negotiable', true)->update(['type_offre' => 'negociable']);
+            DB::table('listings')->where('negotiable', false)->update(['type_offre' => 'fix']);
+        }
+
+        // Step 3: Migrate condition -> etat (only if old column exists)
+        if (Schema::hasColumn('listings', 'condition')) {
+            DB::table('listings')->where('condition', 'new')->update(['etat' => 'jamais_utilise']);
+            DB::table('listings')->where('condition', 'used')->update(['etat' => 'bon_etat']);
+        }
 
         // Step 4: Restructure existing specs JSON
         $listings = DB::table('listings')->whereNotNull('specs')->get();
@@ -42,7 +73,6 @@ return new class extends Migration
 
             $newSpecs = [];
 
-            // Map old flat keys to new nested structure
             $generalKeys = ['brand' => 'fabricant', 'model' => 'modele', 'year' => 'annee_construction'];
             $motorKeys = ['engine_power' => 'puissance_par_moteur', 'fuel_type' => 'type_carburant', 'hours' => 'nombre_heures', 'power' => 'puissance_par_moteur', 'type' => 'propulsion'];
             $dimKeys = ['length' => 'longueur'];
@@ -65,37 +95,62 @@ return new class extends Migration
             ]);
         }
 
-        // Step 5: Drop old columns (SQLite doesn't support dropColumn with enum easily, so we handle it)
-        if (DB::getDriverName() === 'sqlite') {
-            // For SQLite, we can't easily drop enum columns, so we leave them
-            // They won't be used anymore but won't cause issues
-        } else {
-            Schema::table('listings', function (Blueprint $table) {
-                $table->dropColumn(['negotiable', 'condition']);
-            });
+        // Step 5: Drop old columns (only if they exist)
+        if (DB::getDriverName() !== 'sqlite') {
+            if (Schema::hasColumn('listings', 'negotiable')) {
+                Schema::table('listings', function (Blueprint $table) {
+                    $table->dropColumn('negotiable');
+                });
+            }
+            if (Schema::hasColumn('listings', 'condition')) {
+                Schema::table('listings', function (Blueprint $table) {
+                    $table->dropColumn('condition');
+                });
+            }
         }
     }
 
     public function down(): void
     {
-        Schema::table('listings', function (Blueprint $table) {
-            $table->boolean('negotiable')->default(false)->after('price_dzd');
-            $table->string('condition', 10)->default('used')->after('negotiable');
-        });
+        if (!Schema::hasTable('listings')) {
+            return;
+        }
 
-        DB::table('listings')->where('type_offre', 'negociable')->update(['negotiable' => true]);
-        DB::table('listings')->whereIn('type_offre', ['fix', 'offert'])->update(['negotiable' => false]);
-        DB::table('listings')->where('etat', 'jamais_utilise')->update(['condition' => 'new']);
-        DB::table('listings')->where('etat', '!=', 'jamais_utilise')->update(['condition' => 'used']);
+        if (!Schema::hasColumn('listings', 'negotiable')) {
+            Schema::table('listings', function (Blueprint $table) {
+                $table->boolean('negotiable')->default(false)->after('price_dzd');
+            });
+        }
+        if (!Schema::hasColumn('listings', 'condition')) {
+            Schema::table('listings', function (Blueprint $table) {
+                $table->string('condition', 10)->default('used')->after('negotiable');
+            });
+        }
 
-        Schema::table('listings', function (Blueprint $table) {
-            $table->dropIndex(['etat']);
-            $table->dropIndex(['type_offre']);
-            $table->dropColumn([
-                'type_offre', 'etat', 'remarque_echange',
-                'numero_whatsapp', 'numero_mobile', 'contact_email',
-                'visible_a', 'pays',
-            ]);
-        });
+        if (Schema::hasColumn('listings', 'type_offre')) {
+            DB::table('listings')->where('type_offre', 'negociable')->update(['negotiable' => true]);
+            DB::table('listings')->whereIn('type_offre', ['fix', 'offert'])->update(['negotiable' => false]);
+        }
+        if (Schema::hasColumn('listings', 'etat')) {
+            DB::table('listings')->where('etat', 'jamais_utilise')->update(['condition' => 'new']);
+            DB::table('listings')->where('etat', '!=', 'jamais_utilise')->update(['condition' => 'used']);
+        }
+
+        $columnsToDrop = [];
+        foreach (['type_offre', 'etat', 'remarque_echange', 'numero_whatsapp', 'numero_mobile', 'contact_email', 'visible_a', 'pays'] as $col) {
+            if (Schema::hasColumn('listings', $col)) {
+                $columnsToDrop[] = $col;
+            }
+        }
+
+        if (!empty($columnsToDrop)) {
+            Schema::table('listings', function (Blueprint $table) use ($columnsToDrop) {
+                try {
+                    $table->dropIndex(['etat']);
+                    $table->dropIndex(['type_offre']);
+                } catch (\Throwable $e) {}
+                $table->dropColumn($columnsToDrop);
+            });
+        }
     }
 };
