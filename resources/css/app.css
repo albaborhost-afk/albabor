@@ -544,8 +544,8 @@ main {
 
 .reveal {
     opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(48px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
 }
 
@@ -556,8 +556,8 @@ main {
 
 .reveal-left {
     opacity: 0;
-    transform: translateX(-30px);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-48px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
 }
 
@@ -568,8 +568,8 @@ main {
 
 .reveal-right {
     opacity: 0;
-    transform: translateX(30px);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(48px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
 }
 
@@ -580,14 +580,14 @@ main {
 
 .reveal-scale {
     opacity: 0;
-    transform: scale(0.9);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.88) translateY(20px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
 }
 
 .reveal-scale.active {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
 }
 
 /* ============================================
@@ -1722,16 +1722,17 @@ main {
 
 .reveal-stagger > * {
     opacity: 0;
-    transform: translateY(25px);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(40px) scale(0.96);
+    transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
 }
 
-.reveal-stagger.active > *:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.05s; }
-.reveal-stagger.active > *:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.12s; }
-.reveal-stagger.active > *:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.19s; }
-.reveal-stagger.active > *:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.26s; }
-.reveal-stagger.active > *:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 0.33s; }
-.reveal-stagger.active > *:nth-child(6) { opacity: 1; transform: translateY(0); transition-delay: 0.40s; }
+.reveal-stagger.active > *:nth-child(1) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.05s; }
+.reveal-stagger.active > *:nth-child(2) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.18s; }
+.reveal-stagger.active > *:nth-child(3) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.31s; }
+.reveal-stagger.active > *:nth-child(4) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.44s; }
+.reveal-stagger.active > *:nth-child(5) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.57s; }
+.reveal-stagger.active > *:nth-child(6) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.70s; }
 
 /* ============================================
    OCEAN WAVE SEPARATOR

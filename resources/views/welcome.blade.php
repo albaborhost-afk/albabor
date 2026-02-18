@@ -102,9 +102,9 @@
     </div>
 
     <!-- Categories -->
-    <div class="py-8 sm:py-10 reveal" style="background-color: #F0F4F8;">
+    <div class="py-8 sm:py-10" style="background-color: #F0F4F8;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-6">
+            <div class="text-center mb-6 reveal">
                 <span class="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-full mb-4" style="background: rgba(23, 162, 184, 0.08); color: #17A2B8;">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                     Explorez
@@ -151,10 +151,10 @@
 
     <!-- Featured Listings -->
     @if(isset($featuredListings) && $featuredListings->count() > 0)
-    <div class="py-8 sm:py-10 reveal" style="background: white;">
+    <div class="py-8 sm:py-10" style="background: white;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 reveal-left">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, rgba(241,196,15,0.15), rgba(255,140,0,0.12));">
                         <svg class="w-5 h-5" style="color: #F1C40F;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     </div>
@@ -169,7 +169,7 @@
                 </a>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 reveal-stagger">
                 @foreach($featuredListings as $listing)
                     <x-listing-card :listing="$listing" />
                 @endforeach
@@ -187,10 +187,10 @@
 
     <!-- Latest Listings -->
     @if(isset($latestListings) && $latestListings->count() > 0)
-    <div class="py-8 sm:py-10 reveal" style="background-color: #F0F4F8;">
+    <div class="py-8 sm:py-10" style="background-color: #F0F4F8;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 reveal-right">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(27, 79, 114, 0.08);">
                         <svg class="w-5 h-5" style="color: #1B4F72;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
@@ -205,7 +205,7 @@
                 </a>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 reveal-stagger">
                 @foreach($latestListings as $listing)
                     <x-listing-card :listing="$listing" />
                 @endforeach
@@ -222,9 +222,9 @@
     @endif
 
     <!-- How it works -->
-    <div class="py-8 sm:py-10 reveal" style="background: white;">
+    <div class="py-8 sm:py-10" style="background: white;">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-6">
+            <div class="text-center mb-6 reveal">
                 <span class="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-full mb-4" style="background: rgba(27, 79, 114, 0.06); color: #1B4F72;">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     Simple et rapide
@@ -259,9 +259,9 @@
     </div>
 
     <!-- Features / Why AlBabor -->
-    <div class="py-8 sm:py-10 reveal" style="background-color: #F0F4F8;">
+    <div class="py-8 sm:py-10" style="background-color: #F0F4F8;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-6">
+            <div class="text-center mb-6 reveal">
                 <span class="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-full mb-4" style="background: rgba(39, 174, 96, 0.08); color: #27AE60;">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     Avantages
@@ -295,8 +295,8 @@
     </div>
 
     <!-- CTA -->
-    <div class="px-4 sm:px-6 lg:px-8 py-6 reveal">
-        <div class="relative py-10 sm:py-12 overflow-hidden" style="background: linear-gradient(135deg, #0A192F 0%, #1B4F72 40%, #17A2B8 100%); border-radius: 28px;">
+    <div class="px-4 sm:px-6 lg:px-8 py-6">
+        <div class="relative py-10 sm:py-12 overflow-hidden reveal-scale" style="background: linear-gradient(135deg, #0A192F 0%, #1B4F72 40%, #17A2B8 100%); border-radius: 28px;">
             <!-- Decorative elements -->
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
                 <div class="absolute animate-float-slow" style="top: -30px; right: 10%; width: 250px; height: 250px; background: rgba(23,162,184,0.12); border-radius: 50%; filter: blur(60px);"></div>
@@ -350,14 +350,15 @@
 <script>
 // Scroll Reveal with stagger support
 document.addEventListener('DOMContentLoaded', function() {
-    const reveals = document.querySelectorAll('.reveal, .reveal-stagger');
+    const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-stagger');
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('active');
+                observer.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
     reveals.forEach(el => observer.observe(el));
 
     // Counter animation for stats
