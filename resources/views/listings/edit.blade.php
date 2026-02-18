@@ -166,6 +166,22 @@
                                    class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="3.20">
                         </div>
                     </div>
+                    <div class="mt-4 pt-4" style="border-top: 1px solid #E0E6ED;" x-show="category === 'boat'" x-transition>
+                        <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Reservoirs carburant (L)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium mb-1" style="color: #9BA8B7;">Reservoir 1</label>
+                                <input type="number" step="1" name="specs[dimensions][reservoir_1]" value="{{ old('specs.dimensions.reservoir_1', data_get($specs, 'dimensions.reservoir_1')) }}"
+                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="500" min="0">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium mb-1" style="color: #9BA8B7;">Reservoir 2</label>
+                                <input type="number" step="1" name="specs[dimensions][reservoir_2]" value="{{ old('specs.dimensions.reservoir_2', data_get($specs, 'dimensions.reservoir_2')) }}"
+                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="500" min="0">
+                            </div>
+                        </div>
+                        <p class="text-xs mt-1.5" style="color: #9BA8B7;">Laissez le reservoir 2 vide si un seul reservoir</p>
+                    </div>
                 </div>
 
                 {{-- SECTION 4: Motorisation --}}
@@ -409,14 +425,6 @@
                     <div class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Annexe</label>
-                                <select name="specs[extras][annexe]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                    <option value="">-- Choisir --</option>
-                                    <option value="oui" {{ old('specs.extras.annexe', data_get($specs, 'extras.annexe')) == 'oui' ? 'selected' : '' }}>Oui, incluse</option>
-                                    <option value="non" {{ old('specs.extras.annexe', data_get($specs, 'extras.annexe')) == 'non' ? 'selected' : '' }}>Non</option>
-                                </select>
-                            </div>
-                            <div>
                                 <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Remorque</label>
                                 <select name="specs[extras][remorque]" x-model="hasRemorque" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
                                     <option value="">-- Choisir --</option>
@@ -574,39 +582,6 @@
                     </div>
                 </div>
 
-                {{-- SECTION: Localisation --}}
-                <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);" x-show="category" x-transition>
-                    <h2 class="text-base font-semibold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
-                        <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-bold gradient-primary">
-                            <span x-text="getSectionNumber('localisation')">10</span>
-                        </span>
-                        Localisation
-                    </h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Wilaya *</label>
-                            <select name="wilaya" required class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                <option value="">-- Choisir la wilaya --</option>
-                                @foreach($wilayas as $code => $name)
-                                    <option value="{{ $code }}" {{ old('wilaya', $listing->wilaya) == $code ? 'selected' : '' }}>{{ $code }} - {{ $name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Commune, quartier...</label>
-                                <input type="text" name="visible_a" value="{{ old('visible_a', $listing->visible_a) }}"
-                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="Ex: Sidi Fredj...">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Pays</label>
-                                <input type="text" name="pays" value="{{ old('pays', $listing->pays ?? 'Algerie') }}"
-                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 {{-- SECTION: Contact --}}
                 <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);" x-show="category" x-transition>
                     <h2 class="text-base font-semibold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
@@ -616,21 +591,167 @@
                         Contact
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
+                        <div data-old-phone="{{ old('numero_whatsapp', $listing->numero_whatsapp) }}" x-data="{
+                            open: false, search: '', phoneNumber: '',
+                            countries: [
+                                { name: 'Algerie', code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
+                                { name: 'Maroc', code: '+212', flag: '\ud83c\uddf2\ud83c\udde6' },
+                                { name: 'Tunisie', code: '+216', flag: '\ud83c\uddf9\ud83c\uddf3' },
+                                { name: 'Allemagne', code: '+49', flag: '\ud83c\udde9\ud83c\uddea' },
+                                { name: 'Autriche', code: '+43', flag: '\ud83c\udde6\ud83c\uddf9' },
+                                { name: 'Belgique', code: '+32', flag: '\ud83c\udde7\ud83c\uddea' },
+                                { name: 'Bulgarie', code: '+359', flag: '\ud83c\udde7\ud83c\uddec' },
+                                { name: 'Chypre', code: '+357', flag: '\ud83c\udde8\ud83c\uddfe' },
+                                { name: 'Croatie', code: '+385', flag: '\ud83c\udded\ud83c\uddf7' },
+                                { name: 'Danemark', code: '+45', flag: '\ud83c\udde9\ud83c\uddf0' },
+                                { name: 'Espagne', code: '+34', flag: '\ud83c\uddea\ud83c\uddf8' },
+                                { name: 'Estonie', code: '+372', flag: '\ud83c\uddea\ud83c\uddea' },
+                                { name: 'Finlande', code: '+358', flag: '\ud83c\uddeb\ud83c\uddee' },
+                                { name: 'France', code: '+33', flag: '\ud83c\uddeb\ud83c\uddf7' },
+                                { name: 'Grece', code: '+30', flag: '\ud83c\uddec\ud83c\uddf7' },
+                                { name: 'Hongrie', code: '+36', flag: '\ud83c\udded\ud83c\uddfa' },
+                                { name: 'Irlande', code: '+353', flag: '\ud83c\uddee\ud83c\uddea' },
+                                { name: 'Italie', code: '+39', flag: '\ud83c\uddee\ud83c\uddf9' },
+                                { name: 'Lettonie', code: '+371', flag: '\ud83c\uddf1\ud83c\uddfb' },
+                                { name: 'Lituanie', code: '+370', flag: '\ud83c\uddf1\ud83c\uddf9' },
+                                { name: 'Luxembourg', code: '+352', flag: '\ud83c\uddf1\ud83c\uddfa' },
+                                { name: 'Malte', code: '+356', flag: '\ud83c\uddf2\ud83c\uddf9' },
+                                { name: 'Pays-Bas', code: '+31', flag: '\ud83c\uddf3\ud83c\uddf1' },
+                                { name: 'Pologne', code: '+48', flag: '\ud83c\uddf5\ud83c\uddf1' },
+                                { name: 'Portugal', code: '+351', flag: '\ud83c\uddf5\ud83c\uddf9' },
+                                { name: 'Rep. tcheque', code: '+420', flag: '\ud83c\udde8\ud83c\uddff' },
+                                { name: 'Roumanie', code: '+40', flag: '\ud83c\uddf7\ud83c\uddf4' },
+                                { name: 'Slovaquie', code: '+421', flag: '\ud83c\uddf8\ud83c\uddf0' },
+                                { name: 'Slovenie', code: '+386', flag: '\ud83c\uddf8\ud83c\uddee' },
+                                { name: 'Suede', code: '+46', flag: '\ud83c\uddf8\ud83c\uddea' }
+                            ],
+                            selected: { name: 'Algerie', code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
+                            get filteredCountries() {
+                                if (!this.search) return this.countries;
+                                const s = this.search.toLowerCase();
+                                return this.countries.filter(c => c.name.toLowerCase().includes(s) || c.code.includes(s));
+                            },
+                            get fullPhone() { return this.phoneNumber ? this.selected.code + this.phoneNumber : ''; },
+                            selectCountry(country) { this.selected = country; this.open = false; this.search = ''; },
+                            init() {
+                                const old = this.$el.dataset.oldPhone || '';
+                                if (old) {
+                                    const sorted = [...this.countries].sort((a, b) => b.code.length - a.code.length);
+                                    for (const c of sorted) { if (old.startsWith(c.code)) { this.selected = c; this.phoneNumber = old.substring(c.code.length); return; } }
+                                    this.phoneNumber = old;
+                                }
+                            }
+                        }">
                             <label class="block text-xs font-semibold uppercase mb-1.5 flex items-center gap-1" style="color: #6B7B8D;">
                                 <svg class="w-3.5 h-3.5" style="color: #27AE60;" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
                                 WhatsApp
                             </label>
-                            <input type="tel" name="numero_whatsapp" value="{{ old('numero_whatsapp', $listing->numero_whatsapp) }}"
-                                   class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="+213 5XX XX XX XX">
+                            <input type="hidden" name="numero_whatsapp" :value="fullPhone">
+                            <div class="flex gap-2">
+                                <div class="relative">
+                                    <button type="button" @click="open = !open" class="glass-input flex items-center gap-1.5 pl-3 pr-2 py-3 text-sm font-medium rounded-xl h-full" style="min-width: 100px;">
+                                        <span x-text="selected.flag" class="text-base leading-none"></span>
+                                        <span x-text="selected.code" class="font-semibold" style="color: #1B2A4A; font-size: 12px;"></span>
+                                        <svg class="w-3 h-3 ml-auto flex-shrink-0 transition-transform duration-200" :class="open && 'rotate-180'" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <div x-show="open" x-cloak @click.away="open = false; search = ''" x-transition class="absolute z-50 left-0 mt-1.5 w-64 rounded-xl overflow-hidden" style="background: white; border: 1px solid #E0E6ED; box-shadow: 0 20px 40px rgba(0,0,0,0.12);">
+                                        <div class="p-2" style="border-bottom: 1px solid #E0E6ED;">
+                                            <input type="text" x-model="search" x-ref="wsSearchEdit" @keydown.escape="open = false" placeholder="Rechercher..." class="w-full px-3 py-2 text-xs rounded-lg" style="border: 1px solid #E0E6ED; outline: none; color: #1B2A4A;" x-init="$watch('open', v => v && $nextTick(() => $refs.wsSearchEdit.focus()))">
+                                        </div>
+                                        <div class="max-h-48 overflow-y-auto" style="scrollbar-width: thin;">
+                                            <template x-for="country in filteredCountries" :key="'ews-'+country.code">
+                                                <button type="button" @click="selectCountry(country)" class="w-full flex items-center gap-2 px-3 py-2 text-xs transition-colors hover:bg-gray-50" :class="selected.code === country.code && 'bg-cyan-50'">
+                                                    <span x-text="country.flag" class="text-base leading-none"></span>
+                                                    <span x-text="country.name" class="flex-1 text-left font-medium" style="color: #1B2A4A;"></span>
+                                                    <span x-text="country.code" style="color: #6B7B8D;"></span>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="tel" x-model="phoneNumber" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" placeholder="5XX XX XX XX" style="min-width: 0;">
+                            </div>
                         </div>
-                        <div>
+                        <div data-old-phone="{{ old('numero_mobile', $listing->numero_mobile) }}" x-data="{
+                            open: false, search: '', phoneNumber: '',
+                            countries: [
+                                { name: 'Algerie', code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
+                                { name: 'Maroc', code: '+212', flag: '\ud83c\uddf2\ud83c\udde6' },
+                                { name: 'Tunisie', code: '+216', flag: '\ud83c\uddf9\ud83c\uddf3' },
+                                { name: 'Allemagne', code: '+49', flag: '\ud83c\udde9\ud83c\uddea' },
+                                { name: 'Autriche', code: '+43', flag: '\ud83c\udde6\ud83c\uddf9' },
+                                { name: 'Belgique', code: '+32', flag: '\ud83c\udde7\ud83c\uddea' },
+                                { name: 'Bulgarie', code: '+359', flag: '\ud83c\udde7\ud83c\uddec' },
+                                { name: 'Chypre', code: '+357', flag: '\ud83c\udde8\ud83c\uddfe' },
+                                { name: 'Croatie', code: '+385', flag: '\ud83c\udded\ud83c\uddf7' },
+                                { name: 'Danemark', code: '+45', flag: '\ud83c\udde9\ud83c\uddf0' },
+                                { name: 'Espagne', code: '+34', flag: '\ud83c\uddea\ud83c\uddf8' },
+                                { name: 'Estonie', code: '+372', flag: '\ud83c\uddea\ud83c\uddea' },
+                                { name: 'Finlande', code: '+358', flag: '\ud83c\uddeb\ud83c\uddee' },
+                                { name: 'France', code: '+33', flag: '\ud83c\uddeb\ud83c\uddf7' },
+                                { name: 'Grece', code: '+30', flag: '\ud83c\uddec\ud83c\uddf7' },
+                                { name: 'Hongrie', code: '+36', flag: '\ud83c\udded\ud83c\uddfa' },
+                                { name: 'Irlande', code: '+353', flag: '\ud83c\uddee\ud83c\uddea' },
+                                { name: 'Italie', code: '+39', flag: '\ud83c\uddee\ud83c\uddf9' },
+                                { name: 'Lettonie', code: '+371', flag: '\ud83c\uddf1\ud83c\uddfb' },
+                                { name: 'Lituanie', code: '+370', flag: '\ud83c\uddf1\ud83c\uddf9' },
+                                { name: 'Luxembourg', code: '+352', flag: '\ud83c\uddf1\ud83c\uddfa' },
+                                { name: 'Malte', code: '+356', flag: '\ud83c\uddf2\ud83c\uddf9' },
+                                { name: 'Pays-Bas', code: '+31', flag: '\ud83c\uddf3\ud83c\uddf1' },
+                                { name: 'Pologne', code: '+48', flag: '\ud83c\uddf5\ud83c\uddf1' },
+                                { name: 'Portugal', code: '+351', flag: '\ud83c\uddf5\ud83c\uddf9' },
+                                { name: 'Rep. tcheque', code: '+420', flag: '\ud83c\udde8\ud83c\uddff' },
+                                { name: 'Roumanie', code: '+40', flag: '\ud83c\uddf7\ud83c\uddf4' },
+                                { name: 'Slovaquie', code: '+421', flag: '\ud83c\uddf8\ud83c\uddf0' },
+                                { name: 'Slovenie', code: '+386', flag: '\ud83c\uddf8\ud83c\uddee' },
+                                { name: 'Suede', code: '+46', flag: '\ud83c\uddf8\ud83c\uddea' }
+                            ],
+                            selected: { name: 'Algerie', code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
+                            get filteredCountries() {
+                                if (!this.search) return this.countries;
+                                const s = this.search.toLowerCase();
+                                return this.countries.filter(c => c.name.toLowerCase().includes(s) || c.code.includes(s));
+                            },
+                            get fullPhone() { return this.phoneNumber ? this.selected.code + this.phoneNumber : ''; },
+                            selectCountry(country) { this.selected = country; this.open = false; this.search = ''; },
+                            init() {
+                                const old = this.$el.dataset.oldPhone || '';
+                                if (old) {
+                                    const sorted = [...this.countries].sort((a, b) => b.code.length - a.code.length);
+                                    for (const c of sorted) { if (old.startsWith(c.code)) { this.selected = c; this.phoneNumber = old.substring(c.code.length); return; } }
+                                    this.phoneNumber = old;
+                                }
+                            }
+                        }">
                             <label class="block text-xs font-semibold uppercase mb-1.5 flex items-center gap-1" style="color: #6B7B8D;">
                                 <svg class="w-3.5 h-3.5" style="color: #2471A3;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                 Mobile
                             </label>
-                            <input type="tel" name="numero_mobile" value="{{ old('numero_mobile', $listing->numero_mobile) }}"
-                                   class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="+213 5XX XX XX XX">
+                            <input type="hidden" name="numero_mobile" :value="fullPhone">
+                            <div class="flex gap-2">
+                                <div class="relative">
+                                    <button type="button" @click="open = !open" class="glass-input flex items-center gap-1.5 pl-3 pr-2 py-3 text-sm font-medium rounded-xl h-full" style="min-width: 100px;">
+                                        <span x-text="selected.flag" class="text-base leading-none"></span>
+                                        <span x-text="selected.code" class="font-semibold" style="color: #1B2A4A; font-size: 12px;"></span>
+                                        <svg class="w-3 h-3 ml-auto flex-shrink-0 transition-transform duration-200" :class="open && 'rotate-180'" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <div x-show="open" x-cloak @click.away="open = false; search = ''" x-transition class="absolute z-50 left-0 mt-1.5 w-64 rounded-xl overflow-hidden" style="background: white; border: 1px solid #E0E6ED; box-shadow: 0 20px 40px rgba(0,0,0,0.12);">
+                                        <div class="p-2" style="border-bottom: 1px solid #E0E6ED;">
+                                            <input type="text" x-model="search" x-ref="mbSearchEdit" @keydown.escape="open = false" placeholder="Rechercher..." class="w-full px-3 py-2 text-xs rounded-lg" style="border: 1px solid #E0E6ED; outline: none; color: #1B2A4A;" x-init="$watch('open', v => v && $nextTick(() => $refs.mbSearchEdit.focus()))">
+                                        </div>
+                                        <div class="max-h-48 overflow-y-auto" style="scrollbar-width: thin;">
+                                            <template x-for="country in filteredCountries" :key="'emb-'+country.code">
+                                                <button type="button" @click="selectCountry(country)" class="w-full flex items-center gap-2 px-3 py-2 text-xs transition-colors hover:bg-gray-50" :class="selected.code === country.code && 'bg-cyan-50'">
+                                                    <span x-text="country.flag" class="text-base leading-none"></span>
+                                                    <span x-text="country.name" class="flex-1 text-left font-medium" style="color: #1B2A4A;"></span>
+                                                    <span x-text="country.code" style="color: #6B7B8D;"></span>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="tel" x-model="phoneNumber" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" placeholder="5XX XX XX XX" style="min-width: 0;">
+                            </div>
                         </div>
                     </div>
                     <div class="mt-4">
@@ -740,9 +861,8 @@
                         if (isBJ) n += 2;
                         return n;
                     }
-                    if (section === 'localisation') return this.getSectionNumber('prix') + 1;
-                    if (section === 'contact') return this.getSectionNumber('prix') + 2;
-                    if (section === 'photos') return this.getSectionNumber('prix') + 3;
+                    if (section === 'contact') return this.getSectionNumber('prix') + 1;
+                    if (section === 'photos') return this.getSectionNumber('prix') + 2;
                     return n;
                 }
             }
