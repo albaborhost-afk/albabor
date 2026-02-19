@@ -77,7 +77,7 @@ class Payment extends Model
         return match($this->method) {
             'baridimob' => 'BaridiMob',
             'ccp' => 'CCP',
-            'bank_transfer' => 'Virement bancaire',
+            'bank_transfer' => 'BEA – Virement bancaire',
             'paypal' => 'PayPal',
             default => $this->method,
         };

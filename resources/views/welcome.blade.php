@@ -347,6 +347,86 @@
         </div>
     </div>
 
+    {{-- ─── Payment Methods Strip ─────────────────────────────────────────── --}}
+    <div class="px-4 sm:px-6 lg:px-8 py-10 reveal">
+        <div class="max-w-5xl mx-auto">
+            {{-- Title --}}
+            <div class="text-center mb-8">
+                <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color: #17A2B8; letter-spacing: 0.18em;">Paiements sécurisés</p>
+                <h2 class="text-xl sm:text-2xl font-black" style="color: #1B2A4A;">Avec quelle banque pouvez-vous payer ?</h2>
+                <p class="text-sm mt-2" style="color: #9BA8B7;">Nous acceptons plusieurs moyens de paiement pour votre confort</p>
+            </div>
+
+            {{-- Cards grid --}}
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                {{-- BaridiMob --}}
+                <div class="group bg-white rounded-2xl p-5 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden" style="background: #FFF8E1;">
+                        <img src="/images/baridimob.png" alt="BaridiMob" class="w-12 h-12 object-contain">
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-bold" style="color: #1B2A4A;">BaridiMob</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">Algérie Poste</p>
+                    </div>
+                    <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full" style="background: #FFF3CD; color: #856404;">Paiement mobile</span>
+                </div>
+
+                {{-- CCP --}}
+                <div class="group bg-white rounded-2xl p-5 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden" style="background: #FFF8E1;">
+                        <img src="/images/ccp.png" alt="CCP" class="w-12 h-12 object-contain">
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-bold" style="color: #1B2A4A;">CCP</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">Algérie Poste</p>
+                    </div>
+                    <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full" style="background: #FFF3CD; color: #856404;">Compte postal</span>
+                </div>
+
+                {{-- BEA --}}
+                <div class="group bg-white rounded-2xl p-5 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden" style="background: #EEF2FF;">
+                        <img src="/images/bea.png" alt="BEA" class="w-12 h-12 object-contain">
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-bold" style="color: #1B2A4A;">BEA</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">Banque Ext. d'Algérie</p>
+                    </div>
+                    <div class="text-center space-y-0.5">
+                        <span class="block text-[10px] font-semibold px-2.5 py-0.5 rounded-full" style="background: #E8F4FD; color: #1B6CA8;">🇩🇿 RIB DZD</span>
+                        <span class="block text-[10px] font-semibold px-2.5 py-0.5 rounded-full" style="background: #EDE7F6; color: #4527A0;">🇪🇺 RIB EUR</span>
+                    </div>
+                </div>
+
+                {{-- PayPal --}}
+                <div class="group bg-white rounded-2xl p-5 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden" style="background: #E8F4FD;">
+                        <img src="/images/paypal.png" alt="PayPal" class="w-12 h-12 object-contain">
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-bold" style="color: #1B2A4A;">PayPal</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">International</p>
+                    </div>
+                    <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full" style="background: #E8F4FD; color: #003087;">Paiement en ligne</span>
+                </div>
+
+            </div>
+
+            {{-- Security note --}}
+            <div class="mt-6 flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 flex-shrink-0" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+                <p class="text-xs" style="color: #9BA8B7;">Paiement manuel sécurisé · Approbation admin sous 24h · Justificatif requis</p>
+            </div>
+        </div>
+    </div>
+
 <script>
 // Scroll Reveal with stagger support
 document.addEventListener('DOMContentLoaded', function() {

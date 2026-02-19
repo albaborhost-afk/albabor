@@ -204,11 +204,14 @@
                                 </span>
                             </label>
 
-                            <label class="flex items-center p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
-                                <input type="radio" name="method" value="bank_transfer" style="accent-color: #17A2B8;">
+                            <label class="flex items-start p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
+                                <input type="radio" name="method" value="bank_transfer" style="accent-color: #17A2B8; margin-top: 3px;">
+                                <img src="/images/bea.png" alt="BEA" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
                                 <span class="ml-3">
-                                    <span class="block font-semibold" style="color: #1B2A4A;">{{ __('messages.bank_transfer') }}</span>
-                                    <span class="block text-sm" style="color: #6B7B8D;">RIB: 00123456789012345678901234</span>
+                                    <span class="block font-semibold" style="color: #1B2A4A;">BEA – Banque Extérieure d'Algérie</span>
+                                    <span class="block text-xs mb-1" style="color: #9BA8B7;">Virement bancaire</span>
+                                    <span class="block text-sm" style="color: #6B7B8D;">🇩🇿 RIB DZD : <span class="font-mono">00200090090220206690</span></span>
+                                    <span class="block text-sm" style="color: #6B7B8D;">🇪🇺 RIB EUR : <span class="font-mono">00200090090311050391</span></span>
                                 </span>
                             </label>
 
