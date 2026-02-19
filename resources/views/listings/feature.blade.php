@@ -128,7 +128,7 @@
                             <input type="radio" name="method" value="baridimob" required style="accent-color: #17A2B8;">
                             <span class="ml-3">
                                 <span class="block font-semibold" style="color: #1B2A4A;">BaridiMob</span>
-                                <span class="block text-sm" style="color: #6B7B8D;">00799999001234567890</span>
+                                <span class="block text-sm" style="color: #6B7B8D;">00799999002543569223</span>
                             </span>
                         </label>
 
@@ -136,7 +136,7 @@
                             <input type="radio" name="method" value="ccp" style="accent-color: #17A2B8;">
                             <span class="ml-3">
                                 <span class="block font-semibold" style="color: #1B2A4A;">CCP</span>
-                                <span class="block text-sm" style="color: #6B7B8D;">1234567890 {{ __('messages.cle') }} 23</span>
+                                <span class="block text-sm" style="color: #6B7B8D;">0025435692 {{ __('messages.cle') }} 23</span>
                             </span>
                         </label>
 
