@@ -33,7 +33,7 @@ class PaymentController extends Controller
         }
 
         $validated = $request->validate([
-            'method' => 'required|in:baridimob,ccp,bank_transfer',
+            'method' => 'required|in:baridimob,ccp,bank_transfer,paypal',
             'proof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
@@ -65,7 +65,7 @@ class PaymentController extends Controller
         }
 
         $validated = $request->validate([
-            'method' => 'required|in:baridimob,ccp,bank_transfer',
+            'method' => 'required|in:baridimob,ccp,bank_transfer,paypal',
             'proof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
@@ -97,7 +97,7 @@ class PaymentController extends Controller
     {
         $validated = $request->validate([
             'plan_id' => 'required|exists:plans,id',
-            'method' => 'required|in:baridimob,ccp,bank_transfer',
+            'method' => 'required|in:baridimob,ccp,bank_transfer,paypal',
             'proof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
@@ -130,7 +130,7 @@ class PaymentController extends Controller
     {
         $validated = $request->validate([
             'ticket_id' => 'required|exists:mediation_tickets,id',
-            'method' => 'required|in:baridimob,ccp,bank_transfer',
+            'method' => 'required|in:baridimob,ccp,bank_transfer,paypal',
             'proof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 

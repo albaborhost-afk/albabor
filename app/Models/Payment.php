@@ -78,6 +78,7 @@ class Payment extends Model
             'baridimob' => 'BaridiMob',
             'ccp' => 'CCP',
             'bank_transfer' => 'Virement bancaire',
+            'paypal' => 'PayPal',
             default => $this->method,
         };
     }

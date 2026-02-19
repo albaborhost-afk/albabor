@@ -149,6 +149,15 @@
                                 <span class="block text-sm" style="color: #6B7B8D;">RIB: 00123456789012345678901234</span>
                             </span>
                         </label>
+
+                        <label class="flex items-center p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
+                            <input type="radio" name="method" value="paypal" style="accent-color: #17A2B8;">
+                            <img src="/images/paypal.png" alt="PayPal" class="ml-3 h-8 w-auto object-contain">
+                            <span class="ml-3">
+                                <span class="block font-semibold" style="color: #1B2A4A;">PayPal</span>
+                                <span class="block text-sm" style="color: #6B7B8D;">albabordz@gmail.com</span>
+                            </span>
+                        </label>
                     </div>
                 </div>
 
