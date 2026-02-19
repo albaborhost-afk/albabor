@@ -10,9 +10,26 @@ use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
+    private function proofDisk(): string
+    {
+        return config('filesystems.listing_disk', 'public');
+    }
+
+    private function storeProof(Request $request): string|false
+    {
+        try {
+            $path = $request->file('proof')->store('payment-proofs', $this->proofDisk());
+            return $path ?: false;
+        } catch (\Throwable $e) {
+            Log::error('Payment proof storage failed', ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
     public function index()
     {
         $payments = Auth::user()
@@ -39,8 +56,10 @@ class PaymentController extends Controller
 
         $amount = in_array($listing->category, ['boat', 'jetski']) ? 5000 : 0;
 
-        // Store proof image
-        $proofPath = $request->file('proof')->store('payment-proofs', 'public');
+        $proofPath = $this->storeProof($request);
+        if ($proofPath === false) {
+            return back()->withInput()->with('error', 'Erreur lors du téléversement du justificatif. Veuillez réessayer.');
+        }
 
         Payment::create([
             'user_id' => Auth::id(),
@@ -69,7 +88,10 @@ class PaymentController extends Controller
             'proof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
-        $proofPath = $request->file('proof')->store('payment-proofs', 'public');
+        $proofPath = $this->storeProof($request);
+        if ($proofPath === false) {
+            return back()->withInput()->with('error', 'Erreur lors du téléversement du justificatif. Veuillez réessayer.');
+        }
 
         Payment::create([
             'user_id' => Auth::id(),
@@ -110,7 +132,10 @@ class PaymentController extends Controller
             'status' => 'pending',
         ]);
 
-        $proofPath = $request->file('proof')->store('payment-proofs', 'public');
+        $proofPath = $this->storeProof($request);
+        if ($proofPath === false) {
+            return back()->withInput()->with('error', 'Erreur lors du téléversement du justificatif. Veuillez réessayer.');
+        }
 
         Payment::create([
             'user_id' => Auth::id(),
@@ -156,7 +181,10 @@ class PaymentController extends Controller
             return back()->with('error', __('messages.mediation_payment_already_submitted'));
         }
 
-        $proofPath = $request->file('proof')->store('payment-proofs', 'public');
+        $proofPath = $this->storeProof($request);
+        if ($proofPath === false) {
+            return back()->withInput()->with('error', 'Erreur lors du téléversement du justificatif. Veuillez réessayer.');
+        }
 
         Payment::create([
             'user_id' => Auth::id(),
