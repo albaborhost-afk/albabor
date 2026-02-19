@@ -792,18 +792,19 @@
                             <div class="grid grid-cols-5 gap-3">
                                 @foreach($listing->media as $media)
                                     <div class="relative group" x-data="{ marked: false }">
+                                        <input x-show="marked" x-cloak type="hidden" name="delete_images[]" value="{{ $media->id }}">
                                         <div class="aspect-square rounded-xl overflow-hidden" style="border: 1px solid #E0E6ED;">
                                             <img src="{{ $media->thumbnail_url ?? $media->url }}"
                                                  alt="" class="w-full h-full object-cover" :class="marked && 'opacity-30'">
                                         </div>
-                                        <label class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-all"
-                                               :style="marked ? 'background: #FF6B6B; color: white;' : 'background: rgba(255,255,255,0.85); color: #9BA8B7; border: 1px solid rgba(0,0,0,0.06);'"
-                                               @click="marked = !marked">
-                                            <input type="checkbox" name="delete_images[]" value="{{ $media->id }}" class="sr-only" :checked="marked">
+                                        <button type="button"
+                                                class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-all"
+                                                :style="marked ? 'background: #FF6B6B; color: white;' : 'background: rgba(255,255,255,0.85); color: #9BA8B7; border: 1px solid rgba(0,0,0,0.06);'"
+                                                @click="marked = !marked">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                             </svg>
-                                        </label>
+                                        </button>
                                     </div>
                                 @endforeach
                             </div>
