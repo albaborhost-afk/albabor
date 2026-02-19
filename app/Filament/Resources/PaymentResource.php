@@ -408,7 +408,8 @@ class PaymentResource extends Resource
                         // Handle listing publish payment
                         if ($record->type === 'publish_listing' && $record->listing) {
                             $updateData = ['published_until' => now()->addYear()];
-                            if ($record->listing->status === 'awaiting_payment') {
+                            // Always ensure listing is in pending_review for content validation
+                            if (in_array($record->listing->status, ['awaiting_payment', 'pending_review'])) {
                                 $updateData['status'] = 'pending_review';
                             }
                             $record->listing->update($updateData);
@@ -459,6 +460,12 @@ class PaymentResource extends Resource
                             'status' => 'rejected',
                             'rejection_reason' => $data['rejection_reason'],
                         ]);
+
+                        // Revert listing back to awaiting_payment so user can retry
+                        if ($record->type === 'publish_listing' && $record->listing &&
+                            in_array($record->listing->status, ['awaiting_payment', 'pending_review'])) {
+                            $record->listing->update(['status' => 'awaiting_payment']);
+                        }
 
                         Notification::make()
                             ->title("Paiement refusé")

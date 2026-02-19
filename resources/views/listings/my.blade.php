@@ -120,23 +120,50 @@
                                     </td>
 
                                     <!-- Status -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4">
                                         @php
                                             $statusStyles = [
-                                                'active' => ['bg' => 'rgba(39, 174, 96, 0.1)', 'color' => '#27AE60'],
-                                                'pending_review' => ['bg' => 'rgba(243, 156, 18, 0.1)', 'color' => '#F39C12'],
+                                                'active'           => ['bg' => 'rgba(39, 174, 96, 0.1)',   'color' => '#27AE60'],
+                                                'pending_review'   => ['bg' => 'rgba(23, 162, 184, 0.1)',  'color' => '#17A2B8'],
                                                 'awaiting_payment' => ['bg' => 'rgba(255, 107, 107, 0.1)', 'color' => '#FF6B6B'],
-                                                'sold' => ['bg' => 'rgba(23, 162, 184, 0.1)', 'color' => '#17A2B8'],
-                                                'paused' => ['bg' => 'rgba(155, 168, 183, 0.1)', 'color' => '#9BA8B7'],
-                                                'rejected' => ['bg' => 'rgba(231, 76, 60, 0.1)', 'color' => '#E74C3C'],
-                                                'draft' => ['bg' => 'rgba(107, 123, 141, 0.1)', 'color' => '#6B7B8D'],
+                                                'sold'             => ['bg' => 'rgba(107, 123, 141, 0.1)', 'color' => '#6B7B8D'],
+                                                'paused'           => ['bg' => 'rgba(155, 168, 183, 0.1)', 'color' => '#9BA8B7'],
+                                                'rejected'         => ['bg' => 'rgba(231, 76, 60, 0.1)',   'color' => '#E74C3C'],
+                                                'draft'            => ['bg' => 'rgba(107, 123, 141, 0.1)', 'color' => '#6B7B8D'],
                                             ];
                                             $s = $statusStyles[$listing->status] ?? $statusStyles['draft'];
                                         @endphp
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold"
                                               style="background: {{ $s['bg'] }}; color: {{ $s['color'] }};">
+                                            @if($listing->status === 'pending_review')
+                                                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                            @elseif($listing->status === 'awaiting_payment')
+                                                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                                </svg>
+                                            @elseif($listing->status === 'active')
+                                                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            @elseif($listing->status === 'rejected')
+                                                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            @endif
                                             {{ $listing->status_label }}
                                         </span>
+                                        @if($listing->status === 'pending_review')
+                                            <p class="text-xs mt-1.5 flex items-center gap-1" style="color: #9BA8B7;">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                Réponse admin sous 24h
+                                            </p>
+                                        @elseif($listing->status === 'awaiting_payment')
+                                            <p class="text-xs mt-1.5" style="color: #9BA8B7;">Paiement requis pour publier</p>
+                                        @elseif($listing->status === 'rejected')
+                                            <p class="text-xs mt-1.5" style="color: #E74C3C;">Annonce refusée par admin</p>
+                                        @endif
                                     </td>
 
                                     <!-- Stats -->
@@ -269,8 +296,20 @@
                                         @php
                                             $s = $statusStyles[$listing->status] ?? $statusStyles['draft'];
                                         @endphp
-                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold" style="background: {{ $s['bg'] }}; color: {{ $s['color'] }};">{{ $listing->status_label }}</span>
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold" style="background: {{ $s['bg'] }}; color: {{ $s['color'] }};">
+                                            @if($listing->status === 'pending_review')
+                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            @endif
+                                            {{ $listing->status_label }}
+                                        </span>
                                     </div>
+                                    @if($listing->status === 'pending_review')
+                                        <p class="text-[10px] mt-1" style="color: #9BA8B7;">Réponse admin sous 24h</p>
+                                    @elseif($listing->status === 'awaiting_payment')
+                                        <p class="text-[10px] mt-1" style="color: #FF6B6B;">Paiement requis</p>
+                                    @elseif($listing->status === 'rejected')
+                                        <p class="text-[10px] mt-1" style="color: #E74C3C;">Annonce refusée</p>
+                                    @endif
                                     <!-- Stats -->
                                     <div class="flex items-center gap-3 mt-1.5 text-xs" style="color: #9BA8B7;">
                                         <span class="flex items-center">

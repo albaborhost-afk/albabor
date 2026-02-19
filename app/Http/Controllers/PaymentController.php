@@ -71,6 +71,9 @@ class PaymentController extends Controller
             'status' => 'pending',
         ]);
 
+        // Move listing to pending_review so user sees payment is under review
+        $listing->update(['status' => 'pending_review']);
+
         return redirect()->route('listings.my')
             ->with('success', __('messages.payment_submitted'));
     }
