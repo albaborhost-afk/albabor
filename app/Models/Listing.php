@@ -177,7 +177,7 @@ class Listing extends Model
 
     public function getImagesAttribute()
     {
-        return $this->media->pluck('path')->toArray();
+        return $this->media->map(fn (ListingMedia $media) => $media->url)->toArray();
     }
 
     public function getFormattedPriceAttribute(): string

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 
 class ListingMedia extends Model
 {
@@ -29,11 +28,18 @@ class ListingMedia extends Model
 
     public function getUrlAttribute(): string
     {
-        return asset('storage/' . $this->path);
+        return route('listing-media.show', ['media' => $this->id]);
     }
 
     public function getThumbnailUrlAttribute(): ?string
     {
-        return $this->thumbnail_path ? asset('storage/' . $this->thumbnail_path) : null;
+        if (!$this->thumbnail_path) {
+            return $this->url;
+        }
+
+        return route('listing-media.show', [
+            'media' => $this->id,
+            'variant' => 'thumb',
+        ]);
     }
 }

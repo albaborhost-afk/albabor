@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ListingController;
+use App\Http\Controllers\ListingMediaController;
 use App\Http\Controllers\MediationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
@@ -46,6 +47,7 @@ Route::middleware('guest')->group(function () {
 
 // Public listing routes
 Route::get('annonces', [ListingController::class, 'index'])->name('listings.index');
+Route::get('media/listings/{media}/{variant?}', [ListingMediaController::class, 'show'])->name('listing-media.show');
 
 // Authenticated routes
 Route::middleware('auth')->group(function () {

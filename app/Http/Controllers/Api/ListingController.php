@@ -469,7 +469,7 @@ class ListingController extends Controller
             $order++;
 
             // Générer un nom de fichier unique
-            $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+            $filename = uniqid('img_', true) . '.jpg';
             $path = 'listings/' . $listing->id . '/' . $filename;
             $thumbPath = 'listings/' . $listing->id . '/thumb_' . $filename;
 

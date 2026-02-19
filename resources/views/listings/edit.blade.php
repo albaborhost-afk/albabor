@@ -793,7 +793,7 @@
                                 @foreach($listing->media as $media)
                                     <div class="relative group" x-data="{ marked: false }">
                                         <div class="aspect-square rounded-xl overflow-hidden" style="border: 1px solid #E0E6ED;">
-                                            <img src="{{ asset('storage/' . ($media->thumbnail_path ?? $media->path)) }}"
+                                            <img src="{{ $media->thumbnail_url ?? $media->url }}"
                                                  alt="" class="w-full h-full object-cover" :class="marked && 'opacity-30'">
                                         </div>
                                         <label class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-all"
