@@ -284,6 +284,17 @@ if (typeof photoUploader === 'undefined') {
             },
 
             init() {
+                // Re-sync files to input right before form submission
+                // (ensures DataTransfer is fresh; critical for all browsers)
+                this.$nextTick(() => {
+                    const form = this.$el.closest('form');
+                    if (form) {
+                        form.addEventListener('submit', () => {
+                            this.syncInput();
+                        }, { capture: true });
+                    }
+                });
+
                 // Clean up previews on page unload
                 window.addEventListener('beforeunload', () => {
                     this.files.forEach(f => URL.revokeObjectURL(f.preview));
@@ -337,10 +348,13 @@ if (typeof photoUploader === 'undefined') {
             },
 
             syncInput() {
-                const dt = new DataTransfer();
-                this.files.forEach(f => dt.items.add(f.file));
-                if (this.$refs.fileInput) {
+                if (!this.$refs.fileInput) return;
+                try {
+                    const dt = new DataTransfer();
+                    this.files.forEach(f => dt.items.add(f.file));
                     this.$refs.fileInput.files = dt.files;
+                } catch (e) {
+                    console.warn('[PhotoUploader] DataTransfer sync failed:', e);
                 }
             },
 

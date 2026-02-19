@@ -197,6 +197,21 @@ class ListingController extends Controller
             $this->authorize('update', $listing);
 
             $listing->load('media');
+
+            // Clean up orphaned media records (files missing from storage)
+            $disk = $this->listingDisk();
+            foreach ($listing->media as $media) {
+                if (!Storage::disk($disk)->exists($media->path)) {
+                    \Log::info('Removing orphaned ListingMedia record', [
+                        'media_id'   => $media->id,
+                        'path'       => $media->path,
+                        'listing_id' => $listing->id,
+                    ]);
+                    $media->delete();
+                }
+            }
+            $listing->unsetRelation('media')->load('media');
+
             $wilayas = $this->getWilayas();
             $exchangeRate = Setting::getExchangeRate();
 
@@ -292,9 +307,29 @@ class ListingController extends Controller
         // Add new images
         if ($request->hasFile('new_images')) {
             $currentCount = $listing->media()->count();
-            $maxNew = 10 - $currentCount;
-            $newImages = array_slice($request->file('new_images'), 0, $maxNew);
-            $this->handleImageUpload($listing, $newImages);
+            $maxNew = max(0, 10 - $currentCount);
+            \Log::info('Listing image upload', [
+                'listing_id'    => $listing->id,
+                'disk'          => $this->listingDisk(),
+                'existing'      => $currentCount,
+                'max_new'       => $maxNew,
+                'files_received' => count($request->file('new_images')),
+            ]);
+            if ($maxNew > 0) {
+                $newImages = array_slice($request->file('new_images'), 0, $maxNew);
+                $saved = $this->handleImageUpload($listing, $newImages);
+                \Log::info('Listing image upload result', [
+                    'listing_id' => $listing->id,
+                    'saved'      => $saved,
+                ]);
+            } else {
+                \Log::warning('Listing image upload skipped – 10 photo limit reached', [
+                    'listing_id' => $listing->id,
+                    'existing'   => $currentCount,
+                ]);
+            }
+        } else {
+            \Log::info('Listing update – no new_images received', ['listing_id' => $listing->id]);
         }
 
         return redirect()->route('listings.my')
@@ -430,34 +465,46 @@ class ListingController extends Controller
         foreach ($images as $image) {
             $order++;
 
-            // Generate unique filename
-            $filename = uniqid('img_', true) . '.jpg';
-            $path = 'listings/' . $listing->id . '/' . $filename;
+            $filename  = uniqid('img_', true) . '.jpg';
+            $path      = 'listings/' . $listing->id . '/' . $filename;
             $thumbPath = 'listings/' . $listing->id . '/thumb_' . $filename;
 
-            // Resize and save main image (max 1200px)
-            $img = Image::read($image);
-            $img->scaleDown(1200, 1200);
-            $mainStored = Storage::disk($disk)->put($path, (string) $img->toJpeg(85));
+            try {
+                // Resize and save main image (max 1200px)
+                $img = Image::read($image);
+                $img->scaleDown(1200, 1200);
+                $mainStored = Storage::disk($disk)->put($path, (string) $img->toJpeg(85));
 
-            if (!$mainStored) {
-                \Log::error('Failed to store listing image', ['path' => $path, 'disk' => $disk]);
-                continue;
+                if (!$mainStored) {
+                    \Log::error('Storage::put returned false for listing image', [
+                        'path' => $path, 'disk' => $disk,
+                    ]);
+                    continue;
+                }
+
+                // Create thumbnail (300px)
+                $thumb = Image::read($image);
+                $thumb->cover(300, 300);
+                $thumbStored = Storage::disk($disk)->put($thumbPath, (string) $thumb->toJpeg(75));
+
+                ListingMedia::create([
+                    'listing_id'     => $listing->id,
+                    'path'           => $path,
+                    'thumbnail_path' => $thumbStored ? $thumbPath : null,
+                    'order'          => $order,
+                ]);
+
+                $saved++;
+
+            } catch (\Throwable $e) {
+                \Log::error('Exception while storing listing image', [
+                    'listing_id' => $listing->id,
+                    'path'       => $path,
+                    'disk'       => $disk,
+                    'error'      => $e->getMessage(),
+                    'trace'      => $e->getTraceAsString(),
+                ]);
             }
-
-            // Create thumbnail (300px)
-            $thumb = Image::read($image);
-            $thumb->cover(300, 300);
-            $thumbStored = Storage::disk($disk)->put($thumbPath, (string) $thumb->toJpeg(75));
-
-            ListingMedia::create([
-                'listing_id' => $listing->id,
-                'path' => $path,
-                'thumbnail_path' => $thumbStored ? $thumbPath : null,
-                'order' => $order,
-            ]);
-
-            $saved++;
         }
 
         return $saved;
