@@ -358,61 +358,48 @@
             </div>
 
             {{-- Cards grid --}}
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
 
                 {{-- BaridiMob --}}
-                <div class="group bg-white rounded-2xl p-5 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                <div class="group bg-white rounded-2xl p-6 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
                      style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
-                    <div class="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden" style="background: #FFF8E1;">
-                        <img src="/images/baridimob.png" alt="BaridiMob" class="w-12 h-12 object-contain">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden" style="background: #FFF8E1;">
+                        <img src="/images/baridimob.png" alt="BaridiMob" class="w-13 h-13 object-contain">
                     </div>
                     <div class="text-center">
                         <p class="text-sm font-bold" style="color: #1B2A4A;">BaridiMob</p>
                         <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">Algérie Poste</p>
                     </div>
-                    <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full" style="background: #FFF3CD; color: #856404;">Paiement mobile</span>
-                </div>
-
-                {{-- CCP --}}
-                <div class="group bg-white rounded-2xl p-5 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
-                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
-                    <div class="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden" style="background: #FFF8E1;">
-                        <img src="/images/ccp.png" alt="CCP" class="w-12 h-12 object-contain">
-                    </div>
-                    <div class="text-center">
-                        <p class="text-sm font-bold" style="color: #1B2A4A;">CCP</p>
-                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">Algérie Poste</p>
-                    </div>
-                    <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full" style="background: #FFF3CD; color: #856404;">Compte postal</span>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #FFF3CD; color: #856404;">Paiement mobile</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">Titulaire : DJAMAA BILEL</p>
                 </div>
 
                 {{-- BEA --}}
-                <div class="group bg-white rounded-2xl p-5 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                <div class="group bg-white rounded-2xl p-6 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
                      style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
-                    <div class="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden" style="background: #EEF2FF;">
-                        <img src="/images/bea.png" alt="BEA" class="w-12 h-12 object-contain">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden" style="background: #EEF2FF;">
+                        <img src="/images/bea.png" alt="BEA" class="w-13 h-13 object-contain">
                     </div>
                     <div class="text-center">
                         <p class="text-sm font-bold" style="color: #1B2A4A;">BEA</p>
                         <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">Banque Ext. d'Algérie</p>
                     </div>
-                    <div class="text-center space-y-0.5">
-                        <span class="block text-[10px] font-semibold px-2.5 py-0.5 rounded-full" style="background: #E8F4FD; color: #1B6CA8;">🇩🇿 RIB DZD</span>
-                        <span class="block text-[10px] font-semibold px-2.5 py-0.5 rounded-full" style="background: #EDE7F6; color: #4527A0;">🇪🇺 RIB EUR</span>
-                    </div>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #E8F4FD; color: #1B6CA8;">🇩🇿 Virement DZD</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">Titulaire : DJAMAA BILEL</p>
                 </div>
 
                 {{-- PayPal --}}
-                <div class="group bg-white rounded-2xl p-5 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                <div class="group bg-white rounded-2xl p-6 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
                      style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
-                    <div class="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden" style="background: #E8F4FD;">
-                        <img src="/images/paypal.png" alt="PayPal" class="w-12 h-12 object-contain">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden" style="background: #E8F4FD;">
+                        <img src="/images/paypal.png" alt="PayPal" class="w-13 h-13 object-contain">
                     </div>
                     <div class="text-center">
                         <p class="text-sm font-bold" style="color: #1B2A4A;">PayPal</p>
                         <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">International</p>
                     </div>
-                    <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full" style="background: #E8F4FD; color: #003087;">Paiement en ligne</span>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #E8F4FD; color: #003087;">Paiement en ligne</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">Titulaire : DJAMAA BILEL</p>
                 </div>
 
             </div>

@@ -124,21 +124,13 @@
                     </h2>
 
                     <div class="space-y-3">
-                        <label class="flex items-center p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
-                            <input type="radio" name="method" value="baridimob" required style="accent-color: #17A2B8;">
-                            <img src="/images/baridimob.png" alt="BaridiMob" class="ml-3 h-8 w-auto object-contain">
+                        <label class="flex items-start p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
+                            <input type="radio" name="method" value="baridimob" required style="accent-color: #17A2B8; margin-top: 3px;">
+                            <img src="/images/baridimob.png" alt="BaridiMob" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
                             <span class="ml-3">
                                 <span class="block font-semibold" style="color: #1B2A4A;">BaridiMob</span>
-                                <span class="block text-sm" style="color: #6B7B8D;">00799999002543569223</span>
-                            </span>
-                        </label>
-
-                        <label class="flex items-center p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
-                            <input type="radio" name="method" value="ccp" style="accent-color: #17A2B8;">
-                            <img src="/images/ccp.png" alt="CCP" class="ml-3 h-8 w-auto object-contain">
-                            <span class="ml-3">
-                                <span class="block font-semibold" style="color: #1B2A4A;">CCP</span>
-                                <span class="block text-sm" style="color: #6B7B8D;">0025435692 {{ __('messages.cle') }} 23</span>
+                                <span class="block text-sm" style="color: #6B7B8D;"><span class="font-mono">00799999002543569223</span></span>
+                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
                             </span>
                         </label>
 
@@ -147,18 +139,18 @@
                             <img src="/images/bea.png" alt="BEA" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
                             <span class="ml-3">
                                 <span class="block font-semibold" style="color: #1B2A4A;">BEA – Banque Extérieure d'Algérie</span>
-                                <span class="block text-xs mb-1" style="color: #9BA8B7;">Virement bancaire</span>
-                                <span class="block text-sm" style="color: #6B7B8D;">🇩🇿 RIB DZD : <span class="font-mono">00200090090220206690</span></span>
-                                <span class="block text-sm" style="color: #6B7B8D;">🇪🇺 RIB EUR : <span class="font-mono">00200090090311050391</span></span>
+                                <span class="block text-sm" style="color: #6B7B8D;">🇩🇿 RIB : <span class="font-mono">00200090090220206690</span></span>
+                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
                             </span>
                         </label>
 
-                        <label class="flex items-center p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
-                            <input type="radio" name="method" value="paypal" style="accent-color: #17A2B8;">
-                            <img src="/images/paypal.png" alt="PayPal" class="ml-3 h-8 w-auto object-contain">
+                        <label class="flex items-start p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
+                            <input type="radio" name="method" value="paypal" style="accent-color: #17A2B8; margin-top: 3px;">
+                            <img src="/images/paypal.png" alt="PayPal" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
                             <span class="ml-3">
                                 <span class="block font-semibold" style="color: #1B2A4A;">PayPal</span>
                                 <span class="block text-sm" style="color: #6B7B8D;">albabordz@gmail.com</span>
+                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
                             </span>
                         </label>
                     </div>
