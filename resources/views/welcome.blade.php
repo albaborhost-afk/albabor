@@ -358,7 +358,7 @@
             </div>
 
             {{-- Cards grid --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-4xl mx-auto">
 
                 {{-- BaridiMob --}}
                 <div class="group bg-white rounded-2xl p-6 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
@@ -400,6 +400,20 @@
                     </div>
                     <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #E8F4FD; color: #003087;">Paiement en ligne</span>
                     <p class="text-[10px] font-medium" style="color: #C5D0DB;">Titulaire : DJAMAA BILEL</p>
+                </div>
+
+                {{-- RedotPay --}}
+                <div class="group bg-white rounded-2xl p-6 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden" style="background: #EEF2FF;">
+                        <img src="/images/redotpay.png" alt="RedotPay" class="w-10 h-10 object-contain rounded-lg">
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-bold" style="color: #1B2A4A;">RedotPay</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">Virement SEPA</p>
+                    </div>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #EDE9FE; color: #5B21B6;">🇪🇺 IBAN EUR</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">Titulaire : BILEL DJAMAA</p>
                 </div>
 
             </div>

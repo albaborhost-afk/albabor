@@ -79,6 +79,7 @@ class Payment extends Model
             'ccp' => 'CCP',
             'bank_transfer' => 'BEA – Virement bancaire',
             'paypal' => 'PayPal',
+            'redotpay' => 'RedotPay – SEPA',
             default => $this->method,
         };
     }

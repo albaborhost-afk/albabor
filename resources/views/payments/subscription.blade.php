@@ -215,6 +215,16 @@
                                     <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
                                 </span>
                             </label>
+
+                            <label class="flex items-start p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
+                                <input type="radio" name="method" value="redotpay" style="accent-color: #17A2B8; margin-top: 3px;">
+                                <img src="/images/redotpay.png" alt="RedotPay" class="ml-3 h-8 w-8 object-contain flex-shrink-0 rounded-lg">
+                                <span class="ml-3">
+                                    <span class="block font-semibold" style="color: #1B2A4A;">RedotPay – Virement SEPA</span>
+                                    <span class="block text-sm" style="color: #6B7B8D;">🇪🇺 IBAN : <span class="font-mono">DE24 2022 0800 0044 3428 03</span></span>
+                                    <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : BILEL DJAMAA</span>
+                                </span>
+                            </label>
                         </div>
                     </div>
 
