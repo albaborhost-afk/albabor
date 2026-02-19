@@ -778,55 +778,21 @@
 
                 {{-- SECTION: Photos --}}
                 <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);" x-show="category" x-transition>
-                    <h2 class="text-base font-semibold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
-                        <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-bold gradient-primary">
-                            <span x-text="getSectionNumber('photos')">12</span>
-                        </span>
-                        Photos
+                    <h2 class="text-base font-semibold mb-5 flex items-center gap-2" style="color: #1B2A4A;">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #9B59B6, #BB8FCE);">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </div>
+                        <div>
+                            <span class="block"><span x-text="getSectionNumber('photos')">12</span>. Photos</span>
+                            <span class="block text-xs font-normal" style="color: #9BA8B7;">Gérez les photos de votre annonce</span>
+                        </div>
                     </h2>
 
-                    {{-- Existing images --}}
-                    @if($listing->media->count() > 0)
-                        <div class="mb-5">
-                            <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Images actuelles</label>
-                            <div class="grid grid-cols-5 gap-3">
-                                @foreach($listing->media as $media)
-                                    <div class="relative group" x-data="{ marked: false }">
-                                        <input x-show="marked" x-cloak type="hidden" name="delete_images[]" value="{{ $media->id }}">
-                                        <div class="aspect-square rounded-xl overflow-hidden" style="border: 1px solid #E0E6ED;">
-                                            <img src="{{ $media->thumbnail_url ?? $media->url }}"
-                                                 alt="" class="w-full h-full object-cover" :class="marked && 'opacity-30'">
-                                        </div>
-                                        <button type="button"
-                                                class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-all"
-                                                :style="marked ? 'background: #FF6B6B; color: white;' : 'background: rgba(255,255,255,0.85); color: #9BA8B7; border: 1px solid rgba(0,0,0,0.06);'"
-                                                @click="marked = !marked">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                @endforeach
-                            </div>
-                            <p class="mt-2 text-[10px]" style="color: #9BA8B7;">Cliquez sur X pour marquer une image a supprimer</p>
-                        </div>
-                    @endif
-
-                    {{-- New images --}}
-                    <div class="border-2 border-dashed rounded-2xl p-6 text-center transition-colors" style="border-color: #E0E6ED;">
-                        <svg class="mx-auto h-8 w-8" style="color: #9BA8B7;" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        <div class="mt-2">
-                            <label for="new_images" class="cursor-pointer">
-                                <span class="font-medium text-sm" style="color: #17A2B8;">Ajouter des photos</span>
-                                <span class="text-sm" style="color: #9BA8B7;"> ou glissez ici</span>
-                                <input id="new_images" name="new_images[]" type="file" class="sr-only" multiple accept="image/*">
-                            </label>
-                        </div>
-                        <p class="text-[10px] mt-1" style="color: #9BA8B7;">JPEG, PNG, WebP — Max 5 Mo — 10 photos max</p>
-                    </div>
-                    <div id="newImagePreview" class="mt-3 grid grid-cols-5 gap-3"></div>
+                    <x-photo-uploader
+                        input-name="new_images"
+                        :max="10"
+                        :existing-media="$listing->media"
+                    />
                 </div>
 
                 {{-- SUBMIT --}}
@@ -868,20 +834,6 @@
                 }
             }
         }
-        document.getElementById('new_images')?.addEventListener('change', function(e) {
-            const preview = document.getElementById('newImagePreview');
-            preview.innerHTML = '';
-            Array.from(e.target.files).slice(0, 10).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'aspect-square rounded-xl overflow-hidden';
-                    div.style.border = '1px solid #E0E6ED';
-                    div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-                    preview.appendChild(div);
-                }
-                reader.readAsDataURL(file);
-            });
-        });
+        // Image upload is now handled by the photo-uploader component
     </script>
 </x-app-layout>

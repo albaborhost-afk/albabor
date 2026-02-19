@@ -177,7 +177,12 @@ class ListingController extends Controller
         ]);
 
         // Handle images
-        $this->handleImageUpload($listing, $request->file('images'));
+        $savedCount = $this->handleImageUpload($listing, $request->file('images'));
+
+        if ($savedCount === 0) {
+            $listing->delete();
+            return back()->withErrors(['images' => 'Impossible de sauvegarder les images. Veuillez réessayer.'])->withInput();
+        }
 
         // Create payment record
         $amount = $this->getPublishPrice($listing->category);
@@ -271,12 +276,13 @@ class ListingController extends Controller
 
         // Delete selected images
         if (!empty($validated['delete_images'])) {
+            $disk = $this->listingDisk();
             foreach ($validated['delete_images'] as $mediaId) {
                 $media = $listing->media()->find($mediaId);
                 if ($media) {
-                    Storage::disk('public')->delete($media->path);
+                    Storage::disk($disk)->delete($media->path);
                     if ($media->thumbnail_path) {
-                        Storage::disk('public')->delete($media->thumbnail_path);
+                        Storage::disk($disk)->delete($media->thumbnail_path);
                     }
                     $media->delete();
                 }
@@ -306,10 +312,11 @@ class ListingController extends Controller
         }
 
         // Delete all media files
+        $disk = $this->listingDisk();
         foreach ($listing->media as $media) {
-            Storage::disk('public')->delete($media->path);
+            Storage::disk($disk)->delete($media->path);
             if ($media->thumbnail_path) {
-                Storage::disk('public')->delete($media->thumbnail_path);
+                Storage::disk($disk)->delete($media->thumbnail_path);
             }
         }
 
@@ -409,9 +416,16 @@ class ListingController extends Controller
         ]);
     }
 
-    protected function handleImageUpload(Listing $listing, array $images)
+    protected function listingDisk(): string
     {
+        return config('filesystems.listing_disk', 'public');
+    }
+
+    protected function handleImageUpload(Listing $listing, array $images): int
+    {
+        $disk = $this->listingDisk();
         $order = $listing->media()->max('order') ?? 0;
+        $saved = 0;
 
         foreach ($images as $image) {
             $order++;
@@ -424,20 +438,29 @@ class ListingController extends Controller
             // Resize and save main image (max 1200px)
             $img = Image::read($image);
             $img->scaleDown(1200, 1200);
-            Storage::disk('public')->put($path, $img->toJpeg(85));
+            $mainStored = Storage::disk($disk)->put($path, (string) $img->toJpeg(85));
+
+            if (!$mainStored) {
+                \Log::error('Failed to store listing image', ['path' => $path, 'disk' => $disk]);
+                continue;
+            }
 
             // Create thumbnail (300px)
             $thumb = Image::read($image);
             $thumb->cover(300, 300);
-            Storage::disk('public')->put($thumbPath, $thumb->toJpeg(75));
+            $thumbStored = Storage::disk($disk)->put($thumbPath, (string) $thumb->toJpeg(75));
 
             ListingMedia::create([
                 'listing_id' => $listing->id,
                 'path' => $path,
-                'thumbnail_path' => $thumbPath,
+                'thumbnail_path' => $thumbStored ? $thumbPath : null,
                 'order' => $order,
             ]);
+
+            $saved++;
         }
+
+        return $saved;
     }
 
     protected function trackView(Listing $listing)

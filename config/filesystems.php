@@ -51,13 +51,13 @@ return [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION'),
+            'region' => env('AWS_DEFAULT_REGION', 'auto'),
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
-            'throw' => false,
-            'report' => false,
+            'visibility' => 'private',
+            'throw' => true,
         ],
 
     ],
@@ -76,5 +76,17 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Listing Images Storage Disk
+    |--------------------------------------------------------------------------
+    |
+    | Set LISTING_STORAGE_DISK in .env to override the disk used for listing
+    | images. Use 'public' for local/dev, 's3' for production on Laravel Cloud.
+    |
+    */
+    // Automatically use 's3' when Laravel Cloud injects FILESYSTEM_DISK=s3
+    'listing_disk' => env('LISTING_STORAGE_DISK', env('FILESYSTEM_DISK') === 's3' ? 's3' : 'public'),
 
 ];

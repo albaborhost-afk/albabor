@@ -946,23 +946,15 @@
                         </div>
                         <div>
                             <span class="block"><span x-text="getSectionNumber('photos')">12</span>. Photos *</span>
-                            <span class="block text-xs font-normal" style="color: #9BA8B7;">Ajoutez des images</span>
+                            <span class="block text-xs font-normal" style="color: #9BA8B7;">La première photo sera la photo principale</span>
                         </div>
                     </h2>
-                    <div class="border-2 border-dashed rounded-2xl p-8 text-center transition-colors" style="border-color: #E0E6ED;" id="dropZone">
-                        <svg class="mx-auto h-10 w-10" style="color: #9BA8B7;" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        <div class="mt-3">
-                            <label for="images" class="cursor-pointer">
-                                <span class="font-medium" style="color: #17A2B8;">Cliquez pour choisir</span>
-                                <span style="color: #9BA8B7;"> ou glissez vos photos ici</span>
-                                <input id="images" name="images[]" type="file" class="sr-only" multiple accept="image/*" required>
-                            </label>
-                        </div>
-                        <p class="text-[10px] mt-2" style="color: #9BA8B7;">JPEG, PNG, WebP — Max 5 Mo — 10 photos max</p>
-                    </div>
-                    <div id="imagePreview" class="mt-4 grid grid-cols-5 gap-3"></div>
+
+                    <x-photo-uploader
+                        input-name="images"
+                        :max="10"
+                        :required="true"
+                    />
                 </div>
 
                 {{-- SUBMIT --}}
@@ -1006,48 +998,6 @@
                 }
             }
         }
-        document.getElementById('images').addEventListener('change', function(e) {
-            const preview = document.getElementById('imagePreview');
-            preview.innerHTML = '';
-            Array.from(e.target.files).slice(0, 10).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'aspect-square rounded-xl overflow-hidden';
-                    div.style.border = '1px solid #E0E6ED';
-                    div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-                    preview.appendChild(div);
-                }
-                reader.readAsDataURL(file);
-            });
-        });
-
-        // Drop zone drag-over animation
-        const dropZone = document.getElementById('dropZone');
-        let dragCounter = 0;
-        dropZone.addEventListener('dragenter', function(e) {
-            e.preventDefault();
-            dragCounter++;
-            dropZone.classList.add('dropzone-active');
-        });
-        dropZone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-        });
-        dropZone.addEventListener('dragleave', function(e) {
-            dragCounter--;
-            if (dragCounter === 0) {
-                dropZone.classList.remove('dropzone-active');
-            }
-        });
-        dropZone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            dragCounter = 0;
-            dropZone.classList.remove('dropzone-active');
-            const input = document.getElementById('images');
-            if (e.dataTransfer.files.length) {
-                input.files = e.dataTransfer.files;
-                input.dispatchEvent(new Event('change'));
-            }
-        });
+        // Image upload is now handled by the photo-uploader component
     </script>
 </x-app-layout>
