@@ -40,7 +40,14 @@
                 <img src="{{ $firstMedia->url }}"
                      alt="{{ $listing->title }}"
                      class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                     loading="lazy">
+                     loading="lazy"
+                     onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="absolute inset-0 flex-col items-center justify-center gap-2" style="display: none;">
+                    <svg class="w-12 h-12" style="color: #C5D0DB;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.2">
+                        <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span class="text-xs font-medium" style="color: #B8C4CE;">Pas de photo</span>
+                </div>
             @else
                 <div class="w-full h-full flex flex-col items-center justify-center gap-2">
                     @if($listing->category === 'boat')
