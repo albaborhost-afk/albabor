@@ -139,7 +139,7 @@
                             <img src="/images/baridimob.png" alt="BaridiMob" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
                             <span class="ml-3">
                                 <span class="block font-semibold" style="color: #1B2A4A;">BaridiMob</span>
-                                <span class="block text-sm" style="color: #6B7B8D;"><span class="font-mono">00799999002543569223</span></span>
+                                <span class="block text-sm" style="color: #6B7B8D;"><span class="font-mono break-all">00799999002543569223</span></span>
                                 <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
                             </span>
                         </label>
@@ -149,7 +149,7 @@
                             <img src="/images/bea.png" alt="BEA" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
                             <span class="ml-3">
                                 <span class="block font-semibold" style="color: #1B2A4A;">BEA – Banque Extérieure d'Algérie</span>
-                                <span class="block text-sm" style="color: #6B7B8D;">🇩🇿 RIB : <span class="font-mono">00200090090220206690</span></span>
+                                <span class="block text-sm" style="color: #6B7B8D;">🇩🇿 RIB : <span class="font-mono break-all">00200090090220206690</span></span>
                                 <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
                             </span>
                         </label>
@@ -169,7 +169,7 @@
                             <img src="/images/redotpay.png" alt="RedotPay" class="ml-3 h-8 w-8 object-contain flex-shrink-0 rounded-lg">
                             <span class="ml-3">
                                 <span class="block font-semibold" style="color: #1B2A4A;">RedotPay – Virement SEPA</span>
-                                <span class="block text-sm" style="color: #6B7B8D;">🇪🇺 IBAN : <span class="font-mono">DE24 2022 0800 0044 3428 03</span></span>
+                                <span class="block text-sm" style="color: #6B7B8D;">🇪🇺 IBAN : <span class="font-mono break-all">DE24 2022 0800 0044 3428 03</span></span>
                                 <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : BILEL DJAMAA</span>
                             </span>
                         </label>
@@ -189,7 +189,7 @@
                 </div>
 
                 <!-- Submit -->
-                <div class="flex justify-end space-x-4">
+                <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
                     <a href="{{ route('listings.my') }}" class="px-5 py-3 rounded-xl font-semibold transition-all" style="color: #6B7B8D; border: 1px solid #E0E6ED;">
                         {{ __('messages.cancel') }}
                     </a>

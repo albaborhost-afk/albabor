@@ -36,7 +36,7 @@
             </span>
         </div>
 
-        <div class="grid grid-cols-5 gap-3" x-data="{ markedIds: [] }">
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3" x-data="{ markedIds: [] }">
             @foreach($existingMedia as $media)
             <div
                 x-data="{ marked: false }"
@@ -166,7 +166,7 @@
                 </div>
 
                 {{-- Previews --}}
-                <div class="grid grid-cols-5 gap-2.5 mb-3">
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 mb-3">
                     <template x-for="(file, index) in files" :key="file.id">
                         <div
                             class="relative group"

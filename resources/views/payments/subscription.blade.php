@@ -73,7 +73,7 @@
             @endif
 
             <!-- Plans Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
                 @foreach($plans as $plan)
                     @php
                         $planFeatures = [
@@ -134,7 +134,7 @@
 
                             <div class="mb-6">
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-4xl font-black" style="color: {{ $isPro ? '#E74C3C' : '#17A2B8' }};">{{ number_format($plan->price_dzd, 0, ',', ' ') }} DA</span>
+                                    <span class="text-2xl sm:text-3xl md:text-4xl font-black" style="color: {{ $isPro ? '#E74C3C' : '#17A2B8' }};">{{ number_format($plan->price_dzd, 0, ',', ' ') }} DA</span>
                                     <span class="text-sm" style="color: #6B7B8D;">/ mois</span>
                                 </div>
                             </div>
@@ -191,7 +191,7 @@
                                 <img src="/images/baridimob.png" alt="BaridiMob" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
                                 <span class="ml-3">
                                     <span class="block font-semibold" style="color: #1B2A4A;">BaridiMob</span>
-                                    <span class="block text-sm" style="color: #6B7B8D;"><span class="font-mono">00799999002543569223</span></span>
+                                    <span class="block text-sm" style="color: #6B7B8D;"><span class="font-mono break-all">00799999002543569223</span></span>
                                     <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
                                 </span>
                             </label>
@@ -201,7 +201,7 @@
                                 <img src="/images/bea.png" alt="BEA" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
                                 <span class="ml-3">
                                     <span class="block font-semibold" style="color: #1B2A4A;">BEA – Banque Extérieure d'Algérie</span>
-                                    <span class="block text-sm" style="color: #6B7B8D;">🇩🇿 RIB : <span class="font-mono">00200090090220206690</span></span>
+                                    <span class="block text-sm" style="color: #6B7B8D;">🇩🇿 RIB : <span class="font-mono break-all">00200090090220206690</span></span>
                                     <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
                                 </span>
                             </label>
@@ -221,7 +221,7 @@
                                 <img src="/images/redotpay.png" alt="RedotPay" class="ml-3 h-8 w-8 object-contain flex-shrink-0 rounded-lg">
                                 <span class="ml-3">
                                     <span class="block font-semibold" style="color: #1B2A4A;">RedotPay – Virement SEPA</span>
-                                    <span class="block text-sm" style="color: #6B7B8D;">🇪🇺 IBAN : <span class="font-mono">DE24 2022 0800 0044 3428 03</span></span>
+                                    <span class="block text-sm" style="color: #6B7B8D;">🇪🇺 IBAN : <span class="font-mono break-all">DE24 2022 0800 0044 3428 03</span></span>
                                     <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : BILEL DJAMAA</span>
                                 </span>
                             </label>
@@ -241,7 +241,7 @@
                     </div>
 
                     <!-- Submit -->
-                    <div class="flex justify-end space-x-4">
+                    <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
                         <button type="button" onclick="hidePaymentForm()" class="px-5 py-3 rounded-xl font-semibold transition-all" style="color: #6B7B8D; border: 1px solid #E0E6ED;">
                             {{ __('messages.cancel') }}
                         </button>

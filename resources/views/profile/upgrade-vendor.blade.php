@@ -109,7 +109,7 @@
             <div class="mb-8">
                 <h2 class="text-xl font-bold mb-6 text-center" style="color: #9BA8B7;">CHOISIR UN ABONNEMENT</h2>
 
-                <div class="grid md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     <!-- Starter Plan -->
                     <div class="bg-white rounded-2xl p-6 relative" style="box-shadow: 0 8px 24px rgba(0,0,0,0.06); border: 2px solid #E0E6ED;">
                         <div class="flex items-center justify-between mb-4">
@@ -123,7 +123,7 @@
 
                         <div class="mb-6">
                             <div class="flex items-baseline gap-2">
-                                <span class="text-4xl font-black" style="color: #17A2B8;">2 000 DA</span>
+                                <span class="text-2xl sm:text-3xl md:text-4xl font-black" style="color: #17A2B8;">2 000 DA</span>
                                 <span class="text-sm" style="color: #6B7B8D;">/ mois</span>
                             </div>
                         </div>
@@ -175,7 +175,7 @@
 
                         <div class="mb-6">
                             <div class="flex items-baseline gap-2">
-                                <span class="text-4xl font-black" style="color: #E74C3C;">5 000 DA</span>
+                                <span class="text-2xl sm:text-3xl md:text-4xl font-black" style="color: #E74C3C;">5 000 DA</span>
                                 <span class="text-sm" style="color: #6B7B8D;">/ mois</span>
                             </div>
                         </div>
@@ -235,7 +235,7 @@
 
                         <div class="mb-6">
                             <div class="flex items-baseline gap-2">
-                                <span class="text-4xl font-black" style="color: #17A2B8;">10 000 DA</span>
+                                <span class="text-2xl sm:text-3xl md:text-4xl font-black" style="color: #17A2B8;">10 000 DA</span>
                                 <span class="text-sm" style="color: #6B7B8D;">/ mois</span>
                             </div>
                         </div>
