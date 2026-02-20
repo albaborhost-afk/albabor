@@ -209,6 +209,7 @@ return [
     'publication_fee' => 'Frais de publication',
     'valid_365_days' => 'Valide pendant 365 jours',
     'valid_30_days' => 'Valide pendant 30 jours',
+    'listing_created_free' => 'Félicitations ! Votre première annonce est gratuite et sera examinée par notre équipe.',
     'listing_created_payment_required' => 'Annonce créée. Veuillez effectuer le paiement.',
     'listing_already_paid' => 'Cette annonce a déjà été payée',
     'payment_submitted' => 'Paiement soumis. En attente de validation.',

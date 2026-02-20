@@ -184,8 +184,19 @@ class ListingController extends Controller
             return back()->withErrors(['images' => 'Impossible de sauvegarder les images. Veuillez réessayer.'])->withInput();
         }
 
-        // Create payment record
-        $amount = $this->getPublishPrice($listing->category);
+        // First listing is free — check if user has any other listing
+        $isFirstListing = Listing::where('user_id', $user->id)
+            ->where('id', '!=', $listing->id)
+            ->count() === 0;
+
+        if ($isFirstListing) {
+            $listing->update([
+                'status'          => 'pending_review',
+                'published_until' => now()->addYear(),
+            ]);
+            return redirect()->route('listings.my')
+                ->with('success', __('messages.listing_created_free'));
+        }
 
         return redirect()->route('listings.payment', $listing)
             ->with('success', __('messages.listing_created_payment_required'));
