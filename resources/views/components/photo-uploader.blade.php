@@ -20,7 +20,7 @@
 @endphp
 
 <div
-    x-data="photoUploader({{ $maxNew }})"
+    x-data="photoUploader({{ $maxNew }}, {{ $required ? 'true' : 'false' }})"
     x-init="init()"
 >
 
@@ -261,7 +261,6 @@
             multiple
             accept="image/jpeg,image/png,image/webp,image/jpg"
             class="sr-only"
-            {{ $required ? 'required' : '' }}
             @change="handleSelect($event)"
         >
     </div>
@@ -272,12 +271,13 @@
 {{-- ─── Alpine Component ─────────────────────────────────────────────── --}}
 <script>
 if (typeof photoUploader === 'undefined') {
-    function photoUploader(maxFiles) {
+    function photoUploader(maxFiles, isRequired = false) {
         return {
             files: [],
             isDragging: false,
             errors: [],
             maxFiles: maxFiles,
+            isRequired: isRequired,
 
             get slotsLeft() {
                 return Math.max(0, this.maxFiles - this.files.length);
@@ -289,8 +289,15 @@ if (typeof photoUploader === 'undefined') {
                 this.$nextTick(() => {
                     const form = this.$el.closest('form');
                     if (form) {
-                        form.addEventListener('submit', () => {
+                        form.addEventListener('submit', (e) => {
                             this.syncInput();
+                            // Manual required validation (browser native check runs before submit event)
+                            if (this.isRequired && this.files.length === 0) {
+                                e.preventDefault();
+                                e.stopImmediatePropagation();
+                                this.errors = ['Veuillez ajouter au moins une photo.'];
+                                this.$el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
                         }, { capture: true });
                     }
                 });
