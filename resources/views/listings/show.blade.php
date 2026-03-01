@@ -550,23 +550,23 @@
                             <div class="flex items-center gap-3.5">
                                 <div class="relative flex-shrink-0">
                                     <div class="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center text-white font-bold text-xl" style="box-shadow: 0 4px 12px rgba(27,79,114,0.3);">
-                                        {{ strtoupper(substr($listing->user->name ?? 'U', 0, 1)) }}
+                                        {{ strtoupper(substr($listing->user?->name ?? 'U', 0, 1)) }}
                                     </div>
-                                    @if($listing->user->verified_badge ?? false)
+                                    @if($listing->user?->verified_badge ?? false)
                                         <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style="background: #27AE60; border: 2.5px solid white; box-shadow: 0 2px 4px rgba(39,174,96,0.3);">
                                             <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                                         </div>
                                     @endif
                                 </div>
                                 <div class="min-w-0">
-                                    <h3 class="font-bold text-base truncate" style="color: #1B2A4A;">{{ $listing->user->name ?? 'Vendeur' }}</h3>
-                                    @if($listing->user->verified_badge ?? false)
+                                    <h3 class="font-bold text-base truncate" style="color: #1B2A4A;">{{ $listing->user?->name ?? 'Vendeur' }}</h3>
+                                    @if($listing->user?->verified_badge ?? false)
                                         <span class="inline-flex items-center gap-1 text-xs font-semibold" style="color: #27AE60;">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                                             Vendeur verifie
                                         </span>
                                     @endif
-                                    <p class="text-xs mt-0.5" style="color: #9BA8B7;">Membre depuis {{ $listing->user->created_at->format('m/Y') ?? 'N/A' }}</p>
+                                    <p class="text-xs mt-0.5" style="color: #9BA8B7;">Membre depuis {{ $listing->user?->created_at?->format('m/Y') ?? 'N/A' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -611,8 +611,8 @@
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                                 Appeler {{ $listing->numero_mobile }}
                                             </a>
-                                        @elseif($listing->user->phone ?? null)
-                                            <a href="tel:{{ $listing->user->phone }}" class="w-full flex items-center justify-center gap-2.5 px-4 py-3.5 text-white rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5" style="background: linear-gradient(135deg, #2471A3, #1B4F72); box-shadow: 0 4px 15px rgba(36, 113, 163, 0.3);">
+                                        @elseif($listing->user?->phone ?? null)
+                                            <a href="tel:{{ $listing->user?->phone }}" class="w-full flex items-center justify-center gap-2.5 px-4 py-3.5 text-white rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5" style="background: linear-gradient(135deg, #2471A3, #1B4F72); box-shadow: 0 4px 15px rgba(36, 113, 163, 0.3);">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                                 Appeler le vendeur
                                             </a>

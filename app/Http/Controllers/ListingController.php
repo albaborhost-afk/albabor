@@ -110,20 +110,24 @@ class ListingController extends Controller
                 ->limit(4)
                 ->get();
 
-            return view('listings.show', compact('listing', 'relatedListings'));
+            // Render explicitly inside try/catch so Blade errors are caught
+            $html = view('listings.show', compact('listing', 'relatedListings'))->render();
+
+            return response($html);
         } catch (\Throwable $e) {
             \Log::error('Listing show error', [
                 'listing_id' => $listing->id,
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            if (config('app.debug')) {
-                throw $e;
-            }
-
-            return back()->with('error', 'Erreur: ' . $e->getMessage());
+            return response('<h2>Debug Error — Listing #' . $listing->id . '</h2><pre>'
+                . 'Message: ' . e($e->getMessage()) . "\n"
+                . 'File: ' . e($e->getFile()) . ':' . $e->getLine() . "\n"
+                . 'Trace: ' . e($e->getTraceAsString())
+                . '</pre>', 500);
         }
     }
 
