@@ -83,10 +83,12 @@ return [
     |--------------------------------------------------------------------------
     |
     | Set LISTING_STORAGE_DISK in .env to override the disk used for listing
-    | images. Use 'public' for local/dev, 's3' for production on Laravel Cloud.
+    | images. Use 'public' for local/dev, 's3' or 'private' for production.
     |
     */
-    // Automatically use 's3' when Laravel Cloud injects FILESYSTEM_DISK=s3
-    'listing_disk' => env('LISTING_STORAGE_DISK', env('FILESYSTEM_DISK') === 's3' ? 's3' : 'public'),
+    // Use cloud disk (s3/private) when Laravel Cloud injects FILESYSTEM_DISK, otherwise local public
+    'listing_disk' => env('LISTING_STORAGE_DISK',
+        in_array(env('FILESYSTEM_DISK'), ['s3', 'private']) ? env('FILESYSTEM_DISK') : 'public'
+    ),
 
 ];
