@@ -42,13 +42,13 @@ class PaymentController extends Controller
         }
 
         $validated = $request->validate([
-            'method' => 'required|in:baridimob,ccp,bank_transfer',
+            'method' => 'required|in:baridimob,ccp,bank_transfer,paypal,redotpay',
             'proof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
         $amount = in_array($listing->category, ['boat', 'jetski']) ? 5000 : 0;
 
-        $proofPath = $request->file('proof')->store('payment-proofs', 'public');
+        $proofPath = $request->file('proof')->store('payment-proofs', $this->proofDisk());
 
         $payment = Payment::create([
             'user_id' => Auth::id(),
@@ -80,11 +80,11 @@ class PaymentController extends Controller
         }
 
         $validated = $request->validate([
-            'method' => 'required|in:baridimob,ccp,bank_transfer',
+            'method' => 'required|in:baridimob,ccp,bank_transfer,paypal,redotpay',
             'proof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
-        $proofPath = $request->file('proof')->store('payment-proofs', 'public');
+        $proofPath = $request->file('proof')->store('payment-proofs', $this->proofDisk());
 
         $payment = Payment::create([
             'user_id' => Auth::id(),
@@ -109,7 +109,7 @@ class PaymentController extends Controller
     {
         $validated = $request->validate([
             'plan_id' => 'required|exists:plans,id',
-            'method' => 'required|in:baridimob,ccp,bank_transfer',
+            'method' => 'required|in:baridimob,ccp,bank_transfer,paypal,redotpay',
             'proof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
@@ -121,7 +121,7 @@ class PaymentController extends Controller
             'status' => 'pending',
         ]);
 
-        $proofPath = $request->file('proof')->store('payment-proofs', 'public');
+        $proofPath = $request->file('proof')->store('payment-proofs', $this->proofDisk());
 
         $payment = Payment::create([
             'user_id' => Auth::id(),
@@ -141,13 +141,21 @@ class PaymentController extends Controller
     }
 
     /**
+     * Get the configured disk name for payment proof storage.
+     */
+    protected function proofDisk(): string
+    {
+        return config('filesystems.listing_disk', 'public');
+    }
+
+    /**
      * Paiement des frais de médiation.
      */
     public function storeMediationPayment(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'ticket_id' => 'required|exists:mediation_tickets,id',
-            'method' => 'required|in:baridimob,ccp,bank_transfer',
+            'method' => 'required|in:baridimob,ccp,bank_transfer,paypal,redotpay',
             'proof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
@@ -176,7 +184,7 @@ class PaymentController extends Controller
             ], 422);
         }
 
-        $proofPath = $request->file('proof')->store('payment-proofs', 'public');
+        $proofPath = $request->file('proof')->store('payment-proofs', $this->proofDisk());
 
         $payment = Payment::create([
             'user_id' => Auth::id(),

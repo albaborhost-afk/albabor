@@ -70,7 +70,7 @@
                     <div class="ml-4">
                         <h3 class="font-bold" style="color: #1B2A4A;">{{ $listing->title }}</h3>
                         <p class="text-lg font-black mt-1" style="color: #1B4F72;">{{ $listing->formatted_price }}</p>
-                        <p class="text-sm mt-1" style="color: #6B7B8D;">{{ __('messages.seller') }}: {{ $listing->user->name }}</p>
+                        <p class="text-sm mt-1" style="color: #6B7B8D;">{{ __('messages.seller') }}: {{ $listing->user?->name ?? 'Vendeur' }}</p>
                     </div>
                 </div>
             </div>

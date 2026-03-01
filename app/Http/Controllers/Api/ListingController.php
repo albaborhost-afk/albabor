@@ -119,9 +119,10 @@ class ListingController extends Controller
      */
     public function show(Request $request, Listing $listing): JsonResponse
     {
-        // Seules les annonces actives sont visibles aux non-propriétaires
+        // Seules les annonces actives sont visibles aux non-propriétaires (sauf admins)
         if ($listing->status !== 'active') {
-            if (!$request->user() || $request->user()->id !== $listing->user_id) {
+            $user = $request->user();
+            if (!$user || ($user->id !== $listing->user_id && !$user->isAdmin())) {
                 return response()->json([
                     'message' => 'Annonce introuvable.',
                 ], 404);
@@ -233,7 +234,15 @@ class ListingController extends Controller
         ]);
 
         // Gérer les images
-        $this->handleImageUpload($listing, $request->file('images'));
+        $savedCount = $this->handleImageUpload($listing, $request->file('images'));
+
+        if ($savedCount === 0) {
+            $listing->delete();
+
+            return response()->json([
+                'message' => 'Impossible de traiter les images. Veuillez réessayer avec d\'autres fichiers.',
+            ], 422);
+        }
 
         // Première annonce gratuite
         $isFirstListing = Listing::where('user_id', $user->id)
@@ -337,9 +346,9 @@ class ListingController extends Controller
             foreach ($validated['delete_images'] as $mediaId) {
                 $media = $listing->media()->find($mediaId);
                 if ($media) {
-                    Storage::disk('public')->delete($media->path);
+                    Storage::disk($this->listingDisk())->delete($media->path);
                     if ($media->thumbnail_path) {
-                        Storage::disk('public')->delete($media->thumbnail_path);
+                        Storage::disk($this->listingDisk())->delete($media->thumbnail_path);
                     }
                     $media->delete();
                 }
@@ -386,9 +395,9 @@ class ListingController extends Controller
 
         // Supprimer tous les fichiers médias du stockage
         foreach ($listing->media as $media) {
-            Storage::disk('public')->delete($media->path);
+            Storage::disk($this->listingDisk())->delete($media->path);
             if ($media->thumbnail_path) {
-                Storage::disk('public')->delete($media->thumbnail_path);
+                Storage::disk($this->listingDisk())->delete($media->thumbnail_path);
             }
         }
 
@@ -481,37 +490,55 @@ class ListingController extends Controller
     }
 
     /**
+     * Get the configured disk name for listing media storage.
+     */
+    protected function listingDisk(): string
+    {
+        return config('filesystems.listing_disk', 'public');
+    }
+
+    /**
      * Gérer l'upload et le redimensionnement des images.
      */
-    protected function handleImageUpload(Listing $listing, array $images): void
+    protected function handleImageUpload(Listing $listing, array $images): int
     {
         $order = $listing->media()->max('order') ?? 0;
+        $savedCount = 0;
+        $disk = $this->listingDisk();
 
         foreach ($images as $image) {
-            $order++;
+            try {
+                $order++;
 
-            // Générer un nom de fichier unique
-            $filename = uniqid('img_', true) . '.jpg';
-            $path = 'listings/' . $listing->id . '/' . $filename;
-            $thumbPath = 'listings/' . $listing->id . '/thumb_' . $filename;
+                // Générer un nom de fichier unique
+                $filename = uniqid('img_', true) . '.jpg';
+                $path = 'listings/' . $listing->id . '/' . $filename;
+                $thumbPath = 'listings/' . $listing->id . '/thumb_' . $filename;
 
-            // Redimensionner et sauvegarder l'image principale (max 1200px)
-            $img = Image::read($image);
-            $img->scaleDown(1200, 1200);
-            Storage::disk('public')->put($path, $img->toJpeg(85));
+                // Redimensionner et sauvegarder l'image principale (max 1200px)
+                $img = Image::read($image);
+                $img->scaleDown(1200, 1200);
+                Storage::disk($disk)->put($path, $img->toJpeg(85));
 
-            // Créer la miniature (300px)
-            $thumb = Image::read($image);
-            $thumb->cover(300, 300);
-            Storage::disk('public')->put($thumbPath, $thumb->toJpeg(75));
+                // Créer la miniature (300px)
+                $thumb = Image::read($image);
+                $thumb->cover(300, 300);
+                Storage::disk($disk)->put($thumbPath, $thumb->toJpeg(75));
 
-            ListingMedia::create([
-                'listing_id' => $listing->id,
-                'path' => $path,
-                'thumbnail_path' => $thumbPath,
-                'order' => $order,
-            ]);
+                ListingMedia::create([
+                    'listing_id' => $listing->id,
+                    'path' => $path,
+                    'thumbnail_path' => $thumbPath,
+                    'order' => $order,
+                ]);
+
+                $savedCount++;
+            } catch (\Throwable $e) {
+                report($e);
+            }
         }
+
+        return $savedCount;
     }
 
     /**

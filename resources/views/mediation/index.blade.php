@@ -64,8 +64,8 @@
                                 <div class="flex items-start justify-between">
                                     <div class="flex items-center">
                                         <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style="background: #F0F4F8;">
-                                            @if($ticket->listing->media->first())
-                                                <img src="{{ $ticket->listing->media->first()->thumbnail_url ?? $ticket->listing->media->first()->url }}"
+                                            @if($ticket->listing?->media?->first())
+                                                <img src="{{ $ticket->listing?->media?->first()->thumbnail_url ?? $ticket->listing?->media?->first()->url }}"
                                                      alt="" class="w-full h-full object-cover"
                                                      onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'">
                                                 <div class="w-full h-full items-center justify-center" style="color: #C5D0DB; display: none;">
@@ -76,8 +76,8 @@
                                             @endif
                                         </div>
                                         <div class="ml-4">
-                                            <h3 class="font-bold" style="color: #1B2A4A;">{{ $ticket->listing->title }}</h3>
-                                            <p class="text-sm" style="color: #6B7B8D;">{{ __('messages.seller') }}: {{ $ticket->seller->name }}</p>
+                                            <h3 class="font-bold" style="color: #1B2A4A;">{{ $ticket->listing?->title ?? 'Annonce supprimee' }}</h3>
+                                            <p class="text-sm" style="color: #6B7B8D;">{{ __('messages.seller') }}: {{ $ticket->seller?->name ?? 'Utilisateur' }}</p>
                                             <p class="text-sm" style="color: #9BA8B7;">{{ $ticket->created_at->format('d/m/Y H:i') }}</p>
                                         </div>
                                     </div>
@@ -121,8 +121,8 @@
                                 <div class="flex items-start justify-between">
                                     <div class="flex items-center">
                                         <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style="background: #F0F4F8;">
-                                            @if($ticket->listing->media->first())
-                                                <img src="{{ $ticket->listing->media->first()->thumbnail_url ?? $ticket->listing->media->first()->url }}"
+                                            @if($ticket->listing?->media?->first())
+                                                <img src="{{ $ticket->listing?->media?->first()->thumbnail_url ?? $ticket->listing?->media?->first()->url }}"
                                                      alt="" class="w-full h-full object-cover"
                                                      onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'">
                                                 <div class="w-full h-full items-center justify-center" style="color: #C5D0DB; display: none;">
@@ -133,8 +133,8 @@
                                             @endif
                                         </div>
                                         <div class="ml-4">
-                                            <h3 class="font-bold" style="color: #1B2A4A;">{{ $ticket->listing->title }}</h3>
-                                            <p class="text-sm" style="color: #6B7B8D;">{{ __('messages.buyer') }}: {{ $ticket->buyer->name }}</p>
+                                            <h3 class="font-bold" style="color: #1B2A4A;">{{ $ticket->listing?->title ?? 'Annonce supprimee' }}</h3>
+                                            <p class="text-sm" style="color: #6B7B8D;">{{ __('messages.buyer') }}: {{ $ticket->buyer?->name ?? 'Utilisateur' }}</p>
                                             <p class="text-sm" style="color: #9BA8B7;">{{ $ticket->created_at->format('d/m/Y H:i') }}</p>
                                         </div>
                                     </div>

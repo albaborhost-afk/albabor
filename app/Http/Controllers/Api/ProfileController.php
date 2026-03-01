@@ -44,7 +44,7 @@ class ProfileController extends Controller
         if ($request->hasFile('profile_picture')) {
             // Delete old profile picture if exists
             if ($user->profile_picture) {
-                Storage::disk('public')->delete($user->profile_picture);
+                Storage::disk(config('filesystems.listing_disk', 'public'))->delete($user->profile_picture);
             }
 
             // Resize and store
@@ -52,7 +52,7 @@ class ProfileController extends Controller
             $image->cover(400, 400);
 
             $filename = 'profile-pictures/' . uniqid() . '.jpg';
-            Storage::disk('public')->put($filename, $image->toJpeg(quality: 85)->toString());
+            Storage::disk(config('filesystems.listing_disk', 'public'))->put($filename, $image->toJpeg(quality: 85)->toString());
 
             $validated['profile_picture'] = $filename;
         }
@@ -101,7 +101,7 @@ class ProfileController extends Controller
             'document' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
-        $documentPath = $request->file('document')->store('verification-documents', 'public');
+        $documentPath = $request->file('document')->store('verification-documents', config('filesystems.listing_disk', 'public'));
 
         VerificationRequest::create([
             'user_id' => $user->id,
@@ -144,7 +144,7 @@ class ProfileController extends Controller
 
         // Delete old profile picture if exists
         if ($user->profile_picture) {
-            Storage::disk('public')->delete($user->profile_picture);
+            Storage::disk(config('filesystems.listing_disk', 'public'))->delete($user->profile_picture);
         }
 
         // Resize and store
@@ -152,7 +152,7 @@ class ProfileController extends Controller
         $image->cover(400, 400);
 
         $filename = 'profile-pictures/' . uniqid() . '.jpg';
-        Storage::disk('public')->put($filename, $image->toJpeg(quality: 85)->toString());
+        Storage::disk(config('filesystems.listing_disk', 'public'))->put($filename, $image->toJpeg(quality: 85)->toString());
 
         $user->update(['profile_picture' => $filename]);
 
@@ -167,7 +167,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         if ($user->profile_picture) {
-            Storage::disk('public')->delete($user->profile_picture);
+            Storage::disk(config('filesystems.listing_disk', 'public'))->delete($user->profile_picture);
             $user->update(['profile_picture' => null]);
         }
 

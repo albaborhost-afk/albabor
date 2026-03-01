@@ -123,11 +123,7 @@ class ListingController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return response('<h2>Debug Error — Listing #' . $listing->id . '</h2><pre>'
-                . 'Message: ' . e($e->getMessage()) . "\n"
-                . 'File: ' . e($e->getFile()) . ':' . $e->getLine() . "\n"
-                . 'Trace: ' . e($e->getTraceAsString())
-                . '</pre>', 500);
+            return back()->with('error', 'Une erreur est survenue. Veuillez réessayer.');
         }
     }
 
@@ -258,12 +254,7 @@ class ListingController extends Controller
                 'line' => $e->getLine(),
             ]);
 
-            // Temporary: show error details to debug production issue
-            return response('<h2>Debug Error</h2><pre>'
-                . 'Message: ' . $e->getMessage() . "\n"
-                . 'File: ' . $e->getFile() . ':' . $e->getLine() . "\n"
-                . 'Trace: ' . $e->getTraceAsString()
-                . '</pre>', 500);
+            return back()->with('error', 'Une erreur est survenue. Veuillez réessayer.');
         }
     }
 
@@ -428,12 +419,7 @@ class ListingController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            // Temporary: show error details to debug production issue
-            return response('<h2>Debug Error</h2><pre>'
-                . 'Message: ' . $e->getMessage() . "\n"
-                . 'File: ' . $e->getFile() . ':' . $e->getLine() . "\n"
-                . 'Trace: ' . $e->getTraceAsString()
-                . '</pre>', 500);
+            return back()->with('error', 'Une erreur est survenue. Veuillez réessayer.');
         }
     }
 

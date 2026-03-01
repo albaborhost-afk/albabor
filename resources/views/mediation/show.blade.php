@@ -76,8 +76,8 @@
             <div class="bg-white rounded-2xl p-6 mb-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03);">
                 <div class="flex items-start">
                     <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style="background: #F0F4F8;">
-                        @if($ticket->listing->media->first())
-                            <img src="{{ $ticket->listing->media->first()->thumbnail_url ?? $ticket->listing->media->first()->url }}"
+                        @if($ticket->listing?->media?->first())
+                            <img src="{{ $ticket->listing?->media?->first()->thumbnail_url ?? $ticket->listing?->media?->first()->url }}"
                                  alt="" class="w-full h-full object-cover"
                                  onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <div class="w-full h-full items-center justify-center" style="color: #C5D0DB; display: none;">
@@ -88,14 +88,14 @@
                         @endif
                     </div>
                     <div class="ml-4 flex-1">
-                        <a href="{{ route('listings.show', $ticket->listing) }}" class="font-bold hover:opacity-80 transition-opacity" style="color: #1B2A4A;">
-                            {{ $ticket->listing->title }}
+                        <a href="{{ $ticket->listing ? route('listings.show', $ticket->listing) : '#' }}" class="font-bold hover:opacity-80 transition-opacity" style="color: #1B2A4A;">
+                            {{ $ticket->listing?->title ?? 'Annonce supprimee' }}
                         </a>
-                        <p class="text-lg font-black mt-1" style="color: #1B4F72;">{{ $ticket->listing->formatted_price }}</p>
+                        <p class="text-lg font-black mt-1" style="color: #1B4F72;">{{ $ticket->listing?->formatted_price }}</p>
                         <div class="flex items-center mt-2 text-sm" style="color: #6B7B8D;">
-                            <span>{{ __('messages.buyer') }}: {{ $ticket->buyer->name }}</span>
+                            <span>{{ __('messages.buyer') }}: {{ $ticket->buyer?->name ?? 'Utilisateur' }}</span>
                             <span class="mx-2" style="color: #E0E6ED;">|</span>
-                            <span>{{ __('messages.seller') }}: {{ $ticket->seller->name }}</span>
+                            <span>{{ __('messages.seller') }}: {{ $ticket->seller?->name ?? 'Utilisateur' }}</span>
                         </div>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                     @foreach($ticket->messages ?? [] as $message)
                         @php
                             $isCurrentUser = $message['user_id'] == auth()->id();
-                            $userName = $message['user_id'] == $ticket->buyer_id ? $ticket->buyer->name : $ticket->seller->name;
+                            $userName = $message['user_id'] == $ticket->buyer_id ? ($ticket->buyer?->name ?? 'Utilisateur') : ($ticket->seller?->name ?? 'Utilisateur');
                         @endphp
                         <div class="flex {{ $isCurrentUser ? 'justify-end' : 'justify-start' }}">
                             <div class="max-w-xs lg:max-w-md rounded-2xl px-4 py-3" style="{{ $isCurrentUser ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8); color: white;' : 'background: #F0F4F8; color: #1B2A4A;' }}">
