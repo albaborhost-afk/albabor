@@ -87,26 +87,44 @@ class ListingController extends Controller
 
     public function show(Listing $listing)
     {
-        // Only show active listings to non-owners
-        if ($listing->status !== 'active' && (!Auth::check() || Auth::id() !== $listing->user_id)) {
-            abort(404);
+        try {
+            // Only show active listings to non-owners/non-admins
+            if ($listing->status !== 'active') {
+                $user = Auth::user();
+                if (!$user || ($user->id !== $listing->user_id && !$user->isAdmin())) {
+                    abort(404);
+                }
+            }
+
+            $listing->load(['user', 'media']);
+
+            // Track view (unique per day per IP)
+            $this->trackView($listing);
+
+            // Get related listings
+            $relatedListings = Listing::query()
+                ->with(['media'])
+                ->active()
+                ->where('id', '!=', $listing->id)
+                ->where('category', $listing->category)
+                ->limit(4)
+                ->get();
+
+            return view('listings.show', compact('listing', 'relatedListings'));
+        } catch (\Throwable $e) {
+            \Log::error('Listing show error', [
+                'listing_id' => $listing->id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            if (config('app.debug')) {
+                throw $e;
+            }
+
+            return back()->with('error', 'Erreur: ' . $e->getMessage());
         }
-
-        $listing->load(['user', 'media']);
-
-        // Track view (unique per day per IP)
-        $this->trackView($listing);
-
-        // Get related listings
-        $relatedListings = Listing::query()
-            ->with(['media'])
-            ->active()
-            ->where('id', '!=', $listing->id)
-            ->where('category', $listing->category)
-            ->limit(4)
-            ->get();
-
-        return view('listings.show', compact('listing', 'relatedListings'));
     }
 
     public function create()
