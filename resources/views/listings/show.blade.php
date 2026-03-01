@@ -60,20 +60,20 @@
                         $images = $listing->images ?? ($listing->media ?? collect());
                         $hasImages = is_array($images) ? count($images) > 0 : $images->count() > 0;
                         $imageCount = is_array($images) ? count($images) : $images->count();
+                        $imageUrls = collect($listing->images ?? $listing->media ?? [])->map(function ($img) {
+                            if (is_string($img)) {
+                                return $img;
+                            }
+                            return data_get($img, 'url')
+                                ?: (data_get($img, 'path') ? asset('storage/' . data_get($img, 'path')) : '');
+                        })->filter()->values()->toArray();
                     @endphp
 
                     <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);"
                          x-data="{
                             currentIndex: 0,
                             imageCount: {{ $imageCount }},
-                            images: @js(collect($listing->images ?? $listing->media ?? [])->map(function ($img) {
-                                if (is_string($img)) {
-                                    return $img;
-                                }
-
-                                return data_get($img, 'url')
-                                    ?: (data_get($img, 'path') ? asset('storage/' . data_get($img, 'path')) : '');
-                            })->filter()->values()),
+                            images: @js($imageUrls),
                             zooming: false,
                             zoomX: 50,
                             zoomY: 50,
@@ -724,14 +724,7 @@
     </style>
 
     <script>
-        const images = @json(collect($listing->images ?? $listing->media ?? [])->map(function ($img) {
-            if (is_string($img)) {
-                return $img;
-            }
-
-            return data_get($img, 'url')
-                ?: (data_get($img, 'path') ? asset('storage/' . data_get($img, 'path')) : '');
-        })->filter()->values());
+        const images = @json($imageUrls);
         let currentLightboxIndex = 0;
 
         function openLightbox(index) {
