@@ -116,7 +116,9 @@ class ListingController extends Controller
 
         $exchangeRate = Setting::getExchangeRate();
 
-        return view('listings.create', compact('wilayas', 'exchangeRate'));
+        $isFirstListing = Listing::where('user_id', $user->id)->count() === 0;
+
+        return view('listings.create', compact('wilayas', 'exchangeRate', 'isFirstListing'));
     }
 
     public function store(Request $request)

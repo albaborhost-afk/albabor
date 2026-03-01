@@ -235,6 +235,27 @@ class ListingController extends Controller
         // Gérer les images
         $this->handleImageUpload($listing, $request->file('images'));
 
+        // Première annonce gratuite
+        $isFirstListing = Listing::where('user_id', $user->id)
+            ->where('id', '!=', $listing->id)
+            ->count() === 0;
+
+        if ($isFirstListing) {
+            $listing->update([
+                'status'          => 'pending_review',
+                'published_until' => now()->addYear(),
+            ]);
+
+            $listing->load(['user', 'media']);
+
+            return response()->json([
+                'message' => 'Félicitations ! Votre première annonce est gratuite et sera examinée par notre équipe.',
+                'listing' => $listing,
+                'publish_price' => 0,
+                'is_first_listing' => true,
+            ], 201);
+        }
+
         // Prix de publication
         $amount = $this->getPublishPrice($listing->category);
 
@@ -244,6 +265,7 @@ class ListingController extends Controller
             'message' => 'Annonce créée avec succès. Un paiement est requis pour la publier.',
             'listing' => $listing,
             'publish_price' => $amount,
+            'is_first_listing' => false,
         ], 201);
     }
 
