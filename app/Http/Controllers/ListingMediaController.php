@@ -19,9 +19,10 @@ class ListingMediaController extends Controller
             abort(404);
         }
 
-        // Non-active listings only visible to owner
+        // Non-active listings only visible to owner or admin
         if ($listing->status !== 'active') {
-            if (!auth()->check() || auth()->id() !== $listing->user_id) {
+            $user = auth()->user();
+            if (!$user || ($user->id !== $listing->user_id && !$user->isAdmin())) {
                 abort(404);
             }
         }

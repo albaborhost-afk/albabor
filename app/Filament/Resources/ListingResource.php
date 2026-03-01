@@ -384,8 +384,9 @@ class ListingResource extends Resource
                                                 }
 
                                                 $html = '<div style="display: flex; flex-wrap: wrap; gap: 12px;">';
+                                                $disk = config('filesystems.listing_disk', 'public');
                                                 foreach ($record->media as $media) {
-                                                    $url = Storage::url($media->path);
+                                                    $url = Storage::disk($disk)->url($media->path);
                                                     $html .= '<div style="position: relative;">';
                                                     $html .= '<img src="' . $url . '" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid #e5e7eb;" />';
                                                     $html .= '<span style="position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">#' . ($media->order + 1) . '</span>';
@@ -506,7 +507,11 @@ class ListingResource extends Resource
                     ->defaultImageUrl(url('/images/placeholder-listing.png'))
                     ->getStateUsing(function (Listing $record) {
                         $media = $record->media->first();
-                        return $media ? Storage::url($media->path) : null;
+                        if (!$media) {
+                            return null;
+                        }
+                        $disk = config('filesystems.listing_disk', 'public');
+                        return Storage::disk($disk)->url($media->path);
                     }),
 
                 Tables\Columns\TextColumn::make('id')
