@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Conversation;
 use App\Models\Listing;
+use App\Models\MediationTicket;
 use Illuminate\Http\Request;
 
 class ConversationController extends Controller
@@ -15,9 +16,36 @@ class ConversationController extends Controller
         $conversations = Conversation::forUser($user)
             ->with(['listing.media', 'buyer', 'seller', 'latestMessage'])
             ->orderByDesc('last_message_at')
-            ->paginate(20);
+            ->get();
 
-        return view('conversations.index', compact('conversations'));
+        $mediationTickets = MediationTicket::where('buyer_id', $user->id)
+            ->orWhere('seller_id', $user->id)
+            ->with(['listing.media', 'buyer', 'seller'])
+            ->latest('updated_at')
+            ->get();
+
+        // Merge both into a single sorted collection
+        $allItems = collect();
+
+        foreach ($conversations as $conv) {
+            $allItems->push((object) [
+                'type' => 'conversation',
+                'item' => $conv,
+                'sort_date' => $conv->last_message_at ?? $conv->created_at,
+            ]);
+        }
+
+        foreach ($mediationTickets as $ticket) {
+            $allItems->push((object) [
+                'type' => 'mediation',
+                'item' => $ticket,
+                'sort_date' => $ticket->updated_at,
+            ]);
+        }
+
+        $allItems = $allItems->sortByDesc('sort_date')->values();
+
+        return view('conversations.index', compact('allItems'));
     }
 
     public function show(Request $request, Conversation $conversation)

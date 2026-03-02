@@ -44,7 +44,7 @@
                 </div>
             @endif
 
-            @if($conversations->isEmpty())
+            @if($allItems->isEmpty())
                 <!-- Empty State -->
                 <div class="bg-white rounded-2xl p-12 text-center" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
                     <div class="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, rgba(27,79,114,0.06), rgba(23,162,184,0.08));">
@@ -60,62 +60,116 @@
                     </a>
                 </div>
             @else
-                <!-- Conversation List -->
+                <!-- Unified Message List -->
                 <div class="space-y-3">
-                    @foreach($conversations as $conversation)
-                        @php
-                            $otherUser = $conversation->getOtherParticipant(auth()->user());
-                            $unreadCount = $conversation->unreadCountFor(auth()->user());
-                            $isBuyer = $conversation->isBuyer(auth()->user());
-                        @endphp
-                        <a href="{{ route('conversations.show', $conversation) }}" class="block bg-white rounded-2xl p-4 sm:p-5 transition-all duration-200 hover:-translate-y-0.5" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.03); {{ $unreadCount > 0 ? 'border-left: 3px solid #17A2B8;' : '' }}">
-                            <div class="flex items-start gap-4">
-                                <!-- Listing Thumbnail -->
-                                <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style="background: #F0F4F8;">
-                                    @if($conversation->listing?->media?->first())
-                                        <img src="{{ $conversation->listing->media->first()->thumbnail_url ?? $conversation->listing->media->first()->url }}"
-                                             alt="" class="w-full h-full object-cover"
-                                             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'">
-                                        <div class="w-full h-full items-center justify-center" style="color: #C5D0DB; display: none;">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                        </div>
-                                    @else
-                                        <svg class="w-6 h-6" style="color: #C5D0DB;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                    @endif
-                                </div>
-
-                                <!-- Content -->
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-start justify-between gap-2">
-                                        <div class="min-w-0">
-                                            <h3 class="text-sm font-bold truncate" style="color: #1B2A4A;">{{ $conversation->listing?->title ?? __('messages.listing_deleted') }}</h3>
-                                            <div class="flex items-center gap-2 mt-0.5">
-                                                <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background: {{ $isBuyer ? 'rgba(23,162,184,0.08)' : 'rgba(243,156,18,0.08)' }}; color: {{ $isBuyer ? '#17A2B8' : '#F39C12' }};">
-                                                    {{ $isBuyer ? __('messages.buyer') : __('messages.seller') }}
-                                                </span>
-                                                <span class="text-xs" style="color: #9BA8B7;">{{ $otherUser?->name ?? __('messages.deleted_user') }}</span>
+                    @foreach($allItems as $entry)
+                        @if($entry->type === 'conversation')
+                            @php
+                                $conversation = $entry->item;
+                                $otherUser = $conversation->getOtherParticipant(auth()->user());
+                                $unreadCount = $conversation->unreadCountFor(auth()->user());
+                                $isBuyer = $conversation->isBuyer(auth()->user());
+                            @endphp
+                            <a href="{{ route('conversations.show', $conversation) }}" class="block bg-white rounded-2xl p-4 sm:p-5 transition-all duration-200 hover:-translate-y-0.5" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.03); {{ $unreadCount > 0 ? 'border-left: 3px solid #17A2B8;' : '' }}">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style="background: #F0F4F8;">
+                                        @if($conversation->listing?->media?->first())
+                                            <img src="{{ $conversation->listing->media->first()->thumbnail_url ?? $conversation->listing->media->first()->url }}"
+                                                 alt="" class="w-full h-full object-cover"
+                                                 onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                            <div class="w-full h-full items-center justify-center" style="color: #C5D0DB; display: none;">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            </div>
+                                        @else
+                                            <svg class="w-6 h-6" style="color: #C5D0DB;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        @endif
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between gap-2">
+                                            <div class="min-w-0">
+                                                <h3 class="text-sm font-bold truncate" style="color: #1B2A4A;">{{ $conversation->listing?->title ?? __('messages.listing_deleted') }}</h3>
+                                                <div class="flex items-center gap-2 mt-0.5">
+                                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background: rgba(23,162,184,0.08); color: #17A2B8;">
+                                                        Message direct
+                                                    </span>
+                                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background: {{ $isBuyer ? 'rgba(23,162,184,0.08)' : 'rgba(243,156,18,0.08)' }}; color: {{ $isBuyer ? '#17A2B8' : '#F39C12' }};">
+                                                        {{ $isBuyer ? __('messages.buyer') : __('messages.seller') }}
+                                                    </span>
+                                                    <span class="text-xs" style="color: #9BA8B7;">{{ $otherUser?->name ?? __('messages.deleted_user') }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2 flex-shrink-0">
+                                                @if($unreadCount > 0)
+                                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold text-white" style="background: linear-gradient(135deg, #1B4F72, #17A2B8); min-width: 20px;">{{ $unreadCount }}</span>
+                                                @endif
+                                                <span class="text-xs whitespace-nowrap" style="color: #9BA8B7;">{{ $conversation->last_message_at?->diffForHumans() }}</span>
                                             </div>
                                         </div>
-                                        <div class="flex items-center gap-2 flex-shrink-0">
-                                            @if($unreadCount > 0)
-                                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold text-white" style="background: linear-gradient(135deg, #1B4F72, #17A2B8); min-width: 20px;">{{ $unreadCount }}</span>
-                                            @endif
-                                            <span class="text-xs whitespace-nowrap" style="color: #9BA8B7;">{{ $conversation->last_message_at?->diffForHumans() }}</span>
-                                        </div>
+                                        @if($conversation->latestMessage)
+                                            <p class="text-sm mt-1.5 truncate" style="color: {{ $unreadCount > 0 ? '#1B2A4A; font-weight: 600;' : '#6B7B8D;' }}">
+                                                {{ Str::limit($conversation->latestMessage->body, 80) }}
+                                            </p>
+                                        @endif
                                     </div>
-                                    @if($conversation->latestMessage)
-                                        <p class="text-sm mt-1.5 truncate" style="color: {{ $unreadCount > 0 ? '#1B2A4A; font-weight: 600;' : '#6B7B8D;' }}">
-                                            {{ Str::limit($conversation->latestMessage->body, 80) }}
-                                        </p>
-                                    @endif
                                 </div>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
+                            </a>
 
-                <div class="mt-6">
-                    {{ $conversations->links() }}
+                        @elseif($entry->type === 'mediation')
+                            @php
+                                $ticket = $entry->item;
+                                $isBuyer = $ticket->buyer_id === auth()->id();
+                                $otherUser = $isBuyer ? $ticket->seller : $ticket->buyer;
+                                $lastMsg = collect($ticket->messages ?? [])->last();
+                            @endphp
+                            <a href="{{ route('mediation.show', $ticket) }}" class="block bg-white rounded-2xl p-4 sm:p-5 transition-all duration-200 hover:-translate-y-0.5" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.03); border-left: 3px solid #F39C12;">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style="background: #F0F4F8;">
+                                        @if($ticket->listing?->media?->first())
+                                            <img src="{{ $ticket->listing->media->first()->thumbnail_url ?? $ticket->listing->media->first()->url }}"
+                                                 alt="" class="w-full h-full object-cover"
+                                                 onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                            <div class="w-full h-full items-center justify-center" style="color: #C5D0DB; display: none;">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            </div>
+                                        @else
+                                            <svg class="w-6 h-6" style="color: #C5D0DB;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        @endif
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between gap-2">
+                                            <div class="min-w-0">
+                                                <h3 class="text-sm font-bold truncate" style="color: #1B2A4A;">{{ $ticket->listing?->title ?? __('messages.listing_deleted') }}</h3>
+                                                <div class="flex items-center gap-2 mt-0.5">
+                                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background: rgba(243,156,18,0.08); color: #F39C12;">
+                                                        Mediation
+                                                    </span>
+                                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background: {{ $isBuyer ? 'rgba(23,162,184,0.08)' : 'rgba(243,156,18,0.08)' }}; color: {{ $isBuyer ? '#17A2B8' : '#F39C12' }};">
+                                                        {{ $isBuyer ? __('messages.buyer') : __('messages.seller') }}
+                                                    </span>
+                                                    <span class="text-xs" style="color: #9BA8B7;">{{ $otherUser?->name ?? __('messages.deleted_user') }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2 flex-shrink-0">
+                                                <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background: rgba(39,174,96,0.08); color: #27AE60;">
+                                                    {{ $ticket->status_label }}
+                                                </span>
+                                                <span class="text-xs whitespace-nowrap" style="color: #9BA8B7;">{{ $ticket->updated_at->diffForHumans() }}</span>
+                                            </div>
+                                        </div>
+                                        @if($lastMsg)
+                                            <p class="text-sm mt-1.5 truncate" style="color: #6B7B8D;">
+                                                {{ Str::limit($lastMsg['body'] ?? $lastMsg['message'] ?? '', 80) }}
+                                            </p>
+                                        @elseif($ticket->buyer_message)
+                                            <p class="text-sm mt-1.5 truncate" style="color: #6B7B8D;">
+                                                {{ Str::limit($ticket->buyer_message, 80) }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
+                    @endforeach
                 </div>
             @endif
 
