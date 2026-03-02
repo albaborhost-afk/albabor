@@ -296,7 +296,7 @@ class ListingController extends Controller
             'delete_images' => 'nullable|array',
         ]);
 
-        $listing->update([
+        $updateData = [
             'title' => $validated['title'],
             'description' => $validated['description'],
             'category' => $validated['category'],
@@ -313,7 +313,15 @@ class ListingController extends Controller
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
-        ]);
+        ];
+
+        // Re-submit rejected listings for review
+        if ($listing->status === 'rejected') {
+            $updateData['status'] = 'pending_review';
+            $updateData['rejection_reason'] = null;
+        }
+
+        $listing->update($updateData);
 
         // Delete selected images
         if (!empty($validated['delete_images'])) {

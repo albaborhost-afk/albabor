@@ -22,6 +22,23 @@
                 </div>
             @endif
 
+            @if($listing->status === 'rejected' && $listing->rejection_reason)
+                <div class="bg-white rounded-2xl p-5 mb-6" style="border: 1.5px solid rgba(231,76,60,0.3); box-shadow: 0 4px 15px rgba(231,76,60,0.08);">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: rgba(231,76,60,0.1);">
+                            <svg class="w-5 h-5" style="color: #E74C3C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold" style="color: #E74C3C;">Votre annonce a ete refusee</h3>
+                            <p class="text-sm mt-1" style="color: #6B7B8D;">{{ $listing->rejection_reason }}</p>
+                            <p class="text-xs mt-2" style="color: #9BA8B7;">Corrigez les problemes ci-dessus puis enregistrez pour soumettre a nouveau votre annonce.</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             @php
                 $specs = $listing->specs ?? [];
             @endphp

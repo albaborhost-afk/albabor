@@ -162,7 +162,17 @@
                                         @elseif($listing->status === 'awaiting_payment')
                                             <p class="text-xs mt-1.5" style="color: #9BA8B7;">Paiement requis pour publier</p>
                                         @elseif($listing->status === 'rejected')
-                                            <p class="text-xs mt-1.5" style="color: #E74C3C;">Annonce refusée par admin</p>
+                                            <p class="text-xs mt-1.5 font-semibold" style="color: #E74C3C;">Annonce refusee</p>
+                                            @if($listing->rejection_reason)
+                                                <div class="mt-2 p-2.5 rounded-lg text-xs max-w-xs" style="background: rgba(231,76,60,0.06); border: 1px solid rgba(231,76,60,0.15); color: #1B2A4A;">
+                                                    <p class="font-semibold mb-1" style="color: #E74C3C;">Raison :</p>
+                                                    <p style="color: #6B7B8D;">{{ $listing->rejection_reason }}</p>
+                                                </div>
+                                                <a href="{{ route('listings.edit', $listing) }}" class="inline-flex items-center gap-1 mt-2 text-xs font-semibold transition-opacity hover:opacity-80" style="color: #17A2B8;">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                                    Corriger et republier
+                                                </a>
+                                            @endif
                                         @endif
                                     </td>
 
@@ -308,7 +318,17 @@
                                     @elseif($listing->status === 'awaiting_payment')
                                         <p class="text-[10px] mt-1" style="color: #FF6B6B;">Paiement requis</p>
                                     @elseif($listing->status === 'rejected')
-                                        <p class="text-[10px] mt-1" style="color: #E74C3C;">Annonce refusée</p>
+                                        <p class="text-[10px] mt-1 font-semibold" style="color: #E74C3C;">Annonce refusee</p>
+                                        @if($listing->rejection_reason)
+                                            <div class="mt-2 p-2.5 rounded-lg text-xs" style="background: rgba(231,76,60,0.06); border: 1px solid rgba(231,76,60,0.15); color: #1B2A4A;">
+                                                <p class="font-semibold mb-1" style="color: #E74C3C;">Raison :</p>
+                                                <p style="color: #6B7B8D;">{{ $listing->rejection_reason }}</p>
+                                            </div>
+                                            <a href="{{ route('listings.edit', $listing) }}" class="inline-flex items-center gap-1 mt-2 text-xs font-semibold" style="color: #17A2B8;">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                                Corriger et republier
+                                            </a>
+                                        @endif
                                     @endif
                                     <!-- Stats -->
                                     <div class="flex items-center gap-3 mt-1.5 text-xs" style="color: #9BA8B7;">
