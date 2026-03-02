@@ -739,77 +739,81 @@ class ListingResource extends Resource
             ])
             ->filtersFormColumns(3)
             ->actions([
+                Tables\Actions\Action::make('approve')
+                    ->label('Approuver')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->button()
+                    ->size('sm')
+                    ->visible(fn (Listing $record) => in_array($record->status, ['pending_review', 'awaiting_payment']))
+                    ->requiresConfirmation()
+                    ->modalHeading('Approuver cette annonce')
+                    ->modalDescription('L\'annonce sera publiee et visible par tous les utilisateurs.')
+                    ->modalSubmitActionLabel('Oui, approuver')
+                    ->action(function (Listing $record) {
+                        $record->update([
+                            'status' => 'active',
+                            'published_until' => now()->addDays(365),
+                        ]);
+                        Notification::make()
+                            ->title('Annonce approuvee')
+                            ->body('L\'annonce "' . $record->title . '" est maintenant active.')
+                            ->success()
+                            ->send();
+                    }),
+
+                Tables\Actions\Action::make('reject')
+                    ->label('Refuser')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->button()
+                    ->size('sm')
+                    ->visible(fn (Listing $record) => in_array($record->status, ['pending_review', 'awaiting_payment']))
+                    ->modalHeading('Refuser cette annonce')
+                    ->modalDescription('Veuillez indiquer la raison du refus.')
+                    ->form([
+                        Forms\Components\Select::make('rejection_template')
+                            ->label('Modele de refus')
+                            ->options([
+                                'incomplete' => 'Informations incompletes',
+                                'inappropriate' => 'Contenu inapproprie',
+                                'duplicate' => 'Annonce en double',
+                                'price' => 'Prix non realiste',
+                                'photos' => 'Photos de mauvaise qualite',
+                                'other' => 'Autre raison',
+                            ])
+                            ->live()
+                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                $templates = [
+                                    'incomplete' => 'Votre annonce ne contient pas suffisamment d\'informations. Veuillez completer la description et les caracteristiques.',
+                                    'inappropriate' => 'Votre annonce contient du contenu qui ne respecte pas nos conditions d\'utilisation.',
+                                    'duplicate' => 'Cette annonce semble etre un doublon d\'une annonce existante.',
+                                    'price' => 'Le prix indique ne semble pas correspondre au marche. Veuillez verifier.',
+                                    'photos' => 'Les photos fournies ne sont pas de qualite suffisante. Veuillez en ajouter de meilleures.',
+                                ];
+                                if (isset($templates[$state])) {
+                                    $set('rejection_reason', $templates[$state]);
+                                }
+                            }),
+                        Forms\Components\Textarea::make('rejection_reason')
+                            ->label('Raison du refus')
+                            ->required()
+                            ->rows(4)
+                            ->placeholder('Expliquez pourquoi cette annonce est refusee...'),
+                    ])
+                    ->action(function (Listing $record, array $data) {
+                        $record->update([
+                            'status' => 'rejected',
+                            'rejection_reason' => $data['rejection_reason'],
+                        ]);
+                        Notification::make()
+                            ->title('Annonce refusee')
+                            ->body('L\'annonce "' . $record->title . '" a ete refusee.')
+                            ->danger()
+                            ->send();
+                    }),
+
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('approve')
-                        ->label('Approuver')
-                        ->icon('heroicon-o-check-circle')
-                        ->color('success')
-                        ->visible(fn (Listing $record) => $record->status === 'pending_review')
-                        ->requiresConfirmation()
-                        ->modalHeading('Approuver cette annonce')
-                        ->modalDescription('L\'annonce sera publiee et visible par tous les utilisateurs.')
-                        ->modalSubmitActionLabel('Oui, approuver')
-                        ->action(function (Listing $record) {
-                            $record->update([
-                                'status' => 'active',
-                                'published_until' => now()->addDays(365),
-                            ]);
-                            Notification::make()
-                                ->title('Annonce approuvee')
-                                ->body('L\'annonce "' . $record->title . '" est maintenant active.')
-                                ->success()
-                                ->send();
-                        }),
-
-                    Tables\Actions\Action::make('reject')
-                        ->label('Refuser')
-                        ->icon('heroicon-o-x-circle')
-                        ->color('danger')
-                        ->visible(fn (Listing $record) => $record->status === 'pending_review')
-                        ->modalHeading('Refuser cette annonce')
-                        ->modalDescription('Veuillez indiquer la raison du refus.')
-                        ->form([
-                            Forms\Components\Select::make('rejection_template')
-                                ->label('Modele de refus')
-                                ->options([
-                                    'incomplete' => 'Informations incompletes',
-                                    'inappropriate' => 'Contenu inapproprie',
-                                    'duplicate' => 'Annonce en double',
-                                    'price' => 'Prix non realiste',
-                                    'photos' => 'Photos de mauvaise qualite',
-                                    'other' => 'Autre raison',
-                                ])
-                                ->live()
-                                ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                    $templates = [
-                                        'incomplete' => 'Votre annonce ne contient pas suffisamment d\'informations. Veuillez completer la description et les caracteristiques.',
-                                        'inappropriate' => 'Votre annonce contient du contenu qui ne respecte pas nos conditions d\'utilisation.',
-                                        'duplicate' => 'Cette annonce semble etre un doublon d\'une annonce existante.',
-                                        'price' => 'Le prix indique ne semble pas correspondre au marche. Veuillez verifier.',
-                                        'photos' => 'Les photos fournies ne sont pas de qualite suffisante. Veuillez en ajouter de meilleures.',
-                                    ];
-                                    if (isset($templates[$state])) {
-                                        $set('rejection_reason', $templates[$state]);
-                                    }
-                                }),
-                            Forms\Components\Textarea::make('rejection_reason')
-                                ->label('Raison du refus')
-                                ->required()
-                                ->rows(4)
-                                ->placeholder('Expliquez pourquoi cette annonce est refusee...'),
-                        ])
-                        ->action(function (Listing $record, array $data) {
-                            $record->update([
-                                'status' => 'rejected',
-                                'rejection_reason' => $data['rejection_reason'],
-                            ]);
-                            Notification::make()
-                                ->title('Annonce refusee')
-                                ->body('L\'annonce "' . $record->title . '" a ete refusee.')
-                                ->danger()
-                                ->send();
-                        }),
-
                     Tables\Actions\Action::make('feature')
                         ->label(fn (Listing $record) => $record->isFeatured() ? 'Retirer vedette' : 'Mettre en avant')
                         ->icon('heroicon-o-star')
