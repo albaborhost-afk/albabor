@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\ListingMediaController;
+use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\MediationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
@@ -87,6 +88,12 @@ Route::middleware('auth')->group(function () {
     Route::get('abonnements', [PaymentController::class, 'subscriptionPlans'])->name('subscription.plans');
     Route::post('paiements/abonnement', [PaymentController::class, 'storeSubscriptionPayment'])->name('payments.subscription');
     Route::post('paiements/mediation', [PaymentController::class, 'storeMediationPayment'])->name('payments.mediation');
+
+    // Messages
+    Route::get('messages', [ConversationController::class, 'index'])->name('conversations.index');
+    Route::get('messages/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
+    Route::post('messages/annonce/{listing}', [ConversationController::class, 'store'])->name('conversations.store');
+    Route::post('messages/{conversation}/repondre', [ConversationController::class, 'reply'])->name('conversations.reply');
 
     // Mediation
     Route::get('mediation', [MediationController::class, 'index'])->name('mediation.index');

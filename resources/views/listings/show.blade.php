@@ -586,6 +586,29 @@
                                 </form>
 
                                 @if(auth()->id() !== $listing->user_id)
+                                    {{-- Direct Message Button --}}
+                                    <div x-data="{ showMsgForm: false }">
+                                        <button @click="showMsgForm = !showMsgForm" class="w-full flex items-center justify-center gap-2 px-4 py-3.5 text-white rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 mb-3" style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                            {{ __('messages.send_direct_message') }}
+                                        </button>
+                                        <div x-show="showMsgForm" x-cloak x-transition class="mb-3">
+                                            <form action="{{ route('conversations.store', $listing) }}" method="POST">
+                                                @csrf
+                                                <textarea name="body" rows="3" required maxlength="2000"
+                                                          class="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 transition-all duration-200 mb-2"
+                                                          style="background: #F0F4F8; border: 1.5px solid #E0E6ED; color: #1B2A4A;"
+                                                          placeholder="{{ __('messages.message_placeholder') }}">{{ old('body') }}</textarea>
+                                                @error('body')
+                                                    <p class="text-xs mb-2" style="color: #E74C3C;">{{ $message }}</p>
+                                                @enderror
+                                                <button type="submit" class="w-full px-4 py-3 rounded-xl text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5" style="background: linear-gradient(135deg, #17A2B8, #1B4F72); box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);">
+                                                    {{ __('messages.send') }}
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
                                     @if($listing->mediation_enabled)
                                         {{-- Mediation Button --}}
                                         <a href="{{ route('mediation.create', $listing) }}" class="w-full flex items-center justify-center gap-2 px-4 py-3.5 text-white rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 animate-pulse-glow" style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">

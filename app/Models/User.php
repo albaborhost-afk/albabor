@@ -104,6 +104,48 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(MediationTicket::class, 'seller_id');
     }
 
+    public function buyerConversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'buyer_id');
+    }
+
+    public function sellerConversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'seller_id');
+    }
+
+    public function totalUnreadMessagesCount(): int
+    {
+        return Message::whereIn('conversation_id', function ($query) {
+            $query->select('id')
+                ->from('conversations')
+                ->where('buyer_id', $this->id)
+                ->orWhere('seller_id', $this->id);
+        })
+        ->where('sender_id', '!=', $this->id)
+        ->where(function ($query) {
+            $query->whereIn('conversation_id', function ($sub) {
+                $sub->select('id')
+                    ->from('conversations')
+                    ->where('buyer_id', $this->id)
+                    ->where(function ($q) {
+                        $q->whereNull('buyer_last_read_at')
+                          ->orWhereColumn('messages.created_at', '>', 'conversations.buyer_last_read_at');
+                    });
+            })
+            ->orWhereIn('conversation_id', function ($sub) {
+                $sub->select('id')
+                    ->from('conversations')
+                    ->where('seller_id', $this->id)
+                    ->where(function ($q) {
+                        $q->whereNull('seller_last_read_at')
+                          ->orWhereColumn('messages.created_at', '>', 'conversations.seller_last_read_at');
+                    });
+            });
+        })
+        ->count();
+    }
+
     // Helper methods
     public function isAdmin(): bool
     {

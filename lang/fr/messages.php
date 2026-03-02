@@ -421,4 +421,15 @@ return [
     // Listing lifecycle
     'listing_has_pending_payments' => 'Impossible de supprimer cette annonce car elle a des paiements en attente de validation.',
     'category_change_subscription_required' => 'Un abonnement vendeur actif est requis pour changer la catégorie vers moteurs ou pièces détachées.',
+
+    // Direct Messaging
+    'my_messages' => 'Messages',
+    'send_direct_message' => 'Envoyer un message',
+    'no_messages_yet' => 'Aucun message pour le moment',
+    'no_messages_desc' => 'Parcourez les annonces et contactez les vendeurs pour demarrer une conversation.',
+    'no_messages_in_conversation' => 'Aucun message dans cette conversation.',
+    'back_to_messages' => 'Retour aux messages',
+    'cannot_message_own_listing' => 'Vous ne pouvez pas envoyer un message sur votre propre annonce.',
+    'listing_deleted' => 'Annonce supprimee',
+    'deleted_user' => 'Utilisateur supprime',
 ];

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\ListingController;
+use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\MediationController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProfileController;
@@ -72,6 +73,13 @@ Route::prefix('v1')->group(function () {
         // Subscriptions
         Route::get('/subscriptions', [SubscriptionController::class, 'index']);
         Route::get('/subscriptions/active', [SubscriptionController::class, 'active']);
+
+        // Conversations
+        Route::get('/conversations', [ConversationController::class, 'index']);
+        Route::get('/conversations/unread-count', [ConversationController::class, 'unreadCount']);
+        Route::post('/conversations/listing/{listing}', [ConversationController::class, 'store']);
+        Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
+        Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'sendMessage']);
 
         // Mediation
         Route::get('/mediation', [MediationController::class, 'index']);

@@ -115,6 +115,11 @@ class Listing extends Model
         return $this->hasMany(MediationTicket::class);
     }
 
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
     public function isActive(): bool
     {
         return $this->status === 'active';

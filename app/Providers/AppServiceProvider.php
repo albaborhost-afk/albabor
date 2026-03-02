@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Conversation;
 use App\Models\Listing;
 use App\Models\Payment;
+use App\Policies\ConversationPolicy;
 use App\Policies\ListingPolicy;
 use App\Policies\PaymentPolicy;
 use Illuminate\Support\Facades\Artisan;
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         // Register policies
         Gate::policy(Listing::class, ListingPolicy::class);
         Gate::policy(Payment::class, PaymentPolicy::class);
+        Gate::policy(Conversation::class, ConversationPolicy::class);
 
         // Auto-create storage symlink if missing (for production/Laravel Cloud)
         if (!file_exists(public_path('storage'))) {
