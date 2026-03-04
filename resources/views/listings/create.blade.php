@@ -791,29 +791,92 @@
                         </div>
 
                         {{-- Localisation --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase mb-1.5 flex items-center gap-1" style="color: #6B7B8D;">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    Pays *
-                                </label>
-                                <select name="pays" required class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                    <option value="">-- Choisir un pays --</option>
-                                    @foreach($wilayas as $code => $label)
-                                        <option value="{{ $code }}" {{ old('pays') == $code ? 'selected' : '' }}>{{ $label }}</option>
-                                    @endforeach
-                                </select>
+                        <div class="mb-2" x-data="{
+                            selected: '{{ old('pays', '') }}',
+                            countries: [
+                                { code: 'Algérie',            flag: '🇩🇿', name: 'Algérie' },
+                                { code: 'Tunisie',            flag: '🇹🇳', name: 'Tunisie' },
+                                { code: 'Maroc',              flag: '🇲🇦', name: 'Maroc' },
+                                { code: 'Libye',              flag: '🇱🇾', name: 'Libye' },
+                                { code: 'Égypte',             flag: '🇪🇬', name: 'Égypte' },
+                                { code: 'Espagne',            flag: '🇪🇸', name: 'Espagne' },
+                                { code: 'France',             flag: '🇫🇷', name: 'France' },
+                                { code: 'Italie',             flag: '🇮🇹', name: 'Italie' },
+                                { code: 'Grèce',              flag: '🇬🇷', name: 'Grèce' },
+                                { code: 'Croatie',            flag: '🇭🇷', name: 'Croatie' },
+                                { code: 'Monténégro',         flag: '🇲🇪', name: 'Monténégro' },
+                                { code: 'Albanie',            flag: '🇦🇱', name: 'Albanie' },
+                                { code: 'Bosnie-Herzégovine', flag: '🇧🇦', name: 'Bosnie' },
+                                { code: 'Slovénie',           flag: '🇸🇮', name: 'Slovénie' },
+                                { code: 'Turquie',            flag: '🇹🇷', name: 'Turquie' },
+                                { code: 'Liban',              flag: '🇱🇧', name: 'Liban' },
+                                { code: 'Syrie',              flag: '🇸🇾', name: 'Syrie' },
+                                { code: 'Malte',              flag: '🇲🇹', name: 'Malte' },
+                                { code: 'Chypre',             flag: '🇨🇾', name: 'Chypre' },
+                                { code: 'Monaco',             flag: '🇲🇨', name: 'Monaco' },
+                            ]
+                        }">
+                            <input type="hidden" name="pays" :value="selected" x-ref="paysInput">
+
+                            <label class="block text-xs font-semibold uppercase mb-2 flex items-center gap-1.5" style="color: #6B7B8D;">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Pays *
+                                <span x-show="selected" x-text="'— ' + selected" class="font-bold normal-case" style="color: #17A2B8;"></span>
+                            </label>
+
+                            {{-- Scrolling flag strip --}}
+                            <div class="relative">
+                                {{-- Left fade --}}
+                                <div class="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none" style="background: linear-gradient(to right, white, transparent);"></div>
+                                {{-- Right fade --}}
+                                <div class="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none" style="background: linear-gradient(to left, white, transparent);"></div>
+
+                                <div class="flex gap-2.5 overflow-x-auto pb-2 pt-1 px-1 country-scroll"
+                                     style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
+                                    <template x-for="c in countries" :key="c.code">
+                                        <button type="button"
+                                                @click="selected = c.code"
+                                                class="flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2.5 rounded-2xl transition-all duration-200 relative"
+                                                :class="selected === c.code
+                                                    ? 'scale-105 shadow-lg'
+                                                    : 'hover:scale-105 hover:shadow-md'"
+                                                :style="selected === c.code
+                                                    ? 'border: 2.5px solid #17A2B8; background: linear-gradient(135deg, #E8F8FA, #D4F1F4); box-shadow: 0 6px 18px rgba(23,162,184,0.3);'
+                                                    : 'border: 2px solid #E0E6ED; background: white;'"
+                                                style="min-width: 68px; scroll-snap-align: start;">
+                                            {{-- Checkmark badge --}}
+                                            <div x-show="selected === c.code"
+                                                 class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center shadow"
+                                                 style="background: #17A2B8;">
+                                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-2xl leading-none" x-text="c.flag"></span>
+                                            <span class="text-[10px] font-semibold text-center leading-tight"
+                                                  :style="selected === c.code ? 'color: #17A2B8;' : 'color: #6B7B8D;'"
+                                                  x-text="c.name"></span>
+                                        </button>
+                                    </template>
+                                </div>
                             </div>
-                            <div>
+                            <p x-show="!selected" class="text-[10px] mt-1" style="color: #E74C3C;">Veuillez sélectionner un pays</p>
+
+                            {{-- Ville --}}
+                            <div class="mt-3">
                                 <label class="block text-xs font-semibold uppercase mb-1.5 flex items-center gap-1" style="color: #6B7B8D;">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                     Ville / Région
                                 </label>
                                 <input type="text" name="wilaya" value="{{ old('wilaya') }}"
                                        class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                       placeholder="Ex: Alger, Oran, Tunis...">
+                                       placeholder="Ex: Alger, Oran, Tunis, Paris...">
                             </div>
                         </div>
+
+                        <style>
+                            .country-scroll::-webkit-scrollbar { display: none; }
+                        </style>
 
                         {{-- Echange --}}
                         <div>
