@@ -5,7 +5,7 @@
             @php
                 $startStep = 1;
                 if ($errors->any()) {
-                    if ($errors->has('images')) $startStep = 7;
+                    if ($errors->has('images')) $startStep = 8;
                     elseif ($errors->hasAny(['numero_whatsapp', 'numero_mobile', 'contact_email'])) $startStep = 5;
                     elseif ($errors->hasAny(['price_dzd', 'type_offre', 'etat'])) $startStep = 4;
                     elseif ($errors->has('category')) $startStep = 1;
@@ -790,94 +790,6 @@
                             </div>
                         </div>
 
-                        {{-- Localisation --}}
-                        <div class="mb-2" x-data="{
-                            selected: '{{ old('pays', '') }}',
-                            countries: [
-                                { code: 'Algérie',            flag: '🇩🇿', name: 'Algérie' },
-                                { code: 'Tunisie',            flag: '🇹🇳', name: 'Tunisie' },
-                                { code: 'Maroc',              flag: '🇲🇦', name: 'Maroc' },
-                                { code: 'Libye',              flag: '🇱🇾', name: 'Libye' },
-                                { code: 'Égypte',             flag: '🇪🇬', name: 'Égypte' },
-                                { code: 'Espagne',            flag: '🇪🇸', name: 'Espagne' },
-                                { code: 'France',             flag: '🇫🇷', name: 'France' },
-                                { code: 'Italie',             flag: '🇮🇹', name: 'Italie' },
-                                { code: 'Grèce',              flag: '🇬🇷', name: 'Grèce' },
-                                { code: 'Croatie',            flag: '🇭🇷', name: 'Croatie' },
-                                { code: 'Monténégro',         flag: '🇲🇪', name: 'Monténégro' },
-                                { code: 'Albanie',            flag: '🇦🇱', name: 'Albanie' },
-                                { code: 'Bosnie-Herzégovine', flag: '🇧🇦', name: 'Bosnie' },
-                                { code: 'Slovénie',           flag: '🇸🇮', name: 'Slovénie' },
-                                { code: 'Turquie',            flag: '🇹🇷', name: 'Turquie' },
-                                { code: 'Liban',              flag: '🇱🇧', name: 'Liban' },
-                                { code: 'Syrie',              flag: '🇸🇾', name: 'Syrie' },
-                                { code: 'Malte',              flag: '🇲🇹', name: 'Malte' },
-                                { code: 'Chypre',             flag: '🇨🇾', name: 'Chypre' },
-                                { code: 'Monaco',             flag: '🇲🇨', name: 'Monaco' },
-                            ]
-                        }">
-                            <input type="hidden" name="pays" :value="selected" x-ref="paysInput">
-
-                            <label class="block text-xs font-semibold uppercase mb-2 flex items-center gap-1.5" style="color: #6B7B8D;">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                Pays *
-                                <span x-show="selected" x-text="'— ' + selected" class="font-bold normal-case" style="color: #17A2B8;"></span>
-                            </label>
-
-                            {{-- Scrolling flag strip --}}
-                            <div class="relative">
-                                {{-- Left fade --}}
-                                <div class="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none" style="background: linear-gradient(to right, white, transparent);"></div>
-                                {{-- Right fade --}}
-                                <div class="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none" style="background: linear-gradient(to left, white, transparent);"></div>
-
-                                <div class="flex gap-2.5 overflow-x-auto pb-2 pt-1 px-1 country-scroll"
-                                     style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
-                                    <template x-for="c in countries" :key="c.code">
-                                        <button type="button"
-                                                @click="selected = c.code"
-                                                class="flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2.5 rounded-2xl transition-all duration-200 relative"
-                                                :class="selected === c.code
-                                                    ? 'scale-105 shadow-lg'
-                                                    : 'hover:scale-105 hover:shadow-md'"
-                                                :style="selected === c.code
-                                                    ? 'border: 2.5px solid #17A2B8; background: linear-gradient(135deg, #E8F8FA, #D4F1F4); box-shadow: 0 6px 18px rgba(23,162,184,0.3);'
-                                                    : 'border: 2px solid #E0E6ED; background: white;'"
-                                                style="min-width: 68px; scroll-snap-align: start;">
-                                            {{-- Checkmark badge --}}
-                                            <div x-show="selected === c.code"
-                                                 class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center shadow"
-                                                 style="background: #17A2B8;">
-                                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                            </div>
-                                            <span class="text-2xl leading-none" x-text="c.flag"></span>
-                                            <span class="text-[10px] font-semibold text-center leading-tight"
-                                                  :style="selected === c.code ? 'color: #17A2B8;' : 'color: #6B7B8D;'"
-                                                  x-text="c.name"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                            <p x-show="!selected" class="text-[10px] mt-1" style="color: #E74C3C;">Veuillez sélectionner un pays</p>
-
-                            {{-- Ville --}}
-                            <div class="mt-3">
-                                <label class="block text-xs font-semibold uppercase mb-1.5 flex items-center gap-1" style="color: #6B7B8D;">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                    Ville / Région
-                                </label>
-                                <input type="text" name="wilaya" value="{{ old('wilaya') }}"
-                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                       placeholder="Ex: Alger, Oran, Tunis, Paris...">
-                            </div>
-                        </div>
-
-                        <style>
-                            .country-scroll::-webkit-scrollbar { display: none; }
-                        </style>
-
                         {{-- Echange --}}
                         <div>
                             <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Echange</label>
@@ -904,9 +816,128 @@
                 </div>
 
                 {{-- ===================================================== --}}
-                {{-- STEP 5 : Contact                                       --}}
+                {{-- STEP 5 : Localisation                                  --}}
                 {{-- ===================================================== --}}
                 <div x-show="currentStep === 5"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-3"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0">
+
+                    <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);">
+                        {{-- Gradient header --}}
+                        <div class="px-6 py-8 text-center" style="background: linear-gradient(135deg, #1B4F72 0%, #17A2B8 55%, #2ECC71 100%);">
+                            <div class="text-5xl mb-3">🌍</div>
+                            <h2 class="text-xl font-bold text-white">Où se trouve votre annonce ?</h2>
+                            <p class="text-sm mt-1" style="color: rgba(255,255,255,0.75);">Mer Méditerranée — 20 pays disponibles</p>
+                        </div>
+
+                        <div class="p-6"
+                             x-data="{
+                                 selected: '{{ old('pays', '') }}',
+                                 countries: [
+                                     { code: 'Algérie',            flag: '🇩🇿', name: 'Algérie' },
+                                     { code: 'Tunisie',            flag: '🇹🇳', name: 'Tunisie' },
+                                     { code: 'Maroc',              flag: '🇲🇦', name: 'Maroc' },
+                                     { code: 'Libye',              flag: '🇱🇾', name: 'Libye' },
+                                     { code: 'Égypte',             flag: '🇪🇬', name: 'Égypte' },
+                                     { code: 'Espagne',            flag: '🇪🇸', name: 'Espagne' },
+                                     { code: 'France',             flag: '🇫🇷', name: 'France' },
+                                     { code: 'Italie',             flag: '🇮🇹', name: 'Italie' },
+                                     { code: 'Grèce',              flag: '🇬🇷', name: 'Grèce' },
+                                     { code: 'Croatie',            flag: '🇭🇷', name: 'Croatie' },
+                                     { code: 'Monténégro',         flag: '🇲🇪', name: 'Monténégro' },
+                                     { code: 'Albanie',            flag: '🇦🇱', name: 'Albanie' },
+                                     { code: 'Bosnie-Herzégovine', flag: '🇧🇦', name: 'Bosnie' },
+                                     { code: 'Slovénie',           flag: '🇸🇮', name: 'Slovénie' },
+                                     { code: 'Turquie',            flag: '🇹🇷', name: 'Turquie' },
+                                     { code: 'Liban',              flag: '🇱🇧', name: 'Liban' },
+                                     { code: 'Syrie',              flag: '🇸🇾', name: 'Syrie' },
+                                     { code: 'Malte',              flag: '🇲🇹', name: 'Malte' },
+                                     { code: 'Chypre',             flag: '🇨🇾', name: 'Chypre' },
+                                     { code: 'Monaco',             flag: '🇲🇨', name: 'Monaco' },
+                                 ]
+                             }">
+                            <input type="hidden" name="pays" :value="selected">
+
+                            {{-- Selected country banner --}}
+                            <div x-show="selected"
+                                 class="mb-5 rounded-2xl p-4 flex items-center gap-3"
+                                 style="background: linear-gradient(135deg, #E8F8FA, #D4F1F4); border: 2px solid #17A2B8;">
+                                <span class="text-4xl leading-none" x-text="countries.find(c => c.code === selected)?.flag || ''"></span>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #17A2B8;">Pays sélectionné ✓</p>
+                                    <p class="text-base font-bold truncate" style="color: #1B2A4A;" x-text="selected"></p>
+                                </div>
+                                <button type="button" @click="selected = ''"
+                                        class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 transition-all hover:scale-110"
+                                        style="background: #17A2B8;">✕</button>
+                            </div>
+
+                            {{-- Empty state --}}
+                            <div x-show="!selected"
+                                 class="mb-5 rounded-2xl p-4 text-center"
+                                 style="background: #F7F9FB; border: 2px dashed #D0D9E3;">
+                                <span class="text-2xl">👆</span>
+                                <p class="text-xs mt-1" style="color: #9BA8B7;">Faites défiler et cliquez sur votre pays</p>
+                            </div>
+
+                            {{-- Scrolling flag strip --}}
+                            <div class="relative mb-6">
+                                <div class="absolute left-0 top-0 bottom-0 w-10 z-10 pointer-events-none" style="background: linear-gradient(to right, white 20%, transparent);"></div>
+                                <div class="absolute right-0 top-0 bottom-0 w-10 z-10 pointer-events-none" style="background: linear-gradient(to left, white 20%, transparent);"></div>
+                                <div class="flex gap-3 overflow-x-auto py-3 px-3 country-scroll-lg"
+                                     style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
+                                    <template x-for="c in countries" :key="c.code">
+                                        <button type="button"
+                                                @click="selected = c.code"
+                                                class="flex-shrink-0 flex flex-col items-center rounded-2xl transition-all duration-200 relative"
+                                                :class="selected === c.code ? 'scale-110' : 'hover:scale-105 active:scale-95'"
+                                                :style="selected === c.code
+                                                    ? 'border: 3px solid #17A2B8; background: linear-gradient(135deg, #E8F8FA, #D4F1F4); box-shadow: 0 8px 24px rgba(23,162,184,0.4); padding: 14px 16px; gap: 8px;'
+                                                    : 'border: 2px solid #E8EDF2; background: #FAFBFC; box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: 14px 16px; gap: 8px;'"
+                                                style="min-width: 86px; scroll-snap-align: start;">
+                                            {{-- Checkmark badge --}}
+                                            <div x-show="selected === c.code"
+                                                 class="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center z-10"
+                                                 style="background: linear-gradient(135deg, #17A2B8, #1B4F72); box-shadow: 0 3px 8px rgba(23,162,184,0.5);">
+                                                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-4xl leading-none" x-text="c.flag"></span>
+                                            <span class="text-[11px] font-bold text-center leading-tight"
+                                                  :style="selected === c.code ? 'color: #17A2B8;' : 'color: #6B7B8D;'"
+                                                  x-text="c.name"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+
+                            {{-- Ville / Région --}}
+                            <div>
+                                <label class="block text-xs font-semibold uppercase mb-2 flex items-center gap-1.5" style="color: #6B7B8D;">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    Ville / Région
+                                </label>
+                                <input type="text" name="wilaya" value="{{ old('wilaya') }}"
+                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                       placeholder="Ex: Alger, Oran, Tunis, Paris...">
+                            </div>
+                        </div>
+                    </div>
+                    <style>.country-scroll-lg::-webkit-scrollbar { display: none; }</style>
+                </div>
+
+                {{-- ===================================================== --}}
+                {{-- STEP 6 : Contact                                       --}}
+                {{-- ===================================================== --}}
+                <div x-show="currentStep === 6"
                      x-transition:enter="transition ease-out duration-300"
                      x-transition:enter-start="opacity-0 translate-y-3"
                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -1080,9 +1111,9 @@
                 </div>
 
                 {{-- ===================================================== --}}
-                {{-- STEP 6 : Services AlBabor (bateau & jetski seulement) --}}
+                {{-- STEP 7 : Services AlBabor (bateau & jetski seulement) --}}
                 {{-- ===================================================== --}}
-                <div x-show="currentStep === 6"
+                <div x-show="currentStep === 7"
                      x-transition:enter="transition ease-out duration-300"
                      x-transition:enter-start="opacity-0 translate-y-3"
                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -1237,9 +1268,9 @@
                 </div>
 
                 {{-- ===================================================== --}}
-                {{-- STEP 7 : Photos                                        --}}
+                {{-- STEP 8 : Photos                                        --}}
                 {{-- ===================================================== --}}
-                <div x-show="currentStep === 7"
+                <div x-show="currentStep === 8"
                      x-transition:enter="transition ease-out duration-300"
                      x-transition:enter-start="opacity-0 translate-y-3"
                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -1287,7 +1318,7 @@
 
                         {{-- Bouton Suivant --}}
                         <button type="button"
-                                x-show="currentStep < 7"
+                                x-show="currentStep < 8"
                                 @click="nextStep()"
                                 :disabled="currentStep === 1 && !category"
                                 :class="currentStep === 1 && !category
@@ -1300,7 +1331,7 @@
 
                         {{-- Bouton Soumettre (dernier step) --}}
                         <button type="submit"
-                                x-show="currentStep === 7"
+                                x-show="currentStep === 8"
                                 class="px-8 py-3 rounded-xl text-white text-sm font-semibold btn-gradient-animated"
                                 style="box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">
                             Continuer vers le paiement
@@ -1327,21 +1358,22 @@
                         { n: 2, label: 'Infos' },
                         { n: 3, label: 'Specs' },
                         { n: 4, label: 'Prix' },
-                        { n: 5, label: 'Contact' },
-                        { n: 6, label: 'Services' },
-                        { n: 7, label: 'Photos' },
+                        { n: 5, label: 'Pays' },
+                        { n: 6, label: 'Contact' },
+                        { n: 7, label: 'Services' },
+                        { n: 8, label: 'Photos' },
                     ];
                 },
 
                 // Steps skipped based on category
                 isStepCompleted(n) {
                     if (n === 3 && this.category === 'parts' && this.currentStep >= 4) return true;
-                    if (n === 6 && (this.category === 'engine' || this.category === 'parts') && this.currentStep >= 7) return true;
+                    if (n === 7 && (this.category === 'engine' || this.category === 'parts') && this.currentStep >= 8) return true;
                     return this.currentStep > n;
                 },
                 isStepActive(n) {
                     if (n === 3 && this.category === 'parts') return false;
-                    if (n === 6 && (this.category === 'engine' || this.category === 'parts')) return false;
+                    if (n === 7 && (this.category === 'engine' || this.category === 'parts')) return false;
                     return this.currentStep === n;
                 },
 
@@ -1349,13 +1381,13 @@
                 get visualStep() {
                     let skipped = 0;
                     if (this.category === 'parts' && this.currentStep >= 4) skipped++;
-                    if ((this.category === 'engine' || this.category === 'parts') && this.currentStep >= 7) skipped++;
+                    if ((this.category === 'engine' || this.category === 'parts') && this.currentStep >= 8) skipped++;
                     return this.currentStep - skipped;
                 },
                 get totalVisualSteps() {
-                    if (this.category === 'parts') return 5;
-                    if (this.category === 'engine') return 6;
-                    return 7;
+                    if (this.category === 'parts') return 6;
+                    if (this.category === 'engine') return 7;
+                    return 8;
                 },
                 get currentStepLabel() {
                     const labels = {
@@ -1363,9 +1395,10 @@
                         2: 'Informations generales',
                         3: 'Specifications',
                         4: 'Prix & Etat',
-                        5: 'Contact',
-                        6: 'Services AlBabor',
-                        7: 'Photos',
+                        5: 'Localisation',
+                        6: 'Contact',
+                        7: 'Services AlBabor',
+                        8: 'Photos',
                     };
                     return labels[this.currentStep] || '';
                 },
@@ -1377,9 +1410,9 @@
                     let next = this.currentStep + 1;
                     // Skip specs step (3) for parts
                     if (next === 3 && this.category === 'parts') next = 4;
-                    // Skip services step (6) for engine/parts
-                    if (next === 6 && (this.category === 'engine' || this.category === 'parts')) next = 7;
-                    if (next <= 7) {
+                    // Skip services step (7) for engine/parts
+                    if (next === 7 && (this.category === 'engine' || this.category === 'parts')) next = 8;
+                    if (next <= 8) {
                         this.currentStep = next;
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
@@ -1389,8 +1422,8 @@
                     let prev = this.currentStep - 1;
                     // Skip back over specs step (3) for parts
                     if (prev === 3 && this.category === 'parts') prev = 2;
-                    // Skip back over services step (6) for engine/parts
-                    if (prev === 6 && (this.category === 'engine' || this.category === 'parts')) prev = 5;
+                    // Skip back over services step (7) for engine/parts
+                    if (prev === 7 && (this.category === 'engine' || this.category === 'parts')) prev = 6;
                     if (prev >= 1) {
                         this.currentStep = prev;
                         window.scrollTo({ top: 0, behavior: 'smooth' });
