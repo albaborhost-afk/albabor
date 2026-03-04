@@ -597,6 +597,31 @@
                         </div>
                     </div>
 
+                    {{-- Localisation --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1.5 flex items-center gap-1" style="color: #6B7B8D;">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Pays *
+                            </label>
+                            <select name="pays" required class="glass-input w-full rounded-xl px-4 py-3 text-sm">
+                                <option value="">-- Choisir un pays --</option>
+                                @foreach($wilayas as $code => $label)
+                                    <option value="{{ $code }}" {{ old('pays', $listing->pays) == $code ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1.5 flex items-center gap-1" style="color: #6B7B8D;">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                Ville / Région
+                            </label>
+                            <input type="text" name="wilaya" value="{{ old('wilaya', $listing->wilaya) }}"
+                                   class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                   placeholder="Ex: Alger, Oran, Tunis...">
+                        </div>
+                    </div>
+
                     {{-- Echange --}}
                     <div>
                         <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Echange</label>

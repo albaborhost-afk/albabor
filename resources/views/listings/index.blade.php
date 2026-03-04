@@ -141,10 +141,10 @@
                                         <select name="wilaya"
                                                 class="glass-input w-full py-3 pl-4 pr-10 rounded-xl focus:outline-none transition-all duration-200 appearance-none cursor-pointer"
                                                 onchange="document.getElementById('filterForm').submit()">
-                                            <option value="">Toutes les wilayas</option>
+                                            <option value="">Tous les pays</option>
                                             @foreach($wilayas as $code => $name)
                                                 <option value="{{ $code }}" {{ request('wilaya') == $code ? 'selected' : '' }}>
-                                                    {{ $code }} - {{ $name }}
+                                                    {{ $name }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -501,13 +501,13 @@
                             @endforeach
                         </div>
                     </div>
-                    <!-- Wilaya -->
+                    <!-- Pays -->
                     <div class="mb-5">
-                        <label class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">Wilaya</label>
+                        <label class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">Pays</label>
                         <select name="wilaya" class="glass-input w-full py-3 px-4 rounded-xl text-sm appearance-none">
-                            <option value="">Toutes les wilayas</option>
+                            <option value="">Tous les pays</option>
                             @foreach($wilayas as $code => $wname)
-                                <option value="{{ $code }}" {{ request('wilaya') == $code ? 'selected' : '' }}>{{ $code }} - {{ $wname }}</option>
+                                <option value="{{ $code }}" {{ request('wilaya') == $code ? 'selected' : '' }}>{{ $wname }}</option>
                             @endforeach
                         </select>
                     </div>
