@@ -52,6 +52,80 @@
                 </div>
             @endif
 
+            @php
+                $requestedServices = $listing->specs['services'] ?? [];
+                $serviceLabels = [
+                    'photo'     => ['label' => 'Shooting photo professionnel', 'icon' => '📷', 'color' => '#F39C12'],
+                    'reception' => ['label' => 'Réception des appels',         'icon' => '📞', 'color' => '#27AE60'],
+                    'video'     => ['label' => 'Vidéo de présentation',        'icon' => '🎬', 'color' => '#8E44AD'],
+                ];
+                if (!empty($requestedServices)) {
+                    $servicesText = implode(' + ', array_map(fn($s) => $serviceLabels[$s]['label'] ?? $s, $requestedServices));
+                    $waText  = "Bonjour AlBabor 👋\n";
+                    $waText .= "J'ai créé l'annonce *{$listing->title}* et je souhaite activer les services suivants :\n";
+                    foreach ($requestedServices as $s) {
+                        $waText .= "→ " . ($serviceLabels[$s]['label'] ?? $s) . "\n";
+                    }
+                    $waText .= "\nMerci de me contacter pour confirmer et planifier. 🙏";
+                    $waLink  = "https://wa.me/213791807475?text=" . urlencode($waText);
+                }
+            @endphp
+
+            @if(!empty($requestedServices))
+            {{-- ★ Services AlBabor Banner ★ --}}
+            <div class="rounded-2xl mb-6 overflow-hidden" style="box-shadow: 0 10px 30px rgba(243,156,18,0.2); border: 2px solid rgba(243,156,18,0.4);">
+
+                {{-- Header gradient --}}
+                <div class="px-6 py-4 flex items-center gap-3" style="background: linear-gradient(135deg, #1B4F72 0%, #F39C12 100%);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: rgba(255,255,255,0.2);">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-white font-bold text-sm">Services AlBabor demandés</p>
+                        <p class="text-white/70 text-xs">Contactez notre équipe pour confirmer et planifier</p>
+                    </div>
+                    <span class="ml-auto text-xs font-bold text-white bg-white/20 px-3 py-1 rounded-full">{{ count($requestedServices) }} service(s)</span>
+                </div>
+
+                <div class="px-6 py-5" style="background: linear-gradient(160deg, #FFFDF5, #FEF9E7);">
+
+                    {{-- Service chips --}}
+                    <div class="flex flex-wrap gap-2 mb-5">
+                        @foreach($requestedServices as $s)
+                            @if(isset($serviceLabels[$s]))
+                            <span class="inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-full" style="background: white; border: 2px solid {{ $serviceLabels[$s]['color'] }}; color: {{ $serviceLabels[$s]['color'] }}; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                                {{ $serviceLabels[$s]['icon'] }} {{ $serviceLabels[$s]['label'] }}
+                            </span>
+                            @endif
+                        @endforeach
+                    </div>
+
+                    {{-- Instructions --}}
+                    <div class="rounded-xl p-4 mb-5 flex items-start gap-3" style="background: rgba(27,79,114,0.06); border: 1px solid rgba(27,79,114,0.12);">
+                        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #1B4F72;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <div>
+                            <p class="text-sm font-semibold" style="color: #1B2A4A;">Comment confirmer votre service ?</p>
+                            <ol class="text-xs mt-1.5 space-y-1" style="color: #6B7B8D;">
+                                <li><span class="font-bold" style="color: #F39C12;">1.</span> Finalisez le paiement de publication ci-dessous</li>
+                                <li><span class="font-bold" style="color: #F39C12;">2.</span> Cliquez sur le bouton WhatsApp pour contacter notre équipe</li>
+                                <li><span class="font-bold" style="color: #F39C12;">3.</span> Notre équipe vous rappellera pour planifier le(s) service(s)</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    {{-- WhatsApp CTA --}}
+                    <a href="{{ $waLink }}" target="_blank" rel="noopener"
+                       class="flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-bold text-white text-sm transition-all duration-300 hover:-translate-y-1"
+                       style="background: linear-gradient(135deg, #25D366, #128C7E); box-shadow: 0 8px 25px rgba(37,211,102,0.4);">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+                        Contacter l'équipe AlBabor sur WhatsApp
+                        <span class="text-white/80 font-normal text-xs">(0791807475)</span>
+                    </a>
+                    <p class="text-center text-xs mt-2" style="color: #9BA8B7;">Vous ne discutez qu'avec l'équipe AlBabor — vos coordonnées restent privées</p>
+                </div>
+            </div>
+            @endif
+
             <!-- Listing Summary -->
             <div class="bg-white rounded-2xl p-6 mb-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03);">
                 <h2 class="text-lg font-bold mb-4 flex items-center gap-2" style="color: #1B2A4A;">

@@ -1113,9 +1113,19 @@
 
                         </div>
 
-                        {{-- Aucun service sélectionné = passer --}}
-                        <p class="mt-4 text-center text-xs" style="color: #B0BEC5;">
-                            Vous pouvez passer cette étape — ces services sont entièrement optionnels.
+                        {{-- Footer info --}}
+                        <div class="mt-5 rounded-xl p-4 flex items-start gap-3" style="background: rgba(39,174,96,0.07); border: 1px solid rgba(39,174,96,0.18);">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background: #27AE60;">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold" style="color: #1E8449;">Comment ça marche ?</p>
+                                <p class="text-xs mt-0.5" style="color: #4A6B55;">Après activation de votre annonce, notre équipe vous contactera directement sur <strong>WhatsApp</strong> pour confirmer et planifier les services sélectionnés. Vous pouvez aussi nous contacter à tout moment.</p>
+                                <p class="text-xs mt-1 font-bold" style="color: #1B2A4A;">Vous ne communiquez qu'avec l'équipe AlBabor — jamais avec d'autres acheteurs.</p>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-center text-xs" style="color: #B0BEC5;">
+                            Ces services sont entièrement optionnels — passez si vous n'en avez pas besoin.
                         </p>
                     </div>
                 </div>

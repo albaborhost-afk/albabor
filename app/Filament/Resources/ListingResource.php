@@ -636,6 +636,26 @@ class ListingResource extends Resource
                         default => $state,
                     }),
 
+                Tables\Columns\TextColumn::make('services_demandes')
+                    ->label('Services')
+                    ->badge()
+                    ->color('warning')
+                    ->icon('heroicon-o-star')
+                    ->getStateUsing(function (Listing $record): ?string {
+                        $services = $record->specs['services'] ?? [];
+                        if (empty($services)) return null;
+                        $map = ['photo' => 'Photo', 'reception' => 'Appels', 'video' => 'Vidéo'];
+                        return implode(' · ', array_map(fn($s) => $map[$s] ?? $s, $services));
+                    })
+                    ->placeholder('—')
+                    ->tooltip(function (Listing $record): ?string {
+                        $services = $record->specs['services'] ?? [];
+                        if (empty($services)) return null;
+                        $phone = $record->numero_whatsapp ?: $record->numero_mobile ?: 'N/A';
+                        return "Client: {$record->user?->name} — Tél: {$phone}";
+                    })
+                    ->toggleable(),
+
                 Tables\Columns\IconColumn::make('featured')
                     ->label('Vedette')
                     ->boolean()
