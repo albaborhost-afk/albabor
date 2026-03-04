@@ -397,32 +397,98 @@
                             </div>
 
                             <!-- Mobile Actions -->
-                            <div class="flex flex-wrap gap-2 px-4 pb-4" style="border-top: 1px solid #F0F4F8; padding-top: 0.75rem;">
-                                @if($listing->status === 'awaiting_payment')
-                                    <a href="{{ route('listings.payment', $listing) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold" style="background: rgba(255, 107, 107, 0.1); color: #FF6B6B;">Payer</a>
-                                @endif
-                                @if($listing->status === 'active')
-                                    <a href="{{ route('listings.show', $listing) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold" style="background: rgba(23, 162, 184, 0.1); color: #17A2B8;">Voir</a>
-                                    <a href="{{ route('listings.edit', $listing) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold" style="background: rgba(107, 123, 141, 0.1); color: #6B7B8D;">Modifier</a>
-                                    @if(!$listing->isFeatured())
-                                        <a href="{{ route('listings.feature', $listing) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold" style="background: rgba(243, 156, 18, 0.1); color: #F39C12;">Vedette</a>
+                            <div class="px-4 pb-4 pt-3" style="border-top: 1px solid #F0F4F8;">
+
+                                {{-- Primary actions row --}}
+                                <div class="flex gap-2 mb-2">
+
+                                    {{-- Modifier — toujours visible sauf vendu/expiré --}}
+                                    @if(!in_array($listing->status, ['sold', 'expired']))
+                                    <a href="{{ route('listings.edit', $listing) }}"
+                                       class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-white transition-all active:scale-95"
+                                       style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 12px rgba(27,79,114,0.3);">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                        Modifier
+                                    </a>
                                     @endif
+
+                                    {{-- Payer --}}
+                                    @if($listing->status === 'awaiting_payment')
+                                    <a href="{{ route('listings.payment', $listing) }}"
+                                       class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-white transition-all active:scale-95"
+                                       style="background: linear-gradient(135deg, #E74C3C, #FF6B6B); box-shadow: 0 4px 12px rgba(231,76,60,0.3);">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                        </svg>
+                                        Payer
+                                    </a>
+                                    @endif
+
+                                    {{-- Voir l'annonce --}}
+                                    @if($listing->status === 'active')
+                                    <a href="{{ route('listings.show', $listing) }}"
+                                       class="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95"
+                                       style="background: rgba(23,162,184,0.1); color: #17A2B8; border: 1.5px solid rgba(23,162,184,0.25);">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        Voir
+                                    </a>
+                                    @endif
+
+                                </div>
+
+                                {{-- Secondary actions row --}}
+                                <div class="flex gap-2">
+
+                                    {{-- Vedette --}}
+                                    @if($listing->status === 'active' && !$listing->isFeatured())
+                                    <a href="{{ route('listings.feature', $listing) }}"
+                                       class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
+                                       style="background: rgba(243,156,18,0.1); color: #D68910; border: 1.5px solid rgba(243,156,18,0.2);">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                        Vedette
+                                    </a>
+                                    @endif
+
+                                    {{-- Vendu --}}
+                                    @if($listing->status === 'active')
                                     <form action="{{ route('listings.sold', $listing) }}" method="POST" class="inline">@csrf
-                                        <button type="submit" class="px-3 py-1.5 rounded-lg text-xs font-semibold" style="background: rgba(39, 174, 96, 0.1); color: #27AE60;">Vendu</button>
+                                        <button type="submit"
+                                                class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
+                                                style="background: rgba(39,174,96,0.1); color: #1E8449; border: 1.5px solid rgba(39,174,96,0.2);">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                            Vendu
+                                        </button>
                                     </form>
-                                @endif
-                                @if($listing->status === 'paused')
+                                    @endif
+
+                                    {{-- Réactiver --}}
+                                    @if($listing->status === 'paused')
                                     <form action="{{ route('listings.reactivate', $listing) }}" method="POST" class="inline">@csrf
-                                        <button type="submit" class="px-3 py-1.5 rounded-lg text-xs font-semibold" style="background: rgba(39, 174, 96, 0.1); color: #27AE60;">Reactiver</button>
+                                        <button type="submit"
+                                                class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
+                                                style="background: rgba(39,174,96,0.1); color: #1E8449; border: 1.5px solid rgba(39,174,96,0.2);">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            Réactiver
+                                        </button>
                                     </form>
-                                @endif
-                                @if(in_array($listing->status, ['draft', 'rejected', 'paused']))
-                                    <a href="{{ route('listings.edit', $listing) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold" style="background: rgba(107, 123, 141, 0.1); color: #6B7B8D;">Modifier</a>
-                                @endif
-                                <form action="{{ route('listings.destroy', $listing) }}" method="POST" class="inline" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cette annonce ?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="px-3 py-1.5 rounded-lg text-xs font-semibold" style="background: rgba(231, 76, 60, 0.1); color: #E74C3C;">Supprimer</button>
-                                </form>
+                                    @endif
+
+                                    {{-- Supprimer — toujours à droite --}}
+                                    <form action="{{ route('listings.destroy', $listing) }}" method="POST" class="inline ml-auto"
+                                          onsubmit="return confirm('Supprimer cette annonce définitivement ?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit"
+                                                class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
+                                                style="background: rgba(231,76,60,0.08); color: #E74C3C; border: 1.5px solid rgba(231,76,60,0.18);">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     @endforeach
