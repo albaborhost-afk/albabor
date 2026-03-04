@@ -1369,13 +1369,13 @@ main {
 
 .hero-overlay-animated {
     background: linear-gradient(
-        160deg,
-        rgba(10,25,47,0.90) 0%,
-        rgba(27,79,114,0.75) 30%,
-        rgba(23,162,184,0.62) 60%,
-        rgba(27,79,114,0.78) 100%
+        180deg,
+        rgba(5,15,30,0.95) 0%,
+        rgba(10,30,55,0.88) 25%,
+        rgba(20,60,95,0.72) 55%,
+        rgba(23,120,160,0.50) 80%,
+        rgba(23,162,184,0.30) 100%
     );
-    background-size: 200% 200%;
     animation: heroGradientShift 12s ease-in-out infinite;
 }
 
