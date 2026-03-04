@@ -75,7 +75,8 @@ class PaymentController extends Controller
         $listing->update(['status' => 'pending_review']);
 
         return redirect()->route('listings.my')
-            ->with('success', __('messages.payment_submitted'));
+            ->with('success', __('messages.payment_submitted'))
+            ->with('listing_created', true);
     }
 
     public function storeFeaturePayment(Request $request, Listing $listing)

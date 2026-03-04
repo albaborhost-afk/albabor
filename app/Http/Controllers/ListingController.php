@@ -215,7 +215,8 @@ class ListingController extends Controller
                 'published_until' => now()->addYear(),
             ]);
             return redirect()->route('listings.my')
-                ->with('success', __('messages.listing_created_free'));
+                ->with('success', __('messages.listing_created_free'))
+                ->with('listing_created', true);
         }
 
         return redirect()->route('listings.payment', $listing)
