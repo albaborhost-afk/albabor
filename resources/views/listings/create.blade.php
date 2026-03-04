@@ -5,7 +5,7 @@
             @php
                 $startStep = 1;
                 if ($errors->any()) {
-                    if ($errors->has('images')) $startStep = 6;
+                    if ($errors->has('images')) $startStep = 7;
                     elseif ($errors->hasAny(['numero_whatsapp', 'numero_mobile', 'contact_email'])) $startStep = 5;
                     elseif ($errors->hasAny(['price_dzd', 'type_offre', 'etat'])) $startStep = 4;
                     elseif ($errors->has('category')) $startStep = 1;
@@ -105,7 +105,7 @@
                     <div class="relative">
                         {{-- Connector lines --}}
                         <div class="absolute top-5 left-0 right-0 flex items-center" aria-hidden="true" style="padding: 0 20px;">
-                            <template x-for="i in 5" :key="i">
+                            <template x-for="i in 6" :key="i">
                                 <div class="flex-1 h-0.5 transition-colors duration-500"
                                      :class="isStepCompleted(i) ? 'bg-[#17A2B8]' : 'bg-gray-200'">
                                 </div>
@@ -974,9 +974,156 @@
                 </div>
 
                 {{-- ===================================================== --}}
-                {{-- STEP 6 : Photos                                        --}}
+                {{-- STEP 6 : Services AlBabor (bateau & jetski seulement) --}}
                 {{-- ===================================================== --}}
                 <div x-show="currentStep === 6"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-3"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0">
+
+                    <div class="rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-top: 4px solid #F39C12; background: linear-gradient(160deg, #fff 0%, #FEFAF2 100%);">
+
+                        {{-- Header --}}
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #F39C12, #F8C471);">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-bold" style="color: #1B2A4A;">Services AlBabor</h2>
+                                <p class="text-xs" style="color: #9BA8B7;">Optionnel — Boostez votre annonce avec nos services premium</p>
+                            </div>
+                        </div>
+
+                        {{-- Badge optionnel --}}
+                        <div class="mb-5 mt-1">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full" style="background: rgba(243,156,18,0.12); color: #D68910;">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                Sélectionnez un ou plusieurs services — nous vous contactons pour confirmer
+                            </span>
+                        </div>
+
+                        {{-- Service cards --}}
+                        <div class="grid grid-cols-1 gap-4" x-data="{ services: {{ json_encode(old('specs.services', [])) }} }">
+
+                            {{-- Service 1 : Shooting Photo --}}
+                            <label class="relative flex gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group"
+                                   style="border: 2px solid #E0E6ED; background: white;"
+                                   :style="services.includes('photo') ? 'border-color: #F39C12; background: linear-gradient(135deg, #FEFAF2, #FEF9E7); box-shadow: 0 6px 20px rgba(243,156,18,0.18);' : ''">
+                                <input type="checkbox" name="specs[services][]" value="photo"
+                                       class="sr-only" x-model="services">
+                                <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+                                     :style="services.includes('photo') ? 'background: linear-gradient(135deg, #F39C12, #F8C471);' : 'background: #F0F4F8;'">
+                                    <svg class="w-6 h-6 transition-colors duration-300" :style="services.includes('photo') ? 'color: white;' : 'color: #9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div>
+                                            <p class="text-sm font-bold" style="color: #1B2A4A;">Shooting photo professionnel</p>
+                                            <p class="text-xs mt-0.5" style="color: #6B7B8D;">Notre photographe se déplace, met en valeur chaque détail de votre embarcation et vous livre des photos haute définition prêtes à publier.</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
+                                                 :style="services.includes('photo') ? 'background: #F39C12; border-color: #F39C12;' : 'border-color: #D1D5DB;'">
+                                                <svg x-show="services.includes('photo')" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 mt-2">
+                                        <span class="text-xs font-semibold px-2.5 py-1 rounded-lg" style="background: rgba(243,156,18,0.12); color: #D68910;">Sur devis</span>
+                                        <span class="text-xs" style="color: #9BA8B7;">Déplacement inclus • Livraison sous 24h</span>
+                                    </div>
+                                </div>
+                            </label>
+
+                            {{-- Service 2 : Réception des appels --}}
+                            <label class="relative flex gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group"
+                                   style="border: 2px solid #E0E6ED; background: white;"
+                                   :style="services.includes('reception') ? 'border-color: #27AE60; background: linear-gradient(135deg, #F0FFF4, #E8F8F5); box-shadow: 0 6px 20px rgba(39,174,96,0.18);' : ''">
+                                <input type="checkbox" name="specs[services][]" value="reception"
+                                       class="sr-only" x-model="services">
+                                <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+                                     :style="services.includes('reception') ? 'background: linear-gradient(135deg, #27AE60, #58D68D);' : 'background: #F0F4F8;'">
+                                    <svg class="w-6 h-6 transition-colors duration-300" :style="services.includes('reception') ? 'color: white;' : 'color: #9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div>
+                                            <p class="text-sm font-bold" style="color: #1B2A4A;">Réception des appels</p>
+                                            <p class="text-xs mt-0.5" style="color: #6B7B8D;">AlBabor prend en charge tous les appels des acheteurs à votre place. Vous vendez sereinement sans être dérangé — on vous transmet uniquement les contacts sérieux.</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
+                                                 :style="services.includes('reception') ? 'background: #27AE60; border-color: #27AE60;' : 'border-color: #D1D5DB;'">
+                                                <svg x-show="services.includes('reception')" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 mt-2">
+                                        <span class="text-xs font-semibold px-2.5 py-1 rounded-lg" style="background: rgba(39,174,96,0.12); color: #1E8449;">Sur devis</span>
+                                        <span class="text-xs" style="color: #9BA8B7;">Filtrage des appels • Rapport hebdomadaire</span>
+                                    </div>
+                                </div>
+                            </label>
+
+                            {{-- Service 3 : Vidéo de présentation --}}
+                            <label class="relative flex gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group"
+                                   style="border: 2px solid #E0E6ED; background: white;"
+                                   :style="services.includes('video') ? 'border-color: #8E44AD; background: linear-gradient(135deg, #FDF2FF, #F5EAF9); box-shadow: 0 6px 20px rgba(142,68,173,0.18);' : ''">
+                                <input type="checkbox" name="specs[services][]" value="video"
+                                       class="sr-only" x-model="services">
+                                <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+                                     :style="services.includes('video') ? 'background: linear-gradient(135deg, #8E44AD, #BB8FCE);' : 'background: #F0F4F8;'">
+                                    <svg class="w-6 h-6 transition-colors duration-300" :style="services.includes('video') ? 'color: white;' : 'color: #9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div>
+                                            <p class="text-sm font-bold" style="color: #1B2A4A;">Vidéo de présentation professionnelle</p>
+                                            <p class="text-xs mt-0.5" style="color: #6B7B8D;">Notre équipe réalise une vidéo cinématique de votre bateau ou jet-ski — intérieur, extérieur, moteur — pour une annonce qui se démarque vraiment.</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
+                                                 :style="services.includes('video') ? 'background: #8E44AD; border-color: #8E44AD;' : 'border-color: #D1D5DB;'">
+                                                <svg x-show="services.includes('video')" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 mt-2">
+                                        <span class="text-xs font-semibold px-2.5 py-1 rounded-lg" style="background: rgba(142,68,173,0.12); color: #7D3C98;">Sur devis</span>
+                                        <span class="text-xs" style="color: #9BA8B7;">Drone & caméra • Montage pro inclus</span>
+                                    </div>
+                                </div>
+                            </label>
+
+                        </div>
+
+                        {{-- Aucun service sélectionné = passer --}}
+                        <p class="mt-4 text-center text-xs" style="color: #B0BEC5;">
+                            Vous pouvez passer cette étape — ces services sont entièrement optionnels.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- ===================================================== --}}
+                {{-- STEP 7 : Photos                                        --}}
+                {{-- ===================================================== --}}
+                <div x-show="currentStep === 7"
                      x-transition:enter="transition ease-out duration-300"
                      x-transition:enter-start="opacity-0 translate-y-3"
                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -1024,7 +1171,7 @@
 
                         {{-- Bouton Suivant --}}
                         <button type="button"
-                                x-show="currentStep < 6"
+                                x-show="currentStep < 7"
                                 @click="nextStep()"
                                 :disabled="currentStep === 1 && !category"
                                 :class="currentStep === 1 && !category
@@ -1037,7 +1184,7 @@
 
                         {{-- Bouton Soumettre (dernier step) --}}
                         <button type="submit"
-                                x-show="currentStep === 6"
+                                x-show="currentStep === 7"
                                 class="px-8 py-3 rounded-xl text-white text-sm font-semibold btn-gradient-animated"
                                 style="box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">
                             Continuer vers le paiement
@@ -1065,27 +1212,34 @@
                         { n: 3, label: 'Specs' },
                         { n: 4, label: 'Prix' },
                         { n: 5, label: 'Contact' },
-                        { n: 6, label: 'Photos' },
+                        { n: 6, label: 'Services' },
+                        { n: 7, label: 'Photos' },
                     ];
                 },
 
-                // Step 3 is auto-completed for parts (skipped)
+                // Steps skipped based on category
                 isStepCompleted(n) {
                     if (n === 3 && this.category === 'parts' && this.currentStep >= 4) return true;
+                    if (n === 6 && (this.category === 'engine' || this.category === 'parts') && this.currentStep >= 7) return true;
                     return this.currentStep > n;
                 },
                 isStepActive(n) {
                     if (n === 3 && this.category === 'parts') return false;
+                    if (n === 6 && (this.category === 'engine' || this.category === 'parts')) return false;
                     return this.currentStep === n;
                 },
 
                 // Visual step number (for "Etape X sur Y" counter)
                 get visualStep() {
-                    if (this.category === 'parts' && this.currentStep >= 4) return this.currentStep - 1;
-                    return this.currentStep;
+                    let skipped = 0;
+                    if (this.category === 'parts' && this.currentStep >= 4) skipped++;
+                    if ((this.category === 'engine' || this.category === 'parts') && this.currentStep >= 7) skipped++;
+                    return this.currentStep - skipped;
                 },
                 get totalVisualSteps() {
-                    return this.category === 'parts' ? 5 : 6;
+                    if (this.category === 'parts') return 5;
+                    if (this.category === 'engine') return 6;
+                    return 7;
                 },
                 get currentStepLabel() {
                     const labels = {
@@ -1094,7 +1248,8 @@
                         3: 'Specifications',
                         4: 'Prix & Etat',
                         5: 'Contact',
-                        6: 'Photos',
+                        6: 'Services AlBabor',
+                        7: 'Photos',
                     };
                     return labels[this.currentStep] || '';
                 },
@@ -1106,7 +1261,9 @@
                     let next = this.currentStep + 1;
                     // Skip specs step (3) for parts
                     if (next === 3 && this.category === 'parts') next = 4;
-                    if (next <= 6) {
+                    // Skip services step (6) for engine/parts
+                    if (next === 6 && (this.category === 'engine' || this.category === 'parts')) next = 7;
+                    if (next <= 7) {
                         this.currentStep = next;
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
@@ -1116,6 +1273,8 @@
                     let prev = this.currentStep - 1;
                     // Skip back over specs step (3) for parts
                     if (prev === 3 && this.category === 'parts') prev = 2;
+                    // Skip back over services step (6) for engine/parts
+                    if (prev === 6 && (this.category === 'engine' || this.category === 'parts')) prev = 5;
                     if (prev >= 1) {
                         this.currentStep = prev;
                         window.scrollTo({ top: 0, behavior: 'smooth' });
