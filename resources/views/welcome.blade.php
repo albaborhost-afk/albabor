@@ -149,79 +149,141 @@
         </div>
     </div>
 
-    {{-- Mediterranean Countries Auto-Scroll --}}
-    <div class="py-6" style="background: white; overflow: hidden;">
-        <div class="relative">
-            {{-- Left fade --}}
-            <div class="absolute left-0 top-0 bottom-0 w-20 z-10 pointer-events-none" style="background: linear-gradient(to right, white 30%, transparent);"></div>
-            {{-- Right fade --}}
-            <div class="absolute right-0 top-0 bottom-0 w-20 z-10 pointer-events-none" style="background: linear-gradient(to left, white 30%, transparent);"></div>
+    {{-- Mediterranean Countries — Ocean Marquee --}}
+    @php
+    $medFlags = [
+        ['code' => 'Algérie',            'flag' => '🇩🇿'],
+        ['code' => 'Tunisie',            'flag' => '🇹🇳'],
+        ['code' => 'Maroc',              'flag' => '🇲🇦'],
+        ['code' => 'Libye',              'flag' => '🇱🇾'],
+        ['code' => 'Égypte',             'flag' => '🇪🇬'],
+        ['code' => 'Espagne',            'flag' => '🇪🇸'],
+        ['code' => 'France',             'flag' => '🇫🇷'],
+        ['code' => 'Italie',             'flag' => '🇮🇹'],
+        ['code' => 'Grèce',              'flag' => '🇬🇷'],
+        ['code' => 'Croatie',            'flag' => '🇭🇷'],
+        ['code' => 'Monténégro',         'flag' => '🇲🇪'],
+        ['code' => 'Albanie',            'flag' => '🇦🇱'],
+        ['code' => 'Bosnie-Herzégovine', 'flag' => '🇧🇦'],
+        ['code' => 'Slovénie',           'flag' => '🇸🇮'],
+        ['code' => 'Turquie',            'flag' => '🇹🇷'],
+        ['code' => 'Liban',              'flag' => '🇱🇧'],
+        ['code' => 'Syrie',              'flag' => '🇸🇾'],
+        ['code' => 'Malte',              'flag' => '🇲🇹'],
+        ['code' => 'Chypre',             'flag' => '🇨🇾'],
+        ['code' => 'Monaco',             'flag' => '🇲🇨'],
+    ];
+    @endphp
 
-            <div class="flags-marquee-track">
-                @php
-                $flags = [
-                    ['code' => 'Algérie',            'flag' => '🇩🇿'],
-                    ['code' => 'Tunisie',            'flag' => '🇹🇳'],
-                    ['code' => 'Maroc',              'flag' => '🇲🇦'],
-                    ['code' => 'Libye',              'flag' => '🇱🇾'],
-                    ['code' => 'Égypte',             'flag' => '🇪🇬'],
-                    ['code' => 'Espagne',            'flag' => '🇪🇸'],
-                    ['code' => 'France',             'flag' => '🇫🇷'],
-                    ['code' => 'Italie',             'flag' => '🇮🇹'],
-                    ['code' => 'Grèce',              'flag' => '🇬🇷'],
-                    ['code' => 'Croatie',            'flag' => '🇭🇷'],
-                    ['code' => 'Monténégro',         'flag' => '🇲🇪'],
-                    ['code' => 'Albanie',            'flag' => '🇦🇱'],
-                    ['code' => 'Bosnie-Herzégovine', 'flag' => '🇧🇦'],
-                    ['code' => 'Slovénie',           'flag' => '🇸🇮'],
-                    ['code' => 'Turquie',            'flag' => '🇹🇷'],
-                    ['code' => 'Liban',              'flag' => '🇱🇧'],
-                    ['code' => 'Syrie',              'flag' => '🇸🇾'],
-                    ['code' => 'Malte',              'flag' => '🇲🇹'],
-                    ['code' => 'Chypre',             'flag' => '🇨🇾'],
-                    ['code' => 'Monaco',             'flag' => '🇲🇨'],
-                ];
-                @endphp
-                {{-- Duplicate for seamless loop --}}
-                @foreach([$flags, $flags] as $set)
+    <div class="ocean-marquee-wrap">
+        {{-- SVG wave top --}}
+        <svg class="ocean-wave-top" viewBox="0 0 1440 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,20 C240,40 480,0 720,20 C960,40 1200,0 1440,20 L1440,40 L0,40 Z" fill="#0C2D48"/>
+        </svg>
+
+        <div class="ocean-marquee-inner">
+            {{-- Left fade --}}
+            <div class="ocean-fade-left"></div>
+            {{-- Right fade --}}
+            <div class="ocean-fade-right"></div>
+
+            <div class="ocean-track">
+                @foreach([$medFlags, $medFlags] as $set)
                     @foreach($set as $country)
                         <a href="{{ route('listings.index', ['wilaya' => $country['code']]) }}"
-                           class="flags-marquee-item"
+                           class="ocean-flag-bubble"
                            title="{{ $country['code'] }}">
-                            {{ $country['flag'] }}
+                            <span class="ocean-flag-emoji">{{ $country['flag'] }}</span>
+                            <span class="ocean-flag-ripple"></span>
                         </a>
                     @endforeach
                 @endforeach
             </div>
         </div>
+
+        {{-- SVG wave bottom --}}
+        <svg class="ocean-wave-bottom" viewBox="0 0 1440 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,20 C240,0 480,40 720,20 C960,0 1200,40 1440,20 L1440,0 L0,0 Z" fill="#0C2D48"/>
+        </svg>
     </div>
+
     <style>
-        .flags-marquee-track {
-            display: flex;
-            gap: 8px;
-            width: max-content;
-            animation: flagsScroll 28s linear infinite;
+        .ocean-marquee-wrap {
+            position: relative;
+            background: linear-gradient(135deg, #0C2D48 0%, #1B4F72 50%, #17A2B8 100%);
+            overflow: hidden;
         }
-        .flags-marquee-track:hover {
+        .ocean-wave-top, .ocean-wave-bottom {
+            display: block;
+            width: 100%;
+            height: 40px;
+        }
+        .ocean-marquee-inner {
+            position: relative;
+            padding: 18px 0;
+            overflow: hidden;
+        }
+        .ocean-fade-left {
+            position: absolute; left: 0; top: 0; bottom: 0; width: 80px; z-index: 10; pointer-events: none;
+            background: linear-gradient(to right, #0C2D48, transparent);
+        }
+        .ocean-fade-right {
+            position: absolute; right: 0; top: 0; bottom: 0; width: 80px; z-index: 10; pointer-events: none;
+            background: linear-gradient(to left, #17A2B8, transparent);
+        }
+        .ocean-track {
+            display: flex;
+            gap: 14px;
+            width: max-content;
+            padding: 4px 20px;
+            animation: oceanScroll 30s linear infinite;
+        }
+        .ocean-track:hover {
             animation-play-state: paused;
         }
-        .flags-marquee-item {
+        .ocean-flag-bubble {
             flex-shrink: 0;
-            font-size: 2.8rem;
-            line-height: 1;
-            padding: 10px 14px;
-            border-radius: 18px;
-            border: 2px solid #EEF1F5;
-            background: #FAFBFC;
-            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(8px);
             text-decoration: none;
+            transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s, background 0.25s, border-color 0.25s;
+            overflow: hidden;
         }
-        .flags-marquee-item:hover {
-            transform: scale(1.25) translateY(-4px);
-            box-shadow: 0 8px 24px rgba(23,162,184,0.25);
-            border-color: #17A2B8;
+        .ocean-flag-bubble:hover {
+            transform: scale(1.3) translateY(-6px);
+            background: rgba(255,255,255,0.22);
+            border-color: rgba(255,255,255,0.7);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.35), 0 0 0 4px rgba(255,255,255,0.12);
         }
-        @keyframes flagsScroll {
+        .ocean-flag-emoji {
+            font-size: 2.4rem;
+            line-height: 1;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+            transition: transform 0.25s;
+        }
+        .ocean-flag-bubble:hover .ocean-flag-emoji {
+            transform: scale(1.1);
+        }
+        .ocean-flag-ripple {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        .ocean-flag-bubble:hover .ocean-flag-ripple {
+            opacity: 1;
+        }
+        @keyframes oceanScroll {
             0%   { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
