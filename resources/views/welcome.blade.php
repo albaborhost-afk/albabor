@@ -149,6 +149,61 @@
         </div>
     </div>
 
+    {{-- Mediterranean Countries Scroll --}}
+    <div class="py-8 sm:py-10" style="background: white;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-6 reveal">
+                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-full mb-4" style="background: rgba(23,162,184,0.08); color: #17A2B8;">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Méditerranée
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #1B2A4A;">Explorer par pays</h2>
+                <p class="mt-2 text-sm max-w-md mx-auto" style="color: #6B7B8D;">Trouvez des annonces nautiques dans tout le bassin méditerranéen</p>
+            </div>
+
+            <div class="relative reveal">
+                {{-- Left fade --}}
+                <div class="absolute left-0 top-0 bottom-0 w-12 z-10 pointer-events-none" style="background: linear-gradient(to right, white 20%, transparent);"></div>
+                {{-- Right fade --}}
+                <div class="absolute right-0 top-0 bottom-0 w-12 z-10 pointer-events-none" style="background: linear-gradient(to left, white 20%, transparent);"></div>
+
+                <div class="flex gap-3 overflow-x-auto py-4 px-6 med-country-scroll"
+                     style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
+                    @foreach([
+                        ['code' => 'Algérie',            'flag' => '🇩🇿', 'name' => 'Algérie'],
+                        ['code' => 'Tunisie',            'flag' => '🇹🇳', 'name' => 'Tunisie'],
+                        ['code' => 'Maroc',              'flag' => '🇲🇦', 'name' => 'Maroc'],
+                        ['code' => 'Libye',              'flag' => '🇱🇾', 'name' => 'Libye'],
+                        ['code' => 'Égypte',             'flag' => '🇪🇬', 'name' => 'Égypte'],
+                        ['code' => 'Espagne',            'flag' => '🇪🇸', 'name' => 'Espagne'],
+                        ['code' => 'France',             'flag' => '🇫🇷', 'name' => 'France'],
+                        ['code' => 'Italie',             'flag' => '🇮🇹', 'name' => 'Italie'],
+                        ['code' => 'Grèce',              'flag' => '🇬🇷', 'name' => 'Grèce'],
+                        ['code' => 'Croatie',            'flag' => '🇭🇷', 'name' => 'Croatie'],
+                        ['code' => 'Monténégro',         'flag' => '🇲🇪', 'name' => 'Monténégro'],
+                        ['code' => 'Albanie',            'flag' => '🇦🇱', 'name' => 'Albanie'],
+                        ['code' => 'Bosnie-Herzégovine', 'flag' => '🇧🇦', 'name' => 'Bosnie'],
+                        ['code' => 'Slovénie',           'flag' => '🇸🇮', 'name' => 'Slovénie'],
+                        ['code' => 'Turquie',            'flag' => '🇹🇷', 'name' => 'Turquie'],
+                        ['code' => 'Liban',              'flag' => '🇱🇧', 'name' => 'Liban'],
+                        ['code' => 'Syrie',              'flag' => '🇸🇾', 'name' => 'Syrie'],
+                        ['code' => 'Malte',              'flag' => '🇲🇹', 'name' => 'Malte'],
+                        ['code' => 'Chypre',             'flag' => '🇨🇾', 'name' => 'Chypre'],
+                        ['code' => 'Monaco',             'flag' => '🇲🇨', 'name' => 'Monaco'],
+                    ] as $country)
+                        <a href="{{ route('listings.index', ['wilaya' => $country['code']]) }}"
+                           class="flex-shrink-0 flex flex-col items-center gap-2 rounded-2xl transition-all duration-200 hover:scale-110 hover:-translate-y-1 group"
+                           style="border: 2px solid #E8EDF2; background: #FAFBFC; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 16px 18px; min-width: 92px;">
+                            <span class="text-4xl leading-none transition-transform duration-200 group-hover:scale-110">{{ $country['flag'] }}</span>
+                            <span class="text-[11px] font-bold text-center leading-tight" style="color: #6B7B8D;">{{ $country['name'] }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>.med-country-scroll::-webkit-scrollbar { display: none; }</style>
+
     <!-- Featured Listings -->
     @if(isset($featuredListings) && $featuredListings->count() > 0)
     <div class="py-8 sm:py-10" style="background: white;">
