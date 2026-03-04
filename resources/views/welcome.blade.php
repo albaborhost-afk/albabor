@@ -9,17 +9,6 @@
         <!-- Overlay with animated gradient -->
         <div class="absolute inset-0 hero-overlay-animated" style="z-index: 1;"></div>
 
-        <!-- Floating decorative elements -->
-        <div class="absolute inset-0 overflow-hidden pointer-events-none" style="z-index: 1;">
-            <div class="absolute animate-float" style="top: 12%; left: 6%; width: 140px; height: 140px; background: rgba(23,162,184,0.1); border-radius: 50%; filter: blur(50px);"></div>
-            <div class="absolute animate-float-reverse" style="bottom: 15%; right: 8%; width: 180px; height: 180px; background: rgba(255,255,255,0.05); border-radius: 50%; filter: blur(60px);"></div>
-            <div class="absolute animate-float-slow" style="top: 50%; left: 50%; width: 200px; height: 200px; background: rgba(93,173,226,0.06); border-radius: 50%; filter: blur(60px);"></div>
-            <div class="absolute" style="top: 20%; left: 15%; width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: float 6s ease-in-out infinite;"></div>
-            <div class="absolute" style="top: 60%; left: 80%; width: 3px; height: 3px; background: rgba(93,173,226,0.4); border-radius: 50%; animation: float-reverse 8s ease-in-out infinite;"></div>
-            <div class="absolute" style="top: 40%; left: 30%; width: 5px; height: 5px; background: rgba(118,215,196,0.3); border-radius: 50%; animation: float-slow 10s ease-in-out infinite;"></div>
-            <div class="absolute" style="top: 75%; left: 50%; width: 3px; height: 3px; background: rgba(255,255,255,0.2); border-radius: 50%; animation: float 7s ease-in-out infinite 1s;"></div>
-            <div class="absolute" style="top: 30%; left: 70%; width: 4px; height: 4px; background: rgba(93,173,226,0.25); border-radius: 50%; animation: float-reverse 9s ease-in-out infinite 0.5s;"></div>
-        </div>
 
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center" style="z-index: 2; min-height: 75vh; padding-top: 2rem; padding-bottom: 2rem;">
             <div class="text-center w-full max-w-3xl mx-auto">
