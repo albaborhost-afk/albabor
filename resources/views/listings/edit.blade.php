@@ -210,7 +210,16 @@
                         </span>
                         Motorisation
                     </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                         x-data="{
+                             nbMoteurs: '{{ old('specs.motorisation.nombre_moteurs', data_get($specs, 'motorisation.nombre_moteurs', '1')) }}',
+                             puissanceParMoteur: '{{ old('specs.motorisation.puissance_par_moteur', data_get($specs, 'motorisation.puissance_par_moteur', '')) }}',
+                             get puissanceTotale() {
+                                 const n = parseFloat(this.nbMoteurs) || 0;
+                                 const p = parseFloat(this.puissanceParMoteur) || 0;
+                                 return (n > 0 && p > 0) ? String(n * p) : '';
+                             }
+                         }">
                         <div>
                             <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Marque du moteur</label>
                             <input type="text" name="specs[motorisation][marque_moteur]" value="{{ old('specs.motorisation.marque_moteur', data_get($specs, 'motorisation.marque_moteur')) }}"
@@ -236,18 +245,27 @@
                         </div>
                         <div x-show="category === 'boat' || category === 'jetski'">
                             <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre de moteurs</label>
-                            <input type="number" name="specs[motorisation][nombre_moteurs]" value="{{ old('specs.motorisation.nombre_moteurs', data_get($specs, 'motorisation.nombre_moteurs')) }}"
+                            <input type="number" name="specs[motorisation][nombre_moteurs]"
+                                   x-model="nbMoteurs"
                                    class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="1" min="1">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Puissance par moteur (CV)</label>
-                            <input type="number" name="specs[motorisation][puissance_par_moteur]" value="{{ old('specs.motorisation.puissance_par_moteur', data_get($specs, 'motorisation.puissance_par_moteur')) }}"
+                            <input type="number" name="specs[motorisation][puissance_par_moteur]"
+                                   x-model="puissanceParMoteur"
                                    class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="150">
                         </div>
                         <div x-show="category === 'boat' || category === 'jetski'">
-                            <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Puissance totale (CV)</label>
-                            <input type="number" name="specs[motorisation][puissance_totale]" value="{{ old('specs.motorisation.puissance_totale', data_get($specs, 'motorisation.puissance_totale')) }}"
-                                   class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="300">
+                            <label class="block text-xs font-semibold uppercase mb-1.5 flex items-center gap-1.5" style="color: #6B7B8D;">
+                                Puissance totale (CV)
+                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md" style="background: rgba(23,162,184,0.12); color: #17A2B8;">Auto</span>
+                            </label>
+                            <input type="number" name="specs[motorisation][puissance_totale]"
+                                   :value="puissanceTotale"
+                                   :placeholder="puissanceTotale || '300'"
+                                   class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                   style="background: rgba(23,162,184,0.04); cursor: not-allowed;"
+                                   readonly>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre d'heures</label>
