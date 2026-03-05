@@ -113,18 +113,18 @@
                        onmouseenter="this.style.boxShadow='{{ $cat['shadow'] }}'; this.style.transform='translateY(-4px)'"
                        onmouseleave="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.06)'; this.style.transform='translateY(0)'">
 
-                        <!-- Image area with soft tinted bg -->
-                        <div class="w-full flex items-center justify-center py-6 px-4" style="background: {{ $cat['bg'] }}; min-height: 130px;">
+                        <!-- Image -->
+                        <div class="w-full flex items-center justify-center pt-6 pb-2 px-4">
                             <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}"
-                                 class="object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
-                                 style="width: 80px; height: 80px;">
+                                 class="object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-lg"
+                                 style="width: 100px; height: 100px;">
                         </div>
 
                         <!-- Thin accent line -->
-                        <div class="w-full" style="height: 3px; background: {{ $cat['accent'] }};"></div>
+                        <div class="w-10 mx-auto mt-3 rounded-full" style="height: 3px; background: {{ $cat['accent'] }};"></div>
 
                         <!-- Text -->
-                        <div class="py-4 px-3">
+                        <div class="py-3 px-3">
                             <p class="text-sm font-bold" style="color: #1B2A4A;">{{ $cat['label'] }}</p>
                             <p class="text-[11px] mt-0.5 leading-snug" style="color: #9BA8B7;">{{ $cat['desc'] }}</p>
                         </div>
