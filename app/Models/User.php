@@ -23,6 +23,7 @@ class User extends Authenticatable implements FilamentUser
         'phone',
         'password',
         'profile_picture',
+        'profile_picture_data',
         'avatar',
         'account_type',
         'verified_badge',
@@ -189,6 +190,12 @@ class User extends Authenticatable implements FilamentUser
 
     public function getProfilePictureUrlAttribute(): ?string
     {
+        // DB-stored base64 takes priority — 100% persistent across all deploys
+        if ($this->profile_picture_data) {
+            return $this->profile_picture_data;
+        }
+
+        // Legacy: file on disk
         if ($this->profile_picture) {
             $disk = config('filesystems.listing_disk', 'public');
             return \Storage::disk($disk)->url($this->profile_picture);

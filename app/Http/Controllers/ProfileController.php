@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
+use Intervention\Image\Laravel\Facades\Image;
 
 class ProfileController extends Controller
 {
@@ -38,23 +39,19 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'phone' => 'nullable|string|max:20',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        // Handle profile picture upload
-        $disk = config('filesystems.listing_disk', 'public');
+        // Store profile picture as base64 in DB — 100% persistent, no disk dependency
         if ($request->hasFile('profile_picture')) {
-            // Delete old profile picture if exists
-            if ($user->profile_picture) {
-                Storage::disk($disk)->delete($user->profile_picture);
-            }
-
-            // Store new profile picture
-            $path = $request->file('profile_picture')->store('profile-pictures', $disk);
-            $validated['profile_picture'] = $path;
+            $image = Image::read($request->file('profile_picture'));
+            $image->cover(300, 300);
+            $jpeg = $image->toJpeg(quality: 82)->toString();
+            $validated['profile_picture_data'] = 'data:image/jpeg;base64,' . base64_encode($jpeg);
         }
 
+        unset($validated['profile_picture']); // don't overwrite the path field
         $user->update($validated);
 
         return redirect()->route('profile.show')

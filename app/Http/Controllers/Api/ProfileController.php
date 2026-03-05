@@ -137,28 +137,22 @@ class ProfileController extends Controller
     public function updatePicture(Request $request): JsonResponse
     {
         $request->validate([
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         $user = $request->user();
 
-        // Delete old profile picture if exists
-        if ($user->profile_picture) {
-            Storage::disk(config('filesystems.listing_disk', 'public'))->delete($user->profile_picture);
-        }
-
-        // Resize and store
+        // Store as base64 in DB — 100% persistent, no disk/S3 dependency
         $image = Image::read($request->file('profile_picture'));
-        $image->cover(400, 400);
+        $image->cover(300, 300);
+        $jpeg = $image->toJpeg(quality: 82)->toString();
+        $dataUrl = 'data:image/jpeg;base64,' . base64_encode($jpeg);
 
-        $filename = 'profile-pictures/' . uniqid() . '.jpg';
-        Storage::disk(config('filesystems.listing_disk', 'public'))->put($filename, $image->toJpeg(quality: 85)->toString());
-
-        $user->update(['profile_picture' => $filename]);
+        $user->update(['profile_picture_data' => $dataUrl]);
 
         return response()->json([
             'message' => 'Photo de profil mise à jour.',
-            'profile_picture_url' => $user->profile_picture_url,
+            'profile_picture_url' => $user->fresh()->profile_picture_url,
         ]);
     }
 
@@ -166,10 +160,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        if ($user->profile_picture) {
-            Storage::disk(config('filesystems.listing_disk', 'public'))->delete($user->profile_picture);
-            $user->update(['profile_picture' => null]);
-        }
+        $user->update(['profile_picture_data' => null, 'profile_picture' => null]);
 
         return response()->json([
             'message' => 'Photo de profil supprimée.',
