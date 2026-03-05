@@ -50,6 +50,38 @@ Route::middleware('guest')->group(function () {
 Route::get('annonces', [ListingController::class, 'index'])->name('listings.index');
 Route::get('media/listings/{media}/{variant?}', [ListingMediaController::class, 'show'])->name('listing-media.show');
 
+// Profile picture proxy (serves from S3 privately)
+Route::get('media/profile/{userId}', function (int $userId) {
+    $user = \App\Models\User::findOrFail($userId);
+
+    // Base64 stored in DB (legacy or fallback)
+    if ($user->profile_picture_data && str_starts_with($user->profile_picture_data, 'data:')) {
+        $parts = explode(',', $user->profile_picture_data, 2);
+        $content = base64_decode($parts[1] ?? '');
+        return response($content, 200, [
+            'Content-Type'  => 'image/jpeg',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+
+    if (!$user->profile_picture) {
+        abort(404);
+    }
+
+    $disk = \Storage::disk(config('filesystems.listing_disk', 'public'));
+    if (!$disk->exists($user->profile_picture)) {
+        abort(404);
+    }
+
+    $content  = $disk->get($user->profile_picture);
+    $mimeType = $disk->mimeType($user->profile_picture) ?: 'image/jpeg';
+
+    return response($content, 200, [
+        'Content-Type'  => $mimeType,
+        'Cache-Control' => 'public, max-age=2592000',
+    ]);
+})->name('profile.picture');
+
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');

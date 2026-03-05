@@ -43,16 +43,33 @@ class ProfileController extends Controller
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        // Store profile picture as base64 in DB — 100% persistent, no disk dependency
         if ($request->hasFile('profile_picture')) {
+            $disk = config('filesystems.listing_disk', 'public');
+
+            // Delete old file from storage
+            if ($user->profile_picture) {
+                Storage::disk($disk)->delete($user->profile_picture);
+            }
+
+            // Resize to 300x300 and store on S3/disk
             $image = Image::read($request->file('profile_picture'));
             $image->cover(300, 300);
-            $jpeg = $image->toJpeg(quality: 82)->toString();
-            $validated['profile_picture_data'] = 'data:image/jpeg;base64,' . base64_encode($jpeg);
+            $filename = 'profile-pictures/' . $user->id . '_' . time() . '.jpg';
+            Storage::disk($disk)->put($filename, $image->toJpeg(quality: 85)->toString());
+
+            $validated['profile_picture'] = $filename;
+            $validated['profile_picture_data'] = null; // clear any old base64
         }
 
-        unset($validated['profile_picture']); // don't overwrite the path field
-        $user->update($validated);
+        unset($validated['profile_picture']); // handled above
+        if (isset($filename)) {
+            $user->update(array_merge(
+                array_intersect_key($validated, array_flip(['name', 'phone'])),
+                ['profile_picture' => $filename, 'profile_picture_data' => null]
+            ));
+        } else {
+            $user->update(array_intersect_key($validated, array_flip(['name', 'phone'])));
+        }
 
         return redirect()->route('profile.show')
             ->with('success', __('messages.profile_updated'));

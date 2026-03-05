@@ -190,17 +190,12 @@ class User extends Authenticatable implements FilamentUser
 
     public function getProfilePictureUrlAttribute(): ?string
     {
-        // DB-stored base64 takes priority — 100% persistent across all deploys
-        if ($this->profile_picture_data) {
-            return $this->profile_picture_data;
+        // If we have any stored picture (DB base64 or S3 path), serve via proxy
+        if ($this->profile_picture_data || $this->profile_picture) {
+            return route('profile.picture', ['userId' => $this->id]);
         }
 
-        // Legacy: file on disk
-        if ($this->profile_picture) {
-            $disk = config('filesystems.listing_disk', 'public');
-            return \Storage::disk($disk)->url($this->profile_picture);
-        }
-
+        // Google/OAuth avatar
         if ($this->avatar) {
             return $this->avatar;
         }
