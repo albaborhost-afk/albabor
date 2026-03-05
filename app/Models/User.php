@@ -190,7 +190,8 @@ class User extends Authenticatable implements FilamentUser
     public function getProfilePictureUrlAttribute(): ?string
     {
         if ($this->profile_picture) {
-            return asset('storage/' . $this->profile_picture);
+            $disk = config('filesystems.listing_disk', 'public');
+            return \Storage::disk($disk)->url($this->profile_picture);
         }
 
         if ($this->avatar) {

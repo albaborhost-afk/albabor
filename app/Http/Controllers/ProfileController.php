@@ -43,14 +43,15 @@ class ProfileController extends Controller
         ]);
 
         // Handle profile picture upload
+        $disk = config('filesystems.listing_disk', 'public');
         if ($request->hasFile('profile_picture')) {
             // Delete old profile picture if exists
             if ($user->profile_picture) {
-                Storage::disk('public')->delete($user->profile_picture);
+                Storage::disk($disk)->delete($user->profile_picture);
             }
 
             // Store new profile picture
-            $path = $request->file('profile_picture')->store('profile-pictures', 'public');
+            $path = $request->file('profile_picture')->store('profile-pictures', $disk);
             $validated['profile_picture'] = $path;
         }
 
