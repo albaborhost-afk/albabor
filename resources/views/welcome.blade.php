@@ -90,47 +90,39 @@
         </div>
     </div>
 
-    <!-- Categories -->
-    <div class="py-8 sm:py-10" style="background-color: #F0F4F8;">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-6 reveal">
-                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-full mb-4" style="background: rgba(23, 162, 184, 0.08); color: #17A2B8;">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                    Explorez
-                </span>
-                <h2 class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #1B2A4A;">Nos categories</h2>
-                <p class="mt-3 text-sm max-w-md mx-auto" style="color: #6B7B8D;">Trouvez exactement ce que vous cherchez</p>
+    <!-- Categories — horizontal app-style -->
+    <div class="py-6 sm:py-8" style="background: #fff;">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4 px-4 sm:px-6 lg:px-8">
+                <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color: #1B2A4A;">Nos categories</h2>
+                <a href="{{ route('listings.index') }}" class="text-xs font-semibold flex items-center gap-1" style="color: #17A2B8;">
+                    Voir tout
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 reveal-stagger">
+            <!-- Horizontal scroll row -->
+            <div class="flex gap-3 overflow-x-auto px-4 sm:px-6 lg:px-8 pb-2" style="scrollbar-width:none; -ms-overflow-style:none;">
                 @foreach([
-                    'boat' => ['label' => 'Bateaux', 'desc' => 'Voiliers, yachts, semi-rigides', 'img' => '/images/yacht.png', 'color' => '#1B4F72', 'gradient' => 'linear-gradient(135deg, #1B4F72, #2471A3)', 'bg' => 'rgba(27,79,114,0.06)'],
-                    'jetski' => ['label' => 'Jet-Skis', 'desc' => 'Scooters des mers', 'img' => '/images/jetski.png', 'color' => '#17A2B8', 'gradient' => 'linear-gradient(135deg, #17A2B8, #1ABC9C)', 'bg' => 'rgba(23,162,184,0.06)'],
-                    'engine' => ['label' => 'Moteurs', 'desc' => 'Hors-bord, in-bord', 'img' => '/images/moteurs.png', 'color' => '#F39C12', 'gradient' => 'linear-gradient(135deg, #F39C12, #E67E22)', 'bg' => 'rgba(243,156,18,0.06)'],
-                    'parts' => ['label' => 'Pieces', 'desc' => 'Accessoires et equipements', 'img' => '/images/pieces.png', 'color' => '#9B59B6', 'gradient' => 'linear-gradient(135deg, #9B59B6, #8E44AD)', 'bg' => 'rgba(155,89,182,0.06)'],
+                    'boat'   => ['label' => 'Bateaux',  'desc' => 'Voiliers, yachts, semi-rigides', 'img' => '/images/yacht.png',    'gradient' => 'linear-gradient(135deg,#1B4F72,#2471A3)', 'shadow' => 'rgba(27,79,114,0.25)'],
+                    'jetski' => ['label' => 'Jet-Skis', 'desc' => 'Scooters des mers',               'img' => '/images/jetski.png',   'gradient' => 'linear-gradient(135deg,#17A2B8,#1ABC9C)', 'shadow' => 'rgba(23,162,184,0.25)'],
+                    'engine' => ['label' => 'Moteurs',  'desc' => 'Hors-bord, in-bord',              'img' => '/images/moteurs.png',  'gradient' => 'linear-gradient(135deg,#F39C12,#E67E22)', 'shadow' => 'rgba(243,156,18,0.25)'],
+                    'parts'  => ['label' => 'Pieces',   'desc' => 'Accessoires & equipements',       'img' => '/images/pieces.png',   'gradient' => 'linear-gradient(135deg,#9B59B6,#8E44AD)', 'shadow' => 'rgba(155,89,182,0.25)'],
                 ] as $catKey => $cat)
                     <a href="{{ route('listings.index', ['category' => $catKey]) }}"
-                       class="category-card-wrapper group relative bg-white rounded-2xl text-center overflow-hidden">
-                        <!-- Top colored accent bar -->
-                        <div class="h-1 w-full rounded-t-2xl" style="background: {{ $cat['gradient'] }};"></div>
-
-                        <!-- Hover gradient bg -->
-                        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" style="background: {{ $cat['bg'] }};"></div>
-
-                        <div class="relative p-5 sm:p-6">
-                            <div class="w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-4 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110" style="background: {{ $cat['bg'] }};">
-                                <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}" class="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-md">
-                            </div>
-                            <h3 class="text-sm sm:text-base font-bold mb-1 transition-colors duration-300" style="color: #1B2A4A;">{{ $cat['label'] }}</h3>
-                            <p class="text-[11px] sm:text-xs" style="color: #9BA8B7;">{{ $cat['desc'] }}</p>
-
-                            <!-- Arrow indicator -->
-                            <div class="mt-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-semibold" style="color: white; background: {{ $cat['gradient'] }};">
-                                    Voir tout
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </span>
-                            </div>
+                       class="group flex-shrink-0 flex flex-col items-center text-center rounded-2xl overflow-hidden transition-transform duration-200 active:scale-95 hover:-translate-y-1"
+                       style="width: 140px; background: #F7F9FC; border: 1.5px solid #E8EDF3;">
+                        <!-- Image block with gradient bg -->
+                        <div class="w-full h-24 flex items-center justify-center relative overflow-hidden" style="background: {{ $cat['gradient'] }};">
+                            <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}"
+                                 class="w-16 h-16 object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
+                                 style="filter: drop-shadow(0 4px 12px {{ $cat['shadow'] }});">
+                        </div>
+                        <!-- Label block -->
+                        <div class="py-3 px-2">
+                            <p class="text-sm font-bold leading-tight" style="color: #1B2A4A;">{{ $cat['label'] }}</p>
+                            <p class="text-[10px] mt-0.5 leading-snug" style="color: #9BA8B7;">{{ $cat['desc'] }}</p>
                         </div>
                     </a>
                 @endforeach
@@ -138,34 +130,34 @@
         </div>
     </div>
 
-
-    <!-- Featured Listings -->
+    <!-- Annonces Sponsorisées -->
     @if(isset($featuredListings) && $featuredListings->count() > 0)
-    <div class="py-8 sm:py-10" style="background: white;">
+    <div class="py-6 sm:py-8" style="background: #F0F4F8;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-3 reveal-left">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, rgba(241,196,15,0.15), rgba(255,140,0,0.12));">
-                        <svg class="w-5 h-5" style="color: #F1C40F;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg,#F1C40F,#FF8C00);">
+                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     </div>
                     <div>
-                        <h2 class="text-lg sm:text-xl font-bold" style="color: #1B2A4A;">Annonces en vedette</h2>
-                        <p class="text-xs" style="color: #9BA8B7;">Les meilleures offres selectionnees</p>
+                        <h2 class="text-lg sm:text-xl font-black" style="color: #1B2A4A;">Annonces sponsorisees</h2>
+                        <p class="text-[11px]" style="color: #9BA8B7;">Offres mises en avant</p>
                     </div>
                 </div>
-                <a href="{{ route('listings.index') }}" class="btn-see-all hidden sm:inline-flex">
+                <a href="{{ route('listings.index') }}" class="text-xs font-semibold flex items-center gap-1 hidden sm:flex" style="color: #17A2B8;">
                     Voir tout
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 reveal-stagger">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 @foreach($featuredListings as $listing)
                     <x-listing-card :listing="$listing" />
                 @endforeach
             </div>
 
-            <div class="sm:hidden mt-6 text-center">
+            <div class="sm:hidden mt-4 text-center">
                 <a href="{{ route('listings.index') }}" class="btn-see-all px-5 py-2.5">
                     Voir toutes les annonces
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
