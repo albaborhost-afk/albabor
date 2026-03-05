@@ -835,29 +835,39 @@ class ListingResource extends Resource
 
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('feature')
-                        ->label(fn (Listing $record) => $record->isFeatured() ? 'Retirer vedette' : 'Mettre en avant')
+                        ->label(fn (Listing $record) => $record->isFeatured() ? 'Retirer sponsoring' : '⭐ Sponsoriser')
                         ->icon('heroicon-o-star')
                         ->color('warning')
                         ->visible(fn (Listing $record) => $record->status === 'active')
-                        ->requiresConfirmation()
                         ->modalHeading(fn (Listing $record) => $record->isFeatured()
-                            ? 'Retirer la mise en avant'
-                            : 'Mettre en avant cette annonce')
+                            ? 'Retirer le sponsoring'
+                            : 'Sponsoriser cette annonce')
                         ->modalDescription(fn (Listing $record) => $record->isFeatured()
-                            ? 'L\'annonce ne sera plus mise en avant.'
-                            : 'L\'annonce sera mise en avant pendant 30 jours.')
-                        ->action(function (Listing $record) {
+                            ? 'Expire le : ' . $record->featured_until?->format('d/m/Y') . '. Voulez-vous retirer le sponsoring ?'
+                            : 'L\'annonce apparaitra en haut de la homepage dans la section "Annonces sponsorisees".')
+                        ->form(fn (Listing $record) => $record->isFeatured() ? [] : [
+                            Forms\Components\TextInput::make('days')
+                                ->label('Nombre de jours')
+                                ->numeric()
+                                ->default(30)
+                                ->minValue(1)
+                                ->maxValue(365)
+                                ->suffix('jours')
+                                ->required(),
+                        ])
+                        ->action(function (Listing $record, array $data) {
                             if ($record->isFeatured()) {
                                 $record->update(['featured_until' => null]);
                                 Notification::make()
-                                    ->title('Mise en avant retiree')
+                                    ->title('Sponsoring retire')
                                     ->success()
                                     ->send();
                             } else {
-                                $record->update(['featured_until' => now()->addDays(30)]);
+                                $days = (int) ($data['days'] ?? 30);
+                                $record->update(['featured_until' => now()->addDays($days)]);
                                 Notification::make()
-                                    ->title('Annonce mise en avant')
-                                    ->body('L\'annonce sera visible en vedette pendant 30 jours.')
+                                    ->title('Annonce sponsorisee')
+                                    ->body("Visible en vedette pendant {$days} jours. Expire le " . now()->addDays($days)->format('d/m/Y') . '.')
                                     ->success()
                                     ->send();
                             }

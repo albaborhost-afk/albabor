@@ -136,37 +136,49 @@
 
     <!-- Annonces Sponsorisées -->
     @if(isset($featuredListings) && $featuredListings->count() > 0)
-    <div class="py-6 sm:py-8" style="background: #F0F4F8;">
+    <div class="py-8 sm:py-10" style="background: linear-gradient(180deg, #fffdf5 0%, #fff8e1 100%); border-top: 1px solid #fde68a;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Header -->
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg,#F1C40F,#FF8C00);">
-                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+
+            <!-- Header badge + title -->
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <!-- Animated star badge -->
+                    <div class="relative flex-shrink-0">
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg,#F59E0B,#F97316); box-shadow: 0 4px 16px rgba(245,158,11,0.4);">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </div>
+                        <!-- Pulse ring -->
+                        <div class="absolute inset-0 rounded-2xl animate-ping opacity-25" style="background: #F59E0B;"></div>
                     </div>
                     <div>
-                        <h2 class="text-lg sm:text-xl font-black" style="color: #1B2A4A;">Annonces sponsorisees</h2>
-                        <p class="text-[11px]" style="color: #9BA8B7;">Offres mises en avant</p>
+                        <div class="flex items-center gap-2 mb-0.5">
+                            <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color: #1B2A4A;">Annonces sponsorisees</h2>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide" style="background: #FEF3C7; color: #B45309;">Premium</span>
+                        </div>
+                        <p class="text-xs" style="color: #9BA8B7;">Selectionnees et mises en avant par notre equipe</p>
                     </div>
                 </div>
-                <a href="{{ route('listings.index') }}" class="text-xs font-semibold flex items-center gap-1 hidden sm:flex" style="color: #17A2B8;">
+                <a href="{{ route('listings.index') }}" class="hidden sm:flex text-xs font-semibold items-center gap-1" style="color: #D97706;">
                     Voir tout
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
             </div>
 
+            <!-- Listing cards with sponsored badge overlay -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 @foreach($featuredListings as $listing)
-                    <x-listing-card :listing="$listing" />
+                    <div class="relative">
+                        <!-- Sponsored badge -->
+                        <div class="absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold shadow-md"
+                             style="background: linear-gradient(135deg,#F59E0B,#F97316); color: white; letter-spacing: 0.03em;">
+                            <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            Sponsorise
+                        </div>
+                        <x-listing-card :listing="$listing" />
+                    </div>
                 @endforeach
             </div>
 
-            <div class="sm:hidden mt-4 text-center">
-                <a href="{{ route('listings.index') }}" class="btn-see-all px-5 py-2.5">
-                    Voir toutes les annonces
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </a>
-            </div>
         </div>
     </div>
     @endif
