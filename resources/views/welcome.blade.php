@@ -90,13 +90,16 @@
         </div>
     </div>
 
-    <!-- Categories — horizontal app-style -->
-    <div class="py-6 sm:py-8" style="background: #fff;">
+    <!-- Categories — premium dark style -->
+    <div class="py-8 sm:py-10" style="background: linear-gradient(180deg, #0A192F 0%, #0F2440 100%);">
         <div class="max-w-7xl mx-auto">
             <!-- Header -->
-            <div class="flex items-center justify-between mb-4 px-4 sm:px-6 lg:px-8">
-                <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color: #1B2A4A;">Nos categories</h2>
-                <a href="{{ route('listings.index') }}" class="text-xs font-semibold flex items-center gap-1" style="color: #17A2B8;">
+            <div class="flex items-center justify-between mb-6 px-4 sm:px-6 lg:px-8">
+                <div>
+                    <p class="text-[11px] font-bold uppercase tracking-widest mb-1" style="color: #17A2B8; letter-spacing: 0.15em;">Explorer</p>
+                    <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">Nos categories</h2>
+                </div>
+                <a href="{{ route('listings.index') }}" class="text-xs font-semibold flex items-center gap-1 px-4 py-2 rounded-full transition-all duration-200 hover:bg-white/10" style="color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.12);">
                     Voir tout
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
@@ -105,24 +108,33 @@
             <!-- Mobile: horizontal scroll | Desktop: 4-col grid -->
             <div class="flex lg:grid lg:grid-cols-4 gap-3 sm:gap-4 overflow-x-auto lg:overflow-visible px-4 sm:px-6 lg:px-8 pb-2 lg:pb-0" style="scrollbar-width:none; -ms-overflow-style:none;">
                 @foreach([
-                    'boat'   => ['label' => 'Bateaux',  'desc' => 'Voiliers, yachts, semi-rigides', 'img' => '/images/yacht.png',    'gradient' => 'linear-gradient(135deg,#1B4F72,#2471A3)', 'shadow' => 'rgba(27,79,114,0.25)'],
-                    'jetski' => ['label' => 'Jet-Skis', 'desc' => 'Scooters des mers',               'img' => '/images/jetski.png',   'gradient' => 'linear-gradient(135deg,#17A2B8,#1ABC9C)', 'shadow' => 'rgba(23,162,184,0.25)'],
-                    'engine' => ['label' => 'Moteurs',  'desc' => 'Hors-bord, in-bord',              'img' => '/images/moteurs.png',  'gradient' => 'linear-gradient(135deg,#F39C12,#E67E22)', 'shadow' => 'rgba(243,156,18,0.25)'],
-                    'parts'  => ['label' => 'Pieces',   'desc' => 'Accessoires & equipements',       'img' => '/images/pieces.png',   'gradient' => 'linear-gradient(135deg,#9B59B6,#8E44AD)', 'shadow' => 'rgba(155,89,182,0.25)'],
+                    'boat'   => ['label' => 'Bateaux',  'desc' => 'Voiliers, yachts, semi-rigides', 'img' => '/images/yacht.png',   'glow' => 'rgba(36,113,163,0.5)',  'accent' => '#2471A3'],
+                    'jetski' => ['label' => 'Jet-Skis', 'desc' => 'Scooters des mers',               'img' => '/images/jetski.png',  'glow' => 'rgba(23,162,184,0.5)',  'accent' => '#17A2B8'],
+                    'engine' => ['label' => 'Moteurs',  'desc' => 'Hors-bord, in-bord',              'img' => '/images/moteurs.png', 'glow' => 'rgba(243,156,18,0.45)', 'accent' => '#F39C12'],
+                    'parts'  => ['label' => 'Pieces',   'desc' => 'Accessoires & equipements',       'img' => '/images/pieces.png',  'glow' => 'rgba(155,89,182,0.45)', 'accent' => '#9B59B6'],
                 ] as $catKey => $cat)
                     <a href="{{ route('listings.index', ['category' => $catKey]) }}"
-                       class="group flex-shrink-0 lg:flex-shrink flex flex-col items-center text-center rounded-2xl overflow-hidden transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-lg"
-                       style="min-width: 140px; background: #F7F9FC; border: 1.5px solid #E8EDF3;">
-                        <!-- Image block with gradient bg -->
-                        <div class="w-full flex items-center justify-center relative overflow-hidden" style="height: 110px; background: {{ $cat['gradient'] }};">
+                       class="group flex-shrink-0 lg:flex-shrink relative flex flex-col items-center text-center rounded-2xl overflow-hidden transition-all duration-300 active:scale-95 hover:-translate-y-2"
+                       style="min-width: 148px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); backdrop-filter: blur(12px);">
+
+                        <!-- Glow blob behind image -->
+                        <div class="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full pointer-events-none transition-all duration-300 group-hover:w-28 group-hover:h-28"
+                             style="background: {{ $cat['glow'] }}; filter: blur(28px); opacity: 0.7;"></div>
+
+                        <!-- Image -->
+                        <div class="relative pt-7 pb-3 flex items-center justify-center" style="height: 120px;">
                             <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}"
-                                 class="w-18 h-18 object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
-                                 style="width: 72px; height: 72px; filter: drop-shadow(0 4px 12px {{ $cat['shadow'] }});">
+                                 class="object-contain transition-transform duration-300 group-hover:scale-110 relative z-10"
+                                 style="width: 78px; height: 78px; filter: drop-shadow(0 8px 20px {{ $cat['glow'] }});">
                         </div>
-                        <!-- Label block -->
+
+                        <!-- Bottom accent line -->
+                        <div class="w-full h-0.5" style="background: {{ $cat['accent'] }}; opacity: 0.6;"></div>
+
+                        <!-- Label -->
                         <div class="py-3 px-3">
-                            <p class="text-sm font-bold leading-tight" style="color: #1B2A4A;">{{ $cat['label'] }}</p>
-                            <p class="text-[11px] mt-1 leading-snug" style="color: #9BA8B7;">{{ $cat['desc'] }}</p>
+                            <p class="text-sm font-bold text-white leading-tight">{{ $cat['label'] }}</p>
+                            <p class="text-[11px] mt-1 leading-snug" style="color: rgba(255,255,255,0.45);">{{ $cat['desc'] }}</p>
                         </div>
                     </a>
                 @endforeach
