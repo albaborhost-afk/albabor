@@ -17,6 +17,7 @@ class Listing extends Model
         'category',
         'price_dzd',
         'currency',
+        'currency_label',
         'type_offre',
         'etat',
         'remarque_echange',
@@ -187,16 +188,15 @@ class Listing extends Model
 
     public function getFormattedPriceAttribute(): string
     {
-        if ($this->currency === 'EUR') {
-            return number_format($this->price_dzd, 0, ',', ' ') . ' €';
-        }
-
-        return number_format($this->price_dzd, 0, ',', ' ') . ' DA';
+        $symbol = $this->currency_symbol;
+        return number_format($this->price_dzd, 0, ',', ' ') . ' ' . $symbol;
     }
 
     public function getCurrencySymbolAttribute(): string
     {
-        return $this->currency === 'EUR' ? '€' : 'DA';
+        if ($this->currency === 'EUR') return '€';
+        if ($this->currency === 'OTHER') return $this->currency_label ?: '?';
+        return 'DA';
     }
 
     public function getConvertedPriceAttribute(): float

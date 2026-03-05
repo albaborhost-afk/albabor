@@ -754,8 +754,32 @@
                                         <span class="block text-[10px] text-gray-500">Euro</span>
                                     </div>
                                 </label>
+                                <label class="flex-1 relative cursor-pointer">
+                                    <input type="radio" name="currency" value="OTHER" x-model="currency" class="peer sr-only">
+                                    <div class="p-3 border-[3px] border-gray-200 rounded-xl text-center bg-white transition-all duration-300
+                                                peer-checked:!border-[#27AE60] peer-checked:!bg-gradient-to-br peer-checked:!from-green-50 peer-checked:!to-emerald-50
+                                                peer-checked:shadow-[0_0_0_4px_rgba(39,174,96,0.2),0_8px_25px_rgba(39,174,96,0.4)]
+                                                peer-checked:-translate-y-1 hover:border-green-300 hover:shadow-md">
+                                        <div class="absolute top-1 right-1 w-6 h-6 rounded-full bg-[#27AE60] flex items-center justify-center opacity-0 scale-0 transition-all duration-300
+                                                    peer-checked:opacity-100 peer-checked:scale-100 shadow-lg">
+                                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                        </div>
+                                        <span class="block text-2xl mb-0.5">🌐</span>
+                                        <span class="block text-sm font-medium text-gray-700 transition-all peer-checked:!font-bold peer-checked:!text-[#27AE60]">Autre</span>
+                                        <span class="block text-[10px] text-gray-500">Autre devise</span>
+                                    </div>
+                                </label>
                             </div>
-                            <p class="mt-2 text-xs flex items-center gap-1" style="color: #9BA8B7;">
+
+                            <!-- Champ custom si Autre -->
+                            <div x-show="currency === 'OTHER'" x-transition class="mt-3">
+                                <input type="text" name="currency_label" value="{{ old('currency_label') }}"
+                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                       placeholder="Ex: GBP, CHF, CAD, TND..." maxlength="10"
+                                       :required="currency === 'OTHER'">
+                            </div>
+
+                            <p class="mt-2 text-xs flex items-center gap-1" style="color: #9BA8B7;" x-show="currency !== 'OTHER'">
                                 <svg class="w-3.5 h-3.5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
@@ -768,9 +792,10 @@
                             <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Prix *</label>
                             <div class="relative">
                                 <input type="number" name="price_dzd" value="{{ old('price_dzd') }}" required min="0"
-                                       class="glass-input w-full rounded-xl px-4 py-3 pr-16 text-lg font-semibold" style="color: #1B4F72;">
+                                       class="glass-input w-full rounded-xl px-4 py-3 pr-20 text-lg font-semibold" style="color: #1B4F72;">
                                 <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                    <span class="font-semibold" style="color: #17A2B8;" x-text="currency === 'EUR' ? '€' : 'DA'">DA</span>
+                                    <span class="font-semibold text-sm" style="color: #17A2B8;"
+                                          x-text="currency === 'EUR' ? '€' : (currency === 'OTHER' ? ($el.closest('form').querySelector('[name=currency_label]')?.value || '?') : 'DA')">DA</span>
                                 </div>
                             </div>
                         </div>

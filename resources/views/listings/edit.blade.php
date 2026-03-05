@@ -561,8 +561,27 @@
                                     <span class="block text-[10px]" style="color: #9BA8B7;">Euro</span>
                                 </div>
                             </label>
+                            <label class="flex-1 relative cursor-pointer">
+                                <input type="radio" name="currency" value="OTHER" x-model="currency" class="peer sr-only">
+                                <div class="p-3 border-2 rounded-xl text-center transition-all peer-checked:shadow-md"
+                                     style="border-color: #E0E6ED;"
+                                     :style="currency === 'OTHER' ? 'border-color: #17A2B8; box-shadow: 0 0 0 3px rgba(23,162,184,0.15);' : ''">
+                                    <span class="block text-lg mb-0.5">🌐</span>
+                                    <span class="block text-sm font-bold" style="color: #1B2A4A;">Autre</span>
+                                    <span class="block text-[10px]" style="color: #9BA8B7;">Autre devise</span>
+                                </div>
+                            </label>
                         </div>
-                        <p class="mt-2 text-xs flex items-center gap-1" style="color: #9BA8B7;">
+
+                        <!-- Champ custom si Autre -->
+                        <div x-show="currency === 'OTHER'" x-transition class="mt-3">
+                            <input type="text" name="currency_label" value="{{ old('currency_label', $listing->currency_label) }}"
+                                   class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                   placeholder="Ex: GBP, CHF, CAD, TND..." maxlength="10"
+                                   :required="currency === 'OTHER'">
+                        </div>
+
+                        <p class="mt-2 text-xs flex items-center gap-1" style="color: #9BA8B7;" x-show="currency !== 'OTHER'">
                             <svg class="w-3.5 h-3.5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
@@ -575,9 +594,10 @@
                         <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Prix *</label>
                         <div class="relative">
                             <input type="number" name="price_dzd" value="{{ old('price_dzd', $listing->price_dzd) }}" required min="0"
-                                   class="glass-input w-full rounded-xl px-4 py-3 pr-16 text-lg font-semibold" style="color: #1B4F72;">
+                                   class="glass-input w-full rounded-xl px-4 py-3 pr-20 text-lg font-semibold" style="color: #1B4F72;">
                             <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                <span class="font-semibold" style="color: #17A2B8;" x-text="currency === 'EUR' ? '€' : 'DA'">DA</span>
+                                <span class="font-semibold text-sm" style="color: #17A2B8;"
+                                      x-text="currency === 'EUR' ? '€' : (currency === 'OTHER' ? ($el.closest('form').querySelector('[name=currency_label]')?.value || '?') : 'DA')">DA</span>
                             </div>
                         </div>
                     </div>
