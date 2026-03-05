@@ -102,8 +102,8 @@
                 </a>
             </div>
 
-            <!-- Horizontal scroll row -->
-            <div class="flex gap-3 overflow-x-auto px-4 sm:px-6 lg:px-8 pb-2" style="scrollbar-width:none; -ms-overflow-style:none;">
+            <!-- Mobile: horizontal scroll | Desktop: 4-col grid -->
+            <div class="flex lg:grid lg:grid-cols-4 gap-3 sm:gap-4 overflow-x-auto lg:overflow-visible px-4 sm:px-6 lg:px-8 pb-2 lg:pb-0" style="scrollbar-width:none; -ms-overflow-style:none;">
                 @foreach([
                     'boat'   => ['label' => 'Bateaux',  'desc' => 'Voiliers, yachts, semi-rigides', 'img' => '/images/yacht.png',    'gradient' => 'linear-gradient(135deg,#1B4F72,#2471A3)', 'shadow' => 'rgba(27,79,114,0.25)'],
                     'jetski' => ['label' => 'Jet-Skis', 'desc' => 'Scooters des mers',               'img' => '/images/jetski.png',   'gradient' => 'linear-gradient(135deg,#17A2B8,#1ABC9C)', 'shadow' => 'rgba(23,162,184,0.25)'],
@@ -111,18 +111,18 @@
                     'parts'  => ['label' => 'Pieces',   'desc' => 'Accessoires & equipements',       'img' => '/images/pieces.png',   'gradient' => 'linear-gradient(135deg,#9B59B6,#8E44AD)', 'shadow' => 'rgba(155,89,182,0.25)'],
                 ] as $catKey => $cat)
                     <a href="{{ route('listings.index', ['category' => $catKey]) }}"
-                       class="group flex-shrink-0 flex flex-col items-center text-center rounded-2xl overflow-hidden transition-transform duration-200 active:scale-95 hover:-translate-y-1"
-                       style="width: 140px; background: #F7F9FC; border: 1.5px solid #E8EDF3;">
+                       class="group flex-shrink-0 lg:flex-shrink flex flex-col items-center text-center rounded-2xl overflow-hidden transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-lg"
+                       style="min-width: 140px; background: #F7F9FC; border: 1.5px solid #E8EDF3;">
                         <!-- Image block with gradient bg -->
-                        <div class="w-full h-24 flex items-center justify-center relative overflow-hidden" style="background: {{ $cat['gradient'] }};">
+                        <div class="w-full flex items-center justify-center relative overflow-hidden" style="height: 110px; background: {{ $cat['gradient'] }};">
                             <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}"
-                                 class="w-16 h-16 object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
-                                 style="filter: drop-shadow(0 4px 12px {{ $cat['shadow'] }});">
+                                 class="w-18 h-18 object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
+                                 style="width: 72px; height: 72px; filter: drop-shadow(0 4px 12px {{ $cat['shadow'] }});">
                         </div>
                         <!-- Label block -->
-                        <div class="py-3 px-2">
+                        <div class="py-3 px-3">
                             <p class="text-sm font-bold leading-tight" style="color: #1B2A4A;">{{ $cat['label'] }}</p>
-                            <p class="text-[10px] mt-0.5 leading-snug" style="color: #9BA8B7;">{{ $cat['desc'] }}</p>
+                            <p class="text-[11px] mt-1 leading-snug" style="color: #9BA8B7;">{{ $cat['desc'] }}</p>
                         </div>
                     </a>
                 @endforeach
