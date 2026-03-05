@@ -90,51 +90,43 @@
         </div>
     </div>
 
-    <!-- Categories — premium dark style -->
-    <div class="py-8 sm:py-10" style="background: linear-gradient(180deg, #0A192F 0%, #0F2440 100%);">
+    <!-- Categories -->
+    <div class="py-8 sm:py-10" style="background: #F0F4F8;">
         <div class="max-w-7xl mx-auto">
-            <!-- Header -->
-            <div class="flex items-center justify-between mb-6 px-4 sm:px-6 lg:px-8">
-                <div>
-                    <p class="text-[11px] font-bold uppercase tracking-widest mb-1" style="color: #17A2B8; letter-spacing: 0.15em;">Explorer</p>
-                    <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">Nos categories</h2>
-                </div>
-                <a href="{{ route('listings.index') }}" class="text-xs font-semibold flex items-center gap-1 px-4 py-2 rounded-full transition-all duration-200 hover:bg-white/10" style="color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.12);">
-                    Voir tout
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <div class="flex items-center justify-between mb-5 px-4 sm:px-6 lg:px-8">
+                <h2 class="text-xl sm:text-2xl font-black tracking-tight" style="color: #1B2A4A;">Nos categories</h2>
+                <a href="{{ route('listings.index') }}" class="text-xs font-semibold flex items-center gap-1" style="color: #17A2B8;">
+                    Voir tout <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
             </div>
 
-            <!-- Mobile: horizontal scroll | Desktop: 4-col grid -->
-            <div class="flex lg:grid lg:grid-cols-4 gap-3 sm:gap-4 overflow-x-auto lg:overflow-visible px-4 sm:px-6 lg:px-8 pb-2 lg:pb-0" style="scrollbar-width:none; -ms-overflow-style:none;">
+            <div class="flex lg:grid lg:grid-cols-4 gap-3 sm:gap-5 overflow-x-auto lg:overflow-visible px-4 sm:px-6 lg:px-8 pb-2 lg:pb-0" style="scrollbar-width:none; -ms-overflow-style:none;">
                 @foreach([
-                    'boat'   => ['label' => 'Bateaux',  'desc' => 'Voiliers, yachts, semi-rigides', 'img' => '/images/yacht.png',   'glow' => 'rgba(36,113,163,0.5)',  'accent' => '#2471A3'],
-                    'jetski' => ['label' => 'Jet-Skis', 'desc' => 'Scooters des mers',               'img' => '/images/jetski.png',  'glow' => 'rgba(23,162,184,0.5)',  'accent' => '#17A2B8'],
-                    'engine' => ['label' => 'Moteurs',  'desc' => 'Hors-bord, in-bord',              'img' => '/images/moteurs.png', 'glow' => 'rgba(243,156,18,0.45)', 'accent' => '#F39C12'],
-                    'parts'  => ['label' => 'Pieces',   'desc' => 'Accessoires & equipements',       'img' => '/images/pieces.png',  'glow' => 'rgba(155,89,182,0.45)', 'accent' => '#9B59B6'],
+                    'boat'   => ['label' => 'Bateaux',  'desc' => 'Voiliers, yachts, semi-rigides', 'img' => '/images/yacht.png',   'bg' => 'linear-gradient(145deg,#E8F4FD,#D6EAF8)', 'accent' => '#2471A3', 'shadow' => '0 8px 30px rgba(36,113,163,0.18)'],
+                    'jetski' => ['label' => 'Jet-Skis', 'desc' => 'Scooters des mers',               'img' => '/images/jetski.png',  'bg' => 'linear-gradient(145deg,#E8F8F9,#D1F2EB)', 'accent' => '#17A2B8', 'shadow' => '0 8px 30px rgba(23,162,184,0.18)'],
+                    'engine' => ['label' => 'Moteurs',  'desc' => 'Hors-bord, in-bord',              'img' => '/images/moteurs.png', 'bg' => 'linear-gradient(145deg,#FEF9E7,#FDEBD0)', 'accent' => '#E67E22', 'shadow' => '0 8px 30px rgba(230,126,34,0.18)'],
+                    'parts'  => ['label' => 'Pieces',   'desc' => 'Accessoires & equipements',       'img' => '/images/pieces.png',  'bg' => 'linear-gradient(145deg,#F5EEF8,#EBD5F9)', 'accent' => '#8E44AD', 'shadow' => '0 8px 30px rgba(142,68,173,0.18)'],
                 ] as $catKey => $cat)
                     <a href="{{ route('listings.index', ['category' => $catKey]) }}"
-                       class="group flex-shrink-0 lg:flex-shrink relative flex flex-col items-center text-center rounded-2xl overflow-hidden transition-all duration-300 active:scale-95 hover:-translate-y-2"
-                       style="min-width: 148px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); backdrop-filter: blur(12px);">
+                       class="group flex-shrink-0 lg:flex-shrink flex flex-col items-center text-center rounded-3xl overflow-hidden bg-white transition-all duration-300 active:scale-95"
+                       style="min-width: 150px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);"
+                       onmouseenter="this.style.boxShadow='{{ $cat['shadow'] }}'; this.style.transform='translateY(-4px)'"
+                       onmouseleave="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.06)'; this.style.transform='translateY(0)'">
 
-                        <!-- Glow blob behind image -->
-                        <div class="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full pointer-events-none transition-all duration-300 group-hover:w-28 group-hover:h-28"
-                             style="background: {{ $cat['glow'] }}; filter: blur(28px); opacity: 0.7;"></div>
-
-                        <!-- Image -->
-                        <div class="relative pt-7 pb-3 flex items-center justify-center" style="height: 120px;">
+                        <!-- Image area with soft tinted bg -->
+                        <div class="w-full flex items-center justify-center py-6 px-4" style="background: {{ $cat['bg'] }}; min-height: 130px;">
                             <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}"
-                                 class="object-contain transition-transform duration-300 group-hover:scale-110 relative z-10"
-                                 style="width: 78px; height: 78px; filter: drop-shadow(0 8px 20px {{ $cat['glow'] }});">
+                                 class="object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
+                                 style="width: 80px; height: 80px;">
                         </div>
 
-                        <!-- Bottom accent line -->
-                        <div class="w-full h-0.5" style="background: {{ $cat['accent'] }}; opacity: 0.6;"></div>
+                        <!-- Thin accent line -->
+                        <div class="w-full" style="height: 3px; background: {{ $cat['accent'] }};"></div>
 
-                        <!-- Label -->
-                        <div class="py-3 px-3">
-                            <p class="text-sm font-bold text-white leading-tight">{{ $cat['label'] }}</p>
-                            <p class="text-[11px] mt-1 leading-snug" style="color: rgba(255,255,255,0.45);">{{ $cat['desc'] }}</p>
+                        <!-- Text -->
+                        <div class="py-4 px-3">
+                            <p class="text-sm font-bold" style="color: #1B2A4A;">{{ $cat['label'] }}</p>
+                            <p class="text-[11px] mt-0.5 leading-snug" style="color: #9BA8B7;">{{ $cat['desc'] }}</p>
                         </div>
                     </a>
                 @endforeach
