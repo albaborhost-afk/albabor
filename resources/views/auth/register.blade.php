@@ -347,31 +347,54 @@
                         <p class="text-sm" style="color: #6B7B8D;">Rejoignez la communaute AlBabor</p>
                     </div>
 
-                    <form method="POST" action="{{ route('register') }}" class="space-y-4" x-data="{ showPassword: false, showConfirm: false }">
+                    <form method="POST" action="{{ route('register') }}" class="space-y-4"
+                          x-data="{
+                              showPassword: false,
+                              showConfirm: false,
+                              firstName: '{{ old('first_name', '') }}',
+                              lastName: '{{ old('last_name', '') }}',
+                              get fullName() { return (this.firstName + ' ' + this.lastName).trim(); }
+                          }">
                         @csrf
+                        <input type="hidden" name="name" :value="fullName">
 
-                        <!-- Name -->
-                        <div class="auth-form-group">
-                            <label for="name" class="block text-sm font-semibold mb-1.5" style="color: #1B2A4A;">Nom complet</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <svg class="w-[18px] h-[18px] auth-input-icon" style="color: #1B2A4A;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                    </svg>
+                        <!-- Prénom + Nom -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="auth-form-group">
+                                <label class="block text-sm font-semibold mb-1.5" style="color: #1B2A4A;">Prénom</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                        <svg class="w-4 h-4 auth-input-icon" style="color: #1B2A4A;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                        </svg>
+                                    </div>
+                                    <input type="text" x-model="firstName" name="first_name" required autofocus autocomplete="given-name"
+                                           class="auth-input w-full pl-10 pr-3 py-3 text-sm font-medium @error('name') !border-red-400 @enderror"
+                                           placeholder="Prénom">
                                 </div>
-                                <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name"
-                                       class="auth-input w-full pl-12 pr-4 py-3 text-sm font-medium @error('name') !border-red-400 @enderror"
-                                       placeholder="Votre nom complet">
                             </div>
-                            @error('name')
-                                <div class="auth-error">
-                                    <p>
-                                        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                        {{ $message }}
-                                    </p>
+                            <div class="auth-form-group">
+                                <label class="block text-sm font-semibold mb-1.5" style="color: #1B2A4A;">Nom</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                        <svg class="w-4 h-4 auth-input-icon" style="color: #1B2A4A;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                        </svg>
+                                    </div>
+                                    <input type="text" x-model="lastName" name="last_name" required autocomplete="family-name"
+                                           class="auth-input w-full pl-10 pr-3 py-3 text-sm font-medium @error('name') !border-red-400 @enderror"
+                                           placeholder="Nom">
                                 </div>
-                            @enderror
+                            </div>
                         </div>
+                        @error('name')
+                            <div class="auth-error">
+                                <p>
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    {{ $message }}
+                                </p>
+                            </div>
+                        @enderror
 
                         <!-- Email -->
                         <div class="auth-form-group">
@@ -401,38 +424,145 @@
                             open: false,
                             search: '',
                             countries: [
-                                { name: 'Algerie', code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
-                                { name: 'Maroc', code: '+212', flag: '\ud83c\uddf2\ud83c\udde6' },
-                                { name: 'Tunisie', code: '+216', flag: '\ud83c\uddf9\ud83c\uddf3' },
-                                { name: 'Allemagne', code: '+49', flag: '\ud83c\udde9\ud83c\uddea' },
-                                { name: 'Autriche', code: '+43', flag: '\ud83c\udde6\ud83c\uddf9' },
-                                { name: 'Belgique', code: '+32', flag: '\ud83c\udde7\ud83c\uddea' },
-                                { name: 'Bulgarie', code: '+359', flag: '\ud83c\udde7\ud83c\uddec' },
-                                { name: 'Chypre', code: '+357', flag: '\ud83c\udde8\ud83c\uddfe' },
-                                { name: 'Croatie', code: '+385', flag: '\ud83c\udded\ud83c\uddf7' },
-                                { name: 'Danemark', code: '+45', flag: '\ud83c\udde9\ud83c\uddf0' },
-                                { name: 'Espagne', code: '+34', flag: '\ud83c\uddea\ud83c\uddf8' },
-                                { name: 'Estonie', code: '+372', flag: '\ud83c\uddea\ud83c\uddea' },
-                                { name: 'Finlande', code: '+358', flag: '\ud83c\uddeb\ud83c\uddee' },
-                                { name: 'France', code: '+33', flag: '\ud83c\uddeb\ud83c\uddf7' },
-                                { name: 'Grece', code: '+30', flag: '\ud83c\uddec\ud83c\uddf7' },
-                                { name: 'Hongrie', code: '+36', flag: '\ud83c\udded\ud83c\uddfa' },
-                                { name: 'Irlande', code: '+353', flag: '\ud83c\uddee\ud83c\uddea' },
-                                { name: 'Italie', code: '+39', flag: '\ud83c\uddee\ud83c\uddf9' },
-                                { name: 'Lettonie', code: '+371', flag: '\ud83c\uddf1\ud83c\uddfb' },
-                                { name: 'Lituanie', code: '+370', flag: '\ud83c\uddf1\ud83c\uddf9' },
-                                { name: 'Luxembourg', code: '+352', flag: '\ud83c\uddf1\ud83c\uddfa' },
-                                { name: 'Malte', code: '+356', flag: '\ud83c\uddf2\ud83c\uddf9' },
-                                { name: 'Pays-Bas', code: '+31', flag: '\ud83c\uddf3\ud83c\uddf1' },
-                                { name: 'Pologne', code: '+48', flag: '\ud83c\uddf5\ud83c\uddf1' },
-                                { name: 'Portugal', code: '+351', flag: '\ud83c\uddf5\ud83c\uddf9' },
-                                { name: 'Rep. tcheque', code: '+420', flag: '\ud83c\udde8\ud83c\uddff' },
-                                { name: 'Roumanie', code: '+40', flag: '\ud83c\uddf7\ud83c\uddf4' },
-                                { name: 'Slovaquie', code: '+421', flag: '\ud83c\uddf8\ud83c\uddf0' },
-                                { name: 'Slovenie', code: '+386', flag: '\ud83c\uddf8\ud83c\uddee' },
-                                { name: 'Suede', code: '+46', flag: '\ud83c\uddf8\ud83c\uddea' }
+                                { name: 'Algerie', code: '+213', flag: '🇩🇿' },
+                                { name: 'Maroc', code: '+212', flag: '🇲🇦' },
+                                { name: 'Tunisie', code: '+216', flag: '🇹🇳' },
+                                { name: 'Libye', code: '+218', flag: '🇱🇾' },
+                                { name: 'Egypte', code: '+20', flag: '🇪🇬' },
+                                { name: 'Mauritanie', code: '+222', flag: '🇲🇷' },
+                                { name: 'Senegal', code: '+221', flag: '🇸🇳' },
+                                { name: 'Mali', code: '+223', flag: '🇲🇱' },
+                                { name: 'Niger', code: '+227', flag: '🇳🇪' },
+                                { name: 'Tchad', code: '+235', flag: '🇹🇩' },
+                                { name: 'Soudan', code: '+249', flag: '🇸🇩' },
+                                { name: 'Ethiopie', code: '+251', flag: '🇪🇹' },
+                                { name: 'Somalie', code: '+252', flag: '🇸🇴' },
+                                { name: 'Kenya', code: '+254', flag: '🇰🇪' },
+                                { name: 'Tanzania', code: '+255', flag: '🇹🇿' },
+                                { name: 'Nigeria', code: '+234', flag: '🇳🇬' },
+                                { name: 'Ghana', code: '+233', flag: '🇬🇭' },
+                                { name: 'Cameroun', code: '+237', flag: '🇨🇲' },
+                                { name: 'Cote d\'Ivoire', code: '+225', flag: '🇨🇮' },
+                                { name: 'Burkina Faso', code: '+226', flag: '🇧🇫' },
+                                { name: 'Guinee', code: '+224', flag: '🇬🇳' },
+                                { name: 'Benin', code: '+229', flag: '🇧🇯' },
+                                { name: 'Togo', code: '+228', flag: '🇹🇬' },
+                                { name: 'Rwanda', code: '+250', flag: '🇷🇼' },
+                                { name: 'Uganda', code: '+256', flag: '🇺🇬' },
+                                { name: 'Congo', code: '+242', flag: '🇨🇬' },
+                                { name: 'Angola', code: '+244', flag: '🇦🇴' },
+                                { name: 'Mozambique', code: '+258', flag: '🇲🇿' },
+                                { name: 'Madagascar', code: '+261', flag: '🇲🇬' },
+                                { name: 'Afrique du Sud', code: '+27', flag: '🇿🇦' },
+                                { name: 'Zimbabwe', code: '+263', flag: '🇿🇼' },
+                                { name: 'Zambie', code: '+260', flag: '🇿🇲' },
+                                { name: 'Botswana', code: '+267', flag: '🇧🇼' },
+                                { name: 'Maurice', code: '+230', flag: '🇲🇺' },
+                                { name: 'Gabon', code: '+241', flag: '🇬🇦' },
+                                { name: 'France', code: '+33', flag: '🇫🇷' },
+                                { name: 'Allemagne', code: '+49', flag: '🇩🇪' },
+                                { name: 'Espagne', code: '+34', flag: '🇪🇸' },
+                                { name: 'Italie', code: '+39', flag: '🇮🇹' },
+                                { name: 'Portugal', code: '+351', flag: '🇵🇹' },
+                                { name: 'Royaume-Uni', code: '+44', flag: '🇬🇧' },
+                                { name: 'Belgique', code: '+32', flag: '🇧🇪' },
+                                { name: 'Pays-Bas', code: '+31', flag: '🇳🇱' },
+                                { name: 'Suisse', code: '+41', flag: '🇨🇭' },
+                                { name: 'Autriche', code: '+43', flag: '🇦🇹' },
+                                { name: 'Suede', code: '+46', flag: '🇸🇪' },
+                                { name: 'Norvege', code: '+47', flag: '🇳🇴' },
+                                { name: 'Danemark', code: '+45', flag: '🇩🇰' },
+                                { name: 'Finlande', code: '+358', flag: '🇫🇮' },
+                                { name: 'Irlande', code: '+353', flag: '🇮🇪' },
+                                { name: 'Grece', code: '+30', flag: '🇬🇷' },
+                                { name: 'Turquie', code: '+90', flag: '🇹🇷' },
+                                { name: 'Pologne', code: '+48', flag: '🇵🇱' },
+                                { name: 'Rep. tcheque', code: '+420', flag: '🇨🇿' },
+                                { name: 'Hongrie', code: '+36', flag: '🇭🇺' },
+                                { name: 'Roumanie', code: '+40', flag: '🇷🇴' },
+                                { name: 'Bulgarie', code: '+359', flag: '🇧🇬' },
+                                { name: 'Croatie', code: '+385', flag: '🇭🇷' },
+                                { name: 'Serbie', code: '+381', flag: '🇷🇸' },
+                                { name: 'Ukraine', code: '+380', flag: '🇺🇦' },
+                                { name: 'Russie', code: '+7', flag: '🇷🇺' },
+                                { name: 'Slovaquie', code: '+421', flag: '🇸🇰' },
+                                { name: 'Slovenie', code: '+386', flag: '🇸🇮' },
+                                { name: 'Luxembourg', code: '+352', flag: '🇱🇺' },
+                                { name: 'Malte', code: '+356', flag: '🇲🇹' },
+                                { name: 'Chypre', code: '+357', flag: '🇨🇾' },
+                                { name: 'Estonie', code: '+372', flag: '🇪🇪' },
+                                { name: 'Lettonie', code: '+371', flag: '🇱🇻' },
+                                { name: 'Lituanie', code: '+370', flag: '🇱🇹' },
+                                { name: 'Albanie', code: '+355', flag: '🇦🇱' },
+                                { name: 'Macedoine', code: '+389', flag: '🇲🇰' },
+                                { name: 'Bosnie', code: '+387', flag: '🇧🇦' },
+                                { name: 'Montenegro', code: '+382', flag: '🇲🇪' },
+                                { name: 'Kosovo', code: '+383', flag: '🇽🇰' },
+                                { name: 'Andorre', code: '+376', flag: '🇦🇩' },
+                                { name: 'Monaco', code: '+377', flag: '🇲🇨' },
+                                { name: 'Islande', code: '+354', flag: '🇮🇸' },
+                                { name: 'Belarus', code: '+375', flag: '🇧🇾' },
+                                { name: 'Moldova', code: '+373', flag: '🇲🇩' },
+                                { name: 'Georgie', code: '+995', flag: '🇬🇪' },
+                                { name: 'Armenie', code: '+374', flag: '🇦🇲' },
+                                { name: 'Azerbaidjan', code: '+994', flag: '🇦🇿' },
+                                { name: 'Kazakhstan', code: '+7', flag: '🇰🇿' },
+                                { name: 'Ouzbekistan', code: '+998', flag: '🇺🇿' },
+                                { name: 'Turkmenistan', code: '+993', flag: '🇹🇲' },
+                                { name: 'Kirghizistan', code: '+996', flag: '🇰🇬' },
+                                { name: 'Tadjikistan', code: '+992', flag: '🇹🇯' },
+                                { name: 'Afghanistan', code: '+93', flag: '🇦🇫' },
+                                { name: 'Pakistan', code: '+92', flag: '🇵🇰' },
+                                { name: 'Inde', code: '+91', flag: '🇮🇳' },
+                                { name: 'Bangladesh', code: '+880', flag: '🇧🇩' },
+                                { name: 'Sri Lanka', code: '+94', flag: '🇱🇰' },
+                                { name: 'Nepal', code: '+977', flag: '🇳🇵' },
+                                { name: 'Myanmar', code: '+95', flag: '🇲🇲' },
+                                { name: 'Thaïlande', code: '+66', flag: '🇹🇭' },
+                                { name: 'Vietnam', code: '+84', flag: '🇻🇳' },
+                                { name: 'Cambodge', code: '+855', flag: '🇰🇭' },
+                                { name: 'Laos', code: '+856', flag: '🇱🇦' },
+                                { name: 'Malaisie', code: '+60', flag: '🇲🇾' },
+                                { name: 'Singapour', code: '+65', flag: '🇸🇬' },
+                                { name: 'Indonesie', code: '+62', flag: '🇮🇩' },
+                                { name: 'Philippines', code: '+63', flag: '🇵🇭' },
+                                { name: 'Chine', code: '+86', flag: '🇨🇳' },
+                                { name: 'Japon', code: '+81', flag: '🇯🇵' },
+                                { name: 'Coree du Sud', code: '+82', flag: '🇰🇷' },
+                                { name: 'Mongolie', code: '+976', flag: '🇲🇳' },
+                                { name: 'Brunei', code: '+673', flag: '🇧🇳' },
+                                { name: 'Arabie Saoudite', code: '+966', flag: '🇸🇦' },
+                                { name: 'Emirats arabes', code: '+971', flag: '🇦🇪' },
+                                { name: 'Qatar', code: '+974', flag: '🇶🇦' },
+                                { name: 'Koweit', code: '+965', flag: '🇰🇼' },
+                                { name: 'Bahrein', code: '+973', flag: '🇧🇭' },
+                                { name: 'Oman', code: '+968', flag: '🇴🇲' },
+                                { name: 'Jordanie', code: '+962', flag: '🇯🇴' },
+                                { name: 'Liban', code: '+961', flag: '🇱🇧' },
+                                { name: 'Syrie', code: '+963', flag: '🇸🇾' },
+                                { name: 'Irak', code: '+964', flag: '🇮🇶' },
+                                { name: 'Iran', code: '+98', flag: '🇮🇷' },
+                                { name: 'Yemen', code: '+967', flag: '🇾🇪' },
+                                { name: 'Palestine', code: '+970', flag: '🇵🇸' },
+                                { name: 'USA', code: '+1', flag: '🇺🇸' },
+                                { name: 'Canada', code: '+1', flag: '🇨🇦' },
+                                { name: 'Mexique', code: '+52', flag: '🇲🇽' },
+                                { name: 'Bresil', code: '+55', flag: '🇧🇷' },
+                                { name: 'Argentine', code: '+54', flag: '🇦🇷' },
+                                { name: 'Colombie', code: '+57', flag: '🇨🇴' },
+                                { name: 'Chili', code: '+56', flag: '🇨🇱' },
+                                { name: 'Peru', code: '+51', flag: '🇵🇪' },
+                                { name: 'Venezuela', code: '+58', flag: '🇻🇪' },
+                                { name: 'Equateur', code: '+593', flag: '🇪🇨' },
+                                { name: 'Bolivie', code: '+591', flag: '🇧🇴' },
+                                { name: 'Uruguay', code: '+598', flag: '🇺🇾' },
+                                { name: 'Paraguay', code: '+595', flag: '🇵🇾' },
+                                { name: 'Cuba', code: '+53', flag: '🇨🇺' },
+                                { name: 'Haiti', code: '+509', flag: '🇭🇹' },
+                                { name: 'Australie', code: '+61', flag: '🇦🇺' },
+                                { name: 'Nouvelle-Zelande', code: '+64', flag: '🇳🇿' }
                             ],
-                            selected: { name: 'Algerie', code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
+                            selected: { name: 'Algerie', code: '+213', flag: '🇩🇿' },
                             phoneNumber: '',
                             get filteredCountries() {
                                 if (!this.search) return this.countries;
