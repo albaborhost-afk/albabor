@@ -24,7 +24,7 @@ Route::get('/', function () {
 
     $latestListings = Listing::where('status', 'active')
         ->latest()
-        ->take(8)
+        ->take(25)
         ->get();
 
     return view('welcome', compact('featuredListings', 'latestListings'));
