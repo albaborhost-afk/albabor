@@ -35,22 +35,10 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center space-x-0.5">
-                    <a href="{{ route('listings.index', ['category' => 'boat']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #1B4F72;"></span>
-                        Bateaux
-                    </a>
-                    <a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="nav-link-animated px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5" style="color: #17A2B8;">
-                        <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #17A2B8;"></span>
-                        Jet-Skis
-                    </a>
-                    <a href="{{ route('listings.index', ['category' => 'engine']) }}" class="nav-link-animated px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5" style="color: #E67E22;">
-                        <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #F39C12;"></span>
-                        Moteurs
-                    </a>
-                    <a href="{{ route('listings.index', ['category' => 'parts']) }}" class="nav-link-animated px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5" style="color: #8E44AD;">
-                        <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #9B59B6;"></span>
-                        Pieces
-                    </a>
+                    <a href="{{ route('listings.index', ['category' => 'boat']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">Bateaux</a>
+                    <a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">Jet-Skis</a>
+                    <a href="{{ route('listings.index', ['category' => 'engine']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">Moteurs</a>
+                    <a href="{{ route('listings.index', ['category' => 'parts']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">Pieces</a>
                     <div style="width: 1px; height: 20px; background: linear-gradient(180deg, transparent, #E0E6ED, transparent); margin: 0 6px;"></div>
                     @auth
                         <a href="{{ route('favorites.index') }}" class="nav-link-animated nav-item-favorites px-3.5 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
