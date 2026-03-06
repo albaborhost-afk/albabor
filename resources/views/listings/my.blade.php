@@ -7,12 +7,12 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    Accueil
+                    {{ __('Accueil') }}
                 </a>
                 <svg class="w-4 h-4" style="color: #E0E6ED;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <span style="color: #1B2A4A;" class="font-medium">Mes Annonces</span>
+                <span style="color: #1B2A4A;" class="font-medium">{{ __('Mes Annonces') }}</span>
             </nav>
         </div>
     </div>
@@ -24,8 +24,8 @@
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-8">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 class="text-3xl font-extrabold tracking-tight text-white">Mes Annonces</h1>
-                    <p class="mt-1 text-white/70">Gerez vos annonces publiees</p>
+                    <h1 class="text-3xl font-extrabold tracking-tight text-white">{{ __('Mes Annonces') }}</h1>
+                    <p class="mt-1 text-white/70">{{ __('Gerez vos annonces publiees') }}</p>
                 </div>
                 <a href="{{ route('listings.create') }}"
                    class="inline-flex items-center px-5 py-2.5 bg-white rounded-xl font-bold transition-all duration-300 transform hover:-translate-y-0.5"
@@ -33,7 +33,7 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
-                    Nouvelle annonce
+                    {{ __('Nouvelle annonce') }}
                 </a>
             </div>
         </div>
@@ -60,7 +60,7 @@
                         </div>
                         <div class="flex-1">
                             <p class="text-white font-bold text-base">{{ session('success') }}</p>
-                            <p class="text-white/70 text-xs mt-0.5">Notre équipe AlBabor prendra contact avec vous très prochainement.</p>
+                            <p class="text-white/70 text-xs mt-0.5">{{ __('Notre equipe AlBabor prendra contact avec vous tres prochainement.') }}</p>
                         </div>
                         {{-- Animated pulse dot --}}
                         <div class="flex-shrink-0 flex items-center gap-1.5">
@@ -68,15 +68,15 @@
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style="background: #25D366;"></span>
                                 <span class="relative inline-flex rounded-full h-3 w-3" style="background: #25D366;"></span>
                             </span>
-                            <span class="text-white/80 text-xs font-medium">En ligne</span>
+                            <span class="text-white/80 text-xs font-medium">{{ __('En ligne') }}</span>
                         </div>
                     </div>
 
                     {{-- Bottom contact section --}}
                     <div class="px-6 py-5 flex flex-col sm:flex-row items-center gap-3" style="background: white;">
                         <div class="flex-1">
-                            <p class="text-sm font-semibold" style="color: #1B2A4A;">Vous avez une question ? Contactez-nous directement :</p>
-                            <p class="text-xs mt-0.5" style="color: #9BA8B7;">Réponse sous 24h • Équipe disponible 7j/7</p>
+                            <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ __('Vous avez une question ? Contactez-nous directement :') }}</p>
+                            <p class="text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Reponse sous 24h • Equipe disponible 7j/7') }}</p>
                         </div>
                         <div class="flex gap-3 flex-shrink-0">
                             {{-- WhatsApp --}}
@@ -120,11 +120,11 @@
                     <table class="min-w-full">
                         <thead>
                             <tr style="background: #F0F4F8; border-bottom: 1px solid #E0E6ED;">
-                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color: #6B7B8D;">Annonce</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color: #6B7B8D;">Prix</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color: #6B7B8D;">Statut</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color: #6B7B8D;">Stats</th>
-                                <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider" style="color: #6B7B8D;">Actions</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color: #6B7B8D;">{{ __('Annonce') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color: #6B7B8D;">{{ __('Prix') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color: #6B7B8D;">{{ __('Statut') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color: #6B7B8D;">{{ __('Stats') }}</th>
+                                <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider" style="color: #6B7B8D;">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -156,7 +156,7 @@
                                                 <div class="text-sm mt-0.5" style="color: #9BA8B7;">{{ $listing->category_label }} · {{ $listing->wilaya }}</div>
                                                 @if($listing->isFeatured())
                                                     <span class="inline-flex items-center mt-1 px-2 py-0.5 rounded-full text-xs font-semibold" style="background: linear-gradient(135deg, #FFA500, #FF7200); color: white;">
-                                                        En vedette · {{ $listing->featured_until->format('d/m/Y') }}
+                                                        {{ __('En vedette') }} · {{ $listing->featured_until->format('d/m/Y') }}
                                                     </span>
                                                 @endif
                                             </div>
@@ -209,20 +209,20 @@
                                         @if($listing->status === 'pending_review')
                                             <p class="text-xs mt-1.5 flex items-center gap-1" style="color: #9BA8B7;">
                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                Réponse admin sous 24h
+                                                {{ __('Reponse admin sous 24h') }}
                                             </p>
                                         @elseif($listing->status === 'awaiting_payment')
-                                            <p class="text-xs mt-1.5" style="color: #9BA8B7;">Paiement requis pour publier</p>
+                                            <p class="text-xs mt-1.5" style="color: #9BA8B7;">{{ __('Paiement requis pour publier') }}</p>
                                         @elseif($listing->status === 'rejected')
-                                            <p class="text-xs mt-1.5 font-semibold" style="color: #E74C3C;">Annonce refusee</p>
+                                            <p class="text-xs mt-1.5 font-semibold" style="color: #E74C3C;">{{ __('Annonce refusee') }}</p>
                                             @if($listing->rejection_reason)
                                                 <div class="mt-2 p-2.5 rounded-lg text-xs max-w-xs" style="background: rgba(231,76,60,0.06); border: 1px solid rgba(231,76,60,0.15); color: #1B2A4A;">
-                                                    <p class="font-semibold mb-1" style="color: #E74C3C;">Raison :</p>
+                                                    <p class="font-semibold mb-1" style="color: #E74C3C;">{{ __('Raison :') }}</p>
                                                     <p style="color: #6B7B8D;">{{ $listing->rejection_reason }}</p>
                                                 </div>
                                                 <a href="{{ route('listings.edit', $listing) }}" class="inline-flex items-center gap-1 mt-2 text-xs font-semibold transition-opacity hover:opacity-80" style="color: #17A2B8;">
                                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                                    Corriger et republier
+                                                    {{ __('Corriger et republier') }}
                                                 </a>
                                             @endif
                                         @endif
@@ -253,24 +253,24 @@
                                             @if($listing->status === 'awaiting_payment')
                                                 <a href="{{ route('listings.payment', $listing) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(255, 107, 107, 0.1); color: #FF6B6B;">
                                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                                                    Payer
+                                                    {{ __('Payer') }}
                                                 </a>
                                             @endif
 
                                             @if($listing->status === 'active')
                                                 <a href="{{ route('listings.show', $listing) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(23, 162, 184, 0.1); color: #17A2B8;">
                                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                    Voir
+                                                    {{ __('Voir') }}
                                                 </a>
                                                 <a href="{{ route('listings.edit', $listing) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(107, 123, 141, 0.1); color: #6B7B8D;">
                                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                                    Modifier
+                                                    {{ __('Modifier') }}
                                                 </a>
 
                                                 @if(!$listing->isFeatured())
                                                     <a href="{{ route('listings.feature', $listing) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(243, 156, 18, 0.1); color: #F39C12;">
                                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-                                                        Vedette
+                                                        {{ __('Vedette') }}
                                                     </a>
                                                 @endif
 
@@ -278,7 +278,7 @@
                                                     @csrf
                                                     <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(155, 168, 183, 0.1); color: #9BA8B7;">
                                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                        Pause
+                                                        {{ __('Pause') }}
                                                     </button>
                                                 </form>
 
@@ -286,7 +286,7 @@
                                                     @csrf
                                                     <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(39, 174, 96, 0.1); color: #27AE60;">
                                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                        Vendu
+                                                        {{ __('Vendu') }}
                                                     </button>
                                                 </form>
                                             @endif
@@ -296,7 +296,7 @@
                                                     @csrf
                                                     <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(39, 174, 96, 0.1); color: #27AE60;">
                                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                        Reactiver
+                                                        {{ __('Reactiver') }}
                                                     </button>
                                                 </form>
                                             @endif
@@ -304,16 +304,16 @@
                                             @if(in_array($listing->status, ['draft', 'rejected', 'paused']))
                                                 <a href="{{ route('listings.edit', $listing) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(107, 123, 141, 0.1); color: #6B7B8D;">
                                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                                    Modifier
+                                                    {{ __('Modifier') }}
                                                 </a>
                                             @endif
 
-                                            <form action="{{ route('listings.destroy', $listing) }}" method="POST" class="inline" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cette annonce ?')">
+                                            <form action="{{ route('listings.destroy', $listing) }}" method="POST" class="inline" onsubmit="return confirm('{{ addslashes(__('Etes-vous sur de vouloir supprimer cette annonce ?')) }}')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(231, 76, 60, 0.1); color: #E74C3C;">
                                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                    Supprimer
+                                                    {{ __('Supprimer') }}
                                                 </button>
                                             </form>
                                         </div>
@@ -366,19 +366,19 @@
                                         </span>
                                     </div>
                                     @if($listing->status === 'pending_review')
-                                        <p class="text-[10px] mt-1" style="color: #9BA8B7;">Réponse admin sous 24h</p>
+                                        <p class="text-[10px] mt-1" style="color: #9BA8B7;">{{ __('Reponse admin sous 24h') }}</p>
                                     @elseif($listing->status === 'awaiting_payment')
-                                        <p class="text-[10px] mt-1" style="color: #FF6B6B;">Paiement requis</p>
+                                        <p class="text-[10px] mt-1" style="color: #FF6B6B;">{{ __('Paiement requis') }}</p>
                                     @elseif($listing->status === 'rejected')
-                                        <p class="text-[10px] mt-1 font-semibold" style="color: #E74C3C;">Annonce refusee</p>
+                                        <p class="text-[10px] mt-1 font-semibold" style="color: #E74C3C;">{{ __('Annonce refusee') }}</p>
                                         @if($listing->rejection_reason)
                                             <div class="mt-2 p-2.5 rounded-lg text-xs" style="background: rgba(231,76,60,0.06); border: 1px solid rgba(231,76,60,0.15); color: #1B2A4A;">
-                                                <p class="font-semibold mb-1" style="color: #E74C3C;">Raison :</p>
+                                                <p class="font-semibold mb-1" style="color: #E74C3C;">{{ __('Raison :') }}</p>
                                                 <p style="color: #6B7B8D;">{{ $listing->rejection_reason }}</p>
                                             </div>
                                             <a href="{{ route('listings.edit', $listing) }}" class="inline-flex items-center gap-1 mt-2 text-xs font-semibold" style="color: #17A2B8;">
                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                                Corriger et republier
+                                                {{ __('Corriger et republier') }}
                                             </a>
                                         @endif
                                     @endif
@@ -410,7 +410,7 @@
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                         </svg>
-                                        Modifier
+                                        {{ __('Modifier') }}
                                     </a>
                                     @endif
 
@@ -422,7 +422,7 @@
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                                         </svg>
-                                        Payer
+                                        {{ __('Payer') }}
                                     </a>
                                     @endif
 
@@ -434,7 +434,7 @@
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                         </svg>
-                                        Voir
+                                        {{ __('Voir') }}
                                     </a>
                                     @endif
 
@@ -449,7 +449,7 @@
                                        class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
                                        style="background: rgba(243,156,18,0.1); color: #D68910; border: 1.5px solid rgba(243,156,18,0.2);">
                                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                        Vedette
+                                        {{ __('Vedette') }}
                                     </a>
                                     @endif
 
@@ -460,32 +460,32 @@
                                                 class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
                                                 style="background: rgba(39,174,96,0.1); color: #1E8449; border: 1.5px solid rgba(39,174,96,0.2);">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                            Vendu
+                                            {{ __('Vendu') }}
                                         </button>
                                     </form>
                                     @endif
 
-                                    {{-- Réactiver --}}
+                                    {{-- Reactiver --}}
                                     @if($listing->status === 'paused')
                                     <form action="{{ route('listings.reactivate', $listing) }}" method="POST" class="inline">@csrf
                                         <button type="submit"
                                                 class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
                                                 style="background: rgba(39,174,96,0.1); color: #1E8449; border: 1.5px solid rgba(39,174,96,0.2);">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                            Réactiver
+                                            {{ __('Reactiver') }}
                                         </button>
                                     </form>
                                     @endif
 
-                                    {{-- Supprimer — toujours à droite --}}
+                                    {{-- Supprimer --}}
                                     <form action="{{ route('listings.destroy', $listing) }}" method="POST" class="inline ml-auto"
-                                          onsubmit="return confirm('Supprimer cette annonce définitivement ?')">
+                                          onsubmit="return confirm('{{ addslashes(__('Supprimer cette annonce definitivement ?')) }}')">
                                         @csrf @method('DELETE')
                                         <button type="submit"
                                                 class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
                                                 style="background: rgba(231,76,60,0.08); color: #E74C3C; border: 1.5px solid rgba(231,76,60,0.18);">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                            Supprimer
+                                            {{ __('Supprimer') }}
                                         </button>
                                     </form>
                                 </div>
@@ -516,9 +516,9 @@
                         </div>
                     </div>
 
-                    <h3 class="text-2xl font-bold mb-3" style="color: #1B2A4A;">Aucune annonce pour le moment</h3>
+                    <h3 class="text-2xl font-bold mb-3" style="color: #1B2A4A;">{{ __('Aucune annonce pour le moment') }}</h3>
                     <p class="text-lg mb-8 max-w-md mx-auto" style="color: #6B7B8D;">
-                        Commencez par publier votre premiere annonce et atteignez des milliers d'acheteurs.
+                        {{ __("Commencez par publier votre premiere annonce et atteignez des milliers d'acheteurs.") }}
                     </p>
                     <a href="{{ route('listings.create') }}"
                        class="inline-flex items-center px-6 py-3 gradient-primary rounded-xl font-bold text-white transition-all duration-300 transform hover:-translate-y-1"
@@ -526,7 +526,7 @@
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Publier une annonce
+                        {{ __('Publier une annonce') }}
                     </a>
                 </div>
             @endif

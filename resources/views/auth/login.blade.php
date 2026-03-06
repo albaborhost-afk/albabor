@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Connexion - AlBabor</title>
+    <title>{{ __('Connexion') }} - AlBabor</title>
     <link rel="icon" type="image/png" href="/favicon.png?v=5">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
@@ -315,14 +315,14 @@
                     <img src="/images/logo-full.png" alt="AlBabor" style="height: 48px; filter: brightness(0) invert(1) drop-shadow(0 4px 16px rgba(0,0,0,0.3));">
                 </div>
 
-                <h1 class="text-3xl font-bold text-white mb-3 text-center auth-heading" style="text-shadow: 0 2px 20px rgba(0,0,0,0.25); letter-spacing: -0.02em;">La marketplace nautique</h1>
-                <p class="text-lg mb-10 text-center auth-subheading" style="color: rgba(255,255,255,0.7);">N°1 en Algerie</p>
+                <h1 class="text-3xl font-bold text-white mb-3 text-center auth-heading" style="text-shadow: 0 2px 20px rgba(0,0,0,0.25); letter-spacing: -0.02em;">{{ __('La marketplace nautique') }}</h1>
+                <p class="text-lg mb-10 text-center auth-subheading" style="color: rgba(255,255,255,0.7);">{{ __('N°1 en Algerie') }}</p>
 
                 <div class="space-y-5 max-w-sm w-full">
                     @foreach([
-                        ['icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'text' => 'Achetez et vendez en toute securite'],
-                        ['icon' => 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'text' => 'Tous les pays de la Méditerranée'],
-                        ['icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'text' => 'Paiement DZD et EUR acceptes'],
+                        ['icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'text' => __('Achetez et vendez en toute securite')],
+                        ['icon' => 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'text' => __('Tous les pays de la Méditerranée')],
+                        ['icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'text' => __('Paiement DZD et EUR acceptes')],
                     ] as $item)
                         <div class="flex items-center gap-4 auth-feature-item" style="color: rgba(255,255,255,0.85); animation-delay: {{ ($loop->index + 1) * 0.2 }}s;">
                             <div class="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
@@ -362,8 +362,8 @@
                     </div>
 
                     <div class="text-center mb-8">
-                        <h2 class="text-2xl font-bold mb-2" style="color: #1B2A4A; letter-spacing: -0.02em;">Bon retour parmi nous</h2>
-                        <p class="text-sm" style="color: #6B7B8D;">Connectez-vous pour continuer</p>
+                        <h2 class="text-2xl font-bold mb-2" style="color: #1B2A4A; letter-spacing: -0.02em;">{{ __('Bon retour parmi nous') }}</h2>
+                        <p class="text-sm" style="color: #6B7B8D;">{{ __('Connectez-vous pour continuer') }}</p>
                     </div>
 
                     @if (session('status'))
@@ -380,7 +380,7 @@
 
                         <!-- Email -->
                         <div class="auth-form-group">
-                            <label for="email" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">Adresse email</label>
+                            <label for="email" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">{{ __('Adresse email') }}</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                     <svg class="w-[18px] h-[18px] auth-input-icon" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -389,7 +389,7 @@
                                 </div>
                                 <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
                                        class="auth-input w-full pl-12 pr-4 py-3.5 text-sm font-medium @error('email') !border-red-400 @enderror"
-                                       placeholder="votre@email.com">
+                                       placeholder="{{ __('votre@email.com') }}">
                             </div>
                             @error('email')
                                 <div class="auth-error">
@@ -403,7 +403,7 @@
 
                         <!-- Password -->
                         <div class="auth-form-group">
-                            <label for="password" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">Mot de passe</label>
+                            <label for="password" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">{{ __('Mot de passe') }}</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                     <svg class="w-[18px] h-[18px] auth-input-icon" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -412,7 +412,7 @@
                                 </div>
                                 <input id="password" :type="showPassword ? 'text' : 'password'" name="password" required autocomplete="current-password"
                                        class="auth-input w-full pl-12 pr-12 py-3.5 text-sm font-medium @error('password') !border-red-400 @enderror"
-                                       placeholder="Votre mot de passe">
+                                       placeholder="{{ __('Votre mot de passe') }}">
                                 <!-- Password Toggle -->
                                 <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 pr-4 flex items-center password-toggle" tabindex="-1">
                                     <svg x-show="!showPassword" class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -438,10 +438,10 @@
                         <div class="flex items-center justify-between flex-wrap gap-2">
                             <label for="remember_me" class="inline-flex items-center cursor-pointer group">
                                 <input id="remember_me" type="checkbox" name="remember" class="auth-checkbox">
-                                <span class="ml-2.5 text-sm transition-colors group-hover:text-[#1B2A4A]" style="color: #6B7B8D;">Se souvenir de moi</span>
+                                <span class="ml-2.5 text-sm transition-colors group-hover:text-[#1B2A4A]" style="color: #6B7B8D;">{{ __('Se souvenir de moi') }}</span>
                             </label>
                             <a href="{{ route('password.request') }}" class="text-sm font-semibold auth-link">
-                                Mot de passe oublie?
+                                {{ __('Mot de passe oublie?') }}
                             </a>
                         </div>
 
@@ -449,7 +449,7 @@
                         <button type="submit" class="w-full py-3.5 rounded-2xl text-white font-semibold text-sm auth-submit-btn"
                                 style="box-shadow: 0 8px 25px rgba(27, 79, 114, 0.3);">
                             <span class="relative z-10 flex items-center justify-center gap-2">
-                                Se connecter
+                                {{ __('Se connecter') }}
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                             </span>
                         </button>
@@ -461,7 +461,7 @@
                             <div class="auth-divider w-full"></div>
                         </div>
                         <div class="relative flex justify-center text-xs">
-                            <span class="px-4 font-medium" style="background: rgba(255,255,255,0.72); color: #9BA8B7;">ou</span>
+                            <span class="px-4 font-medium" style="background: rgba(255,255,255,0.72); color: #9BA8B7;">{{ __('ou') }}</span>
                         </div>
                     </div>
 
@@ -475,14 +475,14 @@
                             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                         </svg>
-                        Se connecter avec Google
+                        {{ __('Se connecter avec Google') }}
                     </a>
 
                     <!-- Register Link -->
                     <div class="text-center mt-5">
                         <p class="text-sm" style="color: #6B7B8D;">
-                            Pas de compte?
-                            <a href="{{ route('register') }}" class="font-semibold ml-1 auth-link">S'inscrire</a>
+                            {{ __('Pas de compte?') }}
+                            <a href="{{ route('register') }}" class="font-semibold ml-1 auth-link">{{ __("S'inscrire") }}</a>
                         </p>
                     </div>
                 </div>
@@ -491,7 +491,7 @@
                 <div class="text-center mt-7">
                     <a href="{{ route('home') }}" class="inline-flex items-center text-sm font-medium transition-all duration-300 hover:text-[#1B4F72]" style="color: #9BA8B7;">
                         <svg class="w-4 h-4 mr-1.5 transition-transform duration-300" style="transform: translateX(0);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                        Retour a l'accueil
+                        {{ __("Retour a l'accueil") }}
                     </a>
                 </div>
             </div>

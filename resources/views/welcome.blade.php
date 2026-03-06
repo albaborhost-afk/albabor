@@ -19,12 +19,12 @@
 
                 <!-- Tagline -->
                 <h1 class="text-2xl sm:text-3xl lg:text-5xl font-extrabold text-white leading-tight mb-5 animate-fade-in-up stagger-1" style="text-shadow: 0 2px 24px rgba(0,0,0,0.3); letter-spacing: -0.02em;">
-                    La marketplace nautique<br>
-                    <span style="background: linear-gradient(135deg, #5DADE2, #76D7C4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">n°1 en Algerie</span>
+                    {{ __('La marketplace nautique') }}<br>
+                    <span style="background: linear-gradient(135deg, #5DADE2, #76D7C4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ __('n°1 en Algerie') }}</span>
                 </h1>
 
                 <p class="text-sm sm:text-base lg:text-lg max-w-lg mx-auto leading-relaxed mb-10 animate-fade-in-up stagger-2" style="color: rgba(255,255,255,0.7);">
-                    Achetez et vendez des bateaux, jet-skis, moteurs et pieces detachees en toute confiance.
+                    {{ __('Achetez et vendez des bateaux, jet-skis, moteurs et pieces detachees en toute confiance.') }}
                 </p>
 
                 <!-- Search bar with glass-morphism -->
@@ -36,11 +36,11 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </div>
-                            <input type="text" name="q" placeholder="Rechercher un bateau, moteur, jet-ski..."
+                            <input type="text" name="q" placeholder="{{ __('Rechercher un bateau, moteur, jet-ski...') }}"
                                    class="flex-1 py-4 px-2 text-sm border-0 outline-none focus:ring-0 bg-transparent" style="color: #1B2A4A;">
                             <button type="submit" class="hero-search-btn m-1.5 px-4 sm:px-6 py-3 rounded-xl text-white text-sm font-semibold">
                                 <svg class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                                <span class="hidden sm:inline">Rechercher</span>
+                                <span class="hidden sm:inline">{{ __('Rechercher') }}</span>
                             </button>
                         </div>
                     </form>
@@ -49,10 +49,10 @@
                 <!-- Quick category links -->
                 <div class="flex flex-wrap justify-center gap-2.5 mb-8 animate-fade-in-up stagger-3">
                     @foreach([
-                        'boat' => ['label' => 'Bateaux', 'icon' => 'M3 17h18l-3-8H6L3 17zM12 3v6M9 6h6'],
-                        'jetski' => ['label' => 'Jet-Skis', 'icon' => 'M13 10V3L4 14h7v7l9-11h-7z'],
-                        'engine' => ['label' => 'Moteurs', 'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z'],
-                        'parts' => ['label' => 'Pieces', 'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
+                        'boat' => ['label' => __('Bateaux'), 'icon' => 'M3 17h18l-3-8H6L3 17zM12 3v6M9 6h6'],
+                        'jetski' => ['label' => __('Jet-Skis'), 'icon' => 'M13 10V3L4 14h7v7l9-11h-7z'],
+                        'engine' => ['label' => __('Moteurs'), 'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z'],
+                        'parts' => ['label' => __('Pieces'), 'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
                     ] as $catKey => $cat)
                         <a href="{{ route('listings.index', ['category' => $catKey]) }}" class="hero-category-pill inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium text-white">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $cat['icon'] }}"/></svg>
@@ -65,17 +65,17 @@
                 <div class="flex flex-col sm:flex-row justify-center gap-3 animate-fade-in-up stagger-4">
                     <a href="{{ route('listings.index') }}" class="btn-ghost group px-7 py-3.5 text-sm font-semibold rounded-2xl">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        Explorer les annonces
+                        {{ __('Explorer les annonces') }}
                     </a>
                     @guest
                         <a href="{{ route('register') }}" class="btn-white px-7 py-3.5 text-sm font-semibold rounded-2xl">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                            Creer un compte
+                            {{ __('Creer un compte') }}
                         </a>
                     @else
                         <a href="{{ route('listings.create') }}" class="btn-white px-7 py-3.5 text-sm font-semibold rounded-2xl">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                            Publier une annonce
+                            {{ __('Publier une annonce') }}
                         </a>
                     @endguest
                 </div>
@@ -94,18 +94,18 @@
     <div class="py-8 sm:py-10" style="background: #F0F4F8;">
         <div class="max-w-7xl mx-auto">
             <div class="flex items-center justify-between mb-5 px-4 sm:px-6 lg:px-8">
-                <h2 class="text-xl sm:text-2xl font-black tracking-tight" style="color: #1B2A4A;">Nos categories</h2>
+                <h2 class="text-xl sm:text-2xl font-black tracking-tight" style="color: #1B2A4A;">{{ __('Nos categories') }}</h2>
                 <a href="{{ route('listings.index') }}" class="text-xs font-semibold flex items-center gap-1" style="color: #17A2B8;">
-                    Voir tout <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    {{ __('Voir tout') }} <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
             </div>
 
             <div class="flex lg:grid lg:grid-cols-4 gap-3 sm:gap-5 overflow-x-auto lg:overflow-visible px-4 sm:px-6 lg:px-8 pb-2 lg:pb-0" style="scrollbar-width:none; -ms-overflow-style:none;">
                 @foreach([
-                    'boat'   => ['label' => 'Bateaux',  'desc' => 'Voiliers, yachts, semi-rigides', 'img' => '/images/yacht.png',   'bg' => 'linear-gradient(145deg,#E8F4FD,#D6EAF8)', 'accent' => '#2471A3', 'shadow' => '0 8px 30px rgba(36,113,163,0.18)'],
-                    'jetski' => ['label' => 'Jet-Skis', 'desc' => 'Scooters des mers',               'img' => '/images/jetski.png',  'bg' => 'linear-gradient(145deg,#E8F8F9,#D1F2EB)', 'accent' => '#17A2B8', 'shadow' => '0 8px 30px rgba(23,162,184,0.18)'],
-                    'engine' => ['label' => 'Moteurs',  'desc' => 'Hors-bord, in-bord',              'img' => '/images/moteurs.png', 'bg' => 'linear-gradient(145deg,#FEF9E7,#FDEBD0)', 'accent' => '#E67E22', 'shadow' => '0 8px 30px rgba(230,126,34,0.18)'],
-                    'parts'  => ['label' => 'Pieces',   'desc' => 'Accessoires & equipements',       'img' => '/images/pieces.png',  'bg' => 'linear-gradient(145deg,#F5EEF8,#EBD5F9)', 'accent' => '#8E44AD', 'shadow' => '0 8px 30px rgba(142,68,173,0.18)'],
+                    'boat'   => ['label' => __('Bateaux'),  'desc' => __('Voiliers, yachts, semi-rigides'), 'img' => '/images/yacht.png',   'bg' => 'linear-gradient(145deg,#E8F4FD,#D6EAF8)', 'accent' => '#2471A3', 'shadow' => '0 8px 30px rgba(36,113,163,0.18)'],
+                    'jetski' => ['label' => __('Jet-Skis'), 'desc' => __('Scooters des mers'),               'img' => '/images/jetski.png',  'bg' => 'linear-gradient(145deg,#E8F8F9,#D1F2EB)', 'accent' => '#17A2B8', 'shadow' => '0 8px 30px rgba(23,162,184,0.18)'],
+                    'engine' => ['label' => __('Moteurs'),  'desc' => __('Hors-bord, in-bord'),              'img' => '/images/moteurs.png', 'bg' => 'linear-gradient(145deg,#FEF9E7,#FDEBD0)', 'accent' => '#E67E22', 'shadow' => '0 8px 30px rgba(230,126,34,0.18)'],
+                    'parts'  => ['label' => __('Pieces'),   'desc' => __('Accessoires & equipements'),       'img' => '/images/pieces.png',  'bg' => 'linear-gradient(145deg,#F5EEF8,#EBD5F9)', 'accent' => '#8E44AD', 'shadow' => '0 8px 30px rgba(142,68,173,0.18)'],
                 ] as $catKey => $cat)
                     <a href="{{ route('listings.index', ['category' => $catKey]) }}"
                        class="group flex-shrink-0 lg:flex-shrink flex flex-col items-center text-center rounded-3xl overflow-hidden bg-white transition-all duration-300 active:scale-95"
@@ -152,14 +152,14 @@
                     </div>
                     <div>
                         <div class="flex items-center gap-2 mb-0.5">
-                            <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color: #1B2A4A;">Annonces sponsorisees</h2>
+                            <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color: #1B2A4A;">{{ __('Annonces sponsorisees') }}</h2>
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide" style="background: #FEF3C7; color: #B45309;">Premium</span>
                         </div>
-                        <p class="text-xs" style="color: #9BA8B7;">Selectionnees et mises en avant par notre equipe</p>
+                        <p class="text-xs" style="color: #9BA8B7;">{{ __('Selectionnees et mises en avant par notre equipe') }}</p>
                     </div>
                 </div>
                 <a href="{{ route('listings.index') }}" class="hidden sm:flex text-xs font-semibold items-center gap-1" style="color: #D97706;">
-                    Voir tout
+                    {{ __('Voir tout') }}
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
             </div>
@@ -172,7 +172,7 @@
                         <div class="absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold shadow-md"
                              style="background: linear-gradient(135deg,#F59E0B,#F97316); color: white; letter-spacing: 0.03em;">
                             <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            Sponsorise
+                            {{ __('Sponsorise') }}
                         </div>
                         <x-listing-card :listing="$listing" />
                     </div>
@@ -193,12 +193,12 @@
                         <svg class="w-5 h-5" style="color: #1B4F72;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div>
-                        <h2 class="text-lg sm:text-xl font-bold" style="color: #1B2A4A;">Dernieres annonces</h2>
-                        <p class="text-xs" style="color: #9BA8B7;">Fraichement publiees</p>
+                        <h2 class="text-lg sm:text-xl font-bold" style="color: #1B2A4A;">{{ __('Dernieres annonces') }}</h2>
+                        <p class="text-xs" style="color: #9BA8B7;">{{ __('Fraichement publiees') }}</p>
                     </div>
                 </div>
                 <a href="{{ route('listings.index') }}" class="btn-see-all hidden sm:inline-flex">
-                    Voir tout
+                    {{ __('Voir tout') }}
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
             </div>
@@ -211,7 +211,7 @@
 
             <div class="mt-8 text-center">
                 <a href="{{ route('listings.index') }}" class="btn-view-all rounded-2xl">
-                    Voir toutes les annonces
+                    {{ __('Voir toutes les annonces') }}
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
@@ -225,10 +225,10 @@
             <div class="text-center mb-6 reveal">
                 <span class="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-full mb-4" style="background: rgba(27, 79, 114, 0.06); color: #1B4F72;">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    Simple et rapide
+                    {{ __('Simple et rapide') }}
                 </span>
-                <h2 class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #1B2A4A;">Comment ca marche ?</h2>
-                <p class="mt-3 text-sm max-w-md mx-auto" style="color: #6B7B8D;">Vendez ou achetez en 3 etapes simples</p>
+                <h2 class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #1B2A4A;">{{ __('Comment ca marche ?') }}</h2>
+                <p class="mt-3 text-sm max-w-md mx-auto" style="color: #6B7B8D;">{{ __('Vendez ou achetez en 3 etapes simples') }}</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-6 relative reveal-stagger">
@@ -236,9 +236,9 @@
                 <div class="hidden md:block absolute connecting-line-animated" style="top: 48px; left: 20%; right: 20%;"></div>
 
                 @foreach([
-                    ['num' => '1', 'title' => 'Creez votre annonce', 'desc' => 'Ajoutez des photos, une description et fixez votre prix en quelques minutes.', 'gradient' => 'linear-gradient(135deg, #1B4F72, #2471A3)', 'icon' => 'M12 4v16m8-8H4', 'stepClass' => 'step-card-1'],
-                    ['num' => '2', 'title' => 'Recevez des offres', 'desc' => 'Les acheteurs vous contactent directement ou via notre systeme de mediation securise.', 'gradient' => 'linear-gradient(135deg, #2471A3, #17A2B8)', 'icon' => 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z', 'stepClass' => 'step-card-2'],
-                    ['num' => '3', 'title' => 'Concluez la vente', 'desc' => 'Finalisez la transaction en toute securite avec un acheteur verifie.', 'gradient' => 'linear-gradient(135deg, #17A2B8, #27AE60)', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'stepClass' => 'step-card-3'],
+                    ['num' => '1', 'title' => __('Creez votre annonce'), 'desc' => __('Ajoutez des photos, une description et fixez votre prix en quelques minutes.'), 'gradient' => 'linear-gradient(135deg, #1B4F72, #2471A3)', 'icon' => 'M12 4v16m8-8H4', 'stepClass' => 'step-card-1'],
+                    ['num' => '2', 'title' => __('Recevez des offres'), 'desc' => __('Les acheteurs vous contactent directement ou via notre systeme de mediation securise.'), 'gradient' => 'linear-gradient(135deg, #2471A3, #17A2B8)', 'icon' => 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z', 'stepClass' => 'step-card-2'],
+                    ['num' => '3', 'title' => __('Concluez la vente'), 'desc' => __('Finalisez la transaction en toute securite avec un acheteur verifie.'), 'gradient' => 'linear-gradient(135deg, #17A2B8, #27AE60)', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'stepClass' => 'step-card-3'],
                 ] as $step)
                     <div class="card-hover-lift step-card {{ $step['stepClass'] }} relative bg-white rounded-2xl p-6 sm:p-8 text-center">
                         <!-- Step number badge -->
@@ -262,18 +262,18 @@
             <div class="text-center mb-6 reveal">
                 <span class="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-full mb-4" style="background: rgba(39, 174, 96, 0.08); color: #27AE60;">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Avantages
+                    {{ __('Avantages') }}
                 </span>
-                <h2 class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #1B2A4A;">Pourquoi choisir AlBabor ?</h2>
-                <p class="mt-3 text-sm max-w-md mx-auto" style="color: #6B7B8D;">La plateforme de confiance pour le nautisme en Algerie</p>
+                <h2 class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #1B2A4A;">{{ __('Pourquoi choisir AlBabor ?') }}</h2>
+                <p class="mt-3 text-sm max-w-md mx-auto" style="color: #6B7B8D;">{{ __('La plateforme de confiance pour le nautisme en Algerie') }}</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 reveal-stagger">
                 @foreach([
-                    ['icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'color' => '#17A2B8', 'gradient' => 'linear-gradient(135deg, #17A2B8, #1ABC9C)', 'title' => 'Securise', 'desc' => 'Vendeurs verifies et systeme de mediation pour des transactions en toute confiance.'],
-                    ['icon' => 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'color' => '#27AE60', 'gradient' => 'linear-gradient(135deg, #27AE60, #2ECC71)', 'title' => 'Méditerranée', 'desc' => 'Présent dans tous les pays de la Méditerranée — Algérie, Tunisie, Maroc, France, Italie et plus.'],
-                    ['icon' => 'M13 10V3L4 14h7v7l9-11h-7z', 'color' => '#1B4F72', 'gradient' => 'linear-gradient(135deg, #1B4F72, #2471A3)', 'title' => 'Rapide', 'desc' => 'Publiez votre annonce en quelques minutes avec notre formulaire simplifie.'],
-                    ['icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'color' => '#F39C12', 'gradient' => 'linear-gradient(135deg, #F39C12, #E67E22)', 'title' => 'Double devise', 'desc' => 'Publiez en DZD ou EUR avec conversion automatique pour toucher plus d\'acheteurs.'],
+                    ['icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'color' => '#17A2B8', 'gradient' => 'linear-gradient(135deg, #17A2B8, #1ABC9C)', 'title' => __('Securise'), 'desc' => __('Vendeurs verifies et systeme de mediation pour des transactions en toute confiance.')],
+                    ['icon' => 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'color' => '#27AE60', 'gradient' => 'linear-gradient(135deg, #27AE60, #2ECC71)', 'title' => __('Méditerranée'), 'desc' => __('Présent dans tous les pays de la Méditerranée — Algérie, Tunisie, Maroc, France, Italie et plus.')],
+                    ['icon' => 'M13 10V3L4 14h7v7l9-11h-7z', 'color' => '#1B4F72', 'gradient' => 'linear-gradient(135deg, #1B4F72, #2471A3)', 'title' => __('Rapide'), 'desc' => __('Publiez votre annonce en quelques minutes avec notre formulaire simplifie.')],
+                    ['icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'color' => '#F39C12', 'gradient' => 'linear-gradient(135deg, #F39C12, #E67E22)', 'title' => __('Double devise'), 'desc' => __("Publiez en DZD ou EUR avec conversion automatique pour toucher plus d'acheteurs.")],
                 ] as $feature)
                     <div class="card-hover-lift bg-white rounded-2xl overflow-hidden">
                         <div class="h-1 w-full" style="background: {{ $feature['gradient'] }};"></div>
@@ -322,22 +322,22 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                     </svg>
                 </div>
-                <h2 class="text-xl sm:text-2xl lg:text-4xl font-black text-white mb-4 tracking-tight" style="text-shadow: 0 2px 16px rgba(0,0,0,0.2);">Pret a naviguer ?</h2>
-                <p class="text-sm sm:text-base mb-10 max-w-md mx-auto leading-relaxed" style="color: rgba(255,255,255,0.6);">Rejoignez des milliers de passionnes de nautisme sur AlBabor</p>
+                <h2 class="text-xl sm:text-2xl lg:text-4xl font-black text-white mb-4 tracking-tight" style="text-shadow: 0 2px 16px rgba(0,0,0,0.2);">{{ __('Pret a naviguer ?') }}</h2>
+                <p class="text-sm sm:text-base mb-10 max-w-md mx-auto leading-relaxed" style="color: rgba(255,255,255,0.6);">{{ __('Rejoignez des milliers de passionnes de nautisme sur AlBabor') }}</p>
 
                 <div class="flex flex-col sm:flex-row justify-center gap-3">
                     @guest
                         <a href="{{ route('register') }}" class="btn-white-solid btn-cta-glow rounded-2xl">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                            Creer un compte gratuit
+                            {{ __('Creer un compte gratuit') }}
                         </a>
                         <a href="{{ route('listings.index') }}" class="btn-ghost btn-cta-glow px-8 py-4 text-sm font-semibold rounded-2xl">
-                            Explorer les annonces
+                            {{ __('Explorer les annonces') }}
                         </a>
                     @else
                         <a href="{{ route('listings.create') }}" class="btn-white-solid btn-cta-glow rounded-2xl">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                            Publier une annonce
+                            {{ __('Publier une annonce') }}
                         </a>
                     @endguest
                 </div>
@@ -350,9 +350,9 @@
         <div class="max-w-5xl mx-auto">
             {{-- Title --}}
             <div class="text-center mb-8">
-                <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color: #17A2B8; letter-spacing: 0.18em;">Paiements sécurisés</p>
-                <h2 class="text-xl sm:text-2xl font-black" style="color: #1B2A4A;">Avec quelle banque pouvez-vous payer ?</h2>
-                <p class="text-sm mt-2" style="color: #9BA8B7;">Nous acceptons plusieurs moyens de paiement pour votre confort</p>
+                <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color: #17A2B8; letter-spacing: 0.18em;">{{ __('Paiements sécurisés') }}</p>
+                <h2 class="text-xl sm:text-2xl font-black" style="color: #1B2A4A;">{{ __('Avec quelle banque pouvez-vous payer ?') }}</h2>
+                <p class="text-sm mt-2" style="color: #9BA8B7;">{{ __('Nous acceptons plusieurs moyens de paiement pour votre confort') }}</p>
             </div>
 
             {{-- Cards grid --}}
@@ -366,10 +366,10 @@
                     </div>
                     <div class="text-center">
                         <p class="text-sm font-bold" style="color: #1B2A4A;">BaridiMob</p>
-                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">Algérie Poste</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">{{ __('Algérie Poste') }}</p>
                     </div>
-                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #FFF3CD; color: #856404;">Paiement mobile</span>
-                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">Titulaire : DJAMAA BILEL</p>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #FFF3CD; color: #856404;">{{ __('Paiement mobile') }}</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">{{ __('Titulaire : DJAMAA BILEL') }}</p>
                 </div>
 
                 {{-- BEA --}}
@@ -380,10 +380,10 @@
                     </div>
                     <div class="text-center">
                         <p class="text-sm font-bold" style="color: #1B2A4A;">BEA</p>
-                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">Banque Ext. d'Algérie</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">{{ __("Banque Ext. d'Algérie") }}</p>
                     </div>
-                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #E8F4FD; color: #1B6CA8;">🇩🇿 Virement DZD</span>
-                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">Titulaire : DJAMAA BILEL</p>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #E8F4FD; color: #1B6CA8;">🇩🇿 {{ __('Virement DZD') }}</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">{{ __('Titulaire : DJAMAA BILEL') }}</p>
                 </div>
 
                 {{-- PayPal --}}
@@ -394,10 +394,10 @@
                     </div>
                     <div class="text-center">
                         <p class="text-sm font-bold" style="color: #1B2A4A;">PayPal</p>
-                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">International</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">{{ __('International') }}</p>
                     </div>
-                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #E8F4FD; color: #003087;">Paiement en ligne</span>
-                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">Titulaire : DJAMAA BILEL</p>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #E8F4FD; color: #003087;">{{ __('Paiement en ligne') }}</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">{{ __('Titulaire : DJAMAA BILEL') }}</p>
                 </div>
 
                 {{-- RedotPay --}}
@@ -408,10 +408,10 @@
                     </div>
                     <div class="text-center">
                         <p class="text-sm font-bold" style="color: #1B2A4A;">RedotPay</p>
-                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">Virement SEPA</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">{{ __('Virement SEPA') }}</p>
                     </div>
-                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #EDE9FE; color: #5B21B6;">🇪🇺 IBAN EUR</span>
-                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">Titulaire : BILEL DJAMAA</p>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #EDE9FE; color: #5B21B6;">🇪🇺 {{ __('IBAN EUR') }}</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">{{ __('Titulaire : BILEL DJAMAA') }}</p>
                 </div>
 
             </div>
@@ -421,7 +421,7 @@
                 <svg class="w-4 h-4 flex-shrink-0" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                 </svg>
-                <p class="text-xs" style="color: #9BA8B7;">Paiement manuel sécurisé · Approbation admin sous 24h · Justificatif requis</p>
+                <p class="text-xs" style="color: #9BA8B7;">{{ __('Paiement manuel sécurisé · Approbation admin sous 24h · Justificatif requis') }}</p>
             </div>
         </div>
     </div>

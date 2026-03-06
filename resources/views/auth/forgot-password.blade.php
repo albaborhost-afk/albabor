@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Mot de passe oublie - AlBabor</title>
+    <title>{{ __('Mot de passe oublie') }} - AlBabor</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
@@ -276,14 +276,14 @@
                     <img src="/images/logo-full.png" alt="AlBabor" style="height: 48px; filter: brightness(0) invert(1) drop-shadow(0 4px 16px rgba(0,0,0,0.3));">
                 </div>
 
-                <h1 class="text-3xl font-bold text-white mb-3 text-center auth-heading" style="text-shadow: 0 2px 20px rgba(0,0,0,0.25); letter-spacing: -0.02em;">Recuperez votre compte</h1>
-                <p class="text-lg mb-10 text-center auth-subheading" style="color: rgba(255,255,255,0.7);">Un lien de reinitialisation vous sera envoye</p>
+                <h1 class="text-3xl font-bold text-white mb-3 text-center auth-heading" style="text-shadow: 0 2px 20px rgba(0,0,0,0.25); letter-spacing: -0.02em;">{{ __('Recuperez votre compte') }}</h1>
+                <p class="text-lg mb-10 text-center auth-subheading" style="color: rgba(255,255,255,0.7);">{{ __('Un lien de reinitialisation vous sera envoye') }}</p>
 
                 <div class="space-y-5 max-w-sm w-full">
                     @foreach([
-                        ['icon' => 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z', 'text' => 'Reinitialisation securisee par email'],
-                        ['icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'text' => 'Protegez votre compte avec un mot de passe fort'],
-                        ['icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'text' => 'Vos donnees sont protegees et chiffrees'],
+                        ['icon' => 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z', 'text' => __('Reinitialisation securisee par email')],
+                        ['icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'text' => __('Protegez votre compte avec un mot de passe fort')],
+                        ['icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'text' => __('Vos donnees sont protegees et chiffrees')],
                     ] as $item)
                         <div class="flex items-center gap-4 auth-feature-item" style="color: rgba(255,255,255,0.85); animation-delay: {{ ($loop->index + 1) * 0.2 }}s;">
                             <div class="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
@@ -320,8 +320,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                             </svg>
                         </div>
-                        <h2 class="text-2xl font-bold mb-2" style="color: #1B2A4A; letter-spacing: -0.02em;">Mot de passe oublie ?</h2>
-                        <p class="text-sm leading-relaxed mx-auto" style="color: #6B7B8D; max-width: 320px;">Pas de panique ! Entrez votre adresse email et nous vous enverrons un lien pour reinitialiser votre mot de passe.</p>
+                        <h2 class="text-2xl font-bold mb-2" style="color: #1B2A4A; letter-spacing: -0.02em;">{{ __('Mot de passe oublie ?') }}</h2>
+                        <p class="text-sm leading-relaxed mx-auto" style="color: #6B7B8D; max-width: 320px;">{{ __('Pas de panique ! Entrez votre adresse email et nous vous enverrons un lien pour reinitialiser votre mot de passe.') }}</p>
                     </div>
 
                     @if (session('status'))
@@ -338,7 +338,7 @@
 
                         <!-- Email -->
                         <div class="auth-form-group">
-                            <label for="email" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">Adresse email</label>
+                            <label for="email" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">{{ __('Adresse email') }}</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                     <svg class="w-[18px] h-[18px] auth-input-icon" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -347,7 +347,7 @@
                                 </div>
                                 <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
                                        class="auth-input w-full pl-12 pr-4 py-3.5 text-sm font-medium @error('email') !border-red-400 @enderror"
-                                       placeholder="votre@email.com">
+                                       placeholder="{{ __('votre@email.com') }}">
                             </div>
                             @error('email')
                                 <div class="auth-error">
@@ -364,7 +364,7 @@
                                 style="box-shadow: 0 8px 25px rgba(27, 79, 114, 0.3);">
                             <span class="relative z-10 flex items-center justify-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                Envoyer le lien de reinitialisation
+                                {{ __('Envoyer le lien de reinitialisation') }}
                             </span>
                         </button>
                     </form>
@@ -375,15 +375,15 @@
                             <div class="auth-divider w-full"></div>
                         </div>
                         <div class="relative flex justify-center text-xs">
-                            <span class="px-4 font-medium" style="background: rgba(255,255,255,0.72); color: #9BA8B7;">ou</span>
+                            <span class="px-4 font-medium" style="background: rgba(255,255,255,0.72); color: #9BA8B7;">{{ __('ou') }}</span>
                         </div>
                     </div>
 
                     <!-- Login Link -->
                     <div class="text-center">
                         <p class="text-sm" style="color: #6B7B8D;">
-                            Vous vous souvenez ?
-                            <a href="{{ route('login') }}" class="font-semibold ml-1 auth-link">Se connecter</a>
+                            {{ __('Vous vous souvenez ?') }}
+                            <a href="{{ route('login') }}" class="font-semibold ml-1 auth-link">{{ __('Se connecter') }}</a>
                         </p>
                     </div>
                 </div>
@@ -392,7 +392,7 @@
                 <div class="text-center mt-7">
                     <a href="{{ route('home') }}" class="inline-flex items-center text-sm font-medium transition-all duration-300 hover:text-[#1B4F72]" style="color: #9BA8B7;">
                         <svg class="w-4 h-4 mr-1.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                        Retour a l'accueil
+                        {{ __("Retour a l'accueil") }}
                     </a>
                 </div>
             </div>

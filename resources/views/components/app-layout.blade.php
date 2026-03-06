@@ -35,20 +35,20 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center space-x-0.5">
-                    <a href="{{ route('listings.index', ['category' => 'boat']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">Bateaux</a>
-                    <a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">Jet-Skis</a>
-                    <a href="{{ route('listings.index', ['category' => 'engine']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">Moteurs</a>
-                    <a href="{{ route('listings.index', ['category' => 'parts']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">Pieces</a>
+                    <a href="{{ route('listings.index', ['category' => 'boat']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Bateaux') }}</a>
+                    <a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Jet-Skis') }}</a>
+                    <a href="{{ route('listings.index', ['category' => 'engine']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Moteurs') }}</a>
+                    <a href="{{ route('listings.index', ['category' => 'parts']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Pieces') }}</a>
                     <div style="width: 1px; height: 20px; background: linear-gradient(180deg, transparent, #E0E6ED, transparent); margin: 0 6px;"></div>
                     @auth
                         <a href="{{ route('favorites.index') }}" class="nav-link-animated nav-item-favorites px-3.5 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                            Favoris
+                            {{ __('Favoris') }}
                         </a>
-                        <a href="{{ route('listings.my') }}" class="nav-link-animated nav-item-default px-3.5 py-2 rounded-xl font-medium text-sm">Mes annonces</a>
+                        <a href="{{ route('listings.my') }}" class="nav-link-animated nav-item-default px-3.5 py-2 rounded-xl font-medium text-sm">{{ __('Mes annonces') }}</a>
                         <a href="{{ route('conversations.index') }}" class="nav-link-animated nav-item-default px-3.5 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                            Messages
+                            {{ __('Messages') }}
                             @php $unreadMsgCount = auth()->user()->totalUnreadMessagesCount(); @endphp
                             @if($unreadMsgCount > 0)
                                 <span class="inline-flex items-center justify-center w-4.5 h-4.5 rounded-full text-[9px] font-bold text-white" style="background: #FF6B6B; min-width: 18px; height: 18px; padding: 0 4px;">{{ $unreadMsgCount }}</span>
@@ -59,10 +59,35 @@
 
                 <!-- Desktop Auth -->
                 <div class="hidden md:flex items-center space-x-3">
+                    <!-- Language Switcher -->
+                    <div class="relative" x-data="{ langOpen: false }" @click.away="langOpen = false">
+                        <button @click="langOpen = !langOpen" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors hover:bg-gray-100" style="color: #6B7B8D;">
+                            <span>{{ app()->getLocale() === 'fr' ? '🇫🇷' : (app()->getLocale() === 'en' ? '🇬🇧' : '🇪🇸') }}</span>
+                            <span class="uppercase text-xs font-bold">{{ app()->getLocale() }}</span>
+                            <svg class="w-3 h-3 transition-transform duration-200" :class="{ 'rotate-180': langOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div x-show="langOpen" x-cloak
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             class="absolute right-0 mt-2 w-28 rounded-xl py-1.5 z-50 origin-top-right"
+                             style="background: rgba(255,255,255,0.98); border: 1px solid rgba(224,230,237,0.8); box-shadow: 0 8px 24px rgba(27,79,114,0.1);">
+                            @foreach(['fr' => '🇫🇷 Français', 'en' => '🇬🇧 English', 'es' => '🇪🇸 Español'] as $locale => $label)
+                                <a href="{{ route('lang.switch', ['locale' => $locale]) }}"
+                                   class="flex items-center gap-2 px-3 py-2 text-xs font-medium transition-colors hover:bg-gray-50 {{ app()->getLocale() === $locale ? 'font-bold' : '' }}"
+                                   style="color: {{ app()->getLocale() === $locale ? '#1B4F72' : '#6B7B8D' }};">
+                                    {{ $label }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
                     @guest
-                        <a href="{{ route('login') }}" class="nav-item-login px-4 py-2 rounded-xl font-medium text-sm">Connexion</a>
+                        <a href="{{ route('login') }}" class="nav-item-login px-4 py-2 rounded-xl font-medium text-sm">{{ __('Connexion') }}</a>
                         <a href="{{ route('register') }}" class="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold">
-                            S'inscrire
+                            {{ __("S'inscrire") }}
                         </a>
                     @else
                         <div class="relative" id="userDropdown" x-data="{ open: false }" @click.away="open = false">
@@ -93,34 +118,34 @@
                                  class="absolute right-0 mt-2.5 w-56 rounded-2xl py-2 z-50 origin-top-right"
                                  style="background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(224,230,237,0.8); box-shadow: 0 20px 60px rgba(27,79,114,0.12), 0 4px 16px rgba(0,0,0,0.06);">
                                 <div class="px-4 py-3 mb-1" style="border-bottom: 1px solid rgba(224,230,237,0.6);">
-                                    <p class="text-xs font-medium" style="color: #9BA8B7;">Connecte en tant que</p>
+                                    <p class="text-xs font-medium" style="color: #9BA8B7;">{{ __('Connecte en tant que') }}</p>
                                     <p class="text-sm font-semibold truncate" style="color: #1B2A4A;">{{ auth()->user()->name }}</p>
                                 </div>
                                 <a href="{{ route('profile.show') }}" class="dropdown-item flex items-center gap-3 px-4 py-2.5 text-sm">
                                     <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                    Mon profil
+                                    {{ __('Mon profil') }}
                                 </a>
                                 <a href="{{ route('listings.my') }}" class="dropdown-item flex items-center gap-3 px-4 py-2.5 text-sm">
                                     <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                                    Mes annonces
+                                    {{ __('Mes annonces') }}
                                 </a>
                                 <a href="{{ route('conversations.index') }}" class="dropdown-item flex items-center gap-3 px-4 py-2.5 text-sm">
                                     <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                                    Messages
+                                    {{ __('Messages') }}
                                     @if($unreadMsgCount > 0)
                                         <span class="inline-flex items-center justify-center rounded-full text-[9px] font-bold text-white ml-auto" style="background: #FF6B6B; min-width: 18px; height: 18px; padding: 0 4px;">{{ $unreadMsgCount }}</span>
                                     @endif
                                 </a>
                                 <a href="{{ route('favorites.index') }}" class="dropdown-item flex items-center gap-3 px-4 py-2.5 text-sm">
                                     <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                                    Mes favoris
+                                    {{ __('Mes favoris') }}
                                 </a>
                                 <div class="my-1.5 mx-3" style="height: 1px; background: linear-gradient(90deg, transparent, rgba(224,230,237,0.8), transparent);"></div>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="dropdown-item-danger flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                                        Deconnexion
+                                        {{ __('Deconnexion') }}
                                     </button>
                                 </form>
                             </div>
@@ -128,7 +153,7 @@
 
                         <a href="{{ route('listings.create') }}" class="btn-create-glow inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                            Creer
+                            {{ __('Creer') }}
                         </a>
                     @endguest
                 </div>
@@ -138,7 +163,7 @@
                     @auth
                         <a href="{{ route('listings.create') }}" class="btn-create-glow inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                            Creer
+                            {{ __('Creer') }}
                         </a>
                     @endauth
                     <button @click="mobileOpen = !mobileOpen" class="nav-mobile-btn w-10 h-10 flex items-center justify-center rounded-xl">
@@ -165,37 +190,48 @@
                 <div class="flex flex-wrap gap-2 mb-4 pb-4" style="border-bottom: 1px solid rgba(224,230,237,0.6);">
                     <a href="{{ route('listings.index', ['category' => 'boat']) }}" class="mobile-category-chip px-4 py-2 rounded-xl text-xs font-semibold" style="background: rgba(27,79,114,0.08); color: #1B4F72;">
                         <svg class="w-3 h-3 inline -mt-0.5 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 17h1l1-5h14l1 5h1M6 17l1-10h10l1 10"/></svg>
-                        Bateaux
+                        {{ __('Bateaux') }}
                     </a>
-                    <a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="mobile-category-chip px-4 py-2 rounded-xl text-xs font-semibold" style="background: rgba(23,162,184,0.08); color: #17A2B8;">Jet-Skis</a>
-                    <a href="{{ route('listings.index', ['category' => 'engine']) }}" class="mobile-category-chip px-4 py-2 rounded-xl text-xs font-semibold" style="background: rgba(243,156,18,0.08); color: #F39C12;">Moteurs</a>
-                    <a href="{{ route('listings.index', ['category' => 'parts']) }}" class="mobile-category-chip px-4 py-2 rounded-xl text-xs font-semibold" style="background: rgba(155,89,182,0.08); color: #9B59B6;">Pieces</a>
+                    <a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="mobile-category-chip px-4 py-2 rounded-xl text-xs font-semibold" style="background: rgba(23,162,184,0.08); color: #17A2B8;">{{ __('Jet-Skis') }}</a>
+                    <a href="{{ route('listings.index', ['category' => 'engine']) }}" class="mobile-category-chip px-4 py-2 rounded-xl text-xs font-semibold" style="background: rgba(243,156,18,0.08); color: #F39C12;">{{ __('Moteurs') }}</a>
+                    <a href="{{ route('listings.index', ['category' => 'parts']) }}" class="mobile-category-chip px-4 py-2 rounded-xl text-xs font-semibold" style="background: rgba(155,89,182,0.08); color: #9B59B6;">{{ __('Pieces') }}</a>
+                </div>
+
+                <!-- Mobile Language Switcher -->
+                <div class="flex gap-2 mb-3 pb-3" style="border-bottom: 1px solid rgba(224,230,237,0.6);">
+                    @foreach(['fr' => '🇫🇷 FR', 'en' => '🇬🇧 EN', 'es' => '🇪🇸 ES'] as $locale => $label)
+                        <a href="{{ route('lang.switch', ['locale' => $locale]) }}"
+                           class="flex-1 text-center py-2 rounded-xl text-xs font-bold transition-colors"
+                           style="{{ app()->getLocale() === $locale ? 'background: rgba(27,79,114,0.1); color: #1B4F72;' : 'background: rgba(0,0,0,0.03); color: #9BA8B7;' }}">
+                            {{ $label }}
+                        </a>
+                    @endforeach
                 </div>
 
                 @auth
                     <a href="{{ route('favorites.index') }}" class="mobile-nav-item flex items-center gap-3 px-4 py-3 font-medium text-sm">
                         <svg class="w-4 h-4" style="color: #FF6B6B;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                        Favoris
+                        {{ __('Favoris') }}
                     </a>
                     <a href="{{ route('listings.my') }}" class="mobile-nav-item flex items-center gap-3 px-4 py-3 font-medium text-sm">
                         <svg class="w-4 h-4" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                        Mes annonces
+                        {{ __('Mes annonces') }}
                     </a>
                     <a href="{{ route('conversations.index') }}" class="mobile-nav-item flex items-center gap-3 px-4 py-3 font-medium text-sm">
                         <svg class="w-4 h-4" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                        Messages
+                        {{ __('Messages') }}
                         @if($unreadMsgCount > 0)
                             <span class="inline-flex items-center justify-center rounded-full text-[9px] font-bold text-white" style="background: #FF6B6B; min-width: 18px; height: 18px; padding: 0 4px;">{{ $unreadMsgCount }}</span>
                         @endif
                     </a>
                     <a href="{{ route('profile.show') }}" class="mobile-nav-item flex items-center gap-3 px-4 py-3 font-medium text-sm">
                         <svg class="w-4 h-4" style="color: #1B4F72;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                        Mon profil
+                        {{ __('Mon profil') }}
                     </a>
                     <div class="pt-3 mt-2" style="border-top: 1px solid rgba(224,230,237,0.6);">
                         <a href="{{ route('listings.create') }}" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-white font-semibold text-sm text-center btn-create-glow">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                            Creer une annonce
+                            {{ __('Creer une annonce') }}
                         </a>
                     </div>
                     <div class="pt-2 mt-1">
@@ -203,19 +239,19 @@
                             @csrf
                             <button type="submit" class="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-left font-medium text-sm transition-colors duration-200" style="color: #FF6B6B;">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                                Deconnexion
+                                {{ __('Deconnexion') }}
                             </button>
                         </form>
                     </div>
                 @else
                     <a href="{{ route('login') }}" class="mobile-nav-item flex items-center gap-3 px-4 py-3 font-medium text-sm">
                         <svg class="w-4 h-4" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                        Connexion
+                        {{ __('Connexion') }}
                     </a>
                     <div class="pt-3">
                         <a href="{{ route('register') }}" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-white font-semibold text-sm text-center btn-primary">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                            S'inscrire
+                            {{ __("S'inscrire") }}
                         </a>
                     </div>
                 @endguest
@@ -274,40 +310,40 @@
                 <!-- Links columns -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-14">
                     <div>
-                        <h3 class="footer-heading font-semibold mb-5 text-xs uppercase tracking-widest" style="color: rgba(255,255,255,0.75);">Categories</h3>
+                        <h3 class="footer-heading font-semibold mb-5 text-xs uppercase tracking-widest" style="color: rgba(255,255,255,0.75);">{{ __('Categories') }}</h3>
                         <ul class="space-y-3">
                             <li><a href="{{ route('listings.index', ['category' => 'boat']) }}" class="footer-link text-sm flex items-center gap-2.5">
-                                <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #1B4F72; box-shadow: 0 0 6px rgba(27,79,114,0.5);"></span>Bateaux
+                                <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #1B4F72; box-shadow: 0 0 6px rgba(27,79,114,0.5);"></span>{{ __('Bateaux') }}
                             </a></li>
                             <li><a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="footer-link text-sm flex items-center gap-2.5">
-                                <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #17A2B8; box-shadow: 0 0 6px rgba(23,162,184,0.5);"></span>Jet-Skis
+                                <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #17A2B8; box-shadow: 0 0 6px rgba(23,162,184,0.5);"></span>{{ __('Jet-Skis') }}
                             </a></li>
                             <li><a href="{{ route('listings.index', ['category' => 'engine']) }}" class="footer-link text-sm flex items-center gap-2.5">
-                                <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #F39C12; box-shadow: 0 0 6px rgba(243,156,18,0.5);"></span>Moteurs
+                                <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #F39C12; box-shadow: 0 0 6px rgba(243,156,18,0.5);"></span>{{ __('Moteurs') }}
                             </a></li>
                             <li><a href="{{ route('listings.index', ['category' => 'parts']) }}" class="footer-link text-sm flex items-center gap-2.5">
-                                <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #9B59B6; box-shadow: 0 0 6px rgba(155,89,182,0.5);"></span>Pieces
+                                <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: #9B59B6; box-shadow: 0 0 6px rgba(155,89,182,0.5);"></span>{{ __('Pieces') }}
                             </a></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h3 class="footer-heading font-semibold mb-5 text-xs uppercase tracking-widest" style="color: rgba(255,255,255,0.75);">Liens utiles</h3>
+                        <h3 class="footer-heading font-semibold mb-5 text-xs uppercase tracking-widest" style="color: rgba(255,255,255,0.75);">{{ __('Liens utiles') }}</h3>
                         <ul class="space-y-3">
-                            <li><a href="{{ route('listings.index') }}" class="footer-link text-sm">Toutes les annonces</a></li>
+                            <li><a href="{{ route('listings.index') }}" class="footer-link text-sm">{{ __('Toutes les annonces') }}</a></li>
                             @guest
-                                <li><a href="{{ route('register') }}" class="footer-link text-sm">Creer un compte</a></li>
-                                <li><a href="{{ route('login') }}" class="footer-link text-sm">Connexion</a></li>
+                                <li><a href="{{ route('register') }}" class="footer-link text-sm">{{ __('Creer un compte') }}</a></li>
+                                <li><a href="{{ route('login') }}" class="footer-link text-sm">{{ __('Connexion') }}</a></li>
                             @endguest
                             @auth
-                                <li><a href="{{ route('listings.create') }}" class="footer-link text-sm">Publier une annonce</a></li>
-                                <li><a href="{{ route('listings.my') }}" class="footer-link text-sm">Mes annonces</a></li>
+                                <li><a href="{{ route('listings.create') }}" class="footer-link text-sm">{{ __('Publier une annonce') }}</a></li>
+                                <li><a href="{{ route('listings.my') }}" class="footer-link text-sm">{{ __('Mes annonces') }}</a></li>
                             @endauth
                         </ul>
                     </div>
 
                     <div>
-                        <h3 class="footer-heading font-semibold mb-5 text-xs uppercase tracking-widest" style="color: rgba(255,255,255,0.75);">Contact</h3>
+                        <h3 class="footer-heading font-semibold mb-5 text-xs uppercase tracking-widest" style="color: rgba(255,255,255,0.75);">{{ __('Contact') }}</h3>
                         <ul class="space-y-3.5">
                             <li class="flex items-center gap-3 text-sm group" style="color: rgba(255,255,255,0.4);">
                                 <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(23,162,184,0.1);">
@@ -336,9 +372,9 @@
             <div class="pt-7 flex flex-col sm:flex-row items-center justify-between gap-4" style="border-top: 1px solid rgba(255,255,255,0.06);">
                 <p class="text-xs font-medium" style="color: rgba(255,255,255,0.25);">&copy; {{ date('Y') }} AlBabor. Tous droits reserves.</p>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs" style="color: rgba(255,255,255,0.2);">Fait avec</span>
+                    <span class="text-xs" style="color: rgba(255,255,255,0.2);">{{ __('Fait avec') }}</span>
                     <svg class="w-3.5 h-3.5 animate-gentle-pulse" style="color: #FF6B6B;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                    <span class="text-xs" style="color: rgba(255,255,255,0.2);">en Algerie</span>
+                    <span class="text-xs" style="color: rgba(255,255,255,0.2);">{{ __('en Algerie') }}</span>
                     <span style="color: rgba(255,255,255,0.1); margin: 0 6px;">|</span>
                     <!-- Anchor icon decoration -->
                     <svg class="w-3.5 h-3.5" style="color: rgba(255,255,255,0.15);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8V4m0 4a2 2 0 100-4 2 2 0 000 4zm0 0v12m-7-7h14M5 13a7 7 0 0014 0"/></svg>

@@ -2,10 +2,10 @@
 
 @php
     $categoryLabels = [
-        'boat' => 'Bateau',
-        'jetski' => 'Jet-ski',
-        'engine' => 'Moteur',
-        'parts' => 'Pieces',
+        'boat' => __('Bateau'),
+        'jetski' => __('Jet-ski'),
+        'engine' => __('Moteur'),
+        'parts' => __('Pieces'),
     ];
     $categoryBadgeClasses = [
         'boat' => 'badge-boat',
@@ -19,7 +19,7 @@
         'engine' => '#F39C12',
         'parts' => '#9B59B6',
     ];
-    $label = $categoryLabels[$listing->category] ?? 'Autre';
+    $label = $categoryLabels[$listing->category] ?? __('Autre');
     $badgeClass = $categoryBadgeClasses[$listing->category] ?? 'bg-gray-500/80';
     $accentColor = $categoryAccentColors[$listing->category] ?? '#1B4F72';
     $firstMedia = $listing->media->first();
@@ -48,7 +48,7 @@
                     <svg class="w-12 h-12" style="color: #C5D0DB;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.2">
                         <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
-                    <span class="text-xs font-medium" style="color: #B8C4CE;">Pas de photo</span>
+                    <span class="text-xs font-medium" style="color: #B8C4CE;">{{ __('Pas de photo') }}</span>
                 </div>
             @else
                 <div class="w-full h-full flex flex-col items-center justify-center gap-2">
@@ -70,7 +70,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                         </svg>
                     @endif
-                    <span class="text-xs font-medium" style="color: #B8C4CE;">Pas de photo</span>
+                    <span class="text-xs font-medium" style="color: #B8C4CE;">{{ __('Pas de photo') }}</span>
                 </div>
             @endif
 
@@ -88,7 +88,7 @@
             @if($isFeatured)
                 <span class="absolute top-3 right-10 px-2.5 py-1 text-[11px] font-semibold rounded-full shadow-md featured-badge-glow" style="background: linear-gradient(135deg, #FFB800, #FF8C00); color: white; border: 1px solid rgba(255,255,255,0.2);">
                     <svg class="w-3 h-3 inline -mt-0.5 mr-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    Vedette
+                    {{ __('Vedette') }}
                 </span>
             @endif
 
@@ -171,11 +171,11 @@
                     @endif
                 </div>
                 @if($listing->type_offre === 'negociable')
-                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background: rgba(23,162,184,0.08); color: #17A2B8;">Neg.</span>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background: rgba(23,162,184,0.08); color: #17A2B8;">{{ __('Neg.') }}</span>
                 @elseif($listing->type_offre === 'offert')
-                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background: rgba(39,174,96,0.08); color: #27AE60;">Offert</span>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background: rgba(39,174,96,0.08); color: #27AE60;">{{ __('Offert') }}</span>
                 @elseif($listing->type_offre === 'fix')
-                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background: rgba(27,79,114,0.08); color: #1B4F72;">Fixe</span>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background: rgba(27,79,114,0.08); color: #1B4F72;">{{ __('Fixe') }}</span>
                 @endif
             </div>
         </div>

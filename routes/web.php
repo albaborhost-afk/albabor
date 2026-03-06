@@ -14,6 +14,14 @@ use App\Http\Controllers\ProfileController;
 use App\Models\Listing;
 use Illuminate\Support\Facades\Route;
 
+// Language switcher
+Route::get('/lang/{locale}', function (string $locale) {
+    if (in_array($locale, ['fr', 'en', 'es'])) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back()->withInput();
+})->name('lang.switch');
+
 // Home
 Route::get('/', function () {
     $featuredListings = Listing::where('status', 'active')

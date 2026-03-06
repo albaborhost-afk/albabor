@@ -7,12 +7,12 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    Accueil
+                    {{ __('Accueil') }}
                 </a>
                 <svg class="w-4 h-4" style="color: #E0E6ED;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <span style="color: #1B2A4A;" class="font-medium">Mes Favoris</span>
+                <span style="color: #1B2A4A;" class="font-medium">{{ __('Mes Favoris') }}</span>
             </nav>
         </div>
     </div>
@@ -31,10 +31,10 @@
                             </svg>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-extrabold tracking-tight text-white">Mes Favoris</h1>
+                            <h1 class="text-3xl font-extrabold tracking-tight text-white">{{ __('Mes Favoris') }}</h1>
                             <p class="mt-0.5 text-white/80">
                                 <span class="font-semibold text-white">{{ $favorites->total() ?? $favorites->count() }}</span>
-                                {{ ($favorites->total() ?? $favorites->count()) > 1 ? 'annonces sauvegardees' : 'annonce sauvegardee' }}
+                                {{ ($favorites->total() ?? $favorites->count()) > 1 ? __('annonces sauvegardees') : __('annonce sauvegardee') }}
                             </p>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    Decouvrir plus d'annonces
+                    {{ __("Decouvrir plus d'annonces") }}
                 </a>
             </div>
         </div>
@@ -100,10 +100,10 @@
                     </div>
 
                     <h3 class="text-2xl font-bold mb-3" style="color: #1B2A4A;">
-                        Aucun favori pour le moment
+                        {{ __('Aucun favori pour le moment') }}
                     </h3>
                     <p class="text-lg mb-8 max-w-md mx-auto" style="color: #6B7B8D;">
-                        Parcourez nos annonces et cliquez sur le coeur pour sauvegarder vos bateaux preferes ici.
+                        {{ __('Parcourez nos annonces et cliquez sur le coeur pour sauvegarder vos bateaux preferes ici.') }}
                     </p>
 
                     <a href="{{ route('listings.index') }}"
@@ -112,7 +112,7 @@
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
-                        Parcourir les annonces
+                        {{ __('Parcourir les annonces') }}
                     </a>
                 </div>
             @endif

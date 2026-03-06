@@ -39,7 +39,7 @@
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
                     </a>
                     <svg class="w-4 h-4 mx-2 hidden sm:inline" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-                    <a href="{{ route('listings.index') }}" class="hidden sm:inline hover:text-[#17A2B8] transition-colors duration-200">Annonces</a>
+                    <a href="{{ route('listings.index') }}" class="hidden sm:inline hover:text-[#17A2B8] transition-colors duration-200">{{ __('Annonces') }}</a>
                     <svg class="w-4 h-4 mx-2 hidden sm:inline" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
                     <a href="{{ route('listings.index', ['category' => $listing->category]) }}" class="hidden sm:inline hover:text-[#17A2B8] transition-colors duration-200">{{ $categoryLabels[$listing->category] ?? ucfirst($listing->category) }}</a>
                     <svg class="w-4 h-4 mx-2 hidden sm:inline" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
@@ -109,7 +109,7 @@
                                 @if($listing->isFeatured())
                                     <div class="absolute top-4 left-4 px-4 py-2 rounded-full font-bold text-sm text-white flex items-center gap-2 z-10" style="background: linear-gradient(135deg, #FFA500, #FF7200); box-shadow: 0 4px 12px rgba(255, 114, 0, 0.35);">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                        En Vedette
+                                        {{ __('En Vedette') }}
                                     </div>
                                 @endif
 
@@ -164,7 +164,7 @@
                                     <div class="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-3" style="background: rgba(155,168,183,0.1);">
                                         <svg class="w-10 h-10" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                     </div>
-                                    <p class="text-sm font-medium" style="color: #9BA8B7;">Aucune image disponible</p>
+                                    <p class="text-sm font-medium" style="color: #9BA8B7;">{{ __('Aucune image disponible') }}</p>
                                 </div>
                             </div>
                         @endif
@@ -226,7 +226,7 @@
                                 @if($listing->remarque_echange === 'accepte')
                                     <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold" style="background: rgba(39, 174, 96, 0.1); color: #27AE60; border: 1px solid rgba(39, 174, 96, 0.2);">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                                        Echange accepte
+                                        {{ __('Echange accepte') }}
                                     </span>
                                 @endif
 
@@ -242,12 +242,12 @@
                         <div class="px-6 py-3.5 flex items-center gap-2 flex-wrap" style="border-top: 1px solid #E0E6ED; background: #FAFBFC;">
                             <div class="stat-card inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg" style="color: #9BA8B7;">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                <span style="color: #6B7B8D; font-weight: 600;">{{ number_format($listing->views_count ?? 0) }}</span> vues
+                                <span style="color: #6B7B8D; font-weight: 600;">{{ number_format($listing->views_count ?? 0) }}</span> {{ __('vues') }}
                             </div>
                             <div class="w-1 h-1 rounded-full" style="background: #D0D7DE;"></div>
                             <div class="stat-card inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg" style="color: #9BA8B7;">
                                 <svg class="w-4 h-4" style="color: #FF6B6B;" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                                <span style="color: #6B7B8D; font-weight: 600;">{{ number_format($listing->favorites_count ?? 0) }}</span> favoris
+                                <span style="color: #6B7B8D; font-weight: 600;">{{ number_format($listing->favorites_count ?? 0) }}</span> {{ __('favoris') }}
                             </div>
                             <div class="w-1 h-1 rounded-full" style="background: #D0D7DE;"></div>
                             <div class="stat-card inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg" style="color: #9BA8B7;">
@@ -275,7 +275,7 @@
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </span>
-                            Informations generales
+                            {{ __('Informations generales') }}
                         </h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             @php $specIndex = 0; @endphp
@@ -310,7 +310,7 @@
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                             </span>
-                            Dimensions
+                            {{ __('Dimensions') }}
                         </h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             @foreach([
@@ -341,7 +341,7 @@
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             </span>
-                            Motorisation
+                            {{ __('Motorisation') }}
                         </h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             @foreach([
@@ -375,7 +375,7 @@
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
                             </span>
-                            Reservoirs
+                            {{ __('Reservoirs') }}
                         </h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             @foreach([
@@ -404,7 +404,7 @@
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                             </span>
-                            Amenagements
+                            {{ __('Amenagements') }}
                         </h2>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                             @foreach([
@@ -434,14 +434,14 @@
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </span>
-                            Equipements & Options
+                            {{ __('Equipements & Options') }}
                         </h2>
 
                         @php
                             $tagSections = [
-                                'equipement' => ['label' => 'Equipement de securite', 'color' => '#1B4F72', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>'],
-                                'options' => ['label' => 'Options de confort', 'color' => '#17A2B8', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>'],
-                                'electronique' => ['label' => 'Electronique', 'color' => '#2471A3', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>'],
+                                'equipement' => ['label' => __('Equipement de securite'), 'color' => '#1B4F72', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>'],
+                                'options' => ['label' => __('Options de confort'), 'color' => '#17A2B8', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>'],
+                                'electronique' => ['label' => __('Electronique'), 'color' => '#2471A3', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>'],
                             ];
                         @endphp
 
@@ -474,7 +474,7 @@
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                             </span>
-                            Extras
+                            {{ __('Extras') }}
                         </h2>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             @if($listing->getSpec('extras', 'annexe'))
@@ -483,7 +483,7 @@
                                         <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                                         <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">Annexe</p>
                                     </div>
-                                    <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('extras', 'annexe') === 'oui' ? 'Oui, incluse' : 'Non' }}</p>
+                                    <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('extras', 'annexe') === 'oui' ? __('Oui, incluse') : __('Non') }}</p>
                                 </div>
                             @endif
                             @if($listing->getSpec('extras', 'remorque'))
@@ -492,7 +492,7 @@
                                         <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4"/></svg>
                                         <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">Remorque</p>
                                     </div>
-                                    <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('extras', 'remorque') === 'oui' ? 'Oui' : 'Non' }}{{ $listing->getSpec('extras', 'marque_remorque') ? ' — ' . $listing->getSpec('extras', 'marque_remorque') : '' }}</p>
+                                    <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('extras', 'remorque') === 'oui' ? __('Oui') : __('Non') }}{{ $listing->getSpec('extras', 'marque_remorque') ? ' — ' . $listing->getSpec('extras', 'marque_remorque') : '' }}</p>
                                 </div>
                             @endif
                             @if($listing->getSpec('extras', 'place_au_port') === 'oui')
@@ -502,7 +502,7 @@
                                         <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">Place au port</p>
                                     </div>
                                     <p class="text-sm font-semibold" style="color: #1B2A4A;">
-                                        Oui{{ $listing->getSpec('extras', 'adresse_port') ? ' — ' . $listing->getSpec('extras', 'adresse_port') : '' }}
+                                        {{ __('Oui') }}{{ $listing->getSpec('extras', 'adresse_port') ? ' — ' . $listing->getSpec('extras', 'adresse_port') : '' }}
                                         @if($listing->getSpec('extras', 'longueur_place') || $listing->getSpec('extras', 'largeur_place'))
                                             <br><span class="text-xs font-normal" style="color: #9BA8B7;">{{ $listing->getSpec('extras', 'longueur_place') }}m x {{ $listing->getSpec('extras', 'largeur_place') }}m</span>
                                         @endif
@@ -519,7 +519,7 @@
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                             </span>
-                            Partager cette annonce
+                            {{ __('Partager cette annonce') }}
                         </h2>
                         <div class="flex flex-wrap gap-3">
                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="share-btn flex items-center gap-2 px-5 py-2.5 text-white rounded-xl text-sm font-semibold" style="background: #1877F2; box-shadow: 0 4px 12px rgba(24,119,242,0.25);">
@@ -532,7 +532,7 @@
                             </a>
                             <button onclick="copyToClipboard('{{ request()->url() }}')" class="share-btn flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all" style="color: #6B7B8D; border: 1.5px solid #E0E6ED; background: white;">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-                                <span id="copyBtnText">Copier le lien</span>
+                                <span id="copyBtnText">{{ __('Copier le lien') }}</span>
                             </button>
                         </div>
                     </div>
@@ -559,14 +559,14 @@
                                     @endif
                                 </div>
                                 <div class="min-w-0">
-                                    <h3 class="font-bold text-base truncate" style="color: #1B2A4A;">{{ $listing->user?->name ?? 'Vendeur' }}</h3>
+                                    <h3 class="font-bold text-base truncate" style="color: #1B2A4A;">{{ $listing->user?->name ?? __('Vendeur') }}</h3>
                                     @if($listing->user?->verified_badge ?? false)
                                         <span class="inline-flex items-center gap-1 text-xs font-semibold" style="color: #27AE60;">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                                            Vendeur verifie
+                                            {{ __('Vendeur verifie') }}
                                         </span>
                                     @endif
-                                    <p class="text-xs mt-0.5" style="color: #9BA8B7;">Membre depuis {{ $listing->user?->created_at?->format('m/Y') ?? 'N/A' }}</p>
+                                    <p class="text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Membre depuis') }} {{ $listing->user?->created_at?->format('m/Y') ?? 'N/A' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -581,7 +581,7 @@
                                     <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5"
                                             style="{{ $isFavorited ? 'background: rgba(255,107,107,0.08); color: #FF6B6B; border: 1.5px solid rgba(255,107,107,0.25); box-shadow: 0 2px 8px rgba(255,107,107,0.1);' : 'background: white; color: #6B7B8D; border: 1.5px solid #E0E6ED;' }}">
                                         <svg class="w-5 h-5" fill="{{ $isFavorited ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                                        {{ $isFavorited ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
+                                        {{ $isFavorited ? __('Retirer des favoris') : __('Ajouter aux favoris') }}
                                     </button>
                                 </form>
 
@@ -613,11 +613,11 @@
                                         {{-- Mediation Button --}}
                                         <a href="{{ route('mediation.create', $listing) }}" class="w-full flex items-center justify-center gap-2 px-4 py-3.5 text-white rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 animate-pulse-glow" style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                                            Contacter via mediation
+                                            {{ __('Contacter via mediation') }}
                                         </a>
                                         <div class="flex items-center justify-center gap-1.5 mt-1">
                                             <svg class="w-3 h-3" style="color: #27AE60;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                                            <p class="text-center text-[10px] font-medium" style="color: #9BA8B7;">Transaction securisee par AlBabor</p>
+                                            <p class="text-center text-[10px] font-medium" style="color: #9BA8B7;">{{ __('Transaction securisee par AlBabor') }}</p>
                                         </div>
                                     @else
                                         {{-- WhatsApp --}}
@@ -632,12 +632,12 @@
                                         @if($listing->numero_mobile)
                                             <a href="tel:{{ $listing->numero_mobile }}" class="w-full flex items-center justify-center gap-2.5 px-4 py-3.5 text-white rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5" style="background: linear-gradient(135deg, #2471A3, #1B4F72); box-shadow: 0 4px 15px rgba(36, 113, 163, 0.3);">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                                                Appeler {{ $listing->numero_mobile }}
+                                                {{ __('Appeler') }} {{ $listing->numero_mobile }}
                                             </a>
                                         @elseif($listing->user?->phone ?? null)
                                             <a href="tel:{{ $listing->user?->phone }}" class="w-full flex items-center justify-center gap-2.5 px-4 py-3.5 text-white rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5" style="background: linear-gradient(135deg, #2471A3, #1B4F72); box-shadow: 0 4px 15px rgba(36, 113, 163, 0.3);">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                                                Appeler le vendeur
+                                                {{ __('Appeler le vendeur') }}
                                             </a>
                                         @endif
 
@@ -645,7 +645,7 @@
                                         @if($listing->contact_email)
                                             <a href="mailto:{{ $listing->contact_email }}" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5" style="color: #6B7B8D; border: 1.5px solid #E0E6ED; background: white;">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                                Envoyer un email
+                                                {{ __('Envoyer un email') }}
                                             </a>
                                         @endif
                                     @endif
@@ -655,9 +655,9 @@
                                     <div class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4" style="background: linear-gradient(135deg, rgba(27,79,114,0.06), rgba(23,162,184,0.08));">
                                         <svg class="w-8 h-8" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                     </div>
-                                    <p class="text-sm font-medium mb-4" style="color: #6B7B8D;">Connectez-vous pour contacter le vendeur</p>
-                                    <a href="{{ route('login') }}" class="block w-full px-4 py-3.5 text-white rounded-xl font-semibold text-sm text-center transition-all duration-200 hover:-translate-y-0.5" style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">Se connecter</a>
-                                    <p class="text-xs mt-3" style="color: #9BA8B7;">Pas encore de compte? <a href="{{ route('register') }}" class="font-semibold hover:underline" style="color: #17A2B8;">Inscrivez-vous</a></p>
+                                    <p class="text-sm font-medium mb-4" style="color: #6B7B8D;">{{ __('Connectez-vous pour contacter le vendeur') }}</p>
+                                    <a href="{{ route('login') }}" class="block w-full px-4 py-3.5 text-white rounded-xl font-semibold text-sm text-center transition-all duration-200 hover:-translate-y-0.5" style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">{{ __('Se connecter') }}</a>
+                                    <p class="text-xs mt-3" style="color: #9BA8B7;">{{ __('Pas encore de compte?') }} <a href="{{ route('register') }}" class="font-semibold hover:underline" style="color: #17A2B8;">{{ __('Inscrivez-vous') }}</a></p>
                                 </div>
                             @endauth
                         </div>
@@ -669,26 +669,26 @@
                             <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background: rgba(243, 156, 18, 0.1);">
                                 <svg class="w-4 h-4" style="color: #F39C12;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                             </div>
-                            <h3 class="text-sm font-bold" style="color: #1B2A4A;">Conseils de securite</h3>
+                            <h3 class="text-sm font-bold" style="color: #1B2A4A;">{{ __('Conseils de securite') }}</h3>
                         </div>
                         <ul class="space-y-3">
                             <li class="flex items-start gap-2.5 text-xs" style="color: #6B7B8D;">
                                 <div class="w-5 h-5 flex-shrink-0 rounded-full flex items-center justify-center mt-0.5" style="background: rgba(39,174,96,0.1);">
                                     <svg class="w-3 h-3" style="color: #27AE60;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                                 </div>
-                                <span class="leading-relaxed">Verifiez le produit avant le paiement</span>
+                                <span class="leading-relaxed">{{ __('Verifiez le produit avant le paiement') }}</span>
                             </li>
                             <li class="flex items-start gap-2.5 text-xs" style="color: #6B7B8D;">
                                 <div class="w-5 h-5 flex-shrink-0 rounded-full flex items-center justify-center mt-0.5" style="background: rgba(39,174,96,0.1);">
                                     <svg class="w-3 h-3" style="color: #27AE60;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                                 </div>
-                                <span class="leading-relaxed">Rencontrez dans un lieu public</span>
+                                <span class="leading-relaxed">{{ __('Rencontrez dans un lieu public') }}</span>
                             </li>
                             <li class="flex items-start gap-2.5 text-xs" style="color: #6B7B8D;">
                                 <div class="w-5 h-5 flex-shrink-0 rounded-full flex items-center justify-center mt-0.5" style="background: rgba(39,174,96,0.1);">
                                     <svg class="w-3 h-3" style="color: #27AE60;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                                 </div>
-                                <span class="leading-relaxed">Ne payez jamais a l'avance</span>
+                                <span class="leading-relaxed">{{ __("Ne payez jamais a l'avance") }}</span>
                             </li>
                         </ul>
                     </div>
@@ -703,10 +703,10 @@
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                             </span>
-                            <h2 class="text-lg font-bold" style="color: #1B2A4A;">Annonces similaires</h2>
+                            <h2 class="text-lg font-bold" style="color: #1B2A4A;">{{ __('Annonces similaires') }}</h2>
                         </div>
                         <a href="{{ route('listings.index', ['category' => $listing->category]) }}" class="text-sm font-semibold flex items-center gap-1.5 px-4 py-2 rounded-xl transition-all duration-200 hover:-translate-y-0.5" style="color: #17A2B8; background: rgba(23,162,184,0.06);">
-                            Voir tout
+                            {{ __('Voir tout') }}
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                         </a>
                     </div>
