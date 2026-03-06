@@ -25,6 +25,8 @@
     $firstMedia = $listing->media->first();
     $isFavorited = auth()->check() && auth()->user()->hasFavorited($listing);
     $isFeatured = $listing->isFeatured();
+    $annee = $listing->getSpec('general', 'annee_construction');
+    $puissance = $listing->getSpec('motorisation', 'puissance_totale');
 @endphp
 
 <div class="listing-card card-shine group bg-white rounded-2xl overflow-hidden relative {{ $isFeatured ? 'listing-card--featured' : '' }}"
@@ -111,53 +113,69 @@
         <div class="h-px w-full" style="background: linear-gradient(90deg, transparent, #E0E6ED, transparent);"></div>
 
         {{-- Content --}}
-        <div class="p-4">
+        <div class="p-3">
             {{-- Title --}}
-            <h3 class="font-bold line-clamp-2 mb-2.5 leading-snug text-[13.5px] group-hover:text-[#1B4F72] transition-colors duration-300" style="color: #1B2A4A;">
+            <h3 class="font-bold line-clamp-2 leading-snug text-[13px] group-hover:text-[#1B4F72] transition-colors duration-300 mb-2" style="color: #1B2A4A;">
                 {{ $listing->title }}
             </h3>
 
-            {{-- Location & Time --}}
-            <div class="flex items-center gap-3 text-[11px] mb-3" style="color: #9BA8B7;">
-                {{-- Wilaya with map pin --}}
-                <span class="flex items-center gap-1 min-w-0">
-                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    <span class="truncate font-medium" style="color: #6B7B8D;">{{ $listing->wilaya }}</span>
-                </span>
+            {{-- Info chips: Année · Ville · Puissance --}}
+            @if($annee || $listing->wilaya || $puissance)
+            <div class="flex flex-wrap gap-1 mb-2">
+                @if($annee)
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold" style="background: rgba(27,79,114,0.07); color: #1B4F72;">
+                        <svg class="w-2.5 h-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        {{ $annee }}
+                    </span>
+                @endif
+                @if($listing->wilaya)
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold" style="background: rgba(23,162,184,0.07); color: #17A2B8;">
+                        <svg class="w-2.5 h-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        {{ $listing->wilaya }}
+                    </span>
+                @endif
+                @if($puissance)
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold" style="background: rgba(243,156,18,0.09); color: #B7770D;">
+                        <svg class="w-2.5 h-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        {{ $puissance }} CV
+                    </span>
+                @endif
+            </div>
+            @endif
 
-                {{-- Separator dot --}}
-                <span class="flex-shrink-0 w-1 h-1 rounded-full" style="background: #D5DCE4;"></span>
-
-                {{-- Time with clock icon --}}
-                <span class="flex items-center gap-1 min-w-0">
-                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: #C5D0DB;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span class="truncate">{{ $listing->created_at->diffForHumans() }}</span>
-                </span>
+            {{-- Time --}}
+            <div class="flex items-center gap-1 text-[10px] mb-2" style="color: #C5D0DB;">
+                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>{{ $listing->created_at->diffForHumans() }}</span>
             </div>
 
             {{-- Price & Offer Type --}}
-            <div class="flex items-end justify-between pt-3" style="border-top: 1px solid #F0F4F8;">
+            <div class="flex items-end justify-between pt-2" style="border-top: 1px solid #F0F4F8;">
                 <div>
-                    <span class="text-[17px] font-extrabold block leading-tight transition-colors duration-300 group-hover:text-[#17A2B8]" style="color: #1B4F72; letter-spacing: -0.02em;">
+                    <span class="text-[15px] font-extrabold block leading-tight transition-colors duration-300 group-hover:text-[#17A2B8]" style="color: #1B4F72; letter-spacing: -0.02em;">
                         {{ $listing->formatted_price }}
                     </span>
                     @if($listing->formatted_converted_price)
-                        <span class="text-[10.5px] block mt-1 font-medium" style="color: #9BA8B7;">
+                        <span class="text-[10px] block mt-0.5 font-medium" style="color: #9BA8B7;">
                             {{ $listing->formatted_converted_price }}
                         </span>
                     @endif
                 </div>
                 @if($listing->type_offre === 'negociable')
-                    <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full" style="background: rgba(23, 162, 184, 0.08); color: #17A2B8;">Neg.</span>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background: rgba(23,162,184,0.08); color: #17A2B8;">Neg.</span>
                 @elseif($listing->type_offre === 'offert')
-                    <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full" style="background: rgba(39, 174, 96, 0.08); color: #27AE60;">Offert</span>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background: rgba(39,174,96,0.08); color: #27AE60;">Offert</span>
                 @elseif($listing->type_offre === 'fix')
-                    <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full" style="background: rgba(27, 79, 114, 0.08); color: #1B4F72;">Fixe</span>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background: rgba(27,79,114,0.08); color: #1B4F72;">Fixe</span>
                 @endif
             </div>
         </div>
