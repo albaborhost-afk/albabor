@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Anchor icon representing maritime/nautical -->
+    <path
+        android:pathData="M54,28 L54,68 M54,28 C54,25.8 52.2,24 50,24 C47.8,24 46,25.8 46,28 C46,30.2 47.8,32 50,32 L58,32 C60.2,32 62,30.2 62,28 C62,25.8 60.2,24 58,24 C55.8,24 54,25.8 54,28 Z M54,68 L54,80 M38,68 C38,76.8 45.2,84 54,84 C62.8,84 70,76.8 70,68 M34,68 L74,68"
+        android:strokeWidth="4"
+        android:strokeColor="#FFFFFF"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>
