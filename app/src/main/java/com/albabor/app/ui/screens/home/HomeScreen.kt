@@ -1,5 +1,6 @@
 package com.albabor.app.ui.screens.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -356,6 +357,7 @@ private fun SectionHeader(
 
 // ─── Featured carousel ────────────────────────────────────────────────────────
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FeaturedCarousel(
     listings: List<Listing>,

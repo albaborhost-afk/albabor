@@ -1,8 +1,5 @@
 package com.albabor.app.ui.screens.mylistings
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -206,12 +203,7 @@ fun MyListingsScreen(navController: NavController) {
                 }
 
                 // Action loading overlay
-                AnimatedVisibility(
-                    visible = actionState is MyListingsViewModel.ActionState.Loading,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                    modifier = Modifier.fillMaxSize()
-                ) {
+                if (actionState is MyListingsViewModel.ActionState.Loading) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -304,9 +296,7 @@ private fun ListingItemRow(
 
                     DropdownMenu(
                         expanded = menuExpanded,
-                        onDismissRequest = { menuExpanded = false },
-                        containerColor = White,
-                        shape = RoundedCornerShape(12.dp)
+                        onDismissRequest = { menuExpanded = false }
                     ) {
                         when (listing.status) {
                             "active" -> {

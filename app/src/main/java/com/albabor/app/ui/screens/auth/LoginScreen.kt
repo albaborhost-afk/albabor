@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -587,10 +588,6 @@ fun AuthDivider() {
         )
     }
 }
-
-// Needed by Box offset trick — extension to keep negative offset readable
-private fun Modifier.offset(x: androidx.compose.ui.unit.Dp = 0.dp, y: androidx.compose.ui.unit.Dp = 0.dp): Modifier =
-    this.then(androidx.compose.foundation.layout.offset(x = x, y = y))
 
 // Needed for checkbox color reference
 private val Gray300 = com.albabor.app.ui.theme.Gray300

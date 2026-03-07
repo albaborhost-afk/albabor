@@ -193,7 +193,14 @@ fun AlBaborNavHost() {
                 ExploreScreen(navController = navController)
             }
             composable(Screen.CreateListing.route) {
-                CreateListingScreen(navController = navController)
+                CreateListingScreen(
+                    onBack = { navController.popBackStack() },
+                    onSuccess = { listingId ->
+                        navController.navigate(Screen.ListingDetail.route(listingId)) {
+                            popUpTo(Screen.CreateListing.route) { inclusive = true }
+                        }
+                    }
+                )
             }
             composable(Screen.Favorites.route) {
                 FavoritesScreen(navController = navController)
@@ -208,7 +215,13 @@ fun AlBaborNavHost() {
                 arguments = listOf(navArgument("listingId") { type = NavType.IntType }),
             ) { backStackEntry ->
                 val listingId = backStackEntry.arguments?.getInt("listingId") ?: return@composable
-                ListingDetailScreen(listingId = listingId, navController = navController)
+                ListingDetailScreen(
+                    listingId = listingId,
+                    onBack = { navController.popBackStack() },
+                    onMediationRequested = { id ->
+                        navController.navigate(Screen.MediationDetail.route(id))
+                    }
+                )
             }
 
             // ── Edit listing ──────────────────────────────────────────────────────
@@ -217,7 +230,10 @@ fun AlBaborNavHost() {
                 arguments = listOf(navArgument("listingId") { type = NavType.IntType }),
             ) { backStackEntry ->
                 val listingId = backStackEntry.arguments?.getInt("listingId") ?: return@composable
-                CreateListingScreen(navController = navController, editListingId = listingId)
+                CreateListingScreen(
+                    onBack = { navController.popBackStack() },
+                    onSuccess = { navController.popBackStack() }
+                )
             }
 
             // ── My Listings ───────────────────────────────────────────────────────
@@ -247,7 +263,7 @@ fun AlBaborNavHost() {
                 arguments = listOf(navArgument("ticketId") { type = NavType.IntType }),
             ) { backStackEntry ->
                 val ticketId = backStackEntry.arguments?.getInt("ticketId") ?: return@composable
-                MediationDetailScreen(ticketId = ticketId, navController = navController)
+                MediationDetailScreen(navController = navController, ticketId = ticketId)
             }
 
             // ── Conversations ─────────────────────────────────────────────────────

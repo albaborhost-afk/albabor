@@ -1,6 +1,7 @@
 package com.albabor.app.ui.screens.mediation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -472,7 +473,7 @@ fun ChatInputBar(
 
 // Alias to keep send-box modifier clean
 private fun Modifier.android_clickable(onClick: () -> Unit): Modifier =
-    this.then(androidx.compose.foundation.clickable(onClick = onClick))
+    this.clickable(onClick = onClick)
 
 // ─── Cancel ticket dialog ─────────────────────────────────────────────────────
 
