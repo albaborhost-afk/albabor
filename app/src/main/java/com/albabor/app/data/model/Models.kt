@@ -17,7 +17,9 @@ data class User(
     val role: String = "user",
     @SerializedName("listings_count") val listingsCount: Int = 0,
     @SerializedName("favorites_count") val favoritesCount: Int = 0,
-    @SerializedName("created_at") val createdAt: String = ""
+    @SerializedName("created_at") val createdAt: String = "",
+    @SerializedName("verification_status") val verificationStatus: String = "none"
+    // verificationStatus: "none" | "pending" | "approved" | "rejected"
 )
 
 // ─── Listing ─────────────────────────────────────────────────────────────────

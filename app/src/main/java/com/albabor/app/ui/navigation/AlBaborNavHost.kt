@@ -53,6 +53,7 @@ import com.albabor.app.ui.screens.payments.PaymentsScreen
 import com.albabor.app.ui.screens.profile.EditProfileScreen
 import com.albabor.app.ui.screens.profile.ProfileScreen
 import com.albabor.app.ui.screens.payments.SubscriptionsScreen
+import com.albabor.app.ui.screens.verification.VerificationScreen
 import com.albabor.app.ui.theme.Gray400
 import com.albabor.app.ui.theme.OceanBlue50
 import com.albabor.app.ui.theme.OceanBlue700
@@ -247,6 +248,9 @@ fun AlBaborNavHost() {
             }
             composable(Screen.Subscriptions.route) {
                 SubscriptionsScreen(navController = navController)
+            }
+            composable(Screen.Verification.route) {
+                VerificationScreen(navController = navController)
             }
 
             // ── Payments ──────────────────────────────────────────────────────────
