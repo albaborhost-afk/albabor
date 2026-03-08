@@ -108,25 +108,37 @@
                     'parts'  => ['label' => __('Pieces'),   'desc' => __('Accessoires & equipements'),       'img' => '/images/pieces.png',  'bg' => 'linear-gradient(145deg,#F5EEF8,#EBD5F9)', 'accent' => '#8E44AD', 'shadow' => '0 8px 30px rgba(142,68,173,0.18)'],
                 ] as $catKey => $cat)
                     <a href="{{ route('listings.index', ['category' => $catKey]) }}"
-                       class="group flex-shrink-0 lg:flex-shrink flex flex-col items-center text-center rounded-3xl overflow-hidden bg-white transition-all duration-300 active:scale-95"
-                       style="min-width: 150px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);"
-                       onmouseenter="this.style.boxShadow='{{ $cat['shadow'] }}'; this.style.transform='translateY(-4px)'"
-                       onmouseleave="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.06)'; this.style.transform='translateY(0)'">
+                       class="group flex-shrink-0 lg:flex-shrink flex flex-col items-center text-center rounded-3xl overflow-hidden transition-all duration-500 active:scale-95 relative"
+                       style="min-width: 150px; background: {{ $cat['bg'] }}; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid rgba(255,255,255,0.7);"
+                       onmouseenter="this.style.boxShadow='{{ $cat['shadow'] }}'; this.style.transform='translateY(-6px) scale(1.02)'"
+                       onmouseleave="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.06)'; this.style.transform='translateY(0) scale(1)'">
 
-                        <!-- Image -->
-                        <div class="w-full flex items-center justify-center pt-6 pb-2 px-4">
-                            <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}"
-                                 class="object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-lg"
-                                 style="width: 140px; height: 140px;">
+                        {{-- Decorative circles --}}
+                        <div class="absolute -top-6 -right-6 w-24 h-24 rounded-full opacity-[0.12]" style="background: {{ $cat['accent'] }};"></div>
+                        <div class="absolute -bottom-4 -left-4 w-16 h-16 rounded-full opacity-[0.08]" style="background: {{ $cat['accent'] }};"></div>
+
+                        {{-- Category icon badge --}}
+                        <div class="absolute top-3 right-3 w-7 h-7 rounded-lg flex items-center justify-center opacity-60" style="background: {{ $cat['accent'] }}15;">
+                            <div class="w-2 h-2 rounded-full" style="background: {{ $cat['accent'] }};"></div>
                         </div>
 
-                        <!-- Thin accent line -->
-                        <div class="w-10 mx-auto mt-3 rounded-full" style="height: 3px; background: {{ $cat['accent'] }};"></div>
+                        <!-- Image -->
+                        <div class="w-full flex items-center justify-center pt-8 pb-2 px-4 relative z-10">
+                            <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}"
+                                 class="object-contain transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-1"
+                                 style="width: 130px; height: 130px; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.12));">
+                        </div>
+
+                        <!-- Accent line with glow -->
+                        <div class="relative w-12 mx-auto mt-2">
+                            <div class="rounded-full" style="height: 3px; background: {{ $cat['accent'] }};"></div>
+                            <div class="absolute inset-0 rounded-full blur-sm opacity-50" style="height: 3px; background: {{ $cat['accent'] }};"></div>
+                        </div>
 
                         <!-- Text -->
-                        <div class="py-3 px-3">
-                            <p class="text-sm font-bold" style="color: #1B2A4A;">{{ $cat['label'] }}</p>
-                            <p class="text-[11px] mt-0.5 leading-snug" style="color: #9BA8B7;">{{ $cat['desc'] }}</p>
+                        <div class="py-3 px-3 relative z-10">
+                            <p class="text-sm font-bold tracking-tight" style="color: #1B2A4A;">{{ $cat['label'] }}</p>
+                            <p class="text-[11px] mt-0.5 leading-snug font-medium" style="color: {{ $cat['accent'] }}99;">{{ $cat['desc'] }}</p>
                         </div>
                     </a>
                 @endforeach
