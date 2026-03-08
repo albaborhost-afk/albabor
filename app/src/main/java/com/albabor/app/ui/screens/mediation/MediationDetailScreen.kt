@@ -244,10 +244,15 @@ fun MediationDetailScreen(navController: NavController, ticketId: Int) {
                             }
                         }
                     }
-                    items(messages, key = { it.id }) { msg ->
-                        // Determine if msg is "mine" — compare sender id to ticket buyer id
-                        val isMine = msg.sender?.id == ticket?.buyer?.id
-                        MediationChatBubble(message = msg, isMine = isMine)
+                    items(messages, key = { it.userId.toString() + it.createdAt }) { msg ->
+                        // Determine if msg is "mine" — compare sender userId to current ticket buyer
+                        val isMine = msg.userId == ticket?.buyer?.id
+                        val senderName = when (msg.userId) {
+                            ticket?.buyer?.id  -> ticket?.buyer?.name ?: "Acheteur"
+                            ticket?.seller?.id -> ticket?.seller?.name ?: "Vendeur"
+                            else               -> "Admin"
+                        }
+                        MediationChatBubble(message = msg, isMine = isMine, senderName = senderName)
                     }
                 }
             }
@@ -334,7 +339,7 @@ private fun ListingSummaryCard(
 // ─── Chat bubble ─────────────────────────────────────────────────────────────
 
 @Composable
-private fun MediationChatBubble(message: MediationMessage, isMine: Boolean) {
+private fun MediationChatBubble(message: MediationMessage, isMine: Boolean, senderName: String = "") {
     val bubbleBg   = if (isMine) OceanBlue700 else Gray100
     val textColor  = if (isMine) White else Gray900
     val alignment  = if (isMine) Alignment.End else Alignment.Start
@@ -351,7 +356,7 @@ private fun MediationChatBubble(message: MediationMessage, isMine: Boolean) {
         // Sender name (for other party)
         if (!isMine) {
             Text(
-                text = message.sender?.name ?: "—",
+                text = senderName.ifEmpty { "—" },
                 style = MaterialTheme.typography.labelSmall.copy(
                     color = Gray500,
                     fontWeight = FontWeight.SemiBold

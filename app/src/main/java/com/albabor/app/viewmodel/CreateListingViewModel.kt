@@ -210,7 +210,7 @@ class CreateListingViewModel : ViewModel() {
                 val response = api.createListing(data, imageParts)
 
                 if (response.isSuccessful) {
-                    val listing = response.body()?.data
+                    val listing = response.body()?.listing
                         ?: throw Exception("Réponse invalide du serveur")
                     _submitState.value = SubmitState.Success(listing)
                 } else {

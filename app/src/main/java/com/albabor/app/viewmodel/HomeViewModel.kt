@@ -3,6 +3,7 @@ package com.albabor.app.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.albabor.app.data.model.Listing
+import com.albabor.app.data.model.ListingFilters
 import com.albabor.app.data.repository.ListingRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,8 +34,8 @@ class HomeViewModel : ViewModel() {
             repo.getFeaturedListings()
                 .onSuccess { _featured.value = it }
                 .onFailure { _error.value = it.message }
-            repo.getLatestListings(25)
-                .onSuccess { _latest.value = it }
+            repo.getListings(ListingFilters(sortBy = "recent", page = 1))
+                .onSuccess { _latest.value = it.data }
                 .onFailure { if (_error.value == null) _error.value = it.message }
             _isLoading.value = false
         }

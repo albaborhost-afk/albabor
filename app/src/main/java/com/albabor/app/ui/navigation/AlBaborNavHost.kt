@@ -1,8 +1,10 @@
 package com.albabor.app.ui.navigation
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
@@ -15,20 +17,21 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -54,9 +57,12 @@ import com.albabor.app.ui.screens.profile.EditProfileScreen
 import com.albabor.app.ui.screens.profile.ProfileScreen
 import com.albabor.app.ui.screens.payments.SubscriptionsScreen
 import com.albabor.app.ui.screens.verification.VerificationScreen
+import com.albabor.app.ui.theme.AppBackground
+import com.albabor.app.ui.theme.GlassSurfaceStrong
 import com.albabor.app.ui.theme.Gray400
-import com.albabor.app.ui.theme.OceanBlue50
-import com.albabor.app.ui.theme.OceanBlue700
+import com.albabor.app.ui.theme.OceanBlue900
+import com.albabor.app.ui.theme.Teal500
+import com.albabor.app.ui.theme.White
 import kotlinx.coroutines.runBlocking
 
 data class BottomNavItem(
@@ -82,7 +88,7 @@ fun AlBaborNavHost() {
 
     val bottomNavItems = listOf(
         BottomNavItem(Screen.Home, "Accueil", Icons.Filled.Home, Icons.Outlined.Home),
-        BottomNavItem(Screen.Explore, "Annonces", Icons.Filled.Search, Icons.Outlined.Search),
+        BottomNavItem(Screen.Explore, "Explorer", Icons.Filled.Search, Icons.Outlined.Search),
         BottomNavItem(Screen.CreateListing, "Publier", Icons.Filled.Add, Icons.Filled.Add),
         BottomNavItem(Screen.Favorites, "Favoris", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder),
         BottomNavItem(Screen.Profile, "Profil", Icons.Filled.Person, Icons.Outlined.Person),
@@ -104,69 +110,25 @@ fun AlBaborNavHost() {
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                ) {
-                    bottomNavItems.forEach { item ->
-                        val selected = currentRoute == item.screen.route
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = {
-                                if (item.screen == Screen.CreateListing) {
-                                    if (isLoggedIn) {
-                                        navController.navigate(Screen.CreateListing.route)
-                                    } else {
-                                        navController.navigate(Screen.Login.route)
-                                    }
-                                } else {
-                                    navController.navigate(item.screen.route) {
-                                        popUpTo(Screen.Home.route) { saveState = true }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                }
-                            },
-                            icon = {
-                                if (item.screen == Screen.CreateListing) {
-                                    // Special FAB-like centre button
-                                    Surface(
-                                        shape = CircleShape,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(48.dp),
-                                    ) {
-                                        Icon(
-                                            imageVector = item.selectedIcon,
-                                            contentDescription = item.label,
-                                            tint = MaterialTheme.colorScheme.onPrimary,
-                                            modifier = Modifier.padding(12.dp),
-                                        )
-                                    }
-                                } else {
-                                    Icon(
-                                        imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
-                                        contentDescription = item.label,
-                                    )
-                                }
-                            },
-                            label = {
-                                // No label under the centre Publier button
-                                if (item.screen != Screen.CreateListing) {
-                                    Text(
-                                        text = item.label,
-                                        style = MaterialTheme.typography.labelSmall,
-                                    )
-                                }
-                            },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = OceanBlue700,
-                                selectedTextColor = OceanBlue700,
-                                indicatorColor = OceanBlue50,
-                                unselectedIconColor = Gray400,
-                                unselectedTextColor = Gray400,
-                            ),
-                        )
+                FloatingBottomBar(
+                    items = bottomNavItems,
+                    currentRoute = currentRoute,
+                    onNavigate = { item ->
+                        if (item.screen == Screen.CreateListing) {
+                            if (isLoggedIn) {
+                                navController.navigate(Screen.CreateListing.route)
+                            } else {
+                                navController.navigate(Screen.Login.route)
+                            }
+                        } else {
+                            navController.navigate(item.screen.route) {
+                                popUpTo(Screen.Home.route) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     }
-                }
+                )
             }
         },
     ) { paddingValues ->
@@ -280,6 +242,159 @@ fun AlBaborNavHost() {
             ) { backStackEntry ->
                 val conversationId = backStackEntry.arguments?.getInt("conversationId") ?: return@composable
                 ConversationDetailScreen(conversationId = conversationId, navController = navController)
+            }
+        }
+    }
+}
+
+@Composable
+private fun FloatingBottomBar(
+    items: List<BottomNavItem>,
+    currentRoute: String?,
+    onNavigate: (BottomNavItem) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(AppBackground)
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 30.dp)
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 18.dp),
+            shape = RoundedCornerShape(28.dp),
+            color = GlassSurfaceStrong,
+            shadowElevation = 16.dp,
+            tonalElevation = 0.dp
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp, top = 10.dp, bottom = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                items.forEach { item ->
+                    if (item.screen == Screen.CreateListing) {
+                        Box(modifier = Modifier.width(72.dp))
+                    } else {
+                        FloatingTabItem(
+                            item = item,
+                            selected = currentRoute == item.screen.route,
+                            onClick = { onNavigate(item) },
+                            modifier = Modifier.weight(1f, fill = true)
+                        )
+                    }
+                }
+            }
+        }
+
+        items.firstOrNull { it.screen == Screen.CreateListing }?.let { publishItem ->
+            PublishTabButton(
+                modifier = Modifier.align(Alignment.TopCenter),
+                onClick = { onNavigate(publishItem) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun FloatingTabItem(
+    item: BottomNavItem,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(18.dp))
+            .clickable(onClick = onClick)
+            .padding(vertical = 6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(999.dp))
+                .background(
+                    if (selected) {
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Teal500.copy(alpha = 0.16f),
+                                OceanBlue900.copy(alpha = 0.08f)
+                            )
+                        )
+                    } else {
+                        Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent))
+                    }
+                )
+                .padding(horizontal = 12.dp, vertical = 4.dp)
+        ) {
+            Icon(
+                imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
+                contentDescription = item.label,
+                tint = if (selected) OceanBlue900 else Gray400,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        Text(
+            text = item.label,
+            color = if (selected) OceanBlue900 else Gray400,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+private fun PublishTabButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .offset(y = (-2).dp)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(68.dp)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(Teal500.copy(alpha = 0.20f), Color.Transparent)
+                    ),
+                    CircleShape
+                )
+        )
+
+        Surface(
+            modifier = Modifier.size(58.dp),
+            shape = CircleShape,
+            color = White,
+            shadowElevation = 10.dp,
+            tonalElevation = 0.dp
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(OceanBlue900, Teal500)
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Publier",
+                        tint = White,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
             }
         }
     }

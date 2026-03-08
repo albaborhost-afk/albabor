@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -37,22 +39,38 @@ object TokenStore {
 class AuthInterceptor(private val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
         val token = runBlocking { TokenStore.get(context) }
-        val request = chain.request().newBuilder()
-            .addHeader("Accept", "application/json")
-            .addHeader("Content-Type", "application/json")
-            .apply { token?.let { addHeader("Authorization", "Bearer $it") } }
+        val original = chain.request()
+
+        // Don't override Content-Type for multipart — OkHttp sets it automatically with the boundary
+        val isMultipart = original.body?.contentType()?.type == "multipart"
+
+        val request = original.newBuilder()
+            .header("Accept", "application/json")
+            .header("X-Requested-With", "XMLHttpRequest")
+            .apply {
+                if (!isMultipart) header("Content-Type", "application/json")
+                token?.let { header("Authorization", "Bearer $it") }
+            }
             .build()
         return chain.proceed(request)
     }
 }
 
 object NetworkModule {
-    private const val BASE_URL = "https://albabor.com/api/v1/"
+    const val BASE_URL = "https://albabor.com/api/v1/"
     private lateinit var appContext: Context
 
     fun init(context: Context) {
         appContext = context.applicationContext
     }
+
+    private val gson = GsonBuilder()
+        .setLenient()
+        .serializeNulls()
+        // Auto-convert snake_case JSON ↔ camelCase Kotlin fields
+        // (explicit @SerializedName annotations take priority over this policy)
+        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+        .create()
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -64,7 +82,7 @@ object NetworkModule {
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(120, TimeUnit.SECONDS)
             .build()
     }
 
@@ -72,7 +90,7 @@ object NetworkModule {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(ApiService::class.java)
     }

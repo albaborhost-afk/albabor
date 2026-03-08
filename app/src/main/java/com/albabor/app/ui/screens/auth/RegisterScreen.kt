@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -55,8 +57,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.albabor.app.R
+import com.albabor.app.ui.theme.OceanBlue900
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
@@ -134,42 +141,67 @@ fun RegisterScreen(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(220.dp)
+                    .height(260.dp)
                     .background(brush = oceanHeaderGradient),
-                contentAlignment = Alignment.Center
             ) {
+                // Decorative circles
+                Box(
+                    modifier = Modifier
+                        .size(200.dp)
+                        .offset(x = (-60).dp, y = (-40).dp)
+                        .background(color = White.copy(alpha = 0.05f), shape = CircleShape)
+                )
+                Box(
+                    modifier = Modifier
+                        .size(140.dp)
+                        .align(Alignment.TopEnd)
+                        .offset(x = 40.dp, y = 20.dp)
+                        .background(color = White.copy(alpha = 0.05f), shape = CircleShape)
+                )
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .align(Alignment.BottomStart)
+                        .offset(x = 30.dp, y = 30.dp)
+                        .background(color = White.copy(alpha = 0.07f), shape = CircleShape)
+                )
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier
+                        .fillMaxSize()
                         .statusBarsPadding()
-                        .padding(bottom = 16.dp)
+                        .padding(bottom = 36.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(60.dp)
-                            .clip(CircleShape)
-                            .background(White.copy(alpha = 0.18f)),
+                            .shadow(
+                                elevation = 16.dp,
+                                shape = RoundedCornerShape(28.dp),
+                                ambientColor = OceanBlue900.copy(alpha = 0.4f),
+                                spotColor = OceanBlue900.copy(alpha = 0.4f)
+                            )
+                            .clip(RoundedCornerShape(28.dp))
+                            .background(White)
+                            .size(100.dp)
+                            .padding(10.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "\u2693",
-                            fontSize = 28.sp,
-                            color = White
+                        Image(
+                            painter = painterResource(id = R.drawable.albabor_logo),
+                            contentDescription = "AlBabor",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
                         )
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
                     Text(
-                        text = "Rejoignez AlBabor",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = White,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Le marche nautique d'Algerie",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = White.copy(alpha = 0.75f)
+                        text = "La Mer, Votre Marché",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = White.copy(alpha = 0.90f),
+                            letterSpacing = 1.2.sp,
+                            fontWeight = FontWeight.Medium
                         )
                     )
                 }
@@ -179,7 +211,8 @@ fun RegisterScreen(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
+                    .offset(y = (-28).dp)
+                    .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
                     .background(White)
             ) {
                 Column(

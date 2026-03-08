@@ -4,6 +4,7 @@ import android.content.Context
 import com.albabor.app.data.model.*
 import com.albabor.app.data.network.NetworkModule
 import com.albabor.app.data.network.TokenStore
+import com.albabor.app.data.network.errorMessage
 
 class AuthRepository(private val context: Context) {
     private val api = NetworkModule.apiService
@@ -15,7 +16,7 @@ class AuthRepository(private val context: Context) {
             TokenStore.save(context, body.token)
             body
         } else {
-            throw Exception(response.errorBody()?.string() ?: "Connexion échouée")
+            throw Exception(response.errorMessage("Connexion échouée"))
         }
     }
 
@@ -26,15 +27,13 @@ class AuthRepository(private val context: Context) {
             TokenStore.save(context, body.token)
             body
         } else {
-            throw Exception(response.errorBody()?.string() ?: "Inscription échouée")
+            throw Exception(response.errorMessage("Inscription échouée"))
         }
     }
 
     suspend fun forgotPassword(email: String): Result<Unit> = runCatching {
         val response = api.forgotPassword(mapOf("email" to email))
-        if (!response.isSuccessful) {
-            throw Exception(response.errorBody()?.string() ?: "Erreur")
-        }
+        if (!response.isSuccessful) throw Exception(response.errorMessage())
     }
 
     suspend fun logout(): Result<Unit> = runCatching {

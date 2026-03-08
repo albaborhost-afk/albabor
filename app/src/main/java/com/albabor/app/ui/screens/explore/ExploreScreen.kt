@@ -9,23 +9,24 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -37,14 +38,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.albabor.app.data.model.ListingFilters
-import com.albabor.app.ui.components.FilterChip
 import com.albabor.app.ui.components.ListingCard
 import com.albabor.app.ui.components.LoadingGrid
 import com.albabor.app.ui.navigation.Screen
 import com.albabor.app.ui.theme.*
 import com.albabor.app.viewmodel.ExploreViewModel
 
-// ─── Algeria's wilayas ────────────────────────────────────────────────────────
+// ─── Filter option definitions ──────────────────────────────────────────────
+
+private data class RadioOption(val key: String?, val label: String)
 
 private val wilayas = listOf(
     "Adrar", "Alger", "Annaba", "Batna", "Béjaïa", "Biskra", "Blida",
@@ -57,42 +59,27 @@ private val wilayas = listOf(
     "Tindouf", "Tipaza", "Tissemsilt", "Tizi Ouzou", "Tlemcen"
 )
 
-// ─── Filter option definitions ────────────────────────────────────────────────
-
-private data class RadioOption(val key: String?, val label: String)
-
 private val categoryOptions = listOf(
-    RadioOption(null,     "Tous"),
-    RadioOption("boat",   "Bateaux ⛵"),
-    RadioOption("jetski", "Jet-Skis 🚤"),
-    RadioOption("engine", "Moteurs ⚙️"),
-    RadioOption("parts",  "Pièces 🔩"),
+    RadioOption(null, "Tous"), RadioOption("boat", "Bateaux"), RadioOption("jetski", "Jet-Skis"),
+    RadioOption("engine", "Moteurs"), RadioOption("parts", "Pièces"),
 )
 
 private val conditionOptions = listOf(
-    RadioOption(null,              "Tous"),
-    RadioOption("new",             "Jamais utilisé"),
-    RadioOption("like_new",        "Comme neuf"),
-    RadioOption("good",            "Bon état"),
-    RadioOption("average",         "État moyen"),
-    RadioOption("needs_revision",  "À réviser"),
+    RadioOption(null, "Tous"), RadioOption("new", "Jamais utilisé"), RadioOption("like_new", "Comme neuf"),
+    RadioOption("good", "Bon état"), RadioOption("average", "État moyen"), RadioOption("needs_revision", "À réviser"),
 )
 
 private val offerTypeOptions = listOf(
-    RadioOption(null,         "Tous"),
-    RadioOption("negotiable", "Négociable"),
-    RadioOption("fixed",      "Prix fixe"),
-    RadioOption("free",       "Offert"),
+    RadioOption(null, "Tous"), RadioOption("negotiable", "Négociable"),
+    RadioOption("fixed", "Prix fixe"), RadioOption("free", "Offert"),
 )
 
 private val sortOptions = listOf(
-    RadioOption("newest",     "Plus récentes"),
-    RadioOption("price_asc",  "Prix croissant"),
-    RadioOption("price_desc", "Prix décroissant"),
-    RadioOption("popular",    "Plus populaires"),
+    RadioOption("newest", "Plus récentes"), RadioOption("price_asc", "Prix croissant"),
+    RadioOption("price_desc", "Prix décroissant"), RadioOption("popular", "Plus populaires"),
 )
 
-// ─── Screen entry point ───────────────────────────────────────────────────────
+// ─── Screen entry point ─────────────────────────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,105 +87,67 @@ fun ExploreScreen(
     navController: NavController,
     viewModel: ExploreViewModel = viewModel()
 ) {
-    val filters by viewModel.filters.collectAsStateWithLifecycle()
-    val listings by viewModel.listings.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val filters    by viewModel.filters.collectAsStateWithLifecycle()
+    val listings   by viewModel.listings.collectAsStateWithLifecycle()
+    val isLoading  by viewModel.isLoading.collectAsStateWithLifecycle()
     val totalCount by viewModel.totalCount.collectAsStateWithLifecycle()
 
     var showFilterSheet by remember { mutableStateOf(false) }
-    var localSearch by remember { mutableStateOf(filters.search ?: "") }
+    var localSearch     by remember { mutableStateOf(filters.search ?: "") }
 
     val focusManager = LocalFocusManager.current
-    val searchFocusRequester = remember { FocusRequester() }
+    val searchFocus  = remember { FocusRequester() }
 
-    // Active filter count for badge
-    val activeFilterCount = remember(filters) {
+    val activeCount = remember(filters) {
         listOfNotNull(
-            filters.category,
-            filters.wilaya,
-            filters.condition,
-            filters.offerType,
-            filters.minPrice,
-            filters.maxPrice,
-            filters.sortBy?.takeIf { it != "newest" }
+            filters.category, filters.wilaya, filters.condition, filters.offerType,
+            filters.minPrice, filters.maxPrice, filters.sortBy?.takeIf { it != "newest" }
         ).size
     }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            SearchTopBar(
-                query = localSearch,
-                onQueryChange = { localSearch = it },
-                onSearch = {
-                    viewModel.updateSearch(localSearch)
-                    focusManager.clearFocus()
-                },
-                onClearQuery = {
-                    localSearch = ""
-                    viewModel.updateSearch("")
-                },
-                onNavigateBack = { navController.popBackStack() },
-                focusRequester = searchFocusRequester
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            // ── Filter chips row ──────────────────────────────────────────────
-            FilterChipsRow(
-                filters = filters,
-                activeFilterCount = activeFilterCount,
-                onOpenFilters = { showFilterSheet = true }
+    Scaffold(containerColor = AppBackground) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding)) {
+            // ── Search bar ──────────────────────────────────────────────
+            SearchBar(
+                query        = localSearch,
+                onQuery      = { localSearch = it },
+                onSearch     = { viewModel.updateSearch(localSearch); focusManager.clearFocus() },
+                onClear      = { localSearch = ""; viewModel.updateSearch("") },
+                onBack       = { navController.popBackStack() },
+                focusReq     = searchFocus
             )
 
-            // ── Results count ─────────────────────────────────────────────────
-            ResultsCountBar(
-                total = totalCount,
-                isLoading = isLoading
-            )
+            // ── Filter chips ────────────────────────────────────────────
+            FilterRow(filters, activeCount) { showFilterSheet = true }
 
-            // ── Grid ──────────────────────────────────────────────────────────
+            // ── Results count ────────────────────────────────────────────
+            ResultsBar(totalCount, isLoading)
+
+            // ── Grid ────────────────────────────────────────────────────
             PullToRefreshBox(
                 isRefreshing = isLoading,
-                onRefresh = { viewModel.search() },
-                modifier = Modifier.fillMaxSize()
+                onRefresh    = { viewModel.search() },
+                modifier     = Modifier.fillMaxSize()
             ) {
                 if (isLoading && listings.isEmpty()) {
-                    Box(modifier = Modifier.padding(16.dp)) {
-                        LoadingGrid(count = 8)
-                    }
+                    Box(Modifier.padding(14.dp)) { LoadingGrid(count = 8) }
                 } else if (!isLoading && listings.isEmpty()) {
-                    EmptyResults(
-                        hasFilters = activeFilterCount > 0 || filters.search != null,
-                        onClearFilters = {
-                            viewModel.clearFilters()
-                            localSearch = ""
-                        }
-                    )
+                    EmptyState(activeCount > 0 || filters.search != null) {
+                        viewModel.clearFilters(); localSearch = ""
+                    }
                 } else {
                     LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        contentPadding = PaddingValues(
-                            start = 12.dp,
-                            end = 12.dp,
-                            top = 4.dp,
-                            bottom = 100.dp
-                        ),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxSize()
+                        columns            = GridCells.Fixed(2),
+                        contentPadding     = PaddingValues(start = 14.dp, end = 14.dp, top = 6.dp, bottom = 100.dp),
+                        verticalArrangement   = Arrangement.spacedBy(14.dp),
+                        horizontalArrangement = Arrangement.spacedBy(14.dp),
+                        modifier           = Modifier.fillMaxSize()
                     ) {
                         items(listings, key = { it.id }) { listing ->
                             ListingCard(
-                                listing = listing,
-                                onClick = {
-                                    navController.navigate(Screen.ListingDetail.route(listing.id))
-                                },
-                                onFavorite = { /* TODO: wire favorite */ }
+                                listing    = listing,
+                                onClick    = { navController.navigate(Screen.ListingDetail.route(listing.id)) },
+                                onFavorite = { /* TODO */ }
                             )
                         }
                     }
@@ -207,585 +156,420 @@ fun ExploreScreen(
         }
     }
 
-    // ── Filter bottom sheet ───────────────────────────────────────────────────
     if (showFilterSheet) {
-        FilterBottomSheet(
-            currentFilters = filters,
-            onApply = { newFilters ->
-                viewModel.updateFilters(newFilters)
-                showFilterSheet = false
-            },
+        FilterSheet(filters,
+            onApply  = { viewModel.updateFilters(it); showFilterSheet = false },
             onDismiss = { showFilterSheet = false }
         )
     }
 }
 
-// ─── Search TopAppBar ─────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
+//  SEARCH BAR — floating card style
+// ═════════════════════════════════════════════════════════════════════════════
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchTopBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit,
-    onClearQuery: () -> Unit,
-    onNavigateBack: () -> Unit,
-    focusRequester: FocusRequester
+private fun SearchBar(
+    query: String, onQuery: (String) -> Unit, onSearch: () -> Unit,
+    onClear: () -> Unit, onBack: () -> Unit, focusReq: FocusRequester
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 4.dp
+        Modifier.fillMaxWidth(),
+        color           = Color.White,
+        shadowElevation = 6.dp
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 8.dp, vertical = 8.dp),
+            Modifier.fillMaxWidth().statusBarsPadding()
+                .padding(horizontal = 10.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Retour",
-                    tint = OceanBlue700
-                )
-            }
-
-            TextField(
-                value = query,
-                onValueChange = onQueryChange,
-                modifier = Modifier
-                    .weight(1f)
-                    .focusRequester(focusRequester),
-                placeholder = {
-                    Text(
-                        text = "Rechercher bateaux, jet-skis...",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                },
-                singleLine = true,
-                leadingIcon = {
-                    Icon(
-                        Icons.Filled.Search,
-                        contentDescription = null,
-                        tint = OceanBlue500,
-                        modifier = Modifier.size(20.dp)
-                    )
-                },
-                trailingIcon = {
-                    if (query.isNotEmpty()) {
-                        IconButton(onClick = onClearQuery) {
-                            Icon(
-                                Icons.Filled.Clear,
-                                contentDescription = "Effacer",
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    }
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = { onSearch() }),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = OceanBlue50,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-                ),
-                shape = RoundedCornerShape(12.dp)
-            )
-        }
-    }
-}
-
-// ─── Filter chips row (category, wilaya, price, condition, sort) ──────────────
-
-@Composable
-private fun FilterChipsRow(
-    filters: ListingFilters,
-    activeFilterCount: Int,
-    onOpenFilters: () -> Unit
-) {
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Filter button with badge
-        item {
-            BadgedBox(
-                badge = {
-                    if (activeFilterCount > 0) {
-                        Badge(
-                            containerColor = OceanBlue700,
-                            contentColor = White
-                        ) {
-                            Text(
-                                text = activeFilterCount.toString(),
-                                fontSize = 10.sp
-                            )
-                        }
-                    }
-                }
+            // Back button in subtle circle
+            Box(
+                Modifier.size(40.dp).clip(CircleShape).background(AppBackground)
+                    .clickable(onClick = onBack),
+                contentAlignment = Alignment.Center
             ) {
-                FilterChip(
-                    label = "Filtres",
-                    active = activeFilterCount > 0,
-                    onClick = onOpenFilters
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Retour", tint = OceanBlue700, modifier = Modifier.size(20.dp))
+            }
+
+            // Search field — rounded with gradient focus
+            Surface(
+                Modifier.weight(1f).height(46.dp),
+                shape = RoundedCornerShape(14.dp),
+                color = AppBackground,
+                shadowElevation = 0.dp
+            ) {
+                TextField(
+                    value         = query,
+                    onValueChange = onQuery,
+                    modifier      = Modifier.fillMaxSize().focusRequester(focusReq),
+                    placeholder   = {
+                        Text("Rechercher bateaux, jet-skis...",
+                            style = MaterialTheme.typography.bodyMedium, color = Gray400)
+                    },
+                    singleLine    = true,
+                    leadingIcon   = {
+                        Icon(Icons.Filled.Search, null, tint = OceanBlue500, modifier = Modifier.size(20.dp))
+                    },
+                    trailingIcon  = {
+                        if (query.isNotEmpty()) {
+                            IconButton(onClick = onClear) {
+                                Icon(Icons.Filled.Clear, "Effacer", tint = Gray400, modifier = Modifier.size(17.dp))
+                            }
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = { onSearch() }),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor    = Color.Transparent,
+                        unfocusedContainerColor  = Color.Transparent,
+                        focusedIndicatorColor    = Color.Transparent,
+                        unfocusedIndicatorColor  = Color.Transparent,
+                        focusedTextColor         = Gray900,
+                        unfocusedTextColor       = Gray900
+                    )
                 )
             }
         }
+    }
+}
 
-        // Category quick chip
-        item {
-            FilterChip(
-                label = filters.category?.let { key ->
-                    when (key) {
-                        "boat"   -> "Bateaux ⛵"
-                        "jetski" -> "Jet-Skis 🚤"
-                        "engine" -> "Moteurs ⚙️"
-                        "parts"  -> "Pièces 🔩"
-                        else     -> key
+// ═════════════════════════════════════════════════════════════════════════════
+//  FILTER ROW — scrollable styled chips
+// ═════════════════════════════════════════════════════════════════════════════
+
+@Composable
+private fun FilterRow(filters: ListingFilters, activeCount: Int, onOpen: () -> Unit) {
+    Surface(
+        Modifier.fillMaxWidth(),
+        color = Color.White,
+        shadowElevation = 2.dp
+    ) {
+        LazyRow(
+            Modifier.fillMaxWidth().padding(vertical = 10.dp),
+            contentPadding        = PaddingValues(horizontal = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment     = Alignment.CenterVertically
+        ) {
+            // Filter button with badge
+            item {
+                BadgedBox(badge = {
+                    if (activeCount > 0) Badge(containerColor = OceanBlue700, contentColor = Color.White) {
+                        Text("$activeCount", fontSize = 10.sp)
                     }
-                } ?: "Catégorie",
-                active = filters.category != null,
-                onClick = onOpenFilters
-            )
-        }
-
-        // Wilaya quick chip
-        item {
-            FilterChip(
-                label = filters.wilaya ?: "Wilaya",
-                active = filters.wilaya != null,
-                onClick = onOpenFilters
-            )
-        }
-
-        // Price quick chip
-        item {
-            val priceLabel = when {
-                filters.minPrice != null && filters.maxPrice != null ->
-                    "${filters.minPrice.toLong()} – ${filters.maxPrice.toLong()} DA"
-                filters.minPrice != null -> "Min ${filters.minPrice.toLong()} DA"
-                filters.maxPrice != null -> "Max ${filters.maxPrice.toLong()} DA"
-                else -> "Prix"
+                }) {
+                    StyledChip(
+                        label  = "Filtres",
+                        active = activeCount > 0,
+                        icon   = Icons.Filled.Tune,
+                        onClick = onOpen
+                    )
+                }
             }
-            FilterChip(
-                label = priceLabel,
-                active = filters.minPrice != null || filters.maxPrice != null,
-                onClick = onOpenFilters
-            )
-        }
 
-        // Condition quick chip
-        item {
-            FilterChip(
-                label = filters.condition?.let { key ->
-                    conditionOptions.find { it.key == key }?.label
-                } ?: "État",
-                active = filters.condition != null,
-                onClick = onOpenFilters
-            )
-        }
+            item {
+                StyledChip(
+                    label  = filters.category?.let {
+                        when (it) { "boat" -> "Bateaux"; "jetski" -> "Jet-Skis"; "engine" -> "Moteurs"; "parts" -> "Pièces"; else -> it }
+                    } ?: "Catégorie",
+                    active = filters.category != null,
+                    onClick = onOpen
+                )
+            }
 
-        // Sort quick chip
-        item {
-            FilterChip(
-                label = filters.sortBy?.let { key ->
-                    sortOptions.find { it.key == key }?.label
-                } ?: "Trier",
-                active = filters.sortBy != null && filters.sortBy != "newest",
-                onClick = onOpenFilters
+            item {
+                StyledChip(label = filters.wilaya ?: "Wilaya", active = filters.wilaya != null, onClick = onOpen)
+            }
+
+            item {
+                val lbl = when {
+                    filters.minPrice != null && filters.maxPrice != null -> "${filters.minPrice.toLong()} – ${filters.maxPrice.toLong()}"
+                    filters.minPrice != null -> "Min ${filters.minPrice.toLong()}"
+                    filters.maxPrice != null -> "Max ${filters.maxPrice.toLong()}"
+                    else -> "Prix"
+                }
+                StyledChip(label = lbl, active = filters.minPrice != null || filters.maxPrice != null, onClick = onOpen)
+            }
+
+            item {
+                StyledChip(
+                    label  = filters.condition?.let { conditionOptions.find { o -> o.key == it }?.label } ?: "État",
+                    active = filters.condition != null, onClick = onOpen
+                )
+            }
+
+            item {
+                StyledChip(
+                    label  = filters.sortBy?.let { sortOptions.find { o -> o.key == it }?.label } ?: "Trier",
+                    active = filters.sortBy != null && filters.sortBy != "newest", onClick = onOpen
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StyledChip(
+    label: String,
+    active: Boolean,
+    icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
+    onClick: () -> Unit
+) {
+    val shape = RoundedCornerShape(12.dp)
+
+    Surface(
+        modifier = Modifier.clip(shape).clickable(onClick = onClick),
+        shape    = shape,
+        color    = if (active) OceanBlue700 else AppBackground,
+        border   = if (!active) androidx.compose.foundation.BorderStroke(1.dp, Gray200) else null,
+        shadowElevation = if (active) 4.dp else 0.dp
+    ) {
+        Row(
+            Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+            icon?.let {
+                Icon(it, null, tint = if (active) Color.White else Gray500, modifier = Modifier.size(15.dp))
+            }
+            Text(
+                label,
+                fontSize   = 12.sp,
+                fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
+                color      = if (active) Color.White else Gray700,
+                maxLines   = 1
             )
         }
     }
 }
 
-// ─── Results count bar ────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
+//  RESULTS BAR
+// ═════════════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun ResultsCountBar(total: Int, isLoading: Boolean) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 16.dp, vertical = 6.dp)
+private fun ResultsBar(total: Int, loading: Boolean) {
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = if (isLoading) "Recherche en cours..."
-                   else if (total == 0) "Aucune annonce trouvée"
-                   else "$total annonce${if (total > 1) "s" else ""} trouvée${if (total > 1) "s" else ""}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            if (loading) "Recherche en cours..."
+            else if (total == 0) "Aucune annonce trouvée"
+            else "$total annonce${if (total > 1) "s" else ""} trouvée${if (total > 1) "s" else ""}",
+            fontSize   = 13.sp,
+            color      = Gray500,
             fontWeight = FontWeight.Medium
         )
     }
 }
 
-// ─── Empty results state ──────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
+//  EMPTY STATE
+// ═════════════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun EmptyResults(
-    hasFilters: Boolean,
-    onClearFilters: () -> Unit
-) {
+private fun EmptyState(hasFilters: Boolean, onClear: () -> Unit) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
+        Modifier.fillMaxSize().padding(40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "🔍", fontSize = 56.sp)
-        Spacer(modifier = Modifier.height(16.dp))
+        // Icon circle
+        Box(
+            Modifier.size(80.dp).clip(CircleShape)
+                .background(Brush.linearGradient(listOf(OceanBlue100, Teal100))),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(Icons.Default.SearchOff, null, tint = OceanBlue500, modifier = Modifier.size(40.dp))
+        }
+
+        Spacer(Modifier.height(20.dp))
+
         Text(
-            text = if (hasFilters) "Aucune annonce ne correspond à vos filtres"
-                   else "Aucune annonce disponible pour le moment",
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            if (hasFilters) "Aucune annonce ne correspond à vos filtres"
+            else "Aucune annonce disponible pour le moment",
+            style     = MaterialTheme.typography.titleSmall,
+            color     = Gray700,
             textAlign = TextAlign.Center,
-            lineHeight = 20.sp
+            lineHeight = 22.sp
         )
+
         if (hasFilters) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(20.dp))
             Button(
-                onClick = onClearFilters,
-                colors = ButtonDefaults.buttonColors(containerColor = OceanBlue700)
+                onClick = onClear,
+                shape   = RoundedCornerShape(14.dp),
+                colors  = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                contentPadding = PaddingValues(0.dp)
             ) {
-                Text(text = "Effacer les filtres", color = White)
+                Box(
+                    Modifier.background(
+                        Brush.linearGradient(listOf(OceanBlue700, Teal500)),
+                        RoundedCornerShape(14.dp)
+                    ).padding(horizontal = 24.dp, vertical = 12.dp)
+                ) {
+                    Text("Effacer les filtres", color = Color.White, fontWeight = FontWeight.SemiBold)
+                }
             }
         }
     }
 }
 
-// ─── Filter bottom sheet ──────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
+//  FILTER BOTTOM SHEET
+// ═════════════════════════════════════════════════════════════════════════════
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FilterBottomSheet(
+private fun FilterSheet(
     currentFilters: ListingFilters,
     onApply: (ListingFilters) -> Unit,
     onDismiss: () -> Unit
 ) {
-    // Local mutable copies of all filter fields
-    var selectedCategory by remember { mutableStateOf(currentFilters.category) }
-    var selectedWilaya    by remember { mutableStateOf(currentFilters.wilaya) }
-    var minPriceText      by remember { mutableStateOf(currentFilters.minPrice?.toLong()?.toString() ?: "") }
-    var maxPriceText      by remember { mutableStateOf(currentFilters.maxPrice?.toLong()?.toString() ?: "") }
-    var selectedCondition by remember { mutableStateOf(currentFilters.condition) }
-    var selectedOfferType by remember { mutableStateOf(currentFilters.offerType) }
-    var selectedSort      by remember { mutableStateOf(currentFilters.sortBy ?: "newest") }
-    var wilayaSearch      by remember { mutableStateOf("") }
-
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var cat       by remember { mutableStateOf(currentFilters.category) }
+    var wilaya    by remember { mutableStateOf(currentFilters.wilaya) }
+    var minP      by remember { mutableStateOf(currentFilters.minPrice?.toLong()?.toString() ?: "") }
+    var maxP      by remember { mutableStateOf(currentFilters.maxPrice?.toLong()?.toString() ?: "") }
+    var cond      by remember { mutableStateOf(currentFilters.condition) }
+    var offer     by remember { mutableStateOf(currentFilters.offerType) }
+    var sort      by remember { mutableStateOf(currentFilters.sortBy ?: "newest") }
+    var wSearch   by remember { mutableStateOf("") }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor   = Color.White,
+        shape            = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-        ) {
-            // Sheet header
+        Column(Modifier.fillMaxWidth().navigationBarsPadding()) {
+            // Header
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 4.dp),
+                Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment     = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Filtres",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Text("Filtres", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = Gray900)
                 TextButton(onClick = {
-                    selectedCategory = null
-                    selectedWilaya = null
-                    minPriceText = ""
-                    maxPriceText = ""
-                    selectedCondition = null
-                    selectedOfferType = null
-                    selectedSort = "newest"
-                    wilayaSearch = ""
+                    cat = null; wilaya = null; minP = ""; maxP = ""
+                    cond = null; offer = null; sort = "newest"; wSearch = ""
                 }) {
-                    Text(
-                        text = "Effacer tout",
-                        color = Error500,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    Text("Effacer tout", color = Error500, fontWeight = FontWeight.SemiBold)
                 }
             }
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+            HorizontalDivider(color = Gray100)
 
-            // Scrollable content
+            // Content
             Column(
-                modifier = Modifier
-                    .weight(1f, fill = false)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                Modifier.weight(1f, false).verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 14.dp),
+                verticalArrangement = Arrangement.spacedBy(22.dp)
             ) {
+                Section("Catégorie") { categoryOptions.forEach { RadioRow(it.label, cat == it.key) { cat = it.key } } }
+                HorizontalDivider(color = Gray100)
 
-                // ── Category ──────────────────────────────────────────────────
-                FilterSection(title = "Catégorie") {
-                    categoryOptions.forEach { option ->
-                        RadioRow(
-                            label = option.label,
-                            selected = selectedCategory == option.key,
-                            onClick = { selectedCategory = option.key }
-                        )
-                    }
-                }
-
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-                // ── Wilaya ────────────────────────────────────────────────────
-                FilterSection(title = "Wilaya") {
-                    // Search field for wilaya
+                Section("Wilaya") {
                     OutlinedTextField(
-                        value = wilayaSearch,
-                        onValueChange = { wilayaSearch = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text("Rechercher une wilaya...") },
+                        wSearch, { wSearch = it }, Modifier.fillMaxWidth(),
+                        placeholder = { Text("Rechercher une wilaya...", color = Gray400) },
                         singleLine = true,
-                        leadingIcon = {
-                            Icon(Icons.Filled.Search, null, modifier = Modifier.size(18.dp))
-                        },
-                        trailingIcon = {
-                            if (wilayaSearch.isNotEmpty()) {
-                                IconButton(onClick = { wilayaSearch = "" }) {
-                                    Icon(Icons.Filled.Clear, null, modifier = Modifier.size(16.dp))
-                                }
-                            }
-                        },
-                        shape = RoundedCornerShape(10.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = OceanBlue500,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                        )
+                        leadingIcon = { Icon(Icons.Filled.Search, null, Modifier.size(18.dp), tint = Gray400) },
+                        trailingIcon = { if (wSearch.isNotEmpty()) IconButton({ wSearch = "" }) { Icon(Icons.Filled.Clear, null, Modifier.size(16.dp)) } },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OceanBlue500, unfocusedBorderColor = Gray200)
                     )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    // "Toutes" option
-                    RadioRow(
-                        label = "Toutes les wilayas",
-                        selected = selectedWilaya == null,
-                        onClick = { selectedWilaya = null }
-                    )
-
-                    // Filtered wilaya list
-                    val filteredWilayas = remember(wilayaSearch) {
-                        if (wilayaSearch.isBlank()) wilayas
-                        else wilayas.filter {
-                            it.contains(wilayaSearch.trim(), ignoreCase = true)
-                        }
+                    Spacer(Modifier.height(4.dp))
+                    RadioRow("Toutes les wilayas", wilaya == null) { wilaya = null }
+                    val filtered = remember(wSearch) {
+                        if (wSearch.isBlank()) wilayas else wilayas.filter { it.contains(wSearch.trim(), true) }
                     }
+                    filtered.forEach { w -> RadioRow(w, wilaya == w) { wilaya = w } }
+                }
+                HorizontalDivider(color = Gray100)
 
-                    filteredWilayas.forEach { wilaya ->
-                        RadioRow(
-                            label = wilaya,
-                            selected = selectedWilaya == wilaya,
-                            onClick = { selectedWilaya = wilaya }
-                        )
+                Section("Fourchette de prix (DA)") {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        OutlinedTextField(minP, { minP = it.filter { c -> c.isDigit() } }, Modifier.weight(1f),
+                            label = { Text("Min") }, singleLine = true, shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OceanBlue500, unfocusedBorderColor = Gray200))
+                        Text("–", color = Gray400)
+                        OutlinedTextField(maxP, { maxP = it.filter { c -> c.isDigit() } }, Modifier.weight(1f),
+                            label = { Text("Max") }, singleLine = true, shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OceanBlue500, unfocusedBorderColor = Gray200))
                     }
                 }
+                HorizontalDivider(color = Gray100)
 
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-                // ── Price range ───────────────────────────────────────────────
-                FilterSection(title = "Fourchette de prix (DA)") {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        OutlinedTextField(
-                            value = minPriceText,
-                            onValueChange = { minPriceText = it.filter { c -> c.isDigit() } },
-                            modifier = Modifier.weight(1f),
-                            label = { Text("Min") },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = OceanBlue500,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                            )
-                        )
-                        Text("–", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        OutlinedTextField(
-                            value = maxPriceText,
-                            onValueChange = { maxPriceText = it.filter { c -> c.isDigit() } },
-                            modifier = Modifier.weight(1f),
-                            label = { Text("Max") },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = OceanBlue500,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                            )
-                        )
-                    }
-                }
-
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-                // ── Condition ─────────────────────────────────────────────────
-                FilterSection(title = "État") {
-                    conditionOptions.forEach { option ->
-                        RadioRow(
-                            label = option.label,
-                            selected = selectedCondition == option.key,
-                            onClick = { selectedCondition = option.key }
-                        )
-                    }
-                }
-
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-                // ── Offer type ────────────────────────────────────────────────
-                FilterSection(title = "Type d'offre") {
-                    offerTypeOptions.forEach { option ->
-                        RadioRow(
-                            label = option.label,
-                            selected = selectedOfferType == option.key,
-                            onClick = { selectedOfferType = option.key }
-                        )
-                    }
-                }
-
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-                // ── Sort by ───────────────────────────────────────────────────
-                FilterSection(title = "Trier par") {
-                    sortOptions.forEach { option ->
-                        RadioRow(
-                            label = option.label,
-                            selected = selectedSort == option.key,
-                            onClick = { selectedSort = option.key ?: "newest" }
-                        )
-                    }
-                }
-
-                // Bottom spacer to avoid overlap with buttons
-                Spacer(modifier = Modifier.height(8.dp))
+                Section("État") { conditionOptions.forEach { RadioRow(it.label, cond == it.key) { cond = it.key } } }
+                HorizontalDivider(color = Gray100)
+                Section("Type d'offre") { offerTypeOptions.forEach { RadioRow(it.label, offer == it.key) { offer = it.key } } }
+                HorizontalDivider(color = Gray100)
+                Section("Trier par") { sortOptions.forEach { RadioRow(it.label, sort == it.key) { sort = it.key ?: "newest" } } }
+                Spacer(Modifier.height(8.dp))
             }
 
-            // ── Action buttons ─────────────────────────────────────────────────
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-
+            // Action buttons
+            HorizontalDivider(color = Gray200)
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
+                Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 14.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                OutlinedButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = OceanBlue700)
-                ) {
-                    Text("Annuler", fontWeight = FontWeight.SemiBold)
-                }
+                OutlinedButton(onDismiss, Modifier.weight(1f), shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = OceanBlue700),
+                    border = androidx.compose.foundation.BorderStroke(1.5.dp, OceanBlue700)
+                ) { Text("Annuler", fontWeight = FontWeight.SemiBold) }
 
                 Button(
                     onClick = {
-                        val newFilters = ListingFilters(
-                            search      = currentFilters.search,
-                            category    = selectedCategory,
-                            wilaya      = selectedWilaya,
-                            minPrice    = minPriceText.toDoubleOrNull(),
-                            maxPrice    = maxPriceText.toDoubleOrNull(),
-                            condition   = selectedCondition,
-                            offerType   = selectedOfferType,
-                            sortBy      = selectedSort.takeIf { it != "newest" },
-                            page        = 1
-                        )
-                        onApply(newFilters)
+                        onApply(ListingFilters(
+                            search = currentFilters.search, category = cat, wilaya = wilaya,
+                            minPrice = minP.toDoubleOrNull(), maxPrice = maxP.toDoubleOrNull(),
+                            condition = cond, offerType = offer,
+                            sortBy = sort.takeIf { it != "newest" }, page = 1
+                        ))
                     },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = OceanBlue700)
+                    Modifier.weight(1f), shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    contentPadding = PaddingValues(0.dp)
                 ) {
-                    Text("Appliquer", color = White, fontWeight = FontWeight.Bold)
+                    Box(
+                        Modifier.fillMaxWidth().background(
+                            Brush.linearGradient(listOf(OceanBlue700, Teal500)),
+                            RoundedCornerShape(14.dp)
+                        ).padding(vertical = 12.dp),
+                        contentAlignment = Alignment.Center
+                    ) { Text("Appliquer", color = Color.White, fontWeight = FontWeight.Bold) }
                 }
             }
         }
     }
 }
 
-// ─── Reusable filter section wrapper ─────────────────────────────────────────
-
 @Composable
-private fun FilterSection(
-    title: String,
-    content: @Composable ColumnScope.() -> Unit
-) {
+private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            color = OceanBlue900
-        )
-        Spacer(modifier = Modifier.height(4.dp))
+        Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = OceanBlue900)
+        Spacer(Modifier.height(4.dp))
         content()
     }
 }
 
-// ─── Radio row ────────────────────────────────────────────────────────────────
-
 @Composable
-private fun RadioRow(
-    label: String,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
+private fun RadioRow(label: String, selected: Boolean, onClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .clickable(onClick = onClick)
-            .background(
-                if (selected) OceanBlue50
-                else Color.Transparent
-            )
-            .padding(horizontal = 4.dp, vertical = 6.dp),
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).clickable(onClick = onClick)
+            .background(if (selected) OceanBlue50 else Color.Transparent)
+            .padding(horizontal = 6.dp, vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        RadioButton(
-            selected = selected,
-            onClick = onClick,
-            colors = RadioButtonDefaults.colors(
-                selectedColor = OceanBlue700,
-                unselectedColor = MaterialTheme.colorScheme.outline
-            )
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (selected) OceanBlue900 else MaterialTheme.colorScheme.onSurface,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
-        )
+        RadioButton(selected, onClick,
+            colors = RadioButtonDefaults.colors(selectedColor = OceanBlue700, unselectedColor = Gray300))
+        Text(label, style = MaterialTheme.typography.bodyMedium,
+            color = if (selected) OceanBlue900 else Gray700,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal)
     }
 }

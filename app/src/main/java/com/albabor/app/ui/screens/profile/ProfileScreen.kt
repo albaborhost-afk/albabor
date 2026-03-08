@@ -44,9 +44,10 @@ import kotlinx.coroutines.launch
 fun ProfileScreen(navController: NavController) {
     val context = LocalContext.current
     val vm: ProfileViewModel = viewModel(factory = ProfileViewModel.factory(context))
-    val user         by vm.user.collectAsStateWithLifecycle()
-    val isLoading    by vm.isLoading.collectAsStateWithLifecycle()
-    val upgradeState by vm.upgradeState.collectAsStateWithLifecycle()
+    val user          by vm.user.collectAsStateWithLifecycle()
+    val isLoading     by vm.isLoading.collectAsStateWithLifecycle()
+    val profileError  by vm.profileError.collectAsStateWithLifecycle()
+    val upgradeState  by vm.upgradeState.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -112,6 +113,55 @@ fun ProfileScreen(navController: NavController) {
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(color = OceanBlue700)
+            }
+            return@Scaffold
+        }
+
+        if (!isLoading && user == null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.padding(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(64.dp),
+                        tint = Gray300
+                    )
+                    Text(
+                        text = "Connectez-vous pour accéder à votre profil",
+                        style = MaterialTheme.typography.bodyLarge.copy(color = Gray500),
+                        textAlign = TextAlign.Center
+                    )
+                    if (profileError != null) {
+                        Text(
+                            text = profileError!!,
+                            style = MaterialTheme.typography.bodySmall.copy(color = Error500),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Button(
+                        onClick = {
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = OceanBlue700),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Se connecter")
+                    }
+                    TextButton(onClick = { vm.loadProfile() }) {
+                        Text("Réessayer", color = OceanBlue700)
+                    }
+                }
             }
             return@Scaffold
         }

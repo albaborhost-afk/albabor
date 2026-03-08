@@ -1,11 +1,59 @@
 package com.albabor.app
 
 import android.app.Application
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import com.albabor.app.data.network.NetworkModule
+import com.albabor.app.data.network.TokenStore
+import kotlinx.coroutines.runBlocking
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
 
-class AlBaborApp : Application() {
+class AlBaborApp : Application(), ImageLoaderFactory {
+
     override fun onCreate() {
         super.onCreate()
         NetworkModule.init(this)
+    }
+
+    /**
+     * Custom Coil ImageLoader that adds the Bearer token to all image requests.
+     * This allows loading listing media images (including non-active listings
+     * visible to their owner) from the server.
+     */
+    override fun newImageLoader(): ImageLoader {
+        val context = this
+        val authInterceptor = Interceptor { chain ->
+            val token = runBlocking { TokenStore.get(context) }
+            val request = chain.request().newBuilder().apply {
+                token?.let { header("Authorization", "Bearer $it") }
+            }.build()
+            chain.proceed(request)
+        }
+
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
+
+        return ImageLoader.Builder(this)
+            .okHttpClient(okHttpClient)
+            .memoryCache {
+                MemoryCache.Builder(this)
+                    .maxSizePercent(0.25)
+                    .build()
+            }
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(cacheDir.resolve("image_cache"))
+                    .maxSizePercent(0.02)
+                    .build()
+            }
+            .crossfade(true)
+            .build()
     }
 }

@@ -3,6 +3,7 @@ package com.albabor.app.ui.screens.auth
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,10 +17,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -62,8 +63,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -78,6 +81,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.albabor.app.R
 import com.albabor.app.ui.navigation.Screen
 import com.albabor.app.ui.theme.Gray200
 import com.albabor.app.ui.theme.Gray400
@@ -126,7 +130,6 @@ fun LoginScreen(navController: NavController) {
 
     val isLoading = loginState is AuthViewModel.LoginState.Loading
 
-    // Handle state changes
     LaunchedEffect(loginState) {
         when (val state = loginState) {
             is AuthViewModel.LoginState.Success -> {
@@ -135,9 +138,7 @@ fun LoginScreen(navController: NavController) {
                 }
             }
             is AuthViewModel.LoginState.Error -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar(state.message)
-                }
+                scope.launch { snackbarHostState.showSnackbar(state.message) }
                 vm.resetLoginState()
             }
             else -> Unit
@@ -152,46 +153,79 @@ fun LoginScreen(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(310.dp)
                     .background(brush = oceanHeaderGradient),
-                contentAlignment = Alignment.Center
             ) {
+                // Decorative circles in background
+                Box(
+                    modifier = Modifier
+                        .size(200.dp)
+                        .offset(x = (-60).dp, y = (-40).dp)
+                        .background(
+                            color = White.copy(alpha = 0.05f),
+                            shape = CircleShape
+                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .size(140.dp)
+                        .align(Alignment.TopEnd)
+                        .offset(x = 40.dp, y = 20.dp)
+                        .background(
+                            color = White.copy(alpha = 0.05f),
+                            shape = CircleShape
+                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .align(Alignment.BottomStart)
+                        .offset(x = 30.dp, y = 30.dp)
+                        .background(
+                            color = White.copy(alpha = 0.07f),
+                            shape = CircleShape
+                        )
+                )
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier
+                        .fillMaxSize()
                         .statusBarsPadding()
-                        .padding(bottom = 24.dp)
+                        .padding(bottom = 36.dp)
                 ) {
-                    // Anchor icon circle
+                    // Clean white card logo
                     Box(
                         modifier = Modifier
-                            .size(72.dp)
-                            .clip(CircleShape)
-                            .background(White.copy(alpha = 0.18f)),
+                            .shadow(
+                                elevation = 16.dp,
+                                shape = RoundedCornerShape(28.dp),
+                                ambientColor = OceanBlue900.copy(alpha = 0.4f),
+                                spotColor = OceanBlue900.copy(alpha = 0.4f)
+                            )
+                            .clip(RoundedCornerShape(28.dp))
+                            .background(White)
+                            .size(120.dp)
+                            .padding(12.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "\u2693",
-                            fontSize = 36.sp,
-                            color = White
+                        Image(
+                            painter = painterResource(id = R.drawable.albabor_logo),
+                            contentDescription = "AlBabor",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
                         )
                     }
+
                     Spacer(modifier = Modifier.height(16.dp))
+
                     Text(
-                        text = "AlBabor",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = White,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 26.sp,
-                            letterSpacing = 1.5.sp
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "La Mer, Votre Marche",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = White.copy(alpha = 0.75f),
-                            letterSpacing = 0.8.sp
+                        text = "La Mer, Votre Marché",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = White.copy(alpha = 0.90f),
+                            letterSpacing = 1.2.sp,
+                            fontWeight = FontWeight.Medium
                         )
                     )
                 }
@@ -201,8 +235,8 @@ fun LoginScreen(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .offset(y = (-32).dp)
-                    .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
+                    .offset(y = (-28).dp)
+                    .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
                     .background(White)
             ) {
                 Column(
@@ -214,20 +248,21 @@ fun LoginScreen(navController: NavController) {
                         .navigationBarsPadding()
                         .imePadding()
                 ) {
+                    // Header text
                     Text(
-                        text = "Bon retour parmi nous",
-                        style = MaterialTheme.typography.headlineSmall.copy(
+                        text = "Bon retour 👋",
+                        style = MaterialTheme.typography.headlineMedium.copy(
                             color = Gray900,
                             fontWeight = FontWeight.Bold
                         )
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Connectez-vous pour continuer",
                         style = MaterialTheme.typography.bodyMedium.copy(color = Gray500)
                     )
 
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
                     // Email field
                     AuthTextField(
@@ -251,7 +286,7 @@ fun LoginScreen(navController: NavController) {
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Password field
                     AuthTextField(
@@ -277,10 +312,7 @@ fun LoginScreen(navController: NavController) {
                                         Icons.Default.VisibilityOff
                                     else
                                         Icons.Default.Visibility,
-                                    contentDescription = if (passwordVisible)
-                                        "Masquer le mot de passe"
-                                    else
-                                        "Afficher le mot de passe",
+                                    contentDescription = null,
                                     tint = Gray400
                                 )
                             }
@@ -297,7 +329,7 @@ fun LoginScreen(navController: NavController) {
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     // Remember me + Forgot password row
                     Row(
@@ -329,7 +361,7 @@ fun LoginScreen(navController: NavController) {
                         }
 
                         Text(
-                            text = "Mot de passe oublie ?",
+                            text = "Mot de passe oublié ?",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 color = OceanBlue700,
                                 fontWeight = FontWeight.SemiBold
@@ -357,37 +389,40 @@ fun LoginScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     // Divider "ou"
                     AuthDivider()
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // Google sign-in (outlined)
+                    // Google sign-in button with real Google icon
                     OutlinedButton(
-                        onClick = { /* Google OAuth integration */ },
+                        onClick = { /* Google OAuth */ },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp),
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp),
                         border = androidx.compose.foundation.BorderStroke(1.5.dp, Gray200),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Gray700)
                     ) {
-                        Text(
-                            text = "G",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            color = Color(0xFF4285F4)
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_google),
+                            contentDescription = "Google",
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = "Se connecter avec Google",
-                            style = MaterialTheme.typography.labelLarge.copy(color = Gray700)
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                color = Gray700,
+                                fontWeight = FontWeight.Medium
+                            )
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
                     // Sign-up link
                     Box(
@@ -396,7 +431,7 @@ fun LoginScreen(navController: NavController) {
                     ) {
                         val signupText = buildAnnotatedString {
                             withStyle(SpanStyle(color = Gray500)) {
-                                append("Pas de compte? ")
+                                append("Pas de compte ? ")
                             }
                             withStyle(
                                 SpanStyle(
@@ -439,7 +474,7 @@ fun LoginScreen(navController: NavController) {
                 Box(
                     modifier = Modifier
                         .size(80.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(20.dp))
                         .background(White),
                     contentAlignment = Alignment.Center
                 ) {
@@ -504,7 +539,7 @@ fun AuthTextField(
         singleLine = singleLine,
         isError = isError,
         supportingText = supportingText,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(14.dp),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = OceanBlue700,
             unfocusedBorderColor = Gray200,
@@ -513,9 +548,9 @@ fun AuthTextField(
             cursorColor = OceanBlue700,
             focusedLeadingIconColor = OceanBlue700,
             unfocusedLeadingIconColor = Gray400,
-            errorBorderColor = androidx.compose.material3.MaterialTheme.colorScheme.error,
+            errorBorderColor = MaterialTheme.colorScheme.error,
             focusedContainerColor = White,
-            unfocusedContainerColor = androidx.compose.ui.graphics.Color(0xFFF8FBFE)
+            unfocusedContainerColor = Color(0xFFF7FAFD)
         ),
         modifier = modifier.fillMaxWidth()
     )
@@ -536,7 +571,7 @@ fun GradientButton(
 
     Box(
         modifier = modifier
-            .height(52.dp)
+            .height(54.dp)
             .clip(RoundedCornerShape(14.dp))
             .background(brush = gradient)
             .clickable(

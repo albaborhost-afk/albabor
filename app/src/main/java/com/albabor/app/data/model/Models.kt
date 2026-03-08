@@ -1,8 +1,13 @@
 package com.albabor.app.data.model
 
 import com.google.gson.annotations.SerializedName
-import java.text.NumberFormat
-import java.util.Locale
+
+private const val LISTING_MEDIA_ROUTE = "https://albabor.com/media/listings"
+
+private fun String?.ifNotBlank(): String? = this?.takeIf { it.isNotBlank() }
+
+private fun formatWholeAmount(value: Double): String =
+    "%,.0f".format(value).replace(",", " ")
 
 // ─── User ───────────────────────────────────────────────────────────────────
 
@@ -34,7 +39,7 @@ data class Listing(
     val category: String,                 // "boat" | "jetski" | "engine" | "parts"
     val status: String = "active",
     val wilaya: String?,
-    val images: List<ListingImage> = emptyList(),
+    @SerializedName("media") val images: List<ListingImage> = emptyList(),
     val specs: Map<String, Any?>? = null,
     val user: ListingUser?,
     @SerializedName("created_at") val createdAt: String = "",
@@ -43,31 +48,49 @@ data class Listing(
     @SerializedName("mediation_enabled") val mediationEnabled: Boolean = false,
     @SerializedName("is_featured") val isFeatured: Boolean = false,
     @SerializedName("is_favorited") val isFavorited: Boolean = false,
-    val condition: String? = null,        // "new" | "like_new" | "good" | "average" | "needs_revision"
-    @SerializedName("offer_type") val offerType: String? = null  // "negotiable" | "fixed" | "free"
+    @SerializedName("etat") val condition: String? = null,
+    // "jamais_utilise" | "comme_neuf" | "bon_etat" | "etat_moyen" | "a_reviser"
+    @SerializedName("type_offre") val offerType: String? = null,
+    // "negociable" | "offert" | "fix"
+    @SerializedName("numero_whatsapp") val numeroWhatsapp: String? = null,
+    @SerializedName("numero_mobile") val numeroMobile: String? = null,
+    @SerializedName("contact_email") val contactEmail: String? = null,
+    @SerializedName("remarque_echange") val remarqueEchange: String? = null,
 ) {
     val formattedPrice: String
         get() = when (currency) {
-            "EUR" -> "%.0f €".format(priceDzd)
-            else  -> "%,.0f DA".format(priceDzd).replace(",", " ")
+            "EUR" -> "${formatWholeAmount(priceDzd)} €"
+            else  -> "${formatWholeAmount(priceDzd)} DA"
         }
 
     val formattedConvertedPrice: String?
         get() = convertedPrice?.let {
             when (currency) {
-                "EUR" -> "%,.0f DA".format(it).replace(",", " ")
-                else  -> "≈ %.0f €".format(it)
+                "EUR" -> "${formatWholeAmount(it)} DA"
+                else  -> "≈ ${formatWholeAmount(it)} €"
             }
         }
 
     val primaryImage: String?
-        get() = images.firstOrNull { it.isPrimary }?.url ?: images.firstOrNull()?.url
+        get() = images.firstOrNull()?.cardUrl
+
+    val galleryImages: List<String>
+        get() = images.mapNotNull { it.detailUrl }.distinct()
 
     val categoryLabel: String
         get() = when (category) {
-            "boat"   -> "Bateaux"
+            "boat"   -> "Bateau"
             "jetski" -> "Jet-Ski"
             "engine" -> "Moteur"
+            "parts"  -> "Pièce"
+            else     -> category
+        }
+
+    val categoryPluralLabel: String
+        get() = when (category) {
+            "boat"   -> "Bateaux"
+            "jetski" -> "Jet-Ski"
+            "engine" -> "Moteurs"
             "parts"  -> "Pièces"
             else     -> category
         }
@@ -79,6 +102,24 @@ data class Listing(
             "engine" -> "⚙️"
             "parts"  -> "🔩"
             else     -> "📋"
+        }
+
+    val conditionLabel: String
+        get() = when (condition) {
+            "jamais_utilise" -> "Jamais utilisé"
+            "comme_neuf"     -> "Comme neuf"
+            "bon_etat"       -> "Bon état"
+            "etat_moyen"     -> "État moyen"
+            "a_reviser"      -> "À réviser"
+            else             -> condition ?: ""
+        }
+
+    val offerTypeLabel: String
+        get() = when (offerType) {
+            "negociable" -> "Négociable"
+            "offert"     -> "Offert"
+            "fix"        -> "Prix fixe"
+            else         -> offerType ?: ""
         }
 
     val statusLabel: String
@@ -95,10 +136,7 @@ data class Listing(
         }
 
     val timeAgo: String
-        get() {
-            // Simple relative time — real implementation would parse createdAt
-            return createdAt.take(10)
-        }
+        get() = createdAt.take(10)
 
     fun getSpec(group: String, key: String): String? {
         val groupMap = specs?.get(group) as? Map<*, *> ?: return null
@@ -111,10 +149,27 @@ data class Listing(
 }
 
 data class ListingImage(
-    val id: Int,
-    val url: String,
-    @SerializedName("is_primary") val isPrimary: Boolean = false
-)
+    val id: Int = 0,
+    val url: String? = null,
+    @SerializedName("thumbnail_url") val thumbnailUrl: String? = null,
+    val path: String? = null,
+    @SerializedName("thumbnail_path") val thumbnailPath: String? = null,
+    val order: Int = 0,
+) {
+    val isPrimary: Boolean get() = order == 1
+
+    private val mediaRouteBase: String?
+        get() = id.takeIf { it > 0 }?.let { "$LISTING_MEDIA_ROUTE/$it" }
+
+    val detailUrl: String?
+        get() = url.ifNotBlank()
+            ?: mediaRouteBase
+
+    val cardUrl: String?
+        get() = thumbnailUrl.ifNotBlank()
+            ?: mediaRouteBase?.let { "$it/thumb" }
+            ?: detailUrl
+}
 
 data class ListingUser(
     val id: Int,
@@ -151,7 +206,12 @@ data class ApiResponse<T>(
 
 data class PaginatedResponse<T>(
     val data: List<T>,
-    val meta: PaginationMeta? = null
+    val meta: PaginationMeta? = null,
+    // Laravel pagination puts these at root level
+    @SerializedName("current_page") val currentPage: Int = 1,
+    @SerializedName("last_page") val lastPage: Int = 1,
+    val total: Int = 0,
+    @SerializedName("per_page") val perPage: Int = 20,
 )
 
 data class PaginationMeta(
@@ -161,6 +221,26 @@ data class PaginationMeta(
     @SerializedName("per_page") val perPage: Int
 )
 
+// ─── Listing-specific response wrappers ──────────────────────────────────────
+
+data class ListingDetailResponse(
+    val listing: Listing,
+    @SerializedName("is_favorited") val isFavorited: Boolean = false,
+    @SerializedName("related_listings") val relatedListings: List<Listing> = emptyList(),
+)
+
+data class ListingActionResponse(
+    val message: String? = null,
+    val listing: Listing? = null,
+)
+
+data class CreateListingResponse(
+    val listing: Listing? = null,
+    val message: String? = null,
+    @SerializedName("publish_price") val publishPrice: Int = 0,
+    @SerializedName("is_first_listing") val isFirstListing: Boolean = false,
+)
+
 // ─── Mediation ───────────────────────────────────────────────────────────────
 
 data class MediationTicket(
@@ -168,25 +248,43 @@ data class MediationTicket(
     val listing: Listing?,
     val buyer: User?,
     val seller: User?,
-    val status: String,    // "open" | "in_progress" | "resolved" | "closed"
+    val status: String,
+    // "new" | "in_progress" | "resolved" | "closed" | "cancelled"
     val messages: List<MediationMessage> = emptyList(),
     @SerializedName("created_at") val createdAt: String = ""
 ) {
     val statusLabel: String
         get() = when (status) {
-            "open"        -> "Ouvert"
+            "new"         -> "Nouveau"
             "in_progress" -> "En cours"
             "resolved"    -> "Résolu"
             "closed"      -> "Fermé"
+            "cancelled"   -> "Annulé"
             else          -> status
         }
 }
 
 data class MediationMessage(
-    val id: Int,
-    val body: String,
-    val sender: User?,
+    @SerializedName("user_id") val userId: Int = 0,
+    val message: String = "",
     @SerializedName("created_at") val createdAt: String = ""
+) {
+    /** Alias for backward compat with UI code that reads `.body`. */
+    val body: String get() = message
+}
+
+data class MediationTicketsResponse(
+    @SerializedName("buyerTickets") val buyerTickets: List<MediationTicket> = emptyList(),
+    @SerializedName("sellerTickets") val sellerTickets: List<MediationTicket> = emptyList(),
+)
+
+data class MediationTicketResponse(
+    val ticket: MediationTicket? = null,
+)
+
+data class MediationTicketActionResponse(
+    val message: String? = null,
+    val ticket: MediationTicket? = null,
 )
 
 // ─── Conversations ────────────────────────────────────────────────────────────
@@ -194,17 +292,26 @@ data class MediationMessage(
 data class Conversation(
     val id: Int,
     val listing: Listing?,
-    val otherUser: User?,
+    val buyer: User?,
+    val seller: User?,
+    @SerializedName("other_user") val otherUser: User?,
     @SerializedName("last_message") val lastMessage: ConversationMessage?,
     @SerializedName("unread_count") val unreadCount: Int = 0,
-    @SerializedName("created_at") val createdAt: String = ""
+    @SerializedName("created_at") val createdAt: String = "",
+    val role: String = "buyer"  // "buyer" | "seller"
 )
 
 data class ConversationMessage(
     val id: Int,
     val body: String,
     @SerializedName("sender_id") val senderId: Int,
+    val sender: User? = null,
     @SerializedName("created_at") val createdAt: String = ""
+)
+
+data class StartConversationResponse(
+    val conversation: Conversation? = null,
+    val message: ConversationMessage? = null,
 )
 
 // ─── Payments ────────────────────────────────────────────────────────────────
@@ -212,7 +319,8 @@ data class ConversationMessage(
 data class Payment(
     val id: Int,
     val amount: Double,
-    val type: String,      // "publish" | "feature" | "subscription" | "mediation"
+    val type: String,
+    // "publish_listing" | "featured_listing" | "vendor_subscription" | "mediation_fee"
     val status: String,    // "pending" | "approved" | "rejected"
     val listing: Listing?,
     @SerializedName("proof_url") val proofUrl: String?,
@@ -228,16 +336,28 @@ data class Payment(
 
     val typeLabel: String
         get() = when (type) {
-            "publish"      -> "Publication"
-            "feature"      -> "Mise en avant"
-            "subscription" -> "Abonnement"
-            "mediation"    -> "Médiation"
-            else           -> type
+            "publish_listing"    -> "Publication"
+            "featured_listing"   -> "Mise en avant"
+            "vendor_subscription"-> "Abonnement"
+            "mediation_fee"      -> "Médiation"
+            else                 -> type
         }
 
     val formattedAmount: String
-        get() = "%,.0f DA".format(amount).replace(",", " ")
+        get() = "${formatWholeAmount(amount)} DA"
 }
+
+data class PaymentSubmitResponse(
+    val message: String? = null,
+    val payment: Payment? = null,
+)
+
+// ─── Profile ──────────────────────────────────────────────────────────────────
+
+data class ProfileResponse(
+    val user: User,
+    val stats: Map<String, Int>? = null,
+)
 
 // ─── Subscription ─────────────────────────────────────────────────────────────
 
@@ -249,6 +369,14 @@ data class Subscription(
     @SerializedName("created_at") val createdAt: String = ""
 )
 
+// ─── Favorites ────────────────────────────────────────────────────────────────
+
+data class ToggleFavoriteResponse(
+    val favorited: Boolean = false,
+    val message: String? = null,
+    val count: Int = 0,
+)
+
 // ─── Listing filter params ────────────────────────────────────────────────────
 
 data class ListingFilters(
@@ -258,20 +386,20 @@ data class ListingFilters(
     val currency: String? = null,
     val minPrice: Double? = null,
     val maxPrice: Double? = null,
-    val condition: String? = null,
-    val offerType: String? = null,
-    val sortBy: String? = null,   // "newest" | "price_asc" | "price_desc" | "popular"
+    val condition: String? = null,   // "jamais_utilise" | "comme_neuf" | "bon_etat" | "etat_moyen" | "a_reviser"
+    val offerType: String? = null,   // "negociable" | "offert" | "fix"
+    val sortBy: String? = null,      // "recent" | "price_asc" | "price_desc" | "views"
     val page: Int = 1
 ) {
     fun toQueryMap(): Map<String, String> = buildMap {
-        search?.let    { put("search", it) }
+        search?.let    { put("q", it) }
         category?.let  { put("category", it) }
         wilaya?.let    { put("wilaya", it) }
         currency?.let  { put("currency", it) }
-        minPrice?.let  { put("min_price", it.toString()) }
-        maxPrice?.let  { put("max_price", it.toString()) }
-        condition?.let { put("condition", it) }
-        offerType?.let { put("offer_type", it) }
+        minPrice?.let  { put("price_min", it.toString()) }
+        maxPrice?.let  { put("price_max", it.toString()) }
+        condition?.let { put("etat", it) }
+        offerType?.let { put("type_offre", it) }
         sortBy?.let    { put("sort", it) }
         put("page", page.toString())
     }

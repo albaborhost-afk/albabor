@@ -6,12 +6,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,15 +23,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.albabor.app.data.model.Listing
-import com.albabor.app.ui.theme.*
-
-// ─── Large featured card for horizontal carousel ──────────────────────────────
+import com.albabor.app.ui.theme.AppBackground
+import com.albabor.app.ui.theme.Coral500
+import com.albabor.app.ui.theme.GlassSurfaceStrong
+import com.albabor.app.ui.theme.OceanBlue900
+import com.albabor.app.ui.theme.Teal100
+import com.albabor.app.ui.theme.White
+import com.albabor.app.ui.theme.categoryAccentColor
+import com.albabor.app.ui.theme.categoryHeroImageRes
 
 @Composable
 fun FeaturedListingCard(
@@ -36,202 +46,196 @@ fun FeaturedListingCard(
     onFavorite: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    val cardShape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(20.dp)
 
     Card(
         modifier = modifier
-            .width(280.dp)
-            .height(220.dp)
-            .clip(cardShape)
+            .width(260.dp)
+            .clip(shape)
             .clickable(onClick = onClick),
-        shape = cardShape,
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp, pressedElevation = 10.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        shape = shape,
+        colors = CardDefaults.cardColors(containerColor = GlassSurfaceStrong),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp, pressedElevation = 14.dp)
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-
-            // Full-bleed image
-            AsyncImage(
-                model = listing.primaryImage,
-                contentDescription = listing.title,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(OceanBlue100)
-            )
-
-            // Deep gradient scrim from bottom
+        Column {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.65f)
-                    .align(Alignment.BottomCenter)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color(0xCC000000)
+                    .height(170.dp)
+            ) {
+                SubcomposeAsyncImage(
+                    model = listing.primaryImage,
+                    contentDescription = listing.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                    loading = { CategoryFallbackImage(listing = listing) },
+                    error = { CategoryFallbackImage(listing = listing) }
+                )
+
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.18f))
                             )
                         )
-                    )
-            )
+                )
 
-            // Top row: "Sponsorisé" badge + favorite
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-                    .align(Alignment.TopStart),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Sponsored badge
-                Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = Gold500
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(3.dp)
+                    Surface(
+                        shape = RoundedCornerShape(999.dp),
+                        color = Color.Transparent,
+                        tonalElevation = 0.dp,
+                        shadowElevation = 0.dp
                     ) {
-                        Icon(
-                            Icons.Filled.Star,
-                            contentDescription = null,
-                            tint = White,
-                            modifier = Modifier.size(11.dp)
-                        )
-                        Text(
-                            text = "Sponsorisé",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp
-                        )
+                        Row(
+                            modifier = Modifier
+                                .background(
+                                    Brush.horizontalGradient(
+                                        listOf(Color(0xFFF1C40F), Color(0xFFE67E22))
+                                    ),
+                                    RoundedCornerShape(999.dp)
+                                )
+                                .padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Star,
+                                contentDescription = null,
+                                tint = White,
+                                modifier = Modifier.height(10.dp)
+                            )
+                            Text(
+                                text = "En vedette",
+                                color = White,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    if (onFavorite != null) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(GlassSurfaceStrong.copy(alpha = 0.82f))
+                                .clickable(onClick = onFavorite),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = if (listing.isFavorited) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                                contentDescription = null,
+                                tint = if (listing.isFavorited) Coral500 else White,
+                                modifier = Modifier.height(16.dp)
+                            )
+                        }
                     }
                 }
 
-                // Favorite button
-                if (onFavorite != null) {
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(CircleShape)
-                            .background(Color(0x88000000))
-                            .clickable(onClick = onFavorite),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = if (listing.isFavorited) Icons.Filled.Favorite
-                                          else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (listing.isFavorited) "Retirer des favoris"
-                                                 else "Ajouter aux favoris",
-                            tint = if (listing.isFavorited) Color(0xFFFF6B6B) else White,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(12.dp),
+                    shape = RoundedCornerShape(999.dp),
+                    color = categoryAccentColor(listing.category).copy(alpha = 0.88f)
+                ) {
+                    Text(
+                        text = listing.categoryLabel,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        color = White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
 
-            // Bottom content overlay
             Column(
                 modifier = Modifier
-                    .align(Alignment.BottomStart)
                     .fillMaxWidth()
-                    .padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(5.dp)
+                    .background(GlassSurfaceStrong)
+                    .padding(horizontal = 16.dp, vertical = 15.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Category badge
-                Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = OceanBlue700.copy(alpha = 0.9f)
-                ) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(
-                        text = "${listing.categoryIcon} ${listing.categoryLabel}",
-                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = White,
-                        fontSize = 10.sp
+                        text = listing.formattedPrice,
+                        color = OceanBlue900,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
                     )
+                    listing.formattedConvertedPrice?.let { converted ->
+                        Text(
+                            text = converted,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
 
-                // Title
                 Text(
                     text = listing.title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = White,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    lineHeight = 18.sp
+                    lineHeight = 20.sp
                 )
 
-                // Price + location row
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Column {
-                        Text(
-                            text = listing.formattedPrice,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = White,
-                            fontSize = 16.sp
-                        )
-                        listing.formattedConvertedPrice?.let { converted ->
-                            Text(
-                                text = converted,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = White.copy(alpha = 0.75f)
-                            )
-                        }
-                    }
-
-                    // Wilaya chip
-                    listing.wilaya?.let { wilaya ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(3.dp)
-                        ) {
-                            Icon(
-                                Icons.Filled.LocationOn,
-                                contentDescription = null,
-                                tint = Teal100,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Text(
-                                text = wilaya,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Teal100,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                }
-
-                // Power chip (if available)
-                listing.power?.let { power ->
+                listing.wilaya?.let { wilaya ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(3.dp)
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Icon(
-                            Icons.Filled.Bolt,
+                            imageVector = Icons.Filled.LocationOn,
                             contentDescription = null,
-                            tint = Gold100,
-                            modifier = Modifier.size(13.dp)
+                            tint = Teal100.copy(alpha = 0.95f),
+                            modifier = Modifier.height(13.dp)
                         )
                         Text(
-                            text = "$power CV",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Gold100,
-                            fontWeight = FontWeight.Medium
+                            text = wilaya,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 13.sp
                         )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun CategoryFallbackImage(listing: Listing) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppBackground)
+    ) {
+        androidx.compose.foundation.Image(
+            painter = painterResource(id = categoryHeroImageRes(listing.category)),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.16f))
+                    )
+                )
+        )
     }
 }

@@ -25,6 +25,9 @@ class ProfileViewModel(private val context: Context) : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _profileError = MutableStateFlow<String?>(null)
+    val profileError: StateFlow<String?> = _profileError.asStateFlow()
+
     private val _updateState = MutableStateFlow<UpdateState>(UpdateState.Idle)
     val updateState: StateFlow<UpdateState> = _updateState.asStateFlow()
 
@@ -43,9 +46,10 @@ class ProfileViewModel(private val context: Context) : ViewModel() {
     fun loadProfile() {
         viewModelScope.launch {
             _isLoading.value = true
+            _profileError.value = null
             repo.getProfile()
-                .onSuccess { _user.value = it }
-                .onFailure { /* silently fail — user stays null */ }
+                .onSuccess { _user.value = it; _profileError.value = null }
+                .onFailure { e -> _profileError.value = e.message }
             _isLoading.value = false
         }
     }
