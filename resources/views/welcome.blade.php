@@ -117,7 +117,7 @@
                         <div class="w-full flex items-center justify-center pt-6 pb-2 px-4">
                             <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}"
                                  class="object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-lg"
-                                 style="width: 100px; height: 100px;">
+                                 style="width: 140px; height: 140px;">
                         </div>
 
                         <!-- Thin accent line -->
