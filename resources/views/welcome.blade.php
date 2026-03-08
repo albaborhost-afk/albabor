@@ -100,34 +100,101 @@
                 </a>
             </div>
 
-            <div class="flex lg:grid lg:grid-cols-4 gap-3 sm:gap-5 overflow-x-auto lg:overflow-visible px-4 sm:px-6 lg:px-8 pb-2 lg:pb-0" style="scrollbar-width:none; -ms-overflow-style:none;">
-                @foreach([
-                    'boat'   => ['label' => __('Bateaux'),  'desc' => __('Voiliers, yachts, semi-rigides'), 'img' => '/images/yacht.png',   'bg' => 'linear-gradient(145deg,#E8F4FD,#D6EAF8)', 'accent' => '#2471A3', 'shadow' => '0 8px 30px rgba(36,113,163,0.18)'],
-                    'jetski' => ['label' => __('Jet-Skis'), 'desc' => __('Scooters des mers'),               'img' => '/images/jetski.png',  'bg' => 'linear-gradient(145deg,#E8F8F9,#D1F2EB)', 'accent' => '#17A2B8', 'shadow' => '0 8px 30px rgba(23,162,184,0.18)'],
-                    'engine' => ['label' => __('Moteurs'),  'desc' => __('Hors-bord, in-bord'),              'img' => '/images/moteurs.png', 'bg' => 'linear-gradient(145deg,#FEF9E7,#FDEBD0)', 'accent' => '#E67E22', 'shadow' => '0 8px 30px rgba(230,126,34,0.18)'],
-                    'parts'  => ['label' => __('Pieces'),   'desc' => __('Accessoires & equipements'),       'img' => '/images/pieces.png',  'bg' => 'linear-gradient(145deg,#F5EEF8,#EBD5F9)', 'accent' => '#8E44AD', 'shadow' => '0 8px 30px rgba(142,68,173,0.18)'],
-                ] as $catKey => $cat)
-                    <a href="{{ route('listings.index', ['category' => $catKey]) }}"
-                       class="group flex-shrink-0 lg:flex-shrink flex flex-col items-center text-center transition-all duration-300 active:scale-95"
-                       style="min-width: 150px;"
-                       onmouseenter="this.style.transform='translateY(-4px)'"
-                       onmouseleave="this.style.transform='translateY(0)'">
+            <div x-data="categoryScroll()" x-init="init()" class="relative">
+                <div x-ref="scroller" class="flex lg:grid lg:grid-cols-4 gap-3 sm:gap-5 overflow-x-auto lg:overflow-visible px-4 sm:px-6 lg:px-8 pb-2 lg:pb-0 snap-x snap-mandatory" style="scrollbar-width:none; -ms-overflow-style:none; -webkit-overflow-scrolling: touch;">
+                    @foreach([
+                        'boat'   => ['label' => __('Bateaux'),  'desc' => __('Voiliers, yachts, semi-rigides'), 'img' => '/images/yacht.png',   'bg' => 'linear-gradient(145deg,#E8F4FD,#D6EAF8)', 'accent' => '#2471A3', 'shadow' => '0 8px 30px rgba(36,113,163,0.18)'],
+                        'jetski' => ['label' => __('Jet-Skis'), 'desc' => __('Scooters des mers'),               'img' => '/images/jetski.png',  'bg' => 'linear-gradient(145deg,#E8F8F9,#D1F2EB)', 'accent' => '#17A2B8', 'shadow' => '0 8px 30px rgba(23,162,184,0.18)'],
+                        'engine' => ['label' => __('Moteurs'),  'desc' => __('Hors-bord, in-bord'),              'img' => '/images/moteurs.png', 'bg' => 'linear-gradient(145deg,#FEF9E7,#FDEBD0)', 'accent' => '#E67E22', 'shadow' => '0 8px 30px rgba(230,126,34,0.18)'],
+                        'parts'  => ['label' => __('Pieces'),   'desc' => __('Accessoires & equipements'),       'img' => '/images/pieces.png',  'bg' => 'linear-gradient(145deg,#F5EEF8,#EBD5F9)', 'accent' => '#8E44AD', 'shadow' => '0 8px 30px rgba(142,68,173,0.18)'],
+                    ] as $catKey => $cat)
+                        <a href="{{ route('listings.index', ['category' => $catKey]) }}"
+                           class="group flex-shrink-0 lg:flex-shrink flex flex-col items-center text-center transition-all duration-300 active:scale-95 snap-start"
+                           style="min-width: 150px;"
+                           onmouseenter="this.style.transform='translateY(-4px)'"
+                           onmouseleave="this.style.transform='translateY(0)'">
 
-                        <!-- Image -->
-                        <div class="w-full flex items-center justify-center px-4">
-                            <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}"
-                                 class="object-contain transition-transform duration-300 group-hover:scale-105"
-                                 style="width: 170px; height: 170px;">
-                        </div>
+                            <!-- Image -->
+                            <div class="w-full flex items-center justify-center px-4">
+                                <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}"
+                                     class="object-contain transition-transform duration-300 group-hover:scale-105"
+                                     style="width: 170px; height: 170px;">
+                            </div>
 
-                        <!-- Text -->
-                        <div class="pt-1 px-2">
-                            <p class="text-sm font-bold" style="color: #1B2A4A;">{{ $cat['label'] }}</p>
-                            <p class="text-[11px] mt-0.5 leading-snug" style="color: #9BA8B7;">{{ $cat['desc'] }}</p>
+                            <!-- Text -->
+                            <div class="pt-1 px-2">
+                                <p class="text-sm font-bold" style="color: #1B2A4A;">{{ $cat['label'] }}</p>
+                                <p class="text-[11px] mt-0.5 leading-snug" style="color: #9BA8B7;">{{ $cat['desc'] }}</p>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+
+                {{-- Scroll indicator dots (mobile only) --}}
+                <div class="flex lg:hidden justify-center gap-1.5 mt-3">
+                    <template x-for="i in 4" :key="i">
+                        <div class="rounded-full transition-all duration-300"
+                             :class="active === (i-1) ? 'w-6 h-2' : 'w-2 h-2'"
+                             :style="active === (i-1) ? 'background:#2471A3' : 'background:#D5DDE5'">
                         </div>
-                    </a>
-                @endforeach
+                    </template>
+                </div>
+
+                {{-- Swipe hint arrow (shows briefly then fades) --}}
+                <div x-show="showHint" x-transition:leave="transition ease-in duration-500" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                     class="lg:hidden absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <div class="animate-bounce-x flex items-center gap-1 bg-white/90 backdrop-blur rounded-full px-3 py-1.5 shadow-lg">
+                        <span class="text-xs font-medium" style="color:#2471A3;">Glisser</span>
+                        <svg class="w-4 h-4" style="color:#2471A3;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                </div>
             </div>
+
+            <style>
+                @keyframes bounce-x { 0%,100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
+                .animate-bounce-x { animation: bounce-x 1s ease-in-out infinite; }
+            </style>
+
+            <script>
+                function categoryScroll() {
+                    return {
+                        active: 0,
+                        showHint: true,
+                        autoScrollTimer: null,
+                        init() {
+                            const el = this.$refs.scroller;
+                            if (!el) return;
+
+                            // Update dots on manual scroll
+                            el.addEventListener('scroll', () => {
+                                const itemW = el.scrollWidth / 4;
+                                this.active = Math.round(el.scrollLeft / itemW);
+                            });
+
+                            // Auto-scroll on mobile
+                            if (window.innerWidth < 1024) {
+                                this.startAutoScroll(el);
+
+                                // Pause on touch
+                                el.addEventListener('touchstart', () => { clearInterval(this.autoScrollTimer); }, { passive: true });
+                                el.addEventListener('touchend', () => { this.startAutoScroll(el); }, { passive: true });
+                            }
+
+                            // Hide swipe hint after 3s
+                            setTimeout(() => { this.showHint = false; }, 3000);
+                        },
+                        startAutoScroll(el) {
+                            clearInterval(this.autoScrollTimer);
+                            this.autoScrollTimer = setInterval(() => {
+                                const itemW = el.scrollWidth / 4;
+                                const next = (this.active + 1) % 4;
+                                el.scrollTo({ left: next * itemW, behavior: 'smooth' });
+                                this.active = next;
+                            }, 3000);
+                        }
+                    };
+                }
+            </script>
         </div>
     </div>
 
