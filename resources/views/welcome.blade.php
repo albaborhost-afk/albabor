@@ -410,71 +410,82 @@
     </div>
 
     {{-- ─── Payment Methods Strip ─────────────────────────────────────────── --}}
-    <div class="relative overflow-hidden py-16 reveal" style="background: linear-gradient(160deg, #0F2B46 0%, #1B4F72 50%, #17616E 100%);">
-        {{-- Background decoration --}}
-        <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute -top-20 -right-20 w-72 h-72 rounded-full opacity-[0.06]" style="background: radial-gradient(circle, #17A2B8, transparent);"></div>
-            <div class="absolute -bottom-16 -left-16 w-56 h-56 rounded-full opacity-[0.05]" style="background: radial-gradient(circle, #F39C12, transparent);"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.03]" style="background: radial-gradient(circle, white, transparent);"></div>
-        </div>
-
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="px-4 sm:px-6 lg:px-8 py-10 reveal">
+        <div class="max-w-5xl mx-auto">
             {{-- Title --}}
-            <div class="text-center mb-10">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4" style="background: rgba(23,162,184,0.15); border: 1px solid rgba(23,162,184,0.25);">
-                    <svg class="w-4 h-4" style="color: #5DCED8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
-                    <span class="text-xs font-bold uppercase tracking-widest" style="color: #5DCED8;">{{ __('Paiements sécurisés') }}</span>
-                </div>
-                <h2 class="text-2xl sm:text-3xl font-black text-white mb-2">{{ __('Avec quelle banque pouvez-vous payer ?') }}</h2>
-                <p class="text-sm" style="color: rgba(255,255,255,0.55);">{{ __('Nous acceptons plusieurs moyens de paiement pour votre confort') }}</p>
+            <div class="text-center mb-8">
+                <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color: #17A2B8; letter-spacing: 0.18em;">{{ __('Paiements sécurisés') }}</p>
+                <h2 class="text-xl sm:text-2xl font-black" style="color: #1B2A4A;">{{ __('Avec quelle banque pouvez-vous payer ?') }}</h2>
+                <p class="text-sm mt-2" style="color: #9BA8B7;">{{ __('Nous acceptons plusieurs moyens de paiement pour votre confort') }}</p>
             </div>
 
             {{-- Cards grid --}}
-            @php
-                $methods = [
-                    ['name' => 'BaridiMob', 'desc' => 'Algérie Poste', 'img' => '/images/baridimob.png', 'bg' => 'linear-gradient(145deg,#FFF8E1,#FFECB3)', 'badge' => 'Paiement mobile', 'badgeBg' => '#FFF3CD', 'badgeColor' => '#856404', 'holder' => 'DJAMAA BILEL', 'glow' => 'rgba(245,158,11,0.2)'],
-                    ['name' => 'BEA', 'desc' => "Banque Ext. d'Algérie", 'img' => '/images/bea.png', 'bg' => 'linear-gradient(145deg,#EEF2FF,#DBEAFE)', 'badge' => '🇩🇿 Virement DZD', 'badgeBg' => '#DBEAFE', 'badgeColor' => '#1B6CA8', 'holder' => 'DJAMAA BILEL', 'glow' => 'rgba(36,113,163,0.2)'],
-                    ['name' => 'PayPal', 'desc' => 'International', 'img' => '/images/paypal.png', 'bg' => 'linear-gradient(145deg,#E8F4FD,#D1E8FF)', 'badge' => 'Paiement en ligne', 'badgeBg' => '#E0EDFF', 'badgeColor' => '#003087', 'holder' => 'DJAMAA BILEL', 'glow' => 'rgba(0,48,135,0.2)'],
-                    ['name' => 'RedotPay', 'desc' => 'Virement SEPA', 'img' => '/images/redotpay.png', 'bg' => 'linear-gradient(145deg,#F3EEFF,#EDE9FE)', 'badge' => '🇪🇺 IBAN EUR', 'badgeBg' => '#EDE9FE', 'badgeColor' => '#5B21B6', 'holder' => 'BILEL DJAMAA', 'glow' => 'rgba(91,33,182,0.2)'],
-                ];
-            @endphp
-
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-4xl mx-auto">
-                @foreach($methods as $m)
-                <div class="group rounded-3xl p-5 flex flex-col items-center gap-3 transition-all duration-500 hover:-translate-y-2 cursor-default relative overflow-hidden"
-                     style="background: rgba(255,255,255,0.07); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 4px 24px rgba(0,0,0,0.15);"
-                     onmouseenter="this.style.background='rgba(255,255,255,0.12)'; this.style.boxShadow='0 8px 40px rgba(0,0,0,0.2), 0 0 30px {{ $m['glow'] }}'"
-                     onmouseleave="this.style.background='rgba(255,255,255,0.07)'; this.style.boxShadow='0 4px 24px rgba(0,0,0,0.15)'">
 
-                    {{-- Icon --}}
-                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-110"
-                         style="background: {{ $m['bg'] }};">
-                        <img src="{{ $m['img'] }}" alt="{{ $m['name'] }}" class="w-10 h-10 object-contain">
+                {{-- BaridiMob --}}
+                <div class="group bg-white rounded-2xl p-6 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden" style="background: #FFF8E1;">
+                        <img src="/images/baridimob.png" alt="BaridiMob" class="w-13 h-13 object-contain">
                     </div>
-
-                    {{-- Name --}}
                     <div class="text-center">
-                        <p class="text-[15px] font-bold text-white">{{ $m['name'] }}</p>
-                        <p class="text-[11px] mt-0.5" style="color: rgba(255,255,255,0.45);">{{ __($m['desc']) }}</p>
+                        <p class="text-sm font-bold" style="color: #1B2A4A;">BaridiMob</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">{{ __('Algérie Poste') }}</p>
                     </div>
-
-                    {{-- Badge --}}
-                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: {{ $m['badgeBg'] }}; color: {{ $m['badgeColor'] }};">{{ __($m['badge']) }}</span>
-
-                    {{-- Holder --}}
-                    <p class="text-[10px] font-medium" style="color: rgba(255,255,255,0.3);">{{ __('Titulaire') }} : {{ $m['holder'] }}</p>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #FFF3CD; color: #856404;">{{ __('Paiement mobile') }}</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">{{ __('Titulaire : DJAMAA BILEL') }}</p>
                 </div>
-                @endforeach
+
+                {{-- BEA --}}
+                <div class="group bg-white rounded-2xl p-6 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden" style="background: #EEF2FF;">
+                        <img src="/images/bea.png" alt="BEA" class="w-13 h-13 object-contain">
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-bold" style="color: #1B2A4A;">BEA</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">{{ __("Banque Ext. d'Algérie") }}</p>
+                    </div>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #E8F4FD; color: #1B6CA8;">🇩🇿 {{ __('Virement DZD') }}</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">{{ __('Titulaire : DJAMAA BILEL') }}</p>
+                </div>
+
+                {{-- PayPal --}}
+                <div class="group bg-white rounded-2xl p-6 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden" style="background: #E8F4FD;">
+                        <img src="/images/paypal.png" alt="PayPal" class="w-13 h-13 object-contain">
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-bold" style="color: #1B2A4A;">PayPal</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">{{ __('International') }}</p>
+                    </div>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #E8F4FD; color: #003087;">{{ __('Paiement en ligne') }}</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">{{ __('Titulaire : DJAMAA BILEL') }}</p>
+                </div>
+
+                {{-- RedotPay --}}
+                <div class="group bg-white rounded-2xl p-6 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
+                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden" style="background: #EEF2FF;">
+                        <img src="/images/redotpay.png" alt="RedotPay" class="w-10 h-10 object-contain rounded-lg">
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-bold" style="color: #1B2A4A;">RedotPay</p>
+                        <p class="text-[11px] mt-0.5" style="color: #9BA8B7;">{{ __('Virement SEPA') }}</p>
+                    </div>
+                    <span class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background: #EDE9FE; color: #5B21B6;">🇪🇺 {{ __('IBAN EUR') }}</span>
+                    <p class="text-[10px] font-medium" style="color: #C5D0DB;">{{ __('Titulaire : BILEL DJAMAA') }}</p>
+                </div>
+
             </div>
 
             {{-- Security note --}}
-            <div class="mt-8 flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl mx-auto max-w-xl" style="background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.2);">
-                <svg class="w-5 h-5 flex-shrink-0" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="mt-6 flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 flex-shrink-0" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                 </svg>
-                <p class="text-xs font-medium" style="color: rgba(255,255,255,0.6);">{{ __('Paiement manuel sécurisé · Approbation admin sous 24h · Justificatif requis') }}</p>
+                <p class="text-xs" style="color: #9BA8B7;">{{ __('Paiement manuel sécurisé · Approbation admin sous 24h · Justificatif requis') }}</p>
             </div>
         </div>
     </div>
