@@ -38,6 +38,13 @@ class AuthViewModel(context: Context) : ViewModel() {
         data class Error(val message: String) : ForgotState()
     }
 
+    sealed class GoogleAuthState {
+        object Idle : GoogleAuthState()
+        object Loading : GoogleAuthState()
+        data class Success(val response: AuthResponse) : GoogleAuthState()
+        data class Error(val message: String) : GoogleAuthState()
+    }
+
     // ─── State Flows ──────────────────────────────────────────────────────────
 
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
@@ -48,6 +55,9 @@ class AuthViewModel(context: Context) : ViewModel() {
 
     private val _forgotState = MutableStateFlow<ForgotState>(ForgotState.Idle)
     val forgotState: StateFlow<ForgotState> = _forgotState.asStateFlow()
+
+    private val _googleAuthState = MutableStateFlow<GoogleAuthState>(GoogleAuthState.Idle)
+    val googleAuthState: StateFlow<GoogleAuthState> = _googleAuthState.asStateFlow()
 
     // ─── Actions ──────────────────────────────────────────────────────────────
 
@@ -93,9 +103,20 @@ class AuthViewModel(context: Context) : ViewModel() {
         }
     }
 
+    fun loginWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            _googleAuthState.value = GoogleAuthState.Loading
+            repo.googleLogin(idToken).fold(
+                onSuccess = { _googleAuthState.value = GoogleAuthState.Success(it) },
+                onFailure = { _googleAuthState.value = GoogleAuthState.Error(parseError(it.message)) }
+            )
+        }
+    }
+
     fun resetLoginState()    { _loginState.value    = LoginState.Idle }
     fun resetRegisterState() { _registerState.value = RegisterState.Idle }
     fun resetForgotState()   { _forgotState.value   = ForgotState.Idle }
+    fun resetGoogleAuthState() { _googleAuthState.value = GoogleAuthState.Idle }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
 

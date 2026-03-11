@@ -68,18 +68,18 @@ private val categoryOptions = listOf(
 )
 
 private val conditionOptions = listOf(
-    RadioOption(null, "Tous"), RadioOption("new", "Jamais utilisé"), RadioOption("like_new", "Comme neuf"),
-    RadioOption("good", "Bon état"), RadioOption("average", "État moyen"), RadioOption("needs_revision", "À réviser"),
+    RadioOption(null, "Tous"), RadioOption("jamais_utilise", "Jamais utilisé"), RadioOption("comme_neuf", "Comme neuf"),
+    RadioOption("bon_etat", "Bon état"), RadioOption("etat_moyen", "État moyen"), RadioOption("a_reviser", "À réviser"),
 )
 
 private val offerTypeOptions = listOf(
-    RadioOption(null, "Tous"), RadioOption("negotiable", "Négociable"),
-    RadioOption("fixed", "Prix fixe"), RadioOption("free", "Offert"),
+    RadioOption(null, "Tous"), RadioOption("negociable", "Négociable"),
+    RadioOption("fix", "Prix fixe"), RadioOption("offert", "Offert"),
 )
 
 private val sortOptions = listOf(
-    RadioOption("newest", "Plus récentes"), RadioOption("price_asc", "Prix croissant"),
-    RadioOption("price_desc", "Prix décroissant"), RadioOption("popular", "Plus populaires"),
+    RadioOption("recent", "Plus récentes"), RadioOption("price_asc", "Prix croissant"),
+    RadioOption("price_desc", "Prix décroissant"), RadioOption("views", "Plus populaires"),
 )
 
 // ─── Screen entry point ─────────────────────────────────────────────────────
@@ -88,6 +88,7 @@ private val sortOptions = listOf(
 @Composable
 fun ExploreScreen(
     navController: NavController,
+    initialCategory: String? = null,
     viewModel: ExploreViewModel = viewModel()
 ) {
     val filters    by viewModel.filters.collectAsStateWithLifecycle()
@@ -101,10 +102,16 @@ fun ExploreScreen(
     val focusManager = LocalFocusManager.current
     val searchFocus  = remember { FocusRequester() }
 
+    LaunchedEffect(initialCategory) {
+        if (initialCategory != null && initialCategory != filters.category) {
+            viewModel.updateFilters(filters.copy(category = initialCategory, page = 1))
+        }
+    }
+
     val activeCount = remember(filters) {
         listOfNotNull(
             filters.category, filters.wilaya, filters.condition, filters.offerType,
-            filters.minPrice, filters.maxPrice, filters.sortBy?.takeIf { it != "newest" }
+            filters.minPrice, filters.maxPrice, filters.sortBy?.takeIf { it != "recent" }
         ).size
     }
 
@@ -136,20 +143,21 @@ fun ExploreScreen(
                     Box(Modifier.padding(14.dp)) { LoadingGrid(count = 8) }
                 } else if (!isLoading && listings.isEmpty()) {
                     EmptyState(activeCount > 0 || filters.search != null) {
-                        viewModel.clearFilters(); localSearch = ""
+                        viewModel.clearFilters()
+                        localSearch = ""
                     }
                 } else {
                     LazyVerticalGrid(
-                        columns            = GridCells.Fixed(2),
-                        contentPadding     = PaddingValues(start = 14.dp, end = 14.dp, top = 6.dp, bottom = 100.dp),
-                        verticalArrangement   = Arrangement.spacedBy(14.dp),
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(start = 14.dp, end = 14.dp, top = 6.dp, bottom = 100.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp),
                         horizontalArrangement = Arrangement.spacedBy(14.dp),
-                        modifier           = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         items(listings, key = { it.id }) { listing ->
                             ListingCard(
-                                listing    = listing,
-                                onClick    = { navController.navigate(Screen.ListingDetail.route(listing.id)) },
+                                listing = listing,
+                                onClick = { navController.navigate(Screen.ListingDetail.route(listing.id)) },
                                 onFavorite = { /* TODO */ }
                             )
                         }
@@ -187,7 +195,6 @@ private fun SearchBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Back button in subtle circle
             Box(
                 Modifier.size(40.dp).clip(CircleShape).background(AppBackground)
                     .clickable(onClick = onBack),
@@ -196,7 +203,6 @@ private fun SearchBar(
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, "Retour", tint = OceanBlue700, modifier = Modifier.size(20.dp))
             }
 
-            // Search field — rounded with gradient focus
             Surface(
                 Modifier.weight(1f).height(46.dp),
                 shape = RoundedCornerShape(14.dp),
@@ -305,7 +311,7 @@ private fun FilterRow(filters: ListingFilters, activeCount: Int, onOpen: () -> U
             item {
                 StyledChip(
                     label  = filters.sortBy?.let { sortOptions.find { o -> o.key == it }?.label } ?: "Trier",
-                    active = filters.sortBy != null && filters.sortBy != "newest", onClick = onOpen
+                    active = filters.sortBy != null && filters.sortBy != "recent", onClick = onOpen
                 )
             }
         }
@@ -438,7 +444,7 @@ private fun FilterSheet(
     var maxP      by remember { mutableStateOf(currentFilters.maxPrice?.toLong()?.toString() ?: "") }
     var cond      by remember { mutableStateOf(currentFilters.condition) }
     var offer     by remember { mutableStateOf(currentFilters.offerType) }
-    var sort      by remember { mutableStateOf(currentFilters.sortBy ?: "newest") }
+    var sort      by remember { mutableStateOf(currentFilters.sortBy ?: "recent") }
     var wSearch   by remember { mutableStateOf("") }
 
     ModalBottomSheet(
@@ -457,7 +463,7 @@ private fun FilterSheet(
                 Text("Filtres", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = Gray900)
                 TextButton(onClick = {
                     cat = null; wilaya = null; minP = ""; maxP = ""
-                    cond = null; offer = null; sort = "newest"; wSearch = ""
+                    cond = null; offer = null; sort = "recent"; wSearch = ""
                 }) {
                     Text("Effacer tout", color = Error500, fontWeight = FontWeight.SemiBold)
                 }
@@ -510,7 +516,7 @@ private fun FilterSheet(
                 HorizontalDivider(color = Gray100)
                 Section("Type d'offre") { offerTypeOptions.forEach { RadioRow(it.label, offer == it.key) { offer = it.key } } }
                 HorizontalDivider(color = Gray100)
-                Section("Trier par") { sortOptions.forEach { RadioRow(it.label, sort == it.key) { sort = it.key ?: "newest" } } }
+                Section("Trier par") { sortOptions.forEach { RadioRow(it.label, sort == it.key) { sort = it.key ?: "recent" } } }
                 Spacer(Modifier.height(8.dp))
             }
 
@@ -531,7 +537,7 @@ private fun FilterSheet(
                             search = currentFilters.search, category = cat, wilaya = wilaya,
                             minPrice = minP.toDoubleOrNull(), maxPrice = maxP.toDoubleOrNull(),
                             condition = cond, offerType = offer,
-                            sortBy = sort.takeIf { it != "newest" }, page = 1
+                            sortBy = sort.takeIf { it != "recent" }, page = 1
                         ))
                     },
                     Modifier.weight(1f), shape = RoundedCornerShape(14.dp),

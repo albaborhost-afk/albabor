@@ -94,17 +94,13 @@ fun AlBaborNavHost() {
         BottomNavItem(Screen.Profile, "Profil", Icons.Filled.Person, Icons.Outlined.Person),
     )
 
-    // Screens that show the bottom navigation bar
-    val bottomNavRoutes = setOf(
-        Screen.Home.route,
-        Screen.Explore.route,
-        Screen.Favorites.route,
-        Screen.Profile.route,
-    )
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val showBottomBar = currentRoute in bottomNavRoutes
+    val showBottomBar = currentRoute == Screen.Home.route ||
+        currentRoute == Screen.Explore.route ||
+        currentRoute == Screen.Explore.pattern ||
+        currentRoute == Screen.Favorites.route ||
+        currentRoute == Screen.Profile.route
 
     Scaffold(
         bottomBar = {
@@ -120,7 +116,11 @@ fun AlBaborNavHost() {
                                 navController.navigate(Screen.Login.route)
                             }
                         } else {
-                            navController.navigate(item.screen.route) {
+                            val destination = when (item.screen) {
+                                Screen.Explore -> Screen.Explore.route()
+                                else -> item.screen.route
+                            }
+                            navController.navigate(destination) {
                                 popUpTo(Screen.Home.route) { saveState = true }
                                 launchSingleTop = true
                                 restoreState = true
@@ -151,8 +151,20 @@ fun AlBaborNavHost() {
             composable(Screen.Home.route) {
                 HomeScreen(navController = navController)
             }
-            composable(Screen.Explore.route) {
-                ExploreScreen(navController = navController)
+            composable(
+                route = Screen.Explore.pattern,
+                arguments = listOf(
+                    navArgument(Screen.Explore.categoryArg) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                ),
+            ) { backStackEntry ->
+                ExploreScreen(
+                    navController = navController,
+                    initialCategory = backStackEntry.arguments?.getString(Screen.Explore.categoryArg)
+                )
             }
             composable(Screen.CreateListing.route) {
                 CreateListingScreen(
@@ -204,8 +216,20 @@ fun AlBaborNavHost() {
             }
 
             // ── Profile sub-screens ───────────────────────────────────────────────
-            composable(Screen.EditProfile.route) {
-                EditProfileScreen(navController = navController)
+            composable(
+                route = Screen.EditProfile.pattern,
+                arguments = listOf(
+                    navArgument(Screen.EditProfile.tabArg) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                ),
+            ) { backStackEntry ->
+                EditProfileScreen(
+                    navController = navController,
+                    initialTab = backStackEntry.arguments?.getString(Screen.EditProfile.tabArg)
+                )
             }
             composable(Screen.Subscriptions.route) {
                 SubscriptionsScreen(navController = navController)
@@ -279,7 +303,10 @@ private fun FloatingBottomBar(
                     } else {
                         FloatingTabItem(
                             item = item,
-                            selected = currentRoute == item.screen.route,
+                            selected = when (item.screen) {
+                                Screen.Explore -> currentRoute == Screen.Explore.route || currentRoute == Screen.Explore.pattern
+                                else -> currentRoute == item.screen.route
+                            },
                             onClick = { onNavigate(item) },
                             modifier = Modifier.weight(1f, fill = true)
                         )

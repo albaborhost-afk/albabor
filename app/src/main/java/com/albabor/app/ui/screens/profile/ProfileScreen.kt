@@ -9,6 +9,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -181,7 +183,7 @@ fun ProfileScreen(navController: NavController) {
             // ── Section 1: Mon compte ─────────────────────────────────────────
             MenuSection(title = "Mon compte") {
                 MenuItem(
-                    icon = Icons.Outlined.List,
+                    icon = Icons.AutoMirrored.Outlined.List,
                     label = "Mes annonces",
                     iconTint = OceanBlue700,
                     onClick = { navController.navigate(Screen.MyListings.route) }
@@ -224,18 +226,18 @@ fun ProfileScreen(navController: NavController) {
                     icon = Icons.Outlined.Edit,
                     label = "Modifier le profil",
                     iconTint = OceanBlue700,
-                    onClick = { navController.navigate(Screen.EditProfile.route) }
+                    onClick = { navController.navigate(Screen.EditProfile.route()) }
                 )
                 MenuDivider()
                 MenuItem(
                     icon = Icons.Outlined.Lock,
                     label = "Changer le mot de passe",
                     iconTint = Gray500,
-                    onClick = { navController.navigate(Screen.EditProfile.route + "?tab=password") }
+                    onClick = { navController.navigate(Screen.EditProfile.route(tab = "password")) }
                 )
 
                 // Subscriptions — vendors only
-                if (user?.isVendor == true) {
+                if (user?.isVendorAccount == true) {
                     MenuDivider()
                     MenuItem(
                         icon = Icons.Outlined.Storefront,
@@ -248,7 +250,7 @@ fun ProfileScreen(navController: NavController) {
                 }
 
                 // Upgrade to vendor — non-vendors
-                if (user?.isVendor == false) {
+                if (user?.isVendorAccount == false) {
                     MenuDivider()
                     MenuItem(
                         icon = Icons.Outlined.Storefront,
@@ -261,7 +263,7 @@ fun ProfileScreen(navController: NavController) {
                 }
 
                 // Identity verification — unverified
-                if (user?.isVerified == false) {
+                if (user?.isVerifiedAccount == false) {
                     MenuDivider()
                     MenuItem(
                         icon = Icons.Outlined.VerifiedUser,
@@ -277,7 +279,7 @@ fun ProfileScreen(navController: NavController) {
             // ── Section 3: Logout ─────────────────────────────────────────────
             MenuSection {
                 MenuItem(
-                    icon = Icons.Outlined.Logout,
+                    icon = Icons.AutoMirrored.Outlined.Logout,
                     label = "Se deconnecter",
                     iconTint = Error500,
                     textColor = Error500,
@@ -473,7 +475,7 @@ private fun ProfileHeaderCard(user: User?) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (user?.isVerified == true) {
+                if (user?.isVerifiedAccount == true) {
                     Surface(
                         shape = RoundedCornerShape(50),
                         color = White.copy(alpha = 0.2f)
@@ -499,7 +501,7 @@ private fun ProfileHeaderCard(user: User?) {
                     }
                 }
 
-                if (user?.isVendor == true) {
+                if (user?.isVendorAccount == true) {
                     Surface(
                         shape = RoundedCornerShape(50),
                         color = Gold500.copy(alpha = 0.85f)

@@ -31,6 +31,17 @@ class AuthRepository(private val context: Context) {
         }
     }
 
+    suspend fun googleLogin(idToken: String): Result<AuthResponse> = runCatching {
+        val response = api.loginWithGoogle(com.albabor.app.data.model.GoogleLoginRequest(idToken))
+        if (response.isSuccessful) {
+            val body = response.body()!!
+            TokenStore.save(context, body.token)
+            body
+        } else {
+            throw Exception(response.errorMessage("Connexion Google échouée"))
+        }
+    }
+
     suspend fun forgotPassword(email: String): Result<Unit> = runCatching {
         val response = api.forgotPassword(mapOf("email" to email))
         if (!response.isSuccessful) throw Exception(response.errorMessage())

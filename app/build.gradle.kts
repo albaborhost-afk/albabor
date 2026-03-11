@@ -88,4 +88,7 @@ dependencies {
 
     // Accompanist (placeholder shimmer)
     implementation("com.google.accompanist:accompanist-placeholder-material3:0.36.0")
+
+    // Google Sign-In
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
 }

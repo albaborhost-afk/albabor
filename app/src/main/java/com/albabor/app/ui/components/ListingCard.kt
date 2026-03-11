@@ -209,7 +209,6 @@ fun ListingCard(
                 Modifier.fillMaxWidth().padding(14.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Title
                 Text(
                     listing.title,
                     style      = MaterialTheme.typography.titleSmall,
@@ -249,7 +248,6 @@ fun ListingCard(
                     }
                 }
 
-                // Offer type
                 listing.offerType?.let { offer ->
                     val (label, color) = when (offer) {
                         "negociable" -> "Négociable" to Teal500

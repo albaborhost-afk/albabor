@@ -1,5 +1,8 @@
 package com.albabor.app.ui.screens.auth
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -95,7 +98,13 @@ import com.albabor.app.ui.theme.OceanBlue900
 import com.albabor.app.ui.theme.Teal500
 import com.albabor.app.ui.theme.White
 import com.albabor.app.viewmodel.AuthViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.launch
+
+private const val WEB_CLIENT_ID =
+    "364258394169-6osv054m4a6ckphm8l78d7arrah8se2p.apps.googleusercontent.com"
 
 // ─── Gradient helpers (shared across auth screens) ───────────────────────────
 
@@ -118,6 +127,7 @@ fun LoginScreen(navController: NavController) {
     val context = LocalContext.current
     val vm: AuthViewModel = viewModel(factory = AuthViewModel.factory(context))
     val loginState by vm.loginState.collectAsStateWithLifecycle()
+    val googleAuthState by vm.googleAuthState.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -128,7 +138,39 @@ fun LoginScreen(navController: NavController) {
     var passwordVisible by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
 
-    val isLoading = loginState is AuthViewModel.LoginState.Loading
+    val isLoading = loginState is AuthViewModel.LoginState.Loading ||
+                    googleAuthState is AuthViewModel.GoogleAuthState.Loading
+
+    // Google Sign-In client
+    val googleSignInClient = remember {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(WEB_CLIENT_ID)
+            .requestEmail()
+            .build()
+        GoogleSignIn.getClient(context, gso)
+    }
+
+    // Launcher for Google sign-in intent
+    val googleLauncher = rememberLauncherForActivityResult(StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            try {
+                val account = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    .getResult(ApiException::class.java)
+                val idToken = account.idToken
+                if (idToken != null) {
+                    vm.loginWithGoogle(idToken)
+                } else {
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Impossible d'obtenir le jeton Google")
+                    }
+                }
+            } catch (e: ApiException) {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Connexion Google annulée (${e.statusCode})")
+                }
+            }
+        }
+    }
 
     LaunchedEffect(loginState) {
         when (val state = loginState) {
@@ -140,6 +182,21 @@ fun LoginScreen(navController: NavController) {
             is AuthViewModel.LoginState.Error -> {
                 scope.launch { snackbarHostState.showSnackbar(state.message) }
                 vm.resetLoginState()
+            }
+            else -> Unit
+        }
+    }
+
+    LaunchedEffect(googleAuthState) {
+        when (val state = googleAuthState) {
+            is AuthViewModel.GoogleAuthState.Success -> {
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Login.route) { inclusive = true }
+                }
+            }
+            is AuthViewModel.GoogleAuthState.Error -> {
+                scope.launch { snackbarHostState.showSnackbar(state.message) }
+                vm.resetGoogleAuthState()
             }
             else -> Unit
         }
@@ -398,7 +455,11 @@ fun LoginScreen(navController: NavController) {
 
                     // Google sign-in button with real Google icon
                     OutlinedButton(
-                        onClick = { /* Google OAuth */ },
+                        onClick = {
+                            googleSignInClient.signOut().addOnCompleteListener {
+                                googleLauncher.launch(googleSignInClient.signInIntent)
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),

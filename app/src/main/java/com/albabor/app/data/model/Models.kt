@@ -16,16 +16,22 @@ data class User(
     val name: String,
     val email: String,
     val phone: String?,
-    val avatar: String?,
-    @SerializedName("is_verified") val isVerified: Boolean = false,
+    @SerializedName(value = "avatar", alternate = ["profile_picture_url"]) val avatar: String?,
+    @SerializedName(value = "is_verified", alternate = ["verified_badge"]) val isVerified: Boolean = false,
     @SerializedName("is_vendor") val isVendor: Boolean = false,
-    val role: String = "user",
+    @SerializedName(value = "role", alternate = ["account_type"]) val role: String = "user",
     @SerializedName("listings_count") val listingsCount: Int = 0,
     @SerializedName("favorites_count") val favoritesCount: Int = 0,
     @SerializedName("created_at") val createdAt: String = "",
     @SerializedName("verification_status") val verificationStatus: String = "none"
     // verificationStatus: "none" | "pending" | "approved" | "rejected"
-)
+) {
+    val isVerifiedAccount: Boolean
+        get() = isVerified || verificationStatus == "approved"
+
+    val isVendorAccount: Boolean
+        get() = isVendor || role == "vendor" || role == "admin"
+}
 
 // ─── Listing ─────────────────────────────────────────────────────────────────
 
@@ -174,14 +180,16 @@ data class ListingImage(
 data class ListingUser(
     val id: Int,
     val name: String,
-    val avatar: String?,
-    @SerializedName("is_verified") val isVerified: Boolean = false,
+    @SerializedName(value = "avatar", alternate = ["profile_picture_url"]) val avatar: String?,
+    @SerializedName(value = "is_verified", alternate = ["verified_badge"]) val isVerified: Boolean = false,
     val phone: String?
 )
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
 data class LoginRequest(val email: String, val password: String)
+
+data class GoogleLoginRequest(val id_token: String)
 
 data class RegisterRequest(
     val name: String,

@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -42,7 +43,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfileScreen(navController: NavController) {
+fun EditProfileScreen(
+    navController: NavController,
+    initialTab: String? = null
+) {
     val context = LocalContext.current
     val vm: ProfileViewModel = viewModel(factory = ProfileViewModel.factory(context))
     val user          by vm.user.collectAsStateWithLifecycle()
@@ -50,7 +54,9 @@ fun EditProfileScreen(navController: NavController) {
     val passwordState by vm.passwordState.collectAsStateWithLifecycle()
 
     // Tabs: 0 = Infos, 1 = Mot de passe
-    var selectedTab by remember { mutableIntStateOf(0) }
+    var selectedTab by remember(initialTab) {
+        mutableIntStateOf(if (initialTab == "password") 1 else 0)
+    }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -115,7 +121,7 @@ fun EditProfileScreen(navController: NavController) {
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Retour",
                             tint = Gray700
                         )

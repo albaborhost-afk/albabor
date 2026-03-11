@@ -11,8 +11,21 @@ class ProfileRepository {
 
     suspend fun getProfile(): Result<User> = runCatching {
         val response = api.getProfile()
-        if (response.isSuccessful) response.body()?.user!!
-        else throw Exception(response.errorMessage())
+        if (!response.isSuccessful) throw Exception(response.errorMessage())
+
+        val body = response.body()!!
+        val stats = body.stats.orEmpty()
+
+        body.user.copy(
+            listingsCount = body.user.listingsCount.takeUnless { it == 0 }
+                ?: stats["listings_count"]
+                ?: stats["listings"]
+                ?: 0,
+            favoritesCount = body.user.favoritesCount.takeUnless { it == 0 }
+                ?: stats["favorites_count"]
+                ?: stats["favorites"]
+                ?: 0,
+        )
     }
 
     suspend fun updateProfile(name: String, phone: String): Result<User> = runCatching {

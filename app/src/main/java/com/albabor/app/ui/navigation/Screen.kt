@@ -8,7 +8,13 @@ sealed class Screen(val route: String) {
 
     // Main (bottom nav)
     object Home           : Screen("home")
-    object Explore        : Screen("explore")
+    object Explore        : Screen("explore") {
+        const val categoryArg = "category"
+        val pattern = "$route?$categoryArg={$categoryArg}"
+
+        fun route(category: String? = null): String =
+            if (category.isNullOrBlank()) route else "$route?$categoryArg=$category"
+    }
     object CreateListing  : Screen("create_listing")
     object Favorites      : Screen("favorites")
     object Profile        : Screen("profile")
@@ -41,7 +47,13 @@ sealed class Screen(val route: String) {
     }
 
     // Profile sub-screens
-    object EditProfile    : Screen("edit_profile")
+    object EditProfile    : Screen("edit_profile") {
+        const val tabArg = "tab"
+        val pattern = "$route?$tabArg={$tabArg}"
+
+        fun route(tab: String? = null): String =
+            if (tab.isNullOrBlank()) route else "$route?$tabArg=$tab"
+    }
     object Subscriptions  : Screen("subscriptions")
     object Verification   : Screen("verification")
 }
