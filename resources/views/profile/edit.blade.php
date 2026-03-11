@@ -89,7 +89,6 @@
                             { name: 'Autriche', code: '+43', flag: '\ud83c\udde6\ud83c\uddf9' },
                             { name: 'Belgique', code: '+32', flag: '\ud83c\udde7\ud83c\uddea' },
                             { name: 'Bulgarie', code: '+359', flag: '\ud83c\udde7\ud83c\uddec' },
-                            { name: 'Chypre', code: '+357', flag: '\ud83c\udde8\ud83c\uddfe' },
                             { name: 'Croatie', code: '+385', flag: '\ud83c\udded\ud83c\uddf7' },
                             { name: 'Danemark', code: '+45', flag: '\ud83c\udde9\ud83c\uddf0' },
                             { name: 'Espagne', code: '+34', flag: '\ud83c\uddea\ud83c\uddf8' },
