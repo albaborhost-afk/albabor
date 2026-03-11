@@ -467,26 +467,8 @@
                 {{-- Carte Bancaire – Mastercard / Visa --}}
                 <div class="group bg-white rounded-2xl p-6 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-1"
                      style="border: 1.5px solid #E0E6ED; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
-                    {{-- Creative card icon --}}
-                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center relative overflow-hidden"
-                         style="background: linear-gradient(135deg, #1A1F71 0%, #0F3460 100%);">
-                        {{-- Decorative glows --}}
-                        <div class="absolute -top-4 -right-4 w-14 h-14 rounded-full" style="background: rgba(255,255,255,0.07);"></div>
-                        <div class="absolute -bottom-3 -left-3 w-10 h-10 rounded-full" style="background: rgba(255,255,255,0.05);"></div>
-                        {{-- MC circles + Visa text --}}
-                        <div class="relative z-10 flex flex-col items-center gap-1">
-                            <div class="flex items-center">
-                                {{-- Mastercard --}}
-                                <div class="relative" style="width: 28px; height: 18px;">
-                                    <div class="absolute rounded-full" style="width: 16px; height: 16px; background: #EB001B; left: 0; top: 1px;"></div>
-                                    <div class="absolute rounded-full" style="width: 16px; height: 16px; background: #F79E1B; right: 0; top: 1px; opacity: 0.9;"></div>
-                                </div>
-                                <div style="width: 1px; height: 14px; background: rgba(255,255,255,0.2); margin: 0 5px;"></div>
-                                {{-- Visa --}}
-                                <span style="font-size: 11px; font-weight: 900; color: white; letter-spacing: 1px; font-style: italic;">VISA</span>
-                            </div>
-                            <div class="w-8 rounded" style="height: 2px; background: rgba(255,255,255,0.15);"></div>
-                        </div>
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden" style="background: #F8F9FA;">
+                        <img src="/images/mastercard-visa.webp" alt="Mastercard Visa" class="w-14 h-14 object-contain">
                     </div>
                     <div class="text-center">
                         <p class="text-sm font-bold" style="color: #1B2A4A;">Carte Bancaire</p>
