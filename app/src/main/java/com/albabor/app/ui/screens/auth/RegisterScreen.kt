@@ -506,16 +506,19 @@ fun RegisterScreen(navController: NavController) {
                         border = androidx.compose.foundation.BorderStroke(1.5.dp, Gray200),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Gray700)
                     ) {
-                        Text(
-                            text = "G",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            color = Color(0xFF4285F4)
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_google),
+                            contentDescription = "Google",
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = "S'inscrire avec Google",
-                            style = MaterialTheme.typography.labelLarge.copy(color = Gray700)
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                color = Gray700,
+                                fontWeight = FontWeight.Medium
+                            )
                         )
                     }
 
