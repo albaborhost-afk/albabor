@@ -217,6 +217,25 @@
                             </span>
                         </label>
 
+                        <label class="flex items-start p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
+                            <input type="radio" name="method" value="card" {{ old('method') == 'card' ? 'checked' : '' }}
+                                   style="accent-color: #17A2B8; margin-top: 3px;">
+                            <div class="ml-3 h-8 w-8 rounded-lg flex-shrink-0 flex items-center justify-center"
+                                 style="background: linear-gradient(135deg, #1A1F71, #0F3460);">
+                                <div class="flex items-center" style="gap: 2px;">
+                                    <div class="relative" style="width: 14px; height: 10px;">
+                                        <div class="absolute rounded-full" style="width: 8px; height: 8px; background: #EB001B; left: 0; top: 1px;"></div>
+                                        <div class="absolute rounded-full" style="width: 8px; height: 8px; background: #F79E1B; right: 0; top: 1px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="ml-3">
+                                <span class="block font-semibold" style="color: #1B2A4A;">Carte Bancaire – Mastercard / Visa</span>
+                                <span class="block text-sm" style="color: #6B7B8D;">💳 Paiement international sécurisé</span>
+                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
+                            </span>
+                        </label>
+
                     </div>
                 </div>
 
