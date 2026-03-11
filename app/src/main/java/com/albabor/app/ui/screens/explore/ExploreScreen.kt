@@ -49,14 +49,17 @@ import com.albabor.app.viewmodel.ExploreViewModel
 private data class RadioOption(val key: String?, val label: String)
 
 private val wilayas = listOf(
-    "Adrar", "Alger", "Annaba", "Batna", "Béjaïa", "Biskra", "Blida",
-    "Bordj Bou Arréridj", "Bouira", "Boumerdès", "Chlef", "Constantine",
-    "Djelfa", "El Bayadh", "El Oued", "El Tarf", "Ghardaïa", "Guelma",
-    "Illizi", "Jijel", "Khenchela", "Laghouat", "Mascara", "Médéa",
-    "Mila", "Mostaganem", "M'Sila", "Naâma", "Oran", "Ouargla",
-    "Oum El Bouaghi", "Relizane", "Saïda", "Sétif", "Sidi Bel Abbès",
-    "Skikda", "Souk Ahras", "Tamanrasset", "Tébessa", "Tiaret",
-    "Tindouf", "Tipaza", "Tissemsilt", "Tizi Ouzou", "Tlemcen"
+    "Adrar", "Chlef", "Laghouat", "Oum El Bouaghi", "Batna", "Béjaïa",
+    "Biskra", "Béchar", "Blida", "Bouira", "Tamanrasset", "Tébessa",
+    "Tlemcen", "Tiaret", "Tizi Ouzou", "Alger", "Djelfa", "Jijel",
+    "Sétif", "Saïda", "Skikda", "Sidi Bel Abbès", "Annaba", "Guelma",
+    "Constantine", "Médéa", "Mostaganem", "M'Sila", "Mascara", "Ouargla",
+    "Oran", "El Bayadh", "Illizi", "Bordj Bou Arréridj", "Boumerdès",
+    "El Tarf", "Tindouf", "Tissemsilt", "El Oued", "Khenchela",
+    "Souk Ahras", "Tipaza", "Mila", "Aïn Defla", "Naâma", "Aïn Témouchent",
+    "Ghardaïa", "Relizane", "El M'Ghair", "El Meniaa", "Ouled Djellal",
+    "Bordj Baji Mokhtar", "Béni Abbès", "Timimoun", "Touggourt", "Djanet",
+    "In Salah", "In Guezzam"
 )
 
 private val categoryOptions = listOf(

@@ -167,7 +167,7 @@ fun HomeScreen(
                             listing = listing,
                             onClick = { navController.navigate(Screen.ListingDetail.route(listing.id)) },
                             onFavorite = { },
-                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 7.dp)
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                         )
                     }
                 }
@@ -453,27 +453,27 @@ private fun HomeRecentListingCard(
     onFavorite: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val offerLabel = listing.offerTypeLabel.takeIf { it.isNotBlank() }
     val quickFacts = buildList {
         listing.year?.let { add(it) }
         listing.power?.let { add("$it CV") }
-        listing.conditionLabel.takeIf { it.isNotBlank() }?.let { add(it) }
     }.take(2)
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = White.copy(alpha = 0.98f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 14.dp, pressedElevation = 18.dp),
-        border = BorderStroke(1.dp, White.copy(alpha = 0.88f))
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp, pressedElevation = 12.dp),
+        border = BorderStroke(0.5.dp, White.copy(alpha = 0.9f))
     ) {
         Column {
+
+            // ── IMAGE — 80% ──────────────────────────────────────────────────
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(214.dp)
+                    .aspectRatio(1.3f)  // ~258dp tall on a 336dp wide card → 80%
             ) {
                 SubcomposeAsyncImage(
                     model = listing.primaryImage,
@@ -484,126 +484,138 @@ private fun HomeRecentListingCard(
                     error = { HomeCategoryBackdrop(listing = listing) }
                 )
 
+                // Gradient overlay — strong at bottom for price readability
                 Box(
                     modifier = Modifier
                         .matchParentSize()
                         .background(
                             Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Black.copy(alpha = 0.16f),
-                                    Color.Transparent,
-                                    OceanBlue900.copy(alpha = 0.38f)
+                                colorStops = arrayOf(
+                                    0.0f to Color.Black.copy(alpha = 0.06f),
+                                    0.45f to Color.Transparent,
+                                    1.0f to Color.Black.copy(alpha = 0.62f)
                                 )
                             )
                         )
                 )
 
-                Row(
+                // Category badge — top left
+                Surface(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .align(Alignment.TopStart)
+                        .padding(11.dp),
+                    shape = RoundedCornerShape(999.dp),
+                    color = categoryAccentColor(listing.category)
                 ) {
-                    Surface(
-                        shape = RoundedCornerShape(999.dp),
-                        color = categoryAccentColor(listing.category).copy(alpha = 0.92f)
-                    ) {
-                        Text(
-                            text = listing.categoryLabel,
-                            modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp),
-                            color = White,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(White.copy(alpha = 0.92f))
-                            .clickable(onClick = onFavorite),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = if (listing.isFavorited) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = null,
-                            tint = if (listing.isFavorited) Coral500 else Gray500,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
+                    Text(
+                        text = listing.categoryLabel,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        color = White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
 
+                // Favorite button — top right
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(9.dp)
+                        .size(34.dp)
+                        .clip(CircleShape)
+                        .background(White.copy(alpha = 0.88f))
+                        .clickable(onClick = onFavorite),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (listing.isFavorited) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        contentDescription = null,
+                        tint = if (listing.isFavorited) Coral500 else Gray500,
+                        modifier = Modifier.size(15.dp)
+                    )
+                }
+
+                // Price + converted — bottom left inside image
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .padding(start = 12.dp, bottom = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Surface(
-                        shape = RoundedCornerShape(999.dp),
-                        color = White.copy(alpha = 0.95f)
-                    ) {
+                    Text(
+                        text = listing.formattedPrice,
+                        color = White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                    listing.formattedConvertedPrice?.let { converted ->
                         Text(
-                            text = listing.formattedPrice,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
-                            color = OceanBlue900,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.ExtraBold
+                            text = converted,
+                            color = White.copy(alpha = 0.80f),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
                         )
-                    }
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        listing.formattedConvertedPrice?.let { converted ->
-                            HomeImageMetaTag(text = converted)
-                        }
-
-                        offerLabel?.let {
-                            HomeImageMetaTag(text = it)
-                        }
                     }
                 }
             }
 
-            Column(
+            // ── INFO STRIP — 20% ─────────────────────────────────────────────
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(horizontal = 13.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = listing.title,
-                    color = Gray900,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    lineHeight = 23.sp
-                )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                // Left: title + location
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(3.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.LocationOn,
-                        contentDescription = null,
-                        tint = Teal500,
-                        modifier = Modifier.size(15.dp)
-                    )
                     Text(
-                        text = listing.wilaya ?: "Algérie",
-                        color = Gray500,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium
+                        text = listing.title,
+                        color = Gray900,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(3.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.LocationOn,
+                            contentDescription = null,
+                            tint = Teal500,
+                            modifier = Modifier.size(11.dp)
+                        )
+                        Text(
+                            text = listing.wilaya ?: "Algérie",
+                            color = Gray500,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            maxLines = 1
+                        )
+                    }
                 }
 
+                // Right: year + CV chips
                 if (quickFacts.isNotEmpty()) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                         quickFacts.forEach { fact ->
-                            HomeListingFactChip(text = fact)
+                            Surface(
+                                shape = RoundedCornerShape(999.dp),
+                                color = OceanBlue900.copy(alpha = 0.07f)
+                            ) {
+                                Text(
+                                    text = fact,
+                                    modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+                                    color = OceanBlue900,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
                         }
                     }
                 }

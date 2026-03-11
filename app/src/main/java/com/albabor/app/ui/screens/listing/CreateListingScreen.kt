@@ -28,6 +28,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import com.albabor.app.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -41,17 +43,25 @@ import com.albabor.app.ui.theme.*
 import com.albabor.app.viewmodel.CreateListingViewModel
 import com.albabor.app.viewmodel.SubmitState
 
-// ── Wilayas ───────────────────────────────────────────────────────────────────
+// ── Pays méditerranéens ────────────────────────────────────────────────────────
 
-val WILAYAS = listOf(
-    "Adrar", "Alger", "Annaba", "Batna", "Béjaïa", "Biskra", "Blida",
-    "Bordj Bou Arréridj", "Bouira", "Boumerdès", "Chlef", "Constantine",
-    "Djelfa", "El Bayadh", "El Oued", "El Tarf", "Ghardaïa", "Guelma",
-    "Illizi", "Jijel", "Khenchela", "Laghouat", "Mascara", "Médéa", "Mila",
-    "Mostaganem", "M'Sila", "Naâma", "Oran", "Ouargla", "Oum El Bouaghi",
-    "Relizane", "Saïda", "Sétif", "Sidi Bel Abbès", "Skikda", "Souk Ahras",
-    "Tamanrasset", "Tébessa", "Tiaret", "Tindouf", "Tipaza", "Tissemsilt",
-    "Tizi Ouzou", "Tlemcen"
+private data class CountryEntry(val flag: String, val name: String)
+
+private val MEDITERRANEAN_COUNTRIES = listOf(
+    CountryEntry("🇩🇿", "Algérie"),
+    CountryEntry("🇹🇳", "Tunisie"),
+    CountryEntry("🇲🇦", "Maroc"),
+    CountryEntry("🇪🇬", "Égypte"),
+    CountryEntry("🇪🇸", "Espagne"),
+    CountryEntry("🇫🇷", "France"),
+    CountryEntry("🇮🇹", "Italie"),
+    CountryEntry("🇬🇷", "Grèce"),
+    CountryEntry("🇭🇷", "Croatie"),
+    CountryEntry("🇸🇮", "Slovénie"),
+    CountryEntry("🇹🇷", "Turquie"),
+    CountryEntry("🇱🇧", "Liban"),
+    CountryEntry("🇲🇹", "Malte"),
+    CountryEntry("🇲🇨", "Monaco"),
 )
 
 // ── Entry Point ───────────────────────────────────────────────────────────────
@@ -340,10 +350,10 @@ private fun Step1Category(vm: CreateListingViewModel) {
         )
 
         val categories = listOf(
-            CategoryItem("boat",   "Bateaux",  Icons.Default.DirectionsBoat, OceanBlue700, OceanBlue50),
-            CategoryItem("jetski", "Jet-Skis", Icons.Default.Pool,           Teal500,      Teal50),
-            CategoryItem("engine", "Moteurs",  Icons.Default.Settings,       Gold500,      Gold50),
-            CategoryItem("parts",  "Pièces",   Icons.Default.Build,          Gray700,      Gray100),
+            CategoryItem("boat",   "Bateaux",  R.drawable.category_boats,   OceanBlue700, OceanBlue50),
+            CategoryItem("jetski", "Jet-Skis", R.drawable.category_jetski,  Teal500,      Teal50),
+            CategoryItem("engine", "Moteurs",  R.drawable.category_engines, Gold500,      Gold50),
+            CategoryItem("parts",  "Pièces",   R.drawable.category_parts,   Gray700,      Gray100),
         )
 
         // 2x2 grid
@@ -371,7 +381,7 @@ private fun Step1Category(vm: CreateListingViewModel) {
 private data class CategoryItem(
     val key: String,
     val label: String,
-    val icon: ImageVector,
+    @androidx.annotation.DrawableRes val imageRes: Int,
     val color: Color,
     val bg: Color
 )
@@ -383,55 +393,47 @@ private fun CategoryCard(
     onSelect: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = if (isSelected) item.color else MaterialTheme.colorScheme.outline
-    val bgColor     = if (isSelected) item.bg    else MaterialTheme.colorScheme.surface
-    val borderWidth = if (isSelected) 2.dp       else 1.dp
-
     Surface(
         modifier = modifier
-            .aspectRatio(1f)
+            .aspectRatio(0.85f)
             .clickable(onClick = onSelect),
-        shape    = RoundedCornerShape(16.dp),
-        color    = bgColor,
-        border   = BorderStroke(borderWidth, borderColor),
-        shadowElevation = if (isSelected) 4.dp else 1.dp
+        shape    = RoundedCornerShape(20.dp),
+        color    = Color.White,
+        border   = if (isSelected) BorderStroke(2.5.dp, item.color) else BorderStroke(1.dp, Gray200),
+        shadowElevation = if (isSelected) 8.dp else 2.dp
     ) {
-        Column(
-            modifier              = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement   = Arrangement.Center,
-            horizontalAlignment   = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier         = Modifier
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(item.color.copy(alpha = if (isSelected) 0.15f else 0.08f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector        = item.icon,
-                    contentDescription = null,
-                    tint               = item.color,
-                    modifier           = Modifier.size(30.dp)
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-            Text(
-                text       = item.label,
-                style      = MaterialTheme.typography.titleSmall,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                color      = if (isSelected) item.color else MaterialTheme.colorScheme.onSurface,
-                textAlign  = TextAlign.Center
-            )
+        Box(Modifier.fillMaxSize()) {
+            // Selected check badge top-right
             if (isSelected) {
-                Spacer(Modifier.height(6.dp))
-                Icon(
-                    imageVector        = Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    tint               = item.color,
-                    modifier           = Modifier.size(18.dp)
+                Box(
+                    Modifier.align(Alignment.TopEnd).padding(8.dp)
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(item.color),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Check, null, tint = Color.White, modifier = Modifier.size(14.dp))
+                }
+            }
+
+            Column(
+                Modifier.fillMaxSize().padding(12.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter            = painterResource(id = item.imageRes),
+                    contentDescription = item.label,
+                    modifier           = Modifier.size(100.dp),
+                    contentScale       = ContentScale.Fit
+                )
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    text       = item.label,
+                    style      = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color      = if (isSelected) item.color else Gray900,
+                    textAlign  = TextAlign.Center
                 )
             }
         }
@@ -463,10 +465,7 @@ private fun Step2Info(vm: CreateListingViewModel) {
                 maxLength   = 100
             )
 
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                color    = MaterialTheme.colorScheme.outline
-            )
+            HorizontalDivider(color = Gray100)
 
             FormField(
                 label         = "Description *",
@@ -482,9 +481,18 @@ private fun Step2Info(vm: CreateListingViewModel) {
         }
 
         FormCard {
-            WilayaDropdown(
+            CountryPicker(
                 selected = vm.wilaya,
                 onSelect = { vm.wilaya = it }
+            )
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Ville / Région",
+                value         = vm.ville,
+                onValueChange = { vm.ville = it },
+                placeholder   = "Ex: Alger, Oran, Tunis, Paris...",
+                icon          = Icons.Default.LocationCity,
+                maxLength     = 100
             )
         }
 
@@ -537,16 +545,16 @@ private fun Step3Price(vm: CreateListingViewModel) {
         FormCard {
             Text(
                 text       = "Devise",
-                style      = MaterialTheme.typography.labelMedium,
-                color      = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = FontWeight.Medium
+                style      = MaterialTheme.typography.labelLarge,
+                color      = Gray900,
+                fontWeight = FontWeight.SemiBold
             )
             Spacer(Modifier.height(10.dp))
             Row(
                 modifier              = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(AppBackground),
                 horizontalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 listOf("DZD" to "DA – Dinar algérien", "EUR" to "€ – Euro").forEach { (value, label) ->
@@ -554,10 +562,10 @@ private fun Step3Price(vm: CreateListingViewModel) {
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(14.dp))
                             .background(if (isSelected) OceanBlue700 else Color.Transparent)
                             .clickable { vm.currency = value }
-                            .padding(vertical = 12.dp),
+                            .padding(vertical = 14.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -576,9 +584,9 @@ private fun Step3Price(vm: CreateListingViewModel) {
         FormCard {
             Text(
                 text       = "Prix *",
-                style      = MaterialTheme.typography.labelMedium,
-                color      = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = FontWeight.Medium
+                style      = MaterialTheme.typography.labelLarge,
+                color      = Gray900,
+                fontWeight = FontWeight.SemiBold
             )
             Spacer(Modifier.height(10.dp))
             OutlinedTextField(
@@ -661,14 +669,14 @@ private fun Step3Price(vm: CreateListingViewModel) {
                             text       = "Médiation activée",
                             style      = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
-                            color      = MaterialTheme.colorScheme.onSurface
+                            color      = Gray900
                         )
                     }
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text  = "Sécurisez vos transactions avec la médiation AlBabor",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = Gray500
                     )
                 }
                 Spacer(Modifier.width(12.dp))
@@ -746,7 +754,7 @@ private fun BoatJetSkiSpecs(vm: CreateListingViewModel) {
             icon          = Icons.Default.CalendarToday,
             keyboardType  = KeyboardType.Number
         )
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline)
+        HorizontalDivider(color = Gray100)
         FormField(
             label         = "Marque",
             value         = vm.brand,
@@ -754,7 +762,7 @@ private fun BoatJetSkiSpecs(vm: CreateListingViewModel) {
             placeholder   = "ex. Bayliner, Yamaha...",
             icon          = Icons.Default.LocalOffer
         )
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline)
+        HorizontalDivider(color = Gray100)
         FormField(
             label         = "Modèle",
             value         = vm.model,
@@ -762,7 +770,7 @@ private fun BoatJetSkiSpecs(vm: CreateListingViewModel) {
             placeholder   = "ex. 185 Bowrider",
             icon          = Icons.Default.DirectionsBoat
         )
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline)
+        HorizontalDivider(color = Gray100)
         FormField(
             label         = "Couleur",
             value         = vm.color,
@@ -796,7 +804,7 @@ private fun BoatJetSkiSpecs(vm: CreateListingViewModel) {
             icon          = Icons.Default.Speed,
             keyboardType  = KeyboardType.Number
         )
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline)
+        HorizontalDivider(color = Gray100)
         SelectorGroup(
             title   = "Type de moteur",
             options = listOf(
@@ -808,7 +816,7 @@ private fun BoatJetSkiSpecs(vm: CreateListingViewModel) {
             onSelect = { vm.engineType = it },
             compact  = true
         )
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline)
+        HorizontalDivider(color = Gray100)
         FormField(
             label         = "Nombre de moteurs",
             value         = vm.nbEngines,
@@ -831,7 +839,7 @@ private fun EngineSpecs(vm: CreateListingViewModel) {
             placeholder   = "ex. Mercury, Suzuki, Yamaha...",
             icon          = Icons.Default.LocalOffer
         )
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline)
+        HorizontalDivider(color = Gray100)
         FormField(
             label         = "Puissance (CV)",
             value         = vm.power,
@@ -840,7 +848,7 @@ private fun EngineSpecs(vm: CreateListingViewModel) {
             icon          = Icons.Default.Speed,
             keyboardType  = KeyboardType.Number
         )
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline)
+        HorizontalDivider(color = Gray100)
         SelectorGroup(
             title   = "Type de moteur",
             options = listOf(
@@ -866,7 +874,7 @@ private fun PartsSpecs(vm: CreateListingViewModel) {
             placeholder   = "ex. Mercury, Suzuki...",
             icon          = Icons.Default.LocalOffer
         )
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline)
+        HorizontalDivider(color = Gray100)
         FormField(
             label         = "Compatible avec",
             value         = vm.compatibleWith,
@@ -881,19 +889,20 @@ private fun PartsSpecs(vm: CreateListingViewModel) {
 private fun SpecsSectionHeader(title: String, icon: ImageVector) {
     Row(
         verticalAlignment     = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Icon(
-            imageVector        = icon,
-            contentDescription = null,
-            tint               = OceanBlue700,
-            modifier           = Modifier.size(18.dp)
-        )
+        Box(
+            Modifier.size(32.dp).clip(RoundedCornerShape(10.dp))
+                .background(OceanBlue50),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, null, tint = OceanBlue700, modifier = Modifier.size(18.dp))
+        }
         Text(
             text       = title,
             style      = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
-            color      = MaterialTheme.colorScheme.onSurface
+            color      = Gray900
         )
     }
 }
@@ -1146,14 +1155,13 @@ private fun StepHeader(title: String, subtitle: String) {
 private fun FormCard(content: @Composable ColumnScope.() -> Unit) {
     Surface(
         modifier        = Modifier.fillMaxWidth(),
-        shape           = RoundedCornerShape(16.dp),
-        color           = MaterialTheme.colorScheme.surface,
-        shadowElevation = 1.dp,
-        border          = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        shape           = RoundedCornerShape(20.dp),
+        color           = Color.White,
+        shadowElevation = 4.dp
     ) {
         Column(
-            modifier            = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier            = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
             content             = content
         )
     }
@@ -1172,12 +1180,12 @@ private fun FormField(
     maxLength: Int = Int.MAX_VALUE,
     keyboardType: KeyboardType = KeyboardType.Text
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text       = label,
-            style      = MaterialTheme.typography.labelMedium,
-            color      = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = FontWeight.Medium
+            style      = MaterialTheme.typography.labelLarge,
+            color      = Gray900,
+            fontWeight = FontWeight.SemiBold
         )
         OutlinedTextField(
             value         = value,
@@ -1186,7 +1194,8 @@ private fun FormField(
             placeholder   = {
                 Text(
                     text  = placeholder,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    color = Gray400,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             },
             leadingIcon = icon?.let {
@@ -1194,8 +1203,8 @@ private fun FormField(
                     Icon(
                         imageVector        = it,
                         contentDescription = null,
-                        tint               = OceanBlue700,
-                        modifier           = Modifier.size(18.dp)
+                        tint               = OceanBlue500,
+                        modifier           = Modifier.size(20.dp)
                     )
                 }
             },
@@ -1203,14 +1212,19 @@ private fun FormField(
             minLines        = minLines,
             maxLines        = if (singleLine) 1 else maxLines,
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-            shape           = RoundedCornerShape(12.dp)
+            shape           = RoundedCornerShape(14.dp),
+            colors          = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor   = OceanBlue500,
+                unfocusedBorderColor = Gray200,
+                focusedContainerColor   = Color.White,
+                unfocusedContainerColor = AppBackground
+            )
         )
         if (maxLength < Int.MAX_VALUE) {
             Text(
                 text      = "${value.length} / $maxLength",
                 style     = MaterialTheme.typography.labelSmall,
-                color     = if (value.length >= maxLength) Error500
-                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                color     = if (value.length >= maxLength) Error500 else Gray400,
                 modifier  = Modifier.align(Alignment.End)
             )
         }
@@ -1218,63 +1232,126 @@ private fun FormField(
 }
 
 @Composable
-private fun WilayaDropdown(selected: String, onSelect: (String) -> Unit) {
-    var expanded by remember { mutableStateOf(false) }
+private fun CountryPicker(selected: String, onSelect: (String) -> Unit) {
+    var showPicker by remember { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
-            text       = "Wilaya *",
-            style      = MaterialTheme.typography.labelMedium,
-            color      = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = FontWeight.Medium
+            text       = "Pays *",
+            style      = MaterialTheme.typography.labelLarge,
+            color      = Gray900,
+            fontWeight = FontWeight.SemiBold
         )
-        ExposedDropdownMenuBox(
-            expanded         = expanded,
-            onExpandedChange = { expanded = it }
-        ) {
+
+        // Trigger field
+        Box(modifier = Modifier.fillMaxWidth()) {
+            val selectedFlag = MEDITERRANEAN_COUNTRIES.find { it.name == selected }?.flag ?: ""
             OutlinedTextField(
-                value         = selected.ifBlank { "Sélectionnez une wilaya" },
+                value         = selected.ifBlank { "" },
                 onValueChange = {},
                 readOnly      = true,
-                modifier      = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth(),
+                modifier      = Modifier.fillMaxWidth(),
+                placeholder   = { Text("Sélectionnez un pays", fontSize = 14.sp) },
                 leadingIcon   = {
-                    Icon(
-                        imageVector        = Icons.Default.LocationOn,
-                        contentDescription = null,
-                        tint               = OceanBlue700,
-                        modifier           = Modifier.size(18.dp)
+                    Text(
+                        text     = if (selected.isNotBlank()) selectedFlag else "🌍",
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                 },
                 trailingIcon  = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    Icon(Icons.Default.KeyboardArrowDown, null, tint = OceanBlue700)
                 },
-                shape         = RoundedCornerShape(12.dp),
-                textStyle     = if (selected.isBlank())
-                    MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                    )
-                else MaterialTheme.typography.bodyMedium
+                shape = RoundedCornerShape(12.dp),
             )
-            ExposedDropdownMenu(
-                expanded         = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                WILAYAS.forEach { wilaya ->
-                    DropdownMenuItem(
-                        text     = { Text(wilaya) },
-                        onClick  = {
-                            onSelect(wilaya)
-                            expanded = false
-                        },
-                        leadingIcon = if (selected == wilaya) {
-                            { Icon(Icons.Default.Check, null, tint = OceanBlue700, modifier = Modifier.size(16.dp)) }
-                        } else null
+            Box(modifier = Modifier.matchParentSize().clickable { showPicker = true })
+        }
+    }
+
+    // ── Country picker dialog ─────────────────────────────────────────────────
+    if (showPicker) {
+        AlertDialog(
+            onDismissRequest = { showPicker = false },
+            containerColor   = White,
+            shape            = RoundedCornerShape(24.dp),
+            title = {
+                Column(
+                    modifier            = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("🌍", fontSize = 36.sp)
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text       = "Choisissez un pays",
+                        fontWeight = FontWeight.Bold,
+                        fontSize   = 18.sp,
+                        color      = Gray900
+                    )
+                    Text(
+                        text      = "Mer Méditerranée — 20 pays disponibles",
+                        style     = MaterialTheme.typography.bodySmall,
+                        color     = Gray500,
+                        textAlign = TextAlign.Center
                     )
                 }
+            },
+            text = {
+                Column(
+                    modifier            = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    MEDITERRANEAN_COUNTRIES.chunked(3).forEach { row ->
+                        Row(
+                            modifier              = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            row.forEach { country ->
+                                val isSelected = selected == country.name
+                                Surface(
+                                    modifier        = Modifier
+                                        .weight(1f)
+                                        .clickable {
+                                            onSelect(country.name)
+                                            showPicker = false
+                                        },
+                                    shape           = RoundedCornerShape(14.dp),
+                                    color           = if (isSelected) OceanBlue700 else Color.White,
+                                    border          = BorderStroke(
+                                        if (isSelected) 2.dp else 1.dp,
+                                        if (isSelected) OceanBlue700 else Gray200
+                                    ),
+                                    shadowElevation = if (isSelected) 4.dp else 1.dp
+                                ) {
+                                    Column(
+                                        modifier            = Modifier
+                                            .padding(vertical = 10.dp, horizontal = 4.dp)
+                                            .fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Text(country.flag, fontSize = 26.sp)
+                                        Text(
+                                            text      = country.name,
+                                            fontSize  = 10.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                            color     = if (isSelected) Color.White else Gray700,
+                                            textAlign = TextAlign.Center,
+                                            maxLines  = 2
+                                        )
+                                    }
+                                }
+                            }
+                            repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showPicker = false }) {
+                    Text("Fermer", color = OceanBlue700, fontWeight = FontWeight.SemiBold)
+                }
             }
-        }
+        )
     }
 }
 
@@ -1286,12 +1363,12 @@ private fun SelectorGroup(
     onSelect: (String) -> Unit,
     compact: Boolean = false
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text(
             text       = title,
-            style      = MaterialTheme.typography.labelMedium,
-            color      = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = FontWeight.Medium
+            style      = MaterialTheme.typography.labelLarge,
+            color      = Gray900,
+            fontWeight = FontWeight.SemiBold
         )
         if (compact) {
             // Single row for fewer options
@@ -1340,21 +1417,28 @@ private fun SelectorChip(
 ) {
     Surface(
         modifier = modifier.clickable(onClick = onSelect),
-        shape    = RoundedCornerShape(10.dp),
-        color    = if (isSelected) OceanBlue700 else MaterialTheme.colorScheme.surfaceVariant,
-        border   = if (isSelected) null
-                   else BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        shape    = RoundedCornerShape(12.dp),
+        color    = if (isSelected) OceanBlue700 else Color.White,
+        border   = BorderStroke(if (isSelected) 2.dp else 1.dp, if (isSelected) OceanBlue700 else Gray200),
+        shadowElevation = if (isSelected) 4.dp else 0.dp
     ) {
-        Text(
-            text       = label,
-            color      = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-            style      = MaterialTheme.typography.labelMedium,
-            textAlign  = TextAlign.Center,
-            modifier   = Modifier
-                .padding(vertical = 10.dp, horizontal = 6.dp)
-                .fillMaxWidth()
-        )
+        Row(
+            Modifier.padding(vertical = 11.dp, horizontal = 8.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isSelected) {
+                Icon(Icons.Default.Check, null, tint = Color.White, modifier = Modifier.size(14.dp))
+                Spacer(Modifier.width(4.dp))
+            }
+            Text(
+                text       = label,
+                color      = if (isSelected) Color.White else Gray700,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                style      = MaterialTheme.typography.labelMedium,
+                textAlign  = TextAlign.Center
+            )
+        }
     }
 }
 

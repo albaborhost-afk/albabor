@@ -50,7 +50,8 @@ class CreateListingViewModel : ViewModel() {
 
     var title       by mutableStateOf("")
     var description by mutableStateOf("")
-    var wilaya      by mutableStateOf("")
+    var wilaya      by mutableStateOf("")   // selected country
+    var ville       by mutableStateOf("")   // city / region free text
     var condition   by mutableStateOf("")   // new | like_new | good | average | needs_revision
     var offerType   by mutableStateOf("")   // negotiable | fixed | free
 
@@ -99,7 +100,7 @@ class CreateListingViewModel : ViewModel() {
         2 -> when {
             title.isBlank()       -> "Le titre est obligatoire"
             description.isBlank() -> "La description est obligatoire"
-            wilaya.isBlank()      -> "La wilaya est obligatoire"
+            wilaya.isBlank()      -> "Le pays est obligatoire"
             condition.isBlank()   -> "L'état est obligatoire"
             offerType.isBlank()   -> "Le type d'offre est obligatoire"
             else                  -> null
@@ -155,6 +156,7 @@ class CreateListingViewModel : ViewModel() {
                     put("description",  str(description.trim()))
                     put("category",     str(category))
                     put("wilaya",       str(wilaya))
+                    if (ville.isNotBlank()) put("ville", str(ville.trim()))
                     put("condition",    str(condition))
                     put("offer_type",   str(offerType))
                     put("price_dzd",    str(price.trim()))
