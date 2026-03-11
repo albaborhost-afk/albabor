@@ -216,10 +216,14 @@ class CreateListingViewModel : ViewModel() {
                         ?: throw Exception("Réponse invalide du serveur")
                     _submitState.value = SubmitState.Success(listing)
                 } else {
-                    val errorBody = response.errorBody()?.string() ?: "Erreur inconnue"
-                    _submitState.value = SubmitState.Error(
-                        "Erreur ${response.code()}: $errorBody"
-                    )
+                    val rawError = response.errorBody()?.string() ?: ""
+                    val msg = try {
+                        val json = org.json.JSONObject(rawError)
+                        json.optString("message", "").ifBlank { "Erreur ${response.code()}" }
+                    } catch (_: Exception) {
+                        "Erreur ${response.code()}"
+                    }
+                    _submitState.value = SubmitState.Error(msg)
                 }
             } catch (e: Exception) {
                 _submitState.value = SubmitState.Error(
