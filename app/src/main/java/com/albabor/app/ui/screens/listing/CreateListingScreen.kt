@@ -42,6 +42,7 @@ import coil.compose.AsyncImage
 import com.albabor.app.ui.theme.*
 import com.albabor.app.viewmodel.CreateListingViewModel
 import com.albabor.app.viewmodel.SubmitState
+import kotlinx.coroutines.delay
 
 // ── Pays méditerranéens ────────────────────────────────────────────────────────
 
@@ -76,8 +77,9 @@ fun CreateListingScreen(
     val context = LocalContext.current
 
     // Handle submit state dialogs
-    var showSuccessDialog by remember { mutableStateOf(false) }
-    var showErrorDialog   by remember { mutableStateOf<String?>(null) }
+    var showSuccessDialog  by remember { mutableStateOf(false) }
+    var showErrorDialog    by remember { mutableStateOf<String?>(null) }
+    var validationMessage  by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(submitState) {
         when (val s = submitState) {
@@ -132,34 +134,44 @@ fun CreateListingScreen(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
             )
 
-            // Step content with slide animation
-            AnimatedContent(
-                targetState    = vm.step,
-                transitionSpec = {
-                    val direction = if (targetState > initialState)
-                        AnimatedContentTransitionScope.SlideDirection.Start
-                    else
-                        AnimatedContentTransitionScope.SlideDirection.End
-                    slideIntoContainer(direction, tween(300)) togetherWith
-                            slideOutOfContainer(direction, tween(300))
-                },
-                label = "step_content",
-                modifier = Modifier.weight(1f)
-            ) { step ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 20.dp, vertical = 12.dp)
-                ) {
-                    when (step) {
-                        1 -> Step1Category(vm = vm)
-                        2 -> Step2Info(vm = vm)
-                        3 -> Step3Price(vm = vm)
-                        4 -> Step4Specs(vm = vm)
-                        5 -> Step5Photos(vm = vm)
+            // Step content + snackbar overlay + bottom nav — all inside a Box
+            Box(modifier = Modifier.weight(1f)) {
+                // Step content with slide animation
+                AnimatedContent(
+                    targetState    = vm.step,
+                    transitionSpec = {
+                        val direction = if (targetState > initialState)
+                            AnimatedContentTransitionScope.SlideDirection.Start
+                        else
+                            AnimatedContentTransitionScope.SlideDirection.End
+                        slideIntoContainer(direction, tween(300)) togetherWith
+                                slideOutOfContainer(direction, tween(300))
+                    },
+                    label = "step_content",
+                    modifier = Modifier.fillMaxSize()
+                ) { step ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 20.dp, vertical = 12.dp)
+                    ) {
+                        when (step) {
+                            1 -> Step1Category(vm = vm)
+                            2 -> Step2Info(vm = vm)
+                            3 -> Step3Price(vm = vm)
+                            4 -> Step4Specs(vm = vm)
+                            5 -> Step5Photos(vm = vm)
+                        }
                     }
                 }
+
+                // Validation snackbar — floats at the bottom of the step content area
+                ValidationSnackbar(
+                    message   = validationMessage,
+                    onDismiss = { validationMessage = null },
+                    modifier  = Modifier.align(Alignment.BottomCenter)
+                )
             }
 
             // Bottom nav buttons
@@ -171,7 +183,7 @@ fun CreateListingScreen(
                 onNext       = {
                     val error = vm.validateCurrentStep()
                     if (error != null) {
-                        showErrorDialog = error
+                        validationMessage = error
                     } else if (vm.step < vm.totalSteps) {
                         vm.nextStep()
                     } else {
@@ -1438,6 +1450,75 @@ private fun SelectorChip(
                 style      = MaterialTheme.typography.labelMedium,
                 textAlign  = TextAlign.Center
             )
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VALIDATION SNACKBAR
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun ValidationSnackbar(
+    message: String?,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Auto-dismiss after 3 seconds whenever a message is shown
+    LaunchedEffect(message) {
+        if (message != null) {
+            delay(3000L)
+            onDismiss()
+        }
+    }
+
+    AnimatedVisibility(
+        visible = message != null,
+        enter   = slideInVertically(
+            initialOffsetY = { fullHeight -> fullHeight },
+            animationSpec  = tween(durationMillis = 320, easing = FastOutSlowInEasing)
+        ) + fadeIn(animationSpec = tween(200)),
+        exit    = slideOutVertically(
+            targetOffsetY = { fullHeight -> fullHeight },
+            animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing)
+        ) + fadeOut(animationSpec = tween(150)),
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onDismiss),
+            shape           = RoundedCornerShape(50.dp),
+            color           = Gold500,
+            shadowElevation = 8.dp,
+            tonalElevation  = 0.dp
+        ) {
+            Row(
+                modifier          = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector        = Icons.Default.Warning,
+                    contentDescription = null,
+                    tint               = Color.White,
+                    modifier           = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    text       = message ?: "",
+                    style      = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color      = Color.White,
+                    modifier   = Modifier.weight(1f)
+                )
+                Spacer(Modifier.width(8.dp))
+                Icon(
+                    imageVector        = Icons.Default.Close,
+                    contentDescription = "Fermer",
+                    tint               = Color.White.copy(alpha = 0.8f),
+                    modifier           = Modifier.size(16.dp)
+                )
+            }
         }
     }
 }

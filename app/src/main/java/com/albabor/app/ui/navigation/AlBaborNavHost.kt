@@ -98,7 +98,6 @@ fun AlBaborNavHost() {
     val bottomNavRoutes = setOf(
         Screen.Home.route,
         Screen.Explore.route,
-        Screen.CreateListing.route,
         Screen.Favorites.route,
         Screen.Profile.route,
     )
