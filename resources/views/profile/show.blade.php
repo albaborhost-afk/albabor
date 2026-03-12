@@ -38,7 +38,22 @@
         .count-up {
             display: inline-block;
         }
+
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
+
+    @php
+        $profileChecklist = [
+            ['label' => __('messages.profile_check_name'), 'completed' => filled($user->name)],
+            ['label' => __('messages.profile_check_email'), 'completed' => filled($user->email)],
+            ['label' => __('messages.profile_check_phone'), 'completed' => filled($user->phone)],
+            ['label' => __('messages.profile_check_picture'), 'completed' => filled($user->profile_picture_url)],
+        ];
+        $completedProfileItems = collect($profileChecklist)->where('completed', true)->count();
+        $profileCompletion = (int) round(($completedProfileItems / max(count($profileChecklist), 1)) * 100);
+    @endphp
 
     <!-- Breadcrumb Bar -->
     <div style="background: #FFFFFF; border-bottom: 1px solid #E0E6ED;">
@@ -125,7 +140,7 @@
 
                 <!-- Status badges -->
                 <div class="flex gap-3">
-                    @if(auth()->user()->is_vendor)
+                    @if($user->isVendor())
                         <span class="px-4 py-2 rounded-full text-sm font-semibold text-white flex items-center gap-2" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);">
                             <svg class="w-4 h-4" style="color: #F39C12;" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -225,6 +240,17 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="mb-8 p-4 rounded-xl" style="background: rgba(231, 76, 60, 0.08); border: 1px solid rgba(231, 76, 60, 0.2);">
+                    <p class="font-semibold mb-2" style="color: #E74C3C;">{{ __('messages.error') }}</p>
+                    <ul class="list-disc list-inside text-sm" style="color: #E74C3C;">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
                 <!-- SIDEBAR -->
@@ -297,7 +323,7 @@
                 <div class="lg:col-span-3 space-y-8">
 
                     <!-- TABS -->
-                    <div x-data="{ activeTab: 'info' }" class="space-y-6">
+                    <div x-data="{ activeTab: 'info', editMode: {{ $errors->any() ? 'true' : 'false' }} }" class="space-y-6">
                         <!-- Tab Navigation -->
                         <div class="bg-white rounded-2xl p-2 flex flex-wrap gap-2" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03);">
                             <button @click="activeTab = 'info'"
@@ -323,17 +349,121 @@
                         <!-- TAB: Mes Informations -->
                         <div x-show="activeTab === 'info'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
                             <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03);">
-                                <div class="p-6" style="background: linear-gradient(135deg, #1B4F72, #17A2B8);">
-                                    <h2 class="text-xl font-bold text-white flex items-center gap-3">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                        </svg>
-                                        Informations Personnelles
-                                    </h2>
+                                <div class="p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between" style="background: linear-gradient(135deg, #1B4F72, #17A2B8);">
+                                    <div>
+                                        <h2 class="text-xl font-bold text-white flex items-center gap-3">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                            {{ __('messages.personal_info') }}
+                                        </h2>
+                                        <p class="text-sm text-white/75 mt-2">{{ __('messages.edit_inline_description') }}</p>
+                                    </div>
+
+                                    <div class="flex flex-col sm:flex-row gap-3">
+                                        <button
+                                            type="button"
+                                            @click="editMode = !editMode"
+                                            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
+                                            style="background: rgba(255,255,255,0.2); color: white; backdrop-filter: blur(4px);"
+                                        >
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            <span x-text="editMode ? '{{ __('messages.close_editor') }}' : '{{ __('messages.edit_details') }}'"></span>
+                                        </button>
+
+                                        <a
+                                            href="{{ route('profile.edit') }}"
+                                            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
+                                            style="background: rgba(10, 23, 38, 0.18); color: white; border: 1px solid rgba(255,255,255,0.18);"
+                                        >
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0A9 9 0 1112 3a9 9 0 019 9z" />
+                                            </svg>
+                                            {{ __('messages.open_full_editor') }}
+                                        </a>
+                                    </div>
                                 </div>
+
                                 <div class="p-6">
+                                    <div class="grid grid-cols-1 xl:grid-cols-[1.4fr,0.9fr] gap-6 mb-6">
+                                        <div class="rounded-2xl p-5" style="background: linear-gradient(180deg, rgba(27,79,114,0.06), rgba(23,162,184,0.03)); border: 1px solid rgba(23,162,184,0.15);">
+                                            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                                <div>
+                                                    <p class="text-sm font-semibold" style="color: #1B4F72;">{{ __('messages.profile_completion') }}</p>
+                                                    <h3 class="text-3xl font-black mt-1" style="color: #1B2A4A;">{{ $profileCompletion }}%</h3>
+                                                    <p class="text-sm mt-2" style="color: #6B7B8D;">{{ __('messages.profile_completion_hint') }}</p>
+                                                </div>
+                                                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold self-start md:self-center" style="background: {{ $profileCompletion === 100 ? 'rgba(39, 174, 96, 0.12)' : 'rgba(243, 156, 18, 0.12)' }}; color: {{ $profileCompletion === 100 ? '#27AE60' : '#F39C12' }};">
+                                                    <span class="w-2.5 h-2.5 rounded-full" style="background: currentColor;"></span>
+                                                    {{ $profileCompletion === 100 ? __('messages.completion_ready') : __('messages.completion_in_progress') }}
+                                                </span>
+                                            </div>
+
+                                            <div class="mt-5 h-3 rounded-full overflow-hidden" style="background: rgba(27, 79, 114, 0.08);">
+                                                <div class="h-full rounded-full transition-all duration-500" style="width: {{ $profileCompletion }}%; background: linear-gradient(90deg, #1B4F72, #17A2B8);"></div>
+                                            </div>
+
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
+                                                @foreach($profileChecklist as $item)
+                                                    <div class="flex items-center gap-3 rounded-xl px-4 py-3" style="background: white; border: 1px solid rgba(224, 230, 237, 0.95);">
+                                                        <div class="w-9 h-9 rounded-full flex items-center justify-center" style="background: {{ $item['completed'] ? 'rgba(39, 174, 96, 0.12)' : 'rgba(107, 123, 141, 0.12)' }}; color: {{ $item['completed'] ? '#27AE60' : '#6B7B8D' }};">
+                                                            @if($item['completed'])
+                                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                                </svg>
+                                                            @else
+                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                            @endif
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $item['label'] }}</p>
+                                                            <p class="text-xs" style="color: #6B7B8D;">{{ $item['completed'] ? __('messages.completed') : __('messages.completion_in_progress') }}</p>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+
+                                        <div class="rounded-2xl p-5 text-white" style="background: linear-gradient(160deg, #102B45 0%, #1B4F72 55%, #17A2B8 120%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);">
+                                            <p class="text-sm font-semibold text-white/75">{{ __('messages.profile_snapshot') }}</p>
+                                            <div class="mt-4 space-y-4">
+                                                <div class="rounded-2xl px-4 py-3" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.08);">
+                                                    <p class="text-xs uppercase tracking-[0.2em] text-white/55">{{ __('messages.profile_status') }}</p>
+                                                    <p class="text-xl font-bold mt-2">{{ $user->isVendor() ? __('messages.vendor') : 'Particulier' }}</p>
+                                                    <p class="text-sm text-white/70 mt-2">{{ __('messages.manage_from_here') }}</p>
+                                                </div>
+
+                                                <div class="grid grid-cols-2 gap-3">
+                                                    <div class="rounded-2xl px-4 py-3" style="background: rgba(255,255,255,0.08);">
+                                                        <p class="text-xs text-white/55">{{ __('messages.buyer_trust') }}</p>
+                                                        <p class="text-lg font-bold mt-2">{{ $user->verified_badge ? __('messages.verified') : __('messages.not_verified') }}</p>
+                                                    </div>
+                                                    <div class="rounded-2xl px-4 py-3" style="background: rgba(255,255,255,0.08);">
+                                                        <p class="text-xs text-white/55">{{ __('messages.contact_ready') }}</p>
+                                                        <p class="text-lg font-bold mt-2">{{ filled($user->phone) ? __('messages.completed') : __('messages.completion_in_progress') }}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="rounded-2xl px-4 py-4" style="background: rgba(255,255,255,0.08); border: 1px dashed rgba(255,255,255,0.18);">
+                                                    @if(!filled($user->phone))
+                                                        <p class="text-sm font-semibold">{{ __('messages.phone_missing') }}</p>
+                                                    @elseif(!filled($user->profile_picture_url))
+                                                        <p class="text-sm font-semibold">{{ __('messages.picture_missing') }}</p>
+                                                    @elseif(!$user->verified_badge)
+                                                        <p class="text-sm font-semibold">{{ __('messages.verification_hint') }}</p>
+                                                    @else
+                                                        <p class="text-sm font-semibold">{{ __('messages.completion_ready') }}</p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <!-- Nom -->
                                         <div class="rounded-xl p-5" style="background: #F0F4F8;">
                                             <dt class="text-sm mb-2 flex items-center gap-2" style="color: #6B7B8D;">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,10 +471,9 @@
                                                 </svg>
                                                 Nom Complet
                                             </dt>
-                                            <dd class="text-lg font-bold" style="color: #1B2A4A;">{{ auth()->user()->name }}</dd>
+                                            <dd class="text-lg font-bold" style="color: #1B2A4A;">{{ $user->name }}</dd>
                                         </div>
 
-                                        <!-- Email -->
                                         <div class="rounded-xl p-5" style="background: #F0F4F8;">
                                             <dt class="text-sm mb-2 flex items-center gap-2" style="color: #6B7B8D;">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -352,10 +481,9 @@
                                                 </svg>
                                                 Adresse Email
                                             </dt>
-                                            <dd class="text-lg font-bold" style="color: #1B2A4A;">{{ auth()->user()->email }}</dd>
+                                            <dd class="text-lg font-bold" style="color: #1B2A4A;">{{ $user->email }}</dd>
                                         </div>
 
-                                        <!-- Phone -->
                                         <div class="rounded-xl p-5" style="background: #F0F4F8;">
                                             <dt class="text-sm mb-2 flex items-center gap-2" style="color: #6B7B8D;">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -363,21 +491,19 @@
                                                 </svg>
                                                 Telephone
                                             </dt>
-                                            <dd class="text-lg font-bold" style="color: #1B2A4A;">{{ auth()->user()->phone ?? 'Non renseigne' }}</dd>
+                                            <dd class="text-lg font-bold" style="color: #1B2A4A;">{{ $user->phone ?? 'Non renseigne' }}</dd>
                                         </div>
 
-                                        <!-- Member Since -->
                                         <div class="rounded-xl p-5" style="background: #F0F4F8;">
                                             <dt class="text-sm mb-2 flex items-center gap-2" style="color: #6B7B8D;">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                 </svg>
-                                                Membre Depuis
+                                                {{ __('messages.member_since') }}
                                             </dt>
-                                            <dd class="text-lg font-bold" style="color: #1B2A4A;">{{ auth()->user()->created_at->translatedFormat('d F Y') }}</dd>
+                                            <dd class="text-lg font-bold" style="color: #1B2A4A;">{{ $user->created_at->translatedFormat('d F Y') }}</dd>
                                         </div>
 
-                                        <!-- Verification Status -->
                                         <div class="rounded-xl p-5" style="background: #F0F4F8;">
                                             <dt class="text-sm mb-2 flex items-center gap-2" style="color: #6B7B8D;">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,25 +512,24 @@
                                                 Statut Verification
                                             </dt>
                                             <dd class="flex items-center gap-2">
-                                                @if(auth()->user()->verified_badge)
+                                                @if($user->verified_badge)
                                                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold" style="background: rgba(39, 174, 96, 0.1); color: #27AE60;">
                                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                                         </svg>
-                                                        Compte Verifie
+                                                        {{ __('messages.verified_account') }}
                                                     </span>
                                                 @else
                                                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold" style="background: rgba(243, 156, 18, 0.1); color: #F39C12;">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                         </svg>
-                                                        Non Verifie
+                                                        {{ __('messages.not_verified') }}
                                                     </span>
                                                 @endif
                                             </dd>
                                         </div>
 
-                                        <!-- Account Type -->
                                         <div class="rounded-xl p-5" style="background: #F0F4F8;">
                                             <dt class="text-sm mb-2 flex items-center gap-2" style="color: #6B7B8D;">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -413,12 +538,12 @@
                                                 Type de Compte
                                             </dt>
                                             <dd class="flex items-center gap-2">
-                                                @if(auth()->user()->is_vendor)
+                                                @if($user->isVendor())
                                                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold" style="background: rgba(27, 79, 114, 0.1); color: #1B4F72;">
                                                         <svg class="w-4 h-4" style="color: #F39C12;" fill="currentColor" viewBox="0 0 20 20">
                                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                                         </svg>
-                                                        Vendeur Pro
+                                                        {{ __('messages.vendor') }}
                                                     </span>
                                                 @else
                                                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold" style="background: rgba(107, 123, 141, 0.1); color: #6B7B8D;">
@@ -431,6 +556,59 @@
                                             </dd>
                                         </div>
                                     </dl>
+
+                                    <div x-show="editMode" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="mt-6 pt-6" style="border-top: 1px solid #E0E6ED;">
+                                        <form action="{{ route('profile.update') }}" method="POST" class="rounded-2xl p-6" style="background: linear-gradient(180deg, #F8FBFD 0%, #FFFFFF 100%); border: 1px solid #E0E6ED;">
+                                            @csrf
+                                            @method('PUT')
+
+                                            <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-6">
+                                                <div>
+                                                    <h3 class="text-lg font-bold" style="color: #1B2A4A;">{{ __('messages.edit_profile') }}</h3>
+                                                    <p class="text-sm mt-1" style="color: #6B7B8D;">{{ __('messages.manage_from_here') }}</p>
+                                                </div>
+
+                                                <button
+                                                    type="button"
+                                                    @click="editMode = false"
+                                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
+                                                    style="background: #FFFFFF; color: #6B7B8D; border: 1px solid #E0E6ED;"
+                                                >
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                    {{ __('messages.close_editor') }}
+                                                </button>
+                                            </div>
+
+                                            @include('profile.partials.personal-info-fields', [
+                                                'user' => $user,
+                                                'phoneId' => 'profile_phone_inline',
+                                            ])
+
+                                            <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                                <p class="text-sm" style="color: #6B7B8D;">{{ __('messages.edit_inline_description') }}</p>
+
+                                                <div class="flex flex-col sm:flex-row gap-3">
+                                                    <a
+                                                        href="{{ route('profile.edit') }}"
+                                                        class="inline-flex items-center justify-center px-5 py-3 rounded-xl font-semibold transition-all duration-200 hover:-translate-y-0.5"
+                                                        style="color: #1B4F72; border: 1px solid rgba(27, 79, 114, 0.15); background: white;"
+                                                    >
+                                                        {{ __('messages.open_full_editor') }}
+                                                    </a>
+
+                                                    <button
+                                                        type="submit"
+                                                        class="inline-flex items-center justify-center px-5 py-3 rounded-xl font-bold text-white transition-all duration-300 hover:-translate-y-0.5"
+                                                        style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 8px 25px rgba(27, 79, 114, 0.25);"
+                                                    >
+                                                        {{ __('messages.save_profile') }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -43,6 +43,9 @@ class ProfileController extends Controller
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
+        $validated['name'] = trim($validated['name']);
+        $validated['phone'] = $this->normalizePhone($validated['phone'] ?? null);
+
         if ($request->hasFile('profile_picture')) {
             $disk = config('filesystems.listing_disk', 'public');
 
@@ -73,6 +76,17 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.show')
             ->with('success', __('messages.profile_updated'));
+    }
+
+    private function normalizePhone(?string $phone): ?string
+    {
+        if ($phone === null) {
+            return null;
+        }
+
+        $normalizedPhone = preg_replace('/\s+/', '', trim($phone));
+
+        return $normalizedPhone === '' ? null : $normalizedPhone;
     }
 
     public function updatePassword(Request $request)
