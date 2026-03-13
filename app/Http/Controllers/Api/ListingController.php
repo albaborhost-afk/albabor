@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Listing;
 use App\Models\ListingMedia;
+use App\Services\ListingImageWatermark;
 use App\Models\ListingView;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -533,14 +534,16 @@ class ListingController extends Controller
                 $path = 'listings/' . $listing->id . '/' . $filename;
                 $thumbPath = 'listings/' . $listing->id . '/thumb_' . $filename;
 
-                // Redimensionner et sauvegarder l'image principale (max 1200px)
+                // Redimensionner, watermark Albabor, puis sauvegarder l'image principale (max 1200px)
                 $img = Image::read($image);
                 $img->scaleDown(1200, 1200);
+                app(ListingImageWatermark::class)->apply($img);
                 Storage::disk($disk)->put($path, $img->toJpeg(85));
 
-                // Créer la miniature (300px)
+                // Créer la miniature (300px) avec watermark
                 $thumb = Image::read($image);
                 $thumb->cover(300, 300);
+                app(ListingImageWatermark::class)->apply($thumb);
                 Storage::disk($disk)->put($thumbPath, $thumb->toJpeg(75));
 
                 ListingMedia::create([

@@ -66,10 +66,130 @@
     <!-- Main Content -->
     <div style="background: #F0F4F8;" class="pb-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Search + Filter strip (like reference) -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 mb-6 shadow-sm" style="box-shadow: 0 4px 14px rgba(0,0,0,0.06); border: 1px solid #E8EEF2;">
+                <form action="{{ route('listings.index') }}" method="GET" id="topFilterForm">
+                    {{-- Search row --}}
+                    <div class="flex gap-2 mb-5">
+                        <input type="text"
+                               name="q"
+                               value="{{ request('q') }}"
+                               placeholder="{{ __('Entrez vos critères (ex. marque, modèle...)') }}"
+                               class="flex-1 rounded-xl border-0 py-3.5 pl-4 pr-4 text-[15px] placeholder-gray-400 focus:ring-2 focus:ring-amber-400/40 transition-all"
+                               style="background: #F3F4F6;">
+                        <button type="submit"
+                                class="flex-shrink-0 w-12 h-[46px] rounded-xl flex items-center justify-center transition-all hover:opacity-90"
+                                style="background: #FACC15; color: #1F2937;"
+                                aria-label="{{ __('Rechercher') }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {{-- Filter grid: 2 cols, 3 rows — light blue dropdowns with chevron --}}
+                    <div id="filterGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-5">
+                        {{-- Category --}}
+                        <div class="relative">
+                            <select name="category" form="topFilterForm" onchange="this.form.submit()"
+                                    class="w-full appearance-none rounded-xl py-3 pl-4 pr-10 text-sm font-medium cursor-pointer border-0 focus:ring-2 focus:ring-blue-300 transition-all"
+                                    style="background: #DBEAFE; color: #1E3A5F;">
+                                <option value="">{{ __('Catégorie') }}</option>
+                                <option value="boat" {{ request('category') == 'boat' ? 'selected' : '' }}>{{ __('Bateaux') }}</option>
+                                <option value="jetski" {{ request('category') == 'jetski' ? 'selected' : '' }}>{{ __('Jet-Skis') }}</option>
+                                <option value="engine" {{ request('category') == 'engine' ? 'selected' : '' }}>{{ __('Moteurs') }}</option>
+                                <option value="parts" {{ request('category') == 'parts' ? 'selected' : '' }}>{{ __('Pièces') }}</option>
+                            </select>
+                            <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: #1E3A5F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                        {{-- État --}}
+                        <div class="relative">
+                            <select name="etat" form="topFilterForm" onchange="this.form.submit()"
+                                    class="w-full appearance-none rounded-xl py-3 pl-4 pr-10 text-sm font-medium cursor-pointer border-0 focus:ring-2 focus:ring-blue-300 transition-all"
+                                    style="background: #DBEAFE; color: #1E3A5F;">
+                                <option value="">{{ __('État') }}</option>
+                                @foreach(['jamais_utilise' => __('Jamais utilisé'), 'comme_neuf' => __('Comme neuf'), 'bon_etat' => __('Bon état'), 'etat_moyen' => __('État moyen'), 'a_reviser' => __('À réviser')] as $val => $label)
+                                    <option value="{{ $val }}" {{ request('etat') == $val ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: #1E3A5F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                        {{-- Prix --}}
+                        <div class="relative">
+                            <select form="topFilterForm" id="priceRangeSelect"
+                                    class="w-full appearance-none rounded-xl py-3 pl-4 pr-10 text-sm font-medium cursor-pointer border-0 focus:ring-2 focus:ring-blue-300 transition-all"
+                                    style="background: #DBEAFE; color: #1E3A5F;">
+                                <option value="">{{ __('Prix') }}</option>
+                                <option value="0-500000" {{ request('price_min') == '0' && request('price_max') == '500000' ? 'selected' : '' }}>0 - 500 000 DA</option>
+                                <option value="500000-1000000" {{ request('price_min') == '500000' && request('price_max') == '1000000' ? 'selected' : '' }}>500k - 1M DA</option>
+                                <option value="1000000-5000000" {{ request('price_min') == '1000000' && request('price_max') == '5000000' ? 'selected' : '' }}>1M - 5M DA</option>
+                                <option value="5000000-" {{ request('price_min') == '5000000' && !request('price_max') ? 'selected' : '' }}>5M+ DA</option>
+                            </select>
+                            <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: #1E3A5F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                        {{-- Localisation --}}
+                        <div class="relative">
+                            <select name="wilaya" form="topFilterForm" onchange="this.form.submit()"
+                                    class="w-full appearance-none rounded-xl py-3 pl-4 pr-10 text-sm font-medium cursor-pointer border-0 focus:ring-2 focus:ring-blue-300 transition-all"
+                                    style="background: #DBEAFE; color: #1E3A5F;">
+                                <option value="">{{ __('Localisation') }}</option>
+                                @foreach($wilayas as $code => $name)
+                                    <option value="{{ $code }}" {{ request('wilaya') == $code ? 'selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: #1E3A5F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                        {{-- Type d'offre --}}
+                        <div class="relative">
+                            <select name="type_offre" form="topFilterForm" onchange="this.form.submit()"
+                                    class="w-full appearance-none rounded-xl py-3 pl-4 pr-10 text-sm font-medium cursor-pointer border-0 focus:ring-2 focus:ring-blue-300 transition-all"
+                                    style="background: #DBEAFE; color: #1E3A5F;">
+                                <option value="">{{ __("Type d'offre") }}</option>
+                                <option value="negociable" {{ request('type_offre') == 'negociable' ? 'selected' : '' }}>{{ __('Négociable') }}</option>
+                                <option value="fix" {{ request('type_offre') == 'fix' ? 'selected' : '' }}>{{ __('Prix fixe') }}</option>
+                                <option value="offert" {{ request('type_offre') == 'offert' ? 'selected' : '' }}>{{ __('Offert') }}</option>
+                            </select>
+                            <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: #1E3A5F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                        {{-- Devise --}}
+                        <div class="relative">
+                            <select name="currency" form="topFilterForm" onchange="this.form.submit()"
+                                    class="w-full appearance-none rounded-xl py-3 pl-4 pr-10 text-sm font-medium cursor-pointer border-0 focus:ring-2 focus:ring-blue-300 transition-all"
+                                    style="background: #DBEAFE; color: #1E3A5F;">
+                                <option value="">{{ __('Devise') }}</option>
+                                <option value="DZD" {{ request('currency') == 'DZD' ? 'selected' : '' }}>DZD</option>
+                                <option value="EUR" {{ request('currency') == 'EUR' ? 'selected' : '' }}>EUR</option>
+                            </select>
+                            <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: #1E3A5F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                    </div>
+
+                    {{-- Hidden inputs for price_range (split into price_min, price_max) --}}
+                    <input type="hidden" name="price_min" id="topPriceMin" value="{{ request('price_min') }}">
+                    <input type="hidden" name="price_max" id="topPriceMax" value="{{ request('price_max') }}">
+                    <input type="hidden" name="sort" value="{{ request('sort', 'recent') }}">
+
+                    {{-- Actions: Advanced search | Fewer filters | Reset filters --}}
+                    <div class="flex flex-wrap items-center gap-3">
+                        <a href="#sidebar-filters" class="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all hover:opacity-90"
+                           style="background: #DBEAFE; color: #1E3A5F; border-color: #93C5FD;">
+                            {{ __('Recherche avancée') }}
+                        </a>
+                        <button type="button" id="toggleFewerFilters" class="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all hover:opacity-90"
+                                style="background: #DBEAFE; color: #1E3A5F; border-color: #93C5FD;">
+                            <span id="fewerFiltersLabel">{{ __('Moins de filtres') }}</span>
+                        </button>
+                        <a href="{{ route('listings.index') }}" class="text-sm font-semibold hover:underline" style="color: #1E3A5F;">
+                            {{ __('Réinitialiser les filtres') }}
+                        </a>
+                    </div>
+                </form>
+            </div>
+
             <div class="flex flex-col lg:flex-row gap-8">
 
                 <!-- Filters Sidebar (desktop only) -->
-                <aside class="hidden lg:block lg:w-80 flex-shrink-0">
+                <aside id="sidebar-filters" class="hidden lg:block lg:w-80 flex-shrink-0">
                     <div class="lg:sticky lg:top-24">
                         <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03);">
                             <form action="{{ route('listings.index') }}" method="GET" id="filterForm">
@@ -579,4 +699,39 @@
             animation: emptyStatePulse 3s ease-in-out infinite;
         }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('topFilterForm');
+            var priceSelect = document.getElementById('priceRangeSelect');
+            var priceMin = document.getElementById('topPriceMin');
+            var priceMax = document.getElementById('topPriceMax');
+            var filterGrid = document.getElementById('filterGrid');
+            var fewerBtn = document.getElementById('toggleFewerFilters');
+            var fewerLabel = document.getElementById('fewerFiltersLabel');
+
+            if (priceSelect && form) {
+                priceSelect.addEventListener('change', function() {
+                    var v = this.value;
+                    if (!v) {
+                        priceMin.value = '';
+                        priceMax.value = '';
+                    } else {
+                        var parts = v.split('-');
+                        priceMin.value = parts[0] || '';
+                        priceMax.value = parts[1] || '';
+                    }
+                    form.submit();
+                });
+            }
+
+            if (fewerBtn && filterGrid && fewerLabel) {
+                fewerBtn.addEventListener('click', function() {
+                    var hidden = filterGrid.style.display === 'none';
+                    filterGrid.style.display = hidden ? '' : 'none';
+                    fewerLabel.textContent = hidden ? '{{ __("Moins de filtres") }}' : '{{ __("Plus de filtres") }}';
+                });
+            }
+        });
+    </script>
 </x-app-layout>

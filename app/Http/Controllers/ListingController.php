@@ -6,6 +6,7 @@ use App\Models\Listing;
 use App\Models\ListingMedia;
 use App\Models\ListingView;
 use App\Models\Payment;
+use App\Services\ListingImageWatermark;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -519,6 +520,7 @@ class ListingController extends Controller
                 // Resize and save main image (max 1200px)
                 $img = Image::read($image);
                 $img->scaleDown(1200, 1200);
+                app(ListingImageWatermark::class)->apply($img);
                 $mainStored = Storage::disk($disk)->put($path, (string) $img->toJpeg(85));
 
                 if (!$mainStored) {
@@ -528,9 +530,10 @@ class ListingController extends Controller
                     continue;
                 }
 
-                // Create thumbnail (300px)
+                // Create thumbnail (300px) with watermark
                 $thumb = Image::read($image);
                 $thumb->cover(300, 300);
+                app(ListingImageWatermark::class)->apply($thumb);
                 $thumbStored = Storage::disk($disk)->put($thumbPath, (string) $thumb->toJpeg(75));
 
                 ListingMedia::create([

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ListingResource\Pages;
 
 use App\Filament\Resources\ListingResource;
 use App\Models\ListingMedia;
+use App\Services\ListingImageWatermark;
 use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -47,14 +48,16 @@ class EditListing extends EditRecord
             try {
                 $fullPath = Storage::disk('local')->path($tmpPath);
 
-                // Resize main image (max 1200px)
+                // Resize main image (max 1200px), apply Albabor watermark
                 $img = Image::read($fullPath);
                 $img->scaleDown(1200, 1200);
+                app(ListingImageWatermark::class)->apply($img);
                 Storage::disk($disk)->put($path, (string) $img->toJpeg(85));
 
-                // Create thumbnail (300px)
+                // Create thumbnail (300px) with watermark
                 $thumb = Image::read($fullPath);
                 $thumb->cover(300, 300);
+                app(ListingImageWatermark::class)->apply($thumb);
                 $thumbStored = Storage::disk($disk)->put($thumbPath, (string) $thumb->toJpeg(75));
 
                 ListingMedia::create([
