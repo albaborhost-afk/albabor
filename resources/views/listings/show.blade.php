@@ -73,7 +73,8 @@
                         })->filter()->values()->toArray();
                     @endphp
 
-                    <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);"
+                    {{-- Gallery: creative frame (double border + soft shadow) --}}
+                    <div class="listing-gallery-frame rounded-3xl overflow-hidden"
                          x-data="{
                             currentIndex: 0,
                             imageCount: {{ $imageCount }},
@@ -93,44 +94,44 @@
                          }">
 
                         @if($hasImages)
-                            {{-- Main Image (no hover/touch zoom; tap opens lightbox) --}}
-                            <div class="relative overflow-hidden cursor-pointer" style="aspect-ratio: 16/10; background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%); touch-action: manipulation;"
+                            {{-- Main image: inner frame (photo-style) --}}
+                            <div class="listing-gallery-inner relative overflow-hidden cursor-pointer rounded-2xl mx-3 mt-3 mb-2" style="aspect-ratio: 16/10; touch-action: manipulation;"
                                  @click="openLightbox(currentIndex)">
-
+                                <div class="absolute inset-0 rounded-2xl listing-image-inner-border"></div>
                                 <img :src="currentImage"
                                      alt="{{ $listing->title }}"
-                                     class="w-full h-full object-contain transition-all duration-500 ease-out"
+                                     class="listing-gallery-main-img w-full h-full object-contain transition-all duration-500 ease-out rounded-2xl"
                                      :class="{ 'opacity-0 scale-95': transitioning, 'opacity-100 scale-100': !transitioning }"
                                      style="will-change: transform, opacity; touch-action: manipulation;">
 
                                 {{-- Featured Badge --}}
                                 @if($listing->isFeatured())
-                                    <div class="absolute top-4 left-4 px-4 py-2 rounded-full font-bold text-sm text-white flex items-center gap-2 z-10" style="background: linear-gradient(135deg, #FFA500, #FF7200); box-shadow: 0 4px 12px rgba(255, 114, 0, 0.35);">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <div class="absolute top-3 left-3 px-3 py-1.5 rounded-full font-bold text-xs text-white flex items-center gap-1.5 z-10 shadow-lg" style="background: linear-gradient(135deg, #FFA500, #FF7200);">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                         {{ __('En Vedette') }}
                                     </div>
                                 @endif
 
                                 {{-- Image Counter Badge --}}
-                                <div class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full text-xs font-semibold text-white flex items-center gap-1.5 z-10" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                                <div class="absolute bottom-3 right-3 px-2.5 py-1 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 z-10 listing-badge-counter">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                     <span x-text="(currentIndex + 1) + ' / ' + imageCount">1 / {{ $imageCount }}</span>
                                 </div>
 
                                 {{-- Navigation Arrows (only if multiple images) --}}
                                 @if($imageCount > 1)
-                                    <button @click.stop="prev()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white z-10 transition-all duration-200 hover:scale-110" style="background: rgba(0,0,0,0.35); backdrop-filter: blur(8px);">
+                                    <button @click.stop="prev()" class="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white z-10 transition-all duration-200 hover:scale-110 listing-nav-btn">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                                     </button>
-                                    <button @click.stop="next()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white z-10 transition-all duration-200 hover:scale-110" style="background: rgba(0,0,0,0.35); backdrop-filter: blur(8px);">
+                                    <button @click.stop="next()" class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white z-10 transition-all duration-200 hover:scale-110 listing-nav-btn">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                     </button>
                                 @endif
                             </div>
 
-                            {{-- Thumbnail Strip --}}
+                            {{-- Thumbnail Strip: creative frame --}}
                             @if($imageCount > 1)
-                                <div class="flex gap-2 p-3 overflow-x-auto" style="background: #F8FAFC; scrollbar-width: thin;">
+                                <div class="listing-thumb-strip flex gap-2.5 px-4 pb-4 pt-2 overflow-x-auto">
                                     @foreach((is_array($images) ? $images : $images->toArray()) as $index => $image)
                                         @php
                                             $imageUrl = is_string($image)
@@ -145,12 +146,8 @@
                                                         : $imageUrl));
                                         @endphp
                                         <button @click="goTo({{ $index }})"
-                                                class="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden transition-all duration-300 focus:outline-none"
-                                                :class="currentIndex === {{ $index }}
-                                                    ? 'ring-2 ring-[#17A2B8] ring-offset-2 shadow-md scale-105'
-                                                    : 'opacity-60 hover:opacity-100 hover:scale-105'"
-                                                style="border: 2px solid transparent;"
-                                                :style="currentIndex === {{ $index }} ? 'border-color: #17A2B8;' : ''">
+                                                class="listing-thumb flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl overflow-hidden transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#17A2B8]"
+                                                :class="currentIndex === {{ $index }} ? 'listing-thumb-active' : 'listing-thumb-inactive'">
                                             <img src="{{ $thumbUrl }}" alt="Image {{ $index + 1 }}" class="w-full h-full object-cover">
                                         </button>
                                     @endforeach
@@ -169,7 +166,7 @@
                     </div>
 
                     {{-- ======== TITLE & PRICE SECTION ======== --}}
-                    <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl overflow-hidden">
                         {{-- Price Hero Area --}}
                         <div class="p-6 pb-5" style="background: linear-gradient(135deg, rgba(27,79,114,0.03) 0%, rgba(23,162,184,0.04) 100%);">
                             <h1 class="text-xl md:text-2xl lg:text-[1.65rem] font-bold leading-tight mb-5" style="color: #1B2A4A; letter-spacing: -0.02em;">{{ $listing->title }}</h1>
@@ -256,7 +253,7 @@
                     </div>
 
                     {{-- ======== DESCRIPTION ======== --}}
-                    <div class="bg-white rounded-2xl p-4 sm:p-6" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
                         <h2 class="text-base font-bold mb-4 flex items-center gap-2.5" style="color: #1B2A4A;">
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
@@ -268,7 +265,7 @@
 
                     {{-- ======== INFOS GENERALES ======== --}}
                     @if($listing->hasSpecSection('general'))
-                    <div class="bg-white rounded-2xl p-4 sm:p-6" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
                         <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -303,7 +300,7 @@
 
                     {{-- ======== DIMENSIONS ======== --}}
                     @if($listing->hasSpecSection('dimensions'))
-                    <div class="bg-white rounded-2xl p-4 sm:p-6" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
                         <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
@@ -334,7 +331,7 @@
 
                     {{-- ======== MOTORISATION ======== --}}
                     @if($listing->hasSpecSection('motorisation'))
-                    <div class="bg-white rounded-2xl p-4 sm:p-6" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
                         <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -368,7 +365,7 @@
 
                     {{-- ======== RESERVOIRS ======== --}}
                     @if($listing->hasSpecSection('reservoirs'))
-                    <div class="bg-white rounded-2xl p-4 sm:p-6" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
                         <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
@@ -397,7 +394,7 @@
 
                     {{-- ======== AMENAGEMENTS ======== --}}
                     @if($listing->hasSpecSection('amenagements'))
-                    <div class="bg-white rounded-2xl p-4 sm:p-6" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
                         <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
@@ -427,7 +424,7 @@
 
                     {{-- ======== EQUIPEMENTS / OPTIONS / ELECTRONIQUE ======== --}}
                     @if($listing->hasSpecSection('tags'))
-                    <div class="bg-white rounded-2xl p-4 sm:p-6" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
                         <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -467,7 +464,7 @@
 
                     {{-- ======== EXTRAS ======== --}}
                     @if($listing->hasSpecSection('extras'))
-                    <div class="bg-white rounded-2xl p-4 sm:p-6" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
                         <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
@@ -512,7 +509,7 @@
                     @endif
 
                     {{-- ======== SHARE ======== --}}
-                    <div class="bg-white rounded-2xl p-4 sm:p-6" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
                         <h2 class="text-base font-bold mb-4 flex items-center gap-2.5" style="color: #1B2A4A;">
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
@@ -542,7 +539,7 @@
                 <div class="lg:col-span-1 space-y-5 reveal-right" style="transition-delay: 0.25s;">
 
                     {{-- ======== SELLER CARD ======== --}}
-                    <div class="bg-white rounded-2xl overflow-hidden sticky top-24" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl overflow-hidden sticky top-24">
                         {{-- Seller Header --}}
                         <div class="p-5 relative" style="background: linear-gradient(135deg, rgba(27,79,114,0.04) 0%, rgba(23,162,184,0.06) 100%); border-bottom: 1px solid #E0E6ED;">
                             <div class="flex items-center gap-3.5">
@@ -662,7 +659,7 @@
                     </div>
 
                     {{-- ======== SAFETY TIPS ======== --}}
-                    <div class="bg-white rounded-2xl p-5" style="box-shadow: 0 10px 30px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);">
+                    <div class="listing-card-frame rounded-3xl p-5">
                         <div class="flex items-center gap-2.5 mb-4">
                             <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background: rgba(243, 156, 18, 0.1);">
                                 <svg class="w-4 h-4" style="color: #F39C12;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
@@ -735,13 +732,73 @@
         }
         .cta-whatsapp-glow { animation: pulse-glow-whatsapp 3s ease-in-out infinite; }
 
-        /* Gallery: no in-place zoom; tap opens lightbox */
-        .cursor-pointer { cursor: pointer; }
+        /* ========== Creative gallery frame ========== */
+        .listing-gallery-frame {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow:
+                0 0 0 1px rgba(23, 162, 184, 0.12),
+                0 0 0 4px rgba(27, 79, 114, 0.06),
+                0 4px 6px -1px rgba(0, 0, 0, 0.06),
+                0 14px 28px -4px rgba(27, 79, 114, 0.1),
+                0 24px 48px -12px rgba(0, 0, 0, 0.08);
+        }
+        .listing-gallery-inner {
+            background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);
+        }
+        .listing-image-inner-border {
+            pointer-events: none;
+            border: 3px solid rgba(255, 255, 255, 0.85);
+            box-shadow: inset 0 0 0 1px rgba(27, 79, 114, 0.08);
+        }
+        .listing-gallery-main-img { border-radius: 14px; }
+        .listing-badge-counter {
+            background: rgba(27, 79, 114, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        .listing-nav-btn {
+            background: rgba(27, 79, 114, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(27, 79, 114, 0.25);
+        }
+        .listing-nav-btn:hover { background: rgba(27, 79, 114, 0.9); }
 
-        /* Thumbnail scrollbar */
-        .thumbnail-strip::-webkit-scrollbar { height: 4px; }
-        .thumbnail-strip::-webkit-scrollbar-track { background: transparent; }
-        .thumbnail-strip::-webkit-scrollbar-thumb { background: rgba(27,79,114,0.15); border-radius: 4px; }
+        /* Thumbnail strip: creative frame */
+        .listing-thumb-strip {
+            background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 100%);
+            border-top: 1px solid rgba(23, 162, 184, 0.1);
+            scrollbar-width: thin;
+        }
+        .listing-thumb-strip::-webkit-scrollbar { height: 5px; }
+        .listing-thumb-strip::-webkit-scrollbar-track { background: rgba(27, 79, 114, 0.06); border-radius: 6px; }
+        .listing-thumb-strip::-webkit-scrollbar-thumb { background: rgba(23, 162, 184, 0.25); border-radius: 6px; }
+        .listing-thumb {
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        .listing-thumb-inactive {
+            opacity: 0.7;
+            border-color: rgba(203, 213, 225, 0.8);
+        }
+        .listing-thumb-inactive:hover { opacity: 1; }
+        .listing-thumb-active {
+            border-color: #17A2B8;
+            box-shadow: 0 0 0 2px rgba(23, 162, 184, 0.2), 0 4px 14px rgba(23, 162, 184, 0.2);
+            transform: scale(1.02);
+        }
+
+        /* Content cards: softer creative frame */
+        .listing-card-frame {
+            background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+            box-shadow:
+                0 0 0 1px rgba(27, 79, 114, 0.06),
+                0 4px 12px -2px rgba(0, 0, 0, 0.05),
+                0 12px 24px -6px rgba(27, 79, 114, 0.08);
+        }
+
+        .cursor-pointer { cursor: pointer; }
     </style>
 
     <script>
