@@ -35,23 +35,6 @@
     @endphp
 
     <div class="annonce-view-outside min-h-screen">
-        {{-- BREADCRUMB --}}
-        <div class="annonce-breadcrumb">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
-                <nav class="flex items-center text-sm flex-wrap gap-y-1">
-                    <a href="{{ route('home') }}" class="annonce-breadcrumb-link">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
-                    </a>
-                    <svg class="w-4 h-4 mx-2 hidden sm:inline text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-                    <a href="{{ route('listings.index') }}" class="hidden sm:inline annonce-breadcrumb-link">{{ __('Annonces') }}</a>
-                    <svg class="w-4 h-4 mx-2 hidden sm:inline text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-                    <a href="{{ route('listings.index', ['category' => $listing->category]) }}" class="hidden sm:inline annonce-breadcrumb-link">{{ $categoryLabels[$listing->category] ?? ucfirst($listing->category) }}</a>
-                    <svg class="w-4 h-4 mx-2 hidden sm:inline text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-                    <span class="font-semibold truncate max-w-[220px] text-slate-800">{{ $listing->title }}</span>
-                </nav>
-            </div>
-        </div>
-
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
                 {{-- ============================================
@@ -804,18 +787,6 @@
         .annonce-view-outside {
             background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 24%, #f8fafc 100%);
         }
-        .annonce-breadcrumb {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-        }
-        .annonce-breadcrumb-link {
-            color: #64748b;
-            transition: color 0.2s ease;
-        }
-        .annonce-breadcrumb-link:hover { color: #0d9488; }
         .annonce-price-hero {
             background: linear-gradient(135deg, rgba(27, 79, 114, 0.04) 0%, rgba(23, 162, 184, 0.06) 50%, rgba(20, 184, 166, 0.03) 100%);
         }
