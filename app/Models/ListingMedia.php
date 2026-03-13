@@ -33,7 +33,7 @@ class ListingMedia extends Model
 
     public function getUrlAttribute(): string
     {
-        return route('listing-media.show', ['media' => $this->id]);
+        return url()->route('listing-media.show', ['media' => $this->id]);
     }
 
     public function getThumbnailUrlAttribute(): ?string
@@ -42,7 +42,7 @@ class ListingMedia extends Model
             return $this->url;
         }
 
-        return route('listing-media.show', [
+        return url()->route('listing-media.show', [
             'media' => $this->id,
             'variant' => 'thumb',
         ]);
