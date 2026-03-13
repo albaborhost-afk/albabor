@@ -10,12 +10,17 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
+        // Remove old admin if email changed
+        User::where('email', 'admin@dzboats.dz')
+            ->where('account_type', 'admin')
+            ->delete();
+
         User::updateOrCreate(
-            ['email' => 'admin@dzboats.dz'],
+            ['email' => 'Albabordz@gmail.com'],
             [
-                'name' => 'Admin DZ Boats',
+                'name' => 'Admin Albabor',
                 'phone' => '0550000000',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('BILALbilal16@'),
                 'account_type' => 'admin',
                 'verified_badge' => true,
                 'verification_status' => 'approved',
