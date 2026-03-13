@@ -21,8 +21,10 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -58,7 +61,11 @@ import com.albabor.app.ui.theme.AppBackground
 import com.albabor.app.ui.theme.Coral500
 import com.albabor.app.ui.theme.GlassSurfaceStrong
 import com.albabor.app.ui.theme.Gray500
+import com.albabor.app.ui.theme.Gray100
 import com.albabor.app.ui.theme.Gray900
+import com.albabor.app.ui.theme.OceanBlue100
+import com.albabor.app.ui.theme.OceanBlue50
+import com.albabor.app.ui.theme.OceanBlue700
 import com.albabor.app.ui.theme.OceanBlue900
 import com.albabor.app.ui.theme.Teal500
 import com.albabor.app.ui.theme.White
@@ -80,6 +87,16 @@ fun HomeScreen(
 
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     val refreshState = rememberPullToRefreshState()
+    val selectedCategoryLabel = remember(selectedCategory) {
+        homeCategoryVisuals.firstOrNull { it.key == selectedCategory }?.label
+    }
+    val filteredFeatured = remember(featured, selectedCategory) {
+        featured.filterByCategory(selectedCategory)
+    }
+    val filteredLatest = remember(latest, selectedCategory) {
+        latest.filterByCategory(selectedCategory)
+    }
+    val hasCategoryFilter = selectedCategory != null
 
     PullToRefreshBox(
         isRefreshing = isLoading,
@@ -90,7 +107,15 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(AppBackground)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFFF0F4F8),
+                            Color(0xFFE8EEF4),
+                            Color(0xFFF4F8FC)
+                        )
+                    )
+                )
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -102,19 +127,22 @@ fun HomeScreen(
                         selectedCategory = selectedCategory,
                         onCategorySelected = { key ->
                             selectedCategory = if (selectedCategory == key) null else key
-                            if (key != null) navController.navigate(Screen.Explore.route)
                         }
                     )
                 }
 
-                if (featured.isNotEmpty()) {
+                if (filteredFeatured.isNotEmpty()) {
                     item {
                         HomeSectionHeader(
                             icon = Icons.Filled.Star,
                             iconTint = Color(0xFFE67E22),
-                            title = "Annonces en vedette",
+                            title = if (hasCategoryFilter) {
+                                "En vedette${selectedCategoryLabel?.let { " • $it" } ?: ""}"
+                            } else {
+                                "Annonces en vedette"
+                            },
                             actionLabel = "Voir tout",
-                            onActionClick = { navController.navigate(Screen.Explore.route) },
+                            onActionClick = { navController.navigate(Screen.Explore.route(selectedCategory)) },
                             modifier = Modifier.padding(top = 22.dp, bottom = 16.dp)
                         )
                     }
@@ -124,7 +152,7 @@ fun HomeScreen(
                             contentPadding = PaddingValues(horizontal = 20.dp),
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            items(featured, key = { it.id }) { listing ->
+                            items(filteredFeatured, key = { it.id }) { listing ->
                                 FeaturedListingCard(
                                     listing = listing,
                                     onClick = {
@@ -141,28 +169,36 @@ fun HomeScreen(
                     HomeSectionHeader(
                         icon = Icons.Filled.History,
                         iconTint = Teal500,
-                        title = "Annonces recentes",
+                        title = if (hasCategoryFilter) {
+                            "Récentes${selectedCategoryLabel?.let { " • $it" } ?: ""}"
+                        } else {
+                            "Annonces recentes"
+                        },
                         actionLabel = "Voir tout",
-                        onActionClick = { navController.navigate(Screen.Explore.route) },
+                        onActionClick = { navController.navigate(Screen.Explore.route(selectedCategory)) },
                         modifier = Modifier.padding(
-                            top = if (featured.isNotEmpty()) 28.dp else 22.dp,
+                            top = if (filteredFeatured.isNotEmpty()) 28.dp else 22.dp,
                             bottom = 16.dp
                         )
                     )
                 }
 
-                if (isLoading && latest.isEmpty()) {
+                if (isLoading && filteredLatest.isEmpty()) {
                     item {
                         Box(modifier = Modifier.padding(horizontal = 20.dp)) {
                             LoadingGrid(count = 2)
                         }
                     }
-                } else if (latest.isEmpty()) {
+                } else if (filteredLatest.isEmpty()) {
                     item {
-                        HomeEmptyLatest(onExploreClick = { navController.navigate(Screen.Explore.route) })
+                        HomeEmptyLatest(
+                            selectedCategoryLabel = selectedCategoryLabel,
+                            onExploreClick = { navController.navigate(Screen.Explore.route(selectedCategory)) },
+                            onClearFilter = { selectedCategory = null }
+                        )
                     }
                 } else {
-                    items(latest, key = { it.id }) { listing ->
+                    items(filteredLatest, key = { it.id }) { listing ->
                         HomeRecentListingCard(
                             listing = listing,
                             onClick = { navController.navigate(Screen.ListingDetail.route(listing.id)) },
@@ -199,8 +235,9 @@ private fun HomeHeader(
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(
+                        Color(0xFF102B45),
                         OceanBlue900,
-                        Color(0xFF145F85),
+                        OceanBlue700,
                         Teal500
                     )
                 ),
@@ -254,7 +291,7 @@ private fun HomeHeader(
                 modifier = Modifier
                     .size(42.dp)
                     .clip(CircleShape)
-                    .background(White.copy(alpha = 0.15f))
+                    .background(White.copy(alpha = 0.18f))
                     .clickable(onClick = onNotificationsClick),
                 contentAlignment = Alignment.Center
             ) {
@@ -270,17 +307,25 @@ private fun HomeHeader(
         Spacer(modifier = Modifier.height(16.dp))
 
         Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .clickable(onClick = onSearchClick),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .clickable(onClick = onSearchClick),
             color = Color.Transparent,
             shadowElevation = 10.dp,
             tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier
-                    .background(GlassSurfaceStrong, RoundedCornerShape(16.dp))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                White.copy(alpha = 0.92f),
+                                Color(0xFFF6FBFD)
+                            )
+                        ),
+                        RoundedCornerShape(16.dp)
+                    )
                     .padding(start = 6.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -288,7 +333,7 @@ private fun HomeHeader(
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(OceanBlue900.copy(alpha = 0.08f)),
+                        .background(OceanBlue900.copy(alpha = 0.10f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -373,32 +418,66 @@ private fun HomeCategoryChip(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(if (selected) accent else accent.copy(alpha = 0.10f))
-            .clickable(onClick = onClick)
-            .padding(start = if (imageRes != null) 6.dp else 16.dp, end = 18.dp, top = 10.dp, bottom = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    val chipShape = RoundedCornerShape(999.dp)
+
+    Surface(
+        modifier = Modifier.clickable(onClick = onClick),
+        shape = chipShape,
+        color = Color.Transparent,
+        border = BorderStroke(
+            width = 1.dp,
+            color = if (selected) OceanBlue900.copy(alpha = 0.14f) else OceanBlue100
+        ),
+        shadowElevation = 0.dp
     ) {
-        imageRes?.let {
-            Image(
-                painter = painterResource(id = it),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(28.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
+        Row(
+            modifier = Modifier
+                .background(
+                    brush = if (selected) {
+                        Brush.linearGradient(listOf(OceanBlue900, OceanBlue700, Teal500))
+                    } else {
+                        Brush.linearGradient(listOf(White, Color(0xFFF8FBFD)))
+                    },
+                    shape = chipShape
+                )
+                .padding(
+                    start = if (imageRes != null) 6.dp else 16.dp,
+                    end = 18.dp,
+                    top = 10.dp,
+                    bottom = 10.dp
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            imageRes?.let {
+                Box(
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            if (selected) White.copy(alpha = 0.18f)
+                            else accent.copy(alpha = 0.10f)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = it),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+
+            Text(
+                text = label,
+                color = if (selected) White else OceanBlue900,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold
             )
         }
-
-        Text(
-            text = label,
-            color = if (selected) White else accent,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold
-        )
     }
 }
 
@@ -438,7 +517,7 @@ private fun HomeSectionHeader(
 
         Text(
             text = actionLabel,
-            color = Teal500,
+            color = OceanBlue700,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.clickable(onClick = onActionClick)
@@ -458,22 +537,40 @@ private fun HomeRecentListingCard(
         listing.power?.let { add("$it CV") }
     }.take(2)
 
-    Card(
+    // Cadre (frame) around the annonce card — nicer from outside
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp, pressedElevation = 12.dp),
-        border = BorderStroke(0.5.dp, White.copy(alpha = 0.9f))
+            .padding(horizontal = 4.dp, vertical = 2.dp)
+            .shadow(12.dp, RoundedCornerShape(24.dp), spotColor = OceanBlue900.copy(alpha = 0.12f))
+            .clip(RoundedCornerShape(24.dp))
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        OceanBlue100.copy(alpha = 0.25f),
+                        OceanBlue50.copy(alpha = 0.15f)
+                    )
+                )
+            )
+            .padding(6.dp)
     ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp, pressedElevation = 2.dp),
+            border = BorderStroke(1.5.dp, OceanBlue100.copy(alpha = 0.5f))
+        ) {
         Column {
 
             // ── IMAGE — 80% ──────────────────────────────────────────────────
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1.3f)  // ~258dp tall on a 336dp wide card → 80%
+                    .aspectRatio(1.3f)
+                    .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp))
             ) {
                 SubcomposeAsyncImage(
                     model = listing.primaryImage,
@@ -587,7 +684,7 @@ private fun HomeRecentListingCard(
                         Icon(
                             imageVector = Icons.Filled.LocationOn,
                             contentDescription = null,
-                            tint = Teal500,
+                            tint = OceanBlue700,
                             modifier = Modifier.size(11.dp)
                         )
                         Text(
@@ -606,7 +703,7 @@ private fun HomeRecentListingCard(
                         quickFacts.forEach { fact ->
                             Surface(
                                 shape = RoundedCornerShape(999.dp),
-                                color = OceanBlue900.copy(alpha = 0.07f)
+                                color = OceanBlue100.copy(alpha = 0.7f)
                             ) {
                                 Text(
                                     text = fact,
@@ -620,6 +717,7 @@ private fun HomeRecentListingCard(
                     }
                 }
             }
+        }
         }
     }
 }
@@ -670,30 +768,59 @@ private fun HomeCategoryBackdrop(listing: Listing) {
 }
 
 @Composable
-private fun HomeEmptyLatest(onExploreClick: () -> Unit) {
+private fun HomeEmptyLatest(
+    selectedCategoryLabel: String? = null,
+    onExploreClick: () -> Unit,
+    onClearFilter: (() -> Unit)? = null
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 32.dp)
             .clip(RoundedCornerShape(24.dp))
-            .background(GlassSurfaceStrong)
+            .background(
+                Brush.linearGradient(
+                    listOf(
+                        White,
+                        Color(0xFFF7FBFD)
+                    )
+                )
+            )
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Aucune annonce disponible",
+            text = if (selectedCategoryLabel != null) {
+                "Aucune annonce pour $selectedCategoryLabel"
+            } else {
+                "Aucune annonce disponible"
+            },
             color = OceanBlue900,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
         Text(
-            text = "Explorez les annonces disponibles sur la marketplace.",
+            text = if (selectedCategoryLabel != null) {
+                "Restez sur l'accueil ou effacez le filtre pour revoir toutes les annonces."
+            } else {
+                "Explorez les annonces disponibles sur la marketplace."
+            },
             color = Gray500,
             fontSize = 14.sp,
             textAlign = TextAlign.Center
         )
+        onClearFilter?.let { clearFilter ->
+            OutlinedButton(
+                onClick = clearFilter,
+                shape = RoundedCornerShape(14.dp),
+                border = BorderStroke(1.dp, OceanBlue100),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = OceanBlue900)
+            ) {
+                Text("Effacer le filtre", fontWeight = FontWeight.SemiBold)
+            }
+        }
         Surface(
             modifier = Modifier.clickable(onClick = onExploreClick),
             shape = RoundedCornerShape(14.dp),
@@ -713,3 +840,6 @@ private fun HomeEmptyLatest(onExploreClick: () -> Unit) {
         }
     }
 }
+
+private fun List<Listing>.filterByCategory(category: String?): List<Listing> =
+    if (category.isNullOrBlank()) this else filter { it.category == category }
