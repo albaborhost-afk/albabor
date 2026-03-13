@@ -81,6 +81,10 @@ class UserResource extends Resource
                         Forms\Components\Toggle::make('is_blocked')
                             ->label('Compte bloqué')
                             ->helperText('Empêche l\'utilisateur de se connecter'),
+                        Forms\Components\Toggle::make('free_publishing')
+                            ->label('Publication gratuite')
+                            ->helperText('Permet de publier des annonces sans paiement — toutes catégories, illimité')
+                            ->onColor('success'),
                     ])->columns(2),
             ]);
     }
@@ -125,6 +129,13 @@ class UserResource extends Resource
                     ->falseIcon('heroicon-o-lock-open')
                     ->trueColor('danger')
                     ->falseColor('success'),
+                Tables\Columns\IconColumn::make('free_publishing')
+                    ->label('Gratuit')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-gift')
+                    ->falseIcon('heroicon-o-minus-circle')
+                    ->trueColor('success')
+                    ->falseColor('gray'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Créé le')
                     ->dateTime('d/m/Y H:i')
@@ -143,6 +154,8 @@ class UserResource extends Resource
                     ->label('Badge vérifié'),
                 Tables\Filters\TernaryFilter::make('is_blocked')
                     ->label('Bloqué'),
+                Tables\Filters\TernaryFilter::make('free_publishing')
+                    ->label('Publication gratuite'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -152,6 +165,12 @@ class UserResource extends Resource
                     ->color(fn (User $record): string => $record->is_blocked ? 'success' : 'danger')
                     ->requiresConfirmation()
                     ->action(fn (User $record) => $record->update(['is_blocked' => !$record->is_blocked])),
+                Tables\Actions\Action::make('toggleFreePublishing')
+                    ->label(fn (User $record): string => $record->free_publishing ? 'Retirer accès gratuit' : 'Accorder accès gratuit')
+                    ->icon('heroicon-o-gift')
+                    ->color(fn (User $record): string => $record->free_publishing ? 'danger' : 'success')
+                    ->requiresConfirmation()
+                    ->action(fn (User $record) => $record->update(['free_publishing' => !$record->free_publishing])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

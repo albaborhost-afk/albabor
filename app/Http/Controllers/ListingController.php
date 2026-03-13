@@ -135,8 +135,9 @@ class ListingController extends Controller
         $exchangeRate = Setting::getExchangeRate();
 
         $isFirstListing = Listing::where('user_id', $user->id)->count() === 0;
+        $hasFreePublishing = $user->hasFreePublishing();
 
-        return view('listings.create', compact('wilayas', 'exchangeRate', 'isFirstListing'));
+        return view('listings.create', compact('wilayas', 'exchangeRate', 'isFirstListing', 'hasFreePublishing'));
     }
 
     public function store(Request $request)
@@ -204,6 +205,17 @@ class ListingController extends Controller
         if ($savedCount === 0) {
             $listing->delete();
             return back()->withErrors(['images' => 'Impossible de sauvegarder les images. Veuillez réessayer.'])->withInput();
+        }
+
+        // Free publishing users skip payment entirely
+        if ($user->hasFreePublishing()) {
+            $listing->update([
+                'status'          => 'pending_review',
+                'published_until' => now()->addYear(),
+            ]);
+            return redirect()->route('listings.my')
+                ->with('success', __('Votre annonce a été créée et sera examinée par notre équipe.'))
+                ->with('listing_created', true);
         }
 
         // First listing is free — check if user has any other listing

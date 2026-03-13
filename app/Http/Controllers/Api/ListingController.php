@@ -244,6 +244,24 @@ class ListingController extends Controller
             ], 422);
         }
 
+        // Publication gratuite pour les utilisateurs autorisés
+        if ($user->hasFreePublishing()) {
+            $listing->update([
+                'status'          => 'pending_review',
+                'published_until' => now()->addYear(),
+            ]);
+
+            $listing->load(['user', 'media']);
+
+            return response()->json([
+                'message' => 'Votre annonce a été créée et sera examinée par notre équipe.',
+                'listing' => $listing,
+                'publish_price' => 0,
+                'is_first_listing' => false,
+                'free_publishing' => true,
+            ], 201);
+        }
+
         // Première annonce gratuite
         $isFirstListing = Listing::where('user_id', $user->id)
             ->where('id', '!=', $listing->id)

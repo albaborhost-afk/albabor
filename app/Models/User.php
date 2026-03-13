@@ -29,6 +29,7 @@ class User extends Authenticatable implements FilamentUser
         'verified_badge',
         'verification_status',
         'is_blocked',
+        'free_publishing',
         'google_id',
     ];
 
@@ -48,6 +49,7 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'verified_badge' => 'boolean',
             'is_blocked' => 'boolean',
+            'free_publishing' => 'boolean',
         ];
     }
 
@@ -175,7 +177,16 @@ class User extends Authenticatable implements FilamentUser
 
     public function canPublishEngineOrParts(): bool
     {
+        if ($this->hasFreePublishing()) {
+            return true;
+        }
+
         return $this->isVendor() && $this->hasActiveSubscription();
+    }
+
+    public function hasFreePublishing(): bool
+    {
+        return $this->free_publishing === true;
     }
 
     public function hasFavorited(Listing $listing): bool
