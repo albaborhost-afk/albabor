@@ -1,4 +1,8 @@
-<x-app-layout>
+<x-app-layout
+    :title="$listing->title"
+    :description="$listing->category_label . ' — ' . $listing->wilaya . ' — ' . $listing->formatted_price . '. ' . \Str::limit(strip_tags($listing->description ?? ''), 120)"
+    :ogImage="$listing->media->first()?->url ?? asset('images/og-image.png')"
+>
     @php
         $specs = $listing->specs ?? [];
         $categoryLabels = ['boat' => 'Bateau', 'jetski' => 'Jet-ski', 'engine' => 'Moteur', 'parts' => 'Pieces'];

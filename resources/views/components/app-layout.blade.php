@@ -5,9 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? 'AlBabor' }}</title>
+    <title>{{ isset($title) ? $title . ' — AlBabor' : 'AlBabor — Marketplace Nautique N°1 en Algérie' }}</title>
+    <meta name="description" content="{{ $description ?? 'Achetez et vendez des bateaux, jet-skis, moteurs et pièces détachées en Algérie. La marketplace nautique de confiance avec paiement sécurisé.' }}">
+    <meta name="keywords" content="bateau algérie, jet-ski, moteur hors-bord, vente bateau, achat bateau, nautisme algérie, albabor">
+    <meta name="robots" content="index, follow">
+
+    {{-- Open Graph --}}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AlBabor">
+    <meta property="og:title" content="{{ isset($title) ? $title . ' — AlBabor' : 'AlBabor — Marketplace Nautique N°1 en Algérie' }}">
+    <meta property="og:description" content="{{ $description ?? 'Achetez et vendez des bateaux, jet-skis, moteurs et pièces détachées en Algérie.' }}">
+    <meta property="og:image" content="{{ $ogImage ?? asset('images/og-image.png') }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ isset($title) ? $title . ' — AlBabor' : 'AlBabor' }}">
+    <meta name="twitter:description" content="{{ $description ?? 'La marketplace nautique N°1 en Algérie.' }}">
+    <meta name="twitter:image" content="{{ $ogImage ?? asset('images/og-image.png') }}">
+
     <link rel="icon" type="image/png" href="/favicon.png?v=5">
     <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="canonical" href="{{ url()->current() }}">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />

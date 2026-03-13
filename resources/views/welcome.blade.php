@@ -1,4 +1,7 @@
-<x-app-layout>
+<x-app-layout
+    title="La Marketplace Nautique N°1 en Algérie"
+    description="Achetez et vendez des bateaux, jet-skis, moteurs et pièces détachées en Algérie. Annonces vérifiées, paiement sécurisé, livraison partout en Algérie."
+>
     <!-- Hero Section with Video Background -->
     <div class="relative overflow-hidden" style="border-radius: 0 0 32px 32px;">
         <!-- Video Background -->

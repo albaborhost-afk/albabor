@@ -1,4 +1,11 @@
-<x-app-layout>
+@php
+    $pageCatNames = ['boat' => 'Bateaux', 'jetski' => 'Jet-Skis', 'engine' => 'Moteurs', 'parts' => 'Pièces détachées'];
+    $pageTitle = request('category') ? ($pageCatNames[request('category')] ?? 'Annonces') : 'Toutes les Annonces';
+@endphp
+<x-app-layout
+    :title="$pageTitle"
+    description="Parcourez toutes les annonces de bateaux, jet-skis, moteurs et pièces détachées en Algérie. Filtrez par wilaya, état et prix."
+>
     <!-- Breadcrumb Bar -->
     <div style="background: #FFFFFF; border-bottom: 1px solid #E0E6ED;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
