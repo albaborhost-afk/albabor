@@ -78,9 +78,6 @@
                             currentIndex: 0,
                             imageCount: {{ $imageCount }},
                             images: @js($imageUrls),
-                            zooming: false,
-                            zoomX: 50,
-                            zoomY: 50,
                             transitioning: false,
                             get currentImage() { return this.images[this.currentIndex] || ''; },
                             goTo(index) {
@@ -96,18 +93,15 @@
                          }">
 
                         @if($hasImages)
-                            {{-- Main Image --}}
-                            <div class="relative overflow-hidden cursor-zoom-in" style="aspect-ratio: 16/10; background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);"
-                                 @click="openLightbox(currentIndex)"
-                                 @mousemove="zooming = true; zoomX = ($event.offsetX / $event.target.offsetWidth) * 100; zoomY = ($event.offsetY / $event.target.offsetHeight) * 100;"
-                                 @mouseleave="zooming = false">
+                            {{-- Main Image (no hover/touch zoom; tap opens lightbox) --}}
+                            <div class="relative overflow-hidden cursor-pointer" style="aspect-ratio: 16/10; background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%); touch-action: manipulation;"
+                                 @click="openLightbox(currentIndex)">
 
                                 <img :src="currentImage"
                                      alt="{{ $listing->title }}"
                                      class="w-full h-full object-contain transition-all duration-500 ease-out"
                                      :class="{ 'opacity-0 scale-95': transitioning, 'opacity-100 scale-100': !transitioning }"
-                                     :style="zooming ? 'transform: scale(1.8); transform-origin: ' + zoomX + '% ' + zoomY + '%; transition: transform 0.15s ease-out;' : 'transform: scale(1); transition: transform 0.4s ease-out;'"
-                                     style="will-change: transform, opacity;">
+                                     style="will-change: transform, opacity; touch-action: manipulation;">
 
                                 {{-- Featured Badge --}}
                                 @if($listing->isFeatured())
@@ -741,8 +735,8 @@
         }
         .cta-whatsapp-glow { animation: pulse-glow-whatsapp 3s ease-in-out infinite; }
 
-        /* Gallery image smooth zoom */
-        .cursor-zoom-in { cursor: zoom-in; }
+        /* Gallery: no in-place zoom; tap opens lightbox */
+        .cursor-pointer { cursor: pointer; }
 
         /* Thumbnail scrollbar */
         .thumbnail-strip::-webkit-scrollbar { height: 4px; }
