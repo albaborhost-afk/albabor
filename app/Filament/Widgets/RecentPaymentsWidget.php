@@ -82,7 +82,7 @@ class RecentPaymentsWidget extends BaseWidget
                     ->label('')
                     ->icon('heroicon-o-eye')
                     ->tooltip('Voir les details')
-                    ->url(fn (Payment $record) => route('filament.admin.resources.payments.edit', $record))
+                    ->url(fn (Payment $record) => route('filament.admin.resources.payments.view', $record))
                     ->color('gray'),
             ])
             ->striped()
