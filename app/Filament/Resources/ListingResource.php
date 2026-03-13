@@ -403,15 +403,17 @@ class ListingResource extends Resource
                         Forms\Components\Tabs\Tab::make('Medias')
                             ->icon('heroicon-o-photo')
                             ->schema([
-                                Forms\Components\Section::make('Images de l\'annonce')
-                                    ->description('Galerie d\'images (max 10)')
-                                    ->icon('heroicon-o-camera')
+                                Forms\Components\Section::make('Images actuelles')
+                                    ->description('Galerie d\'images de l\'annonce')
+                                    ->icon('heroicon-o-photo')
                                     ->schema([
                                         Forms\Components\Placeholder::make('media_gallery')
-                                            ->label('Images actuelles')
+                                            ->label('')
                                             ->content(function ($record) {
                                                 if (!$record || $record->media->isEmpty()) {
-                                                    return 'Aucune image';
+                                                    return new \Illuminate\Support\HtmlString(
+                                                        '<p style="color: #9ca3af; font-style: italic;">Aucune image. Ajoutez des images ci-dessous.</p>'
+                                                    );
                                                 }
 
                                                 $disk = config('filesystems.listing_disk', 'public');
@@ -432,9 +434,46 @@ class ListingResource extends Resource
                                                 return new \Illuminate\Support\HtmlString($html);
                                             })
                                             ->columnSpanFull(),
-                                        Forms\Components\Placeholder::make('media_info')
-                                            ->label('')
-                                            ->content('Pour modifier les images, utilisez l\'application mobile ou l\'API.')
+                                        Forms\Components\Actions::make([
+                                            Forms\Components\Actions\Action::make('deleteAllImages')
+                                                ->label('Supprimer toutes les images')
+                                                ->icon('heroicon-o-trash')
+                                                ->color('danger')
+                                                ->requiresConfirmation()
+                                                ->modalHeading('Supprimer toutes les images ?')
+                                                ->modalDescription('Cette action est irréversible.')
+                                                ->visible(fn ($record) => $record && $record->media->isNotEmpty())
+                                                ->action(function ($record) {
+                                                    $disk = Storage::disk(config('filesystems.listing_disk', 'public'));
+                                                    foreach ($record->media as $media) {
+                                                        try {
+                                                            $disk->delete($media->path);
+                                                            if ($media->thumbnail_path) {
+                                                                $disk->delete($media->thumbnail_path);
+                                                            }
+                                                        } catch (\Throwable) {}
+                                                        $media->delete();
+                                                    }
+                                                    Notification::make()->title('Images supprimées')->success()->send();
+                                                }),
+                                        ]),
+                                    ]),
+
+                                Forms\Components\Section::make('Ajouter des images')
+                                    ->description('Ajoutez jusqu\'à 10 images (JPEG, PNG, WebP — max 5 Mo chacune)')
+                                    ->icon('heroicon-o-camera')
+                                    ->schema([
+                                        Forms\Components\FileUpload::make('new_images')
+                                            ->label('Nouvelles images')
+                                            ->multiple()
+                                            ->image()
+                                            ->maxFiles(10)
+                                            ->maxSize(5120)
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->disk('local')
+                                            ->directory('tmp-listing-uploads')
+                                            ->dehydrated(false)
+                                            ->helperText('Les images seront redimensionnées automatiquement.')
                                             ->columnSpanFull(),
                                     ]),
                             ]),
