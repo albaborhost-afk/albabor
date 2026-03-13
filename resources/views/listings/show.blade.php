@@ -94,13 +94,12 @@
                          }">
 
                         @if($hasImages)
-                            {{-- Main image: inner frame (photo-style) --}}
-                            <div class="listing-gallery-inner relative overflow-hidden cursor-pointer rounded-2xl mx-3 mt-3 mb-2" style="aspect-ratio: 16/10; touch-action: manipulation;"
+                            {{-- Main image: one rounded clip area, corners aligned --}}
+                            <div class="listing-gallery-inner relative overflow-hidden cursor-pointer mx-3 mt-3 mb-2" style="aspect-ratio: 16/10; touch-action: manipulation;"
                                  @click="openLightbox(currentIndex)">
-                                <div class="absolute inset-0 rounded-2xl listing-image-inner-border"></div>
                                 <img :src="currentImage"
                                      alt="{{ $listing->title }}"
-                                     class="listing-gallery-main-img w-full h-full object-contain transition-all duration-500 ease-out rounded-2xl"
+                                     class="listing-gallery-main-img w-full h-full object-cover transition-all duration-500 ease-out"
                                      :class="{ 'opacity-0 scale-95': transitioning, 'opacity-100 scale-100': !transitioning }"
                                      style="will-change: transform, opacity; touch-action: manipulation;">
 
@@ -742,15 +741,18 @@
                 0 14px 28px -4px rgba(27, 79, 114, 0.1),
                 0 24px 48px -12px rgba(0, 0, 0, 0.08);
         }
+        /* Single radius for all gallery corners (no mismatch) */
         .listing-gallery-inner {
             background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);
+            border-radius: 16px;
+            /* Inset frame via shadow (no extra div = clean corners) */
+            box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.9), inset 0 0 0 4px rgba(27, 79, 114, 0.06);
         }
-        .listing-image-inner-border {
-            pointer-events: none;
-            border: 3px solid rgba(255, 255, 255, 0.85);
-            box-shadow: inset 0 0 0 1px rgba(27, 79, 114, 0.08);
+        .listing-gallery-main-img {
+            display: block;
+            border-radius: 16px;
+            object-fit: cover;
         }
-        .listing-gallery-main-img { border-radius: 14px; }
         .listing-badge-counter {
             background: rgba(27, 79, 114, 0.75);
             backdrop-filter: blur(12px);
