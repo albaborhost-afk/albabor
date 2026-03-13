@@ -22,7 +22,7 @@ return [
 
     /** Offset in pixels from the position. */
     'watermark_offset_x' => (int) env('LISTING_WATERMARK_OFFSET_X', 0),
-    'watermark_offset_y' => (int) env('LISTING_WATERMARK_OFFSET_Y', 30),
+    'watermark_offset_y' => (int) env('LISTING_WATERMARK_OFFSET_Y', 80),
 
     /** Max width of the watermark as a fraction of the image width (e.g. 0.30 = 30%). */
     'watermark_max_width_ratio' => 0.30,
