@@ -34,26 +34,26 @@
         $typeOffreLabels = ['negociable' => 'Negociable', 'fix' => 'Prix fixe', 'offert' => 'Offert'];
     @endphp
 
-    <div style="background-color: #F0F4F8; min-height: 100vh;">
+    <div class="annonce-view-outside min-h-screen">
         {{-- BREADCRUMB --}}
-        <div class="bg-white" style="border-bottom: 1px solid #E0E6ED;">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-                <nav class="flex items-center text-sm flex-wrap gap-y-1" style="color: #9BA8B7;">
-                    <a href="{{ route('home') }}" class="hover:text-[#17A2B8] transition-colors duration-200" style="color: #9BA8B7;">
+        <div class="annonce-breadcrumb">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+                <nav class="flex items-center text-sm flex-wrap gap-y-1">
+                    <a href="{{ route('home') }}" class="annonce-breadcrumb-link">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
                     </a>
-                    <svg class="w-4 h-4 mx-2 hidden sm:inline" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-                    <a href="{{ route('listings.index') }}" class="hidden sm:inline hover:text-[#17A2B8] transition-colors duration-200">{{ __('Annonces') }}</a>
-                    <svg class="w-4 h-4 mx-2 hidden sm:inline" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-                    <a href="{{ route('listings.index', ['category' => $listing->category]) }}" class="hidden sm:inline hover:text-[#17A2B8] transition-colors duration-200">{{ $categoryLabels[$listing->category] ?? ucfirst($listing->category) }}</a>
-                    <svg class="w-4 h-4 mx-2 hidden sm:inline" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-                    <span class="font-medium truncate max-w-[200px]" style="color: #1B2A4A;">{{ $listing->title }}</span>
+                    <svg class="w-4 h-4 mx-2 hidden sm:inline text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                    <a href="{{ route('listings.index') }}" class="hidden sm:inline annonce-breadcrumb-link">{{ __('Annonces') }}</a>
+                    <svg class="w-4 h-4 mx-2 hidden sm:inline text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                    <a href="{{ route('listings.index', ['category' => $listing->category]) }}" class="hidden sm:inline annonce-breadcrumb-link">{{ $categoryLabels[$listing->category] ?? ucfirst($listing->category) }}</a>
+                    <svg class="w-4 h-4 mx-2 hidden sm:inline text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                    <span class="font-semibold truncate max-w-[220px] text-slate-800">{{ $listing->title }}</span>
                 </nav>
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
                 {{-- ============================================
                      MAIN CONTENT (Left Column)
                    ============================================ --}}
@@ -165,15 +165,15 @@
                     </div>
 
                     {{-- ======== TITLE & PRICE SECTION ======== --}}
-                    <div class="listing-card-frame rounded-3xl overflow-hidden">
+                    <div class="listing-card-frame listing-hero-card rounded-3xl overflow-hidden">
                         {{-- Price Hero Area --}}
-                        <div class="p-6 pb-5" style="background: linear-gradient(135deg, rgba(27,79,114,0.03) 0%, rgba(23,162,184,0.04) 100%);">
-                            <h1 class="text-xl md:text-2xl lg:text-[1.65rem] font-bold leading-tight mb-5" style="color: #1B2A4A; letter-spacing: -0.02em;">{{ $listing->title }}</h1>
+                        <div class="p-6 sm:p-8 pb-6 annonce-price-hero">
+                            <h1 class="text-xl md:text-2xl lg:text-[1.75rem] font-bold leading-tight mb-5 text-slate-800 tracking-tight">{{ $listing->title }}</h1>
 
                             <div class="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4">
                                 {{-- Main Price --}}
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight" style="color: #1B4F72; letter-spacing: -0.03em;">{{ $listing->formatted_price }}</span>
+                                    <span class="annonce-price text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">{{ $listing->formatted_price }}</span>
                                 </div>
 
                                 {{-- Converted Price + Type Offre --}}
@@ -538,9 +538,9 @@
                 <div class="lg:col-span-1 space-y-5 reveal-right" style="transition-delay: 0.25s;">
 
                     {{-- ======== SELLER CARD ======== --}}
-                    <div class="listing-card-frame rounded-3xl overflow-hidden sticky top-24">
+                    <div class="listing-card-frame listing-seller-card rounded-3xl overflow-hidden sticky top-24">
                         {{-- Seller Header --}}
-                        <div class="p-5 relative" style="background: linear-gradient(135deg, rgba(27,79,114,0.04) 0%, rgba(23,162,184,0.06) 100%); border-bottom: 1px solid #E0E6ED;">
+                        <div class="p-5 sm:p-6 relative annonce-seller-header">
                             <div class="flex items-center gap-3.5">
                                 <div class="relative flex-shrink-0">
                                     <div class="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center text-white font-bold text-xl" style="box-shadow: 0 4px 12px rgba(27,79,114,0.3);">
@@ -658,12 +658,12 @@
                     </div>
 
                     {{-- ======== SAFETY TIPS ======== --}}
-                    <div class="listing-card-frame rounded-3xl p-5">
+                    <div class="listing-card-frame annonce-safety-card rounded-3xl p-5 sm:p-6">
                         <div class="flex items-center gap-2.5 mb-4">
-                            <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background: rgba(243, 156, 18, 0.1);">
-                                <svg class="w-4 h-4" style="color: #F39C12;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center annonce-safety-icon">
+                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                             </div>
-                            <h3 class="text-sm font-bold" style="color: #1B2A4A;">{{ __('Conseils de securite') }}</h3>
+                            <h3 class="text-sm font-bold text-slate-800">{{ __('Conseils de securite') }}</h3>
                         </div>
                         <ul class="space-y-3">
                             <li class="flex items-start gap-2.5 text-xs" style="color: #6B7B8D;">
@@ -691,20 +691,20 @@
 
             {{-- ======== SIMILAR LISTINGS ======== --}}
             @if(isset($relatedListings) && $relatedListings->count() > 0)
-                <div class="mt-14">
+                <div class="mt-16 pt-2">
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
+                            <span class="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-md annonce-similar-icon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                             </span>
-                            <h2 class="text-lg font-bold" style="color: #1B2A4A;">{{ __('Annonces similaires') }}</h2>
+                            <h2 class="text-lg font-bold text-slate-800">{{ __('Annonces similaires') }}</h2>
                         </div>
-                        <a href="{{ route('listings.index', ['category' => $listing->category]) }}" class="text-sm font-semibold flex items-center gap-1.5 px-4 py-2 rounded-xl transition-all duration-200 hover:-translate-y-0.5" style="color: #17A2B8; background: rgba(23,162,184,0.06);">
+                        <a href="{{ route('listings.index', ['category' => $listing->category]) }}" class="annonce-see-all text-sm font-semibold flex items-center gap-1.5 px-4 py-2.5 rounded-xl transition-all duration-200 hover:-translate-y-0.5">
                             {{ __('Voir tout') }}
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                         </a>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
                         @foreach($relatedListings as $related)
                             <x-listing-card :listing="$related" />
                         @endforeach
@@ -799,6 +799,61 @@
                 0 4px 12px -2px rgba(0, 0, 0, 0.05),
                 0 12px 24px -6px rgba(27, 79, 114, 0.08);
         }
+
+        /* ========== Annonce view from outside (premium look) ========== */
+        .annonce-view-outside {
+            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 24%, #f8fafc 100%);
+        }
+        .annonce-breadcrumb {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .annonce-breadcrumb-link {
+            color: #64748b;
+            transition: color 0.2s ease;
+        }
+        .annonce-breadcrumb-link:hover { color: #0d9488; }
+        .annonce-price-hero {
+            background: linear-gradient(135deg, rgba(27, 79, 114, 0.04) 0%, rgba(23, 162, 184, 0.06) 50%, rgba(20, 184, 166, 0.03) 100%);
+        }
+        .annonce-price {
+            color: #0f766e;
+            letter-spacing: -0.03em;
+            text-shadow: 0 1px 2px rgba(15, 118, 110, 0.08);
+        }
+        .listing-hero-card {
+            box-shadow:
+                0 0 0 1px rgba(15, 118, 110, 0.08),
+                0 4px 14px -2px rgba(0, 0, 0, 0.06),
+                0 16px 32px -8px rgba(27, 79, 114, 0.12);
+        }
+        .annonce-seller-header {
+            background: linear-gradient(135deg, rgba(27, 79, 114, 0.05) 0%, rgba(23, 162, 184, 0.08) 100%);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+        }
+        .listing-seller-card {
+            box-shadow:
+                0 0 0 1px rgba(23, 162, 184, 0.08),
+                0 8px 24px -6px rgba(27, 79, 114, 0.1);
+        }
+        .annonce-safety-card {
+            border: 1px solid rgba(251, 191, 36, 0.15);
+            background: linear-gradient(145deg, #fffbeb 0%, #fefce8 50%, #ffffff 100%);
+        }
+        .annonce-safety-icon {
+            background: rgba(245, 158, 11, 0.12);
+        }
+        .annonce-similar-icon {
+            background: linear-gradient(135deg, #0f766e, #0d9488);
+        }
+        .annonce-see-all {
+            color: #0f766e;
+            background: rgba(20, 184, 166, 0.08);
+        }
+        .annonce-see-all:hover { background: rgba(20, 184, 166, 0.14); color: #0d9488; }
 
         .cursor-pointer { cursor: pointer; }
     </style>
