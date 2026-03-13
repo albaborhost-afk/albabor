@@ -76,7 +76,8 @@ private val HeroGradientSubtle = Brush.linearGradient(
 fun ListingDetailScreen(
     listingId: Int,
     onBack: () -> Unit,
-    onMediationRequested: (listingId: Int) -> Unit = {}
+    onMediationRequested: (listingId: Int) -> Unit = {},
+    onConversationRequested: (conversationId: Int) -> Unit = {}
 ) {
     val vm: ListingDetailViewModel = viewModel(
         key     = "listing_$listingId",
@@ -84,10 +85,23 @@ fun ListingDetailScreen(
     )
     val state       by vm.state.collectAsStateWithLifecycle()
     val isFavorited by vm.isFavorited.collectAsStateWithLifecycle()
+    val currentUserId by vm.currentUserId.collectAsStateWithLifecycle()
+    val isStartingConversation by vm.isStartingConversation.collectAsStateWithLifecycle()
+    val startedConversationId by vm.startedConversationId.collectAsStateWithLifecycle()
     val snackbar    by vm.snackbar.collectAsStateWithLifecycle()
     val host = remember { SnackbarHostState() }
+    var showMessageDialog by remember { mutableStateOf(false) }
+    var messageDraft by remember { mutableStateOf("") }
 
     LaunchedEffect(snackbar) { snackbar?.let { host.showSnackbar(it); vm.clearSnackbar() } }
+    LaunchedEffect(startedConversationId) {
+        startedConversationId?.let { conversationId ->
+            showMessageDialog = false
+            messageDraft = ""
+            onConversationRequested(conversationId)
+            vm.clearStartedConversation()
+        }
+    }
 
     Scaffold(
         snackbarHost   = { SnackbarHost(host) },
@@ -102,9 +116,29 @@ fun ListingDetailScreen(
                     ErrorContent(s.msg, vm::loadListing, Modifier.align(Alignment.Center))
 
                 is ListingDetailViewModel.State.Success ->
-                    DetailBody(s.listing, isFavorited, onBack, vm::toggleFavorite, onMediationRequested)
+                    DetailBody(
+                        listing = s.listing,
+                        isFavorited = isFavorited,
+                        currentUserId = currentUserId,
+                        onBack = onBack,
+                        onToggleFavorite = vm::toggleFavorite,
+                        onMediationRequested = onMediationRequested,
+                        onDirectMessage = { showMessageDialog = true }
+                    )
             }
         }
+    }
+
+    if (showMessageDialog) {
+        DirectMessageDialog(
+            value = messageDraft,
+            isSending = isStartingConversation,
+            onValueChange = { messageDraft = it },
+            onDismiss = {
+                if (!isStartingConversation) showMessageDialog = false
+            },
+            onSend = { vm.startConversation(messageDraft) }
+        )
     }
 }
 
@@ -114,15 +148,20 @@ fun ListingDetailScreen(
 private fun DetailBody(
     listing: Listing,
     isFavorited: Boolean,
+    currentUserId: Int,
     onBack: () -> Unit,
     onToggleFavorite: () -> Unit,
-    onMediationRequested: (Int) -> Unit
+    onMediationRequested: (Int) -> Unit,
+    onDirectMessage: () -> Unit
 ) {
     val ctx = LocalContext.current
+    val canDirectMessage = listing.user?.id?.let { sellerId ->
+        currentUserId != 0 && currentUserId != sellerId
+    } == true
 
     LazyColumn(
         modifier            = Modifier.fillMaxSize(),
-        contentPadding      = PaddingValues(bottom = 150.dp),
+        contentPadding      = PaddingValues(bottom = 28.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         item { ImageGallery(listing, isFavorited, onBack, onToggleFavorite) }
@@ -137,28 +176,28 @@ private fun DetailBody(
         item { EquipementsSection(listing) }
         item { ExtrasSection(listing) }
         item { SafetyTips() }
-    }
-
-    // Sticky bottom bar
-    Box(Modifier.fillMaxSize()) {
-        BottomContactBar(
-            listing          = listing,
-            isFavorited      = isFavorited,
-            onToggleFavorite = onToggleFavorite,
-            onMediation      = { onMediationRequested(listing.id) },
-            onCall = {
-                (listing.numeroMobile ?: listing.user?.phone)?.let {
-                    ctx.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$it")))
-                }
-            },
-            onWhatsApp = {
-                listing.numeroWhatsapp?.let {
-                    ctx.startActivity(Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://wa.me/${it.replace(Regex("[^0-9]"), "")}")))
-                }
-            },
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        item {
+            BottomContactBar(
+                listing = listing,
+                isFavorited = isFavorited,
+                canDirectMessage = canDirectMessage,
+                onToggleFavorite = onToggleFavorite,
+                onDirectMessage = onDirectMessage,
+                onMediation = { onMediationRequested(listing.id) },
+                onCall = {
+                    (listing.numeroMobile ?: listing.user?.phone)?.let {
+                        ctx.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$it")))
+                    }
+                },
+                onWhatsApp = {
+                    listing.numeroWhatsapp?.let {
+                        ctx.startActivity(Intent(Intent.ACTION_VIEW,
+                            Uri.parse("https://wa.me/${it.replace(Regex("[^0-9]"), "")}")))
+                    }
+                },
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 20.dp)
+            )
+        }
     }
 }
 
@@ -909,7 +948,9 @@ private fun SpecGrid(items: List<Pair<String, String>>, accent: Color) {
 private fun BottomContactBar(
     listing: Listing,
     isFavorited: Boolean,
+    canDirectMessage: Boolean,
     onToggleFavorite: () -> Unit,
+    onDirectMessage: () -> Unit,
     onMediation: () -> Unit,
     onCall: () -> Unit,
     onWhatsApp: () -> Unit,
@@ -917,15 +958,24 @@ private fun BottomContactBar(
 ) {
     Surface(
         modifier.fillMaxWidth(),
-        shadowElevation = 24.dp,
+        shadowElevation = 4.dp,
         color = Color.White,
-        shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
+        shape = RoundedCornerShape(22.dp)
     ) {
         Column(
             Modifier.fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 16.dp)
-                .navigationBarsPadding()
+                .padding(horizontal = 20.dp, vertical = 18.dp)
         ) {
+            if (canDirectMessage) {
+                GradientButton(
+                    onClick  = onDirectMessage,
+                    gradient = Brush.linearGradient(listOf(OceanBlue700, OceanBlue900)),
+                    icon     = Icons.Default.Forum,
+                    text     = "Envoyer un message"
+                )
+                Spacer(Modifier.height(10.dp))
+            }
+
             if (listing.mediationEnabled) {
                 // Gradient mediation button
                 GradientButton(
@@ -989,6 +1039,68 @@ private fun BottomContactBar(
             }
         }
     }
+}
+
+@Composable
+private fun DirectMessageDialog(
+    value: String,
+    isSending: Boolean,
+    onValueChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onSend: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("Envoyer un message", color = Gray900, fontWeight = FontWeight.Bold)
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(
+                    "Votre message sera envoyé directement au vendeur.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Gray500
+                )
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 140.dp),
+                    minLines = 5,
+                    maxLines = 7,
+                    placeholder = { Text("Bonjour, votre annonce est-elle toujours disponible ?") },
+                    enabled = !isSending,
+                    shape = RoundedCornerShape(16.dp)
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onSend,
+                enabled = value.trim().isNotEmpty() && !isSending,
+                colors = ButtonDefaults.buttonColors(containerColor = OceanBlue700),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                if (isSending) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text("Envoyer")
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, enabled = !isSending) {
+                Text("Annuler")
+            }
+        },
+        containerColor = Color.White,
+        shape = RoundedCornerShape(24.dp)
+    )
 }
 
 @Composable

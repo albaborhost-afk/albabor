@@ -12,7 +12,6 @@ data class HomeCategoryVisual(
 )
 
 val homeCategoryVisuals = listOf(
-    HomeCategoryVisual(key = null, label = "Tous", accent = OceanBlue700),
     HomeCategoryVisual(key = "boat", label = "Bateaux", imageRes = R.drawable.category_boats, accent = OceanBlue900),
     HomeCategoryVisual(key = "jetski", label = "Jet-Ski", imageRes = R.drawable.category_jetski, accent = Teal500),
     HomeCategoryVisual(key = "engine", label = "Moteurs", imageRes = R.drawable.category_engines, accent = Gold500),

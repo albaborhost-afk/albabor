@@ -23,7 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -87,7 +87,10 @@ private fun avatarColorFor(name: String): Color {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConversationsScreen(navController: NavController) {
+fun ConversationsScreen(
+    navController: NavController,
+    showBackButton: Boolean = true
+) {
     val vm: ConversationsViewModel = viewModel()
     val conversations by vm.conversations.collectAsStateWithLifecycle()
     val isLoading by vm.isLoading.collectAsStateWithLifecycle()
@@ -105,12 +108,14 @@ fun ConversationsScreen(navController: NavController) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Retour",
-                            tint = Gray700
-                        )
+                    if (showBackButton) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Retour",
+                                tint = Gray700
+                            )
+                        }
                     }
                 },
                 actions = {
@@ -332,7 +337,7 @@ private fun ConversationsEmptyState() {
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = Icons.Filled.Chat,
+                imageVector = Icons.AutoMirrored.Filled.Chat,
                 contentDescription = null,
                 tint = OceanBlue700,
                 modifier = Modifier.size(44.dp)

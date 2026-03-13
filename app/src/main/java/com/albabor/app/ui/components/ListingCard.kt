@@ -31,6 +31,8 @@ import com.albabor.app.ui.theme.*
 
 private val CardShape = RoundedCornerShape(20.dp)
 private val HeartPink = Color(0xFFFF4D6D)
+private val GridCardMinHeight = 272.dp
+private val GridCardImageHeight = 182.dp
 
 // ─── Main listing card (2-column grid) ───────────────────────────────────────
 
@@ -45,6 +47,7 @@ fun ListingCard(
     Surface(
         modifier = modifier
             .fillMaxWidth()
+            .heightIn(min = GridCardMinHeight)
             .clip(CardShape)
             .clickable(onClick = onClick),
         shape       = CardShape,
@@ -56,7 +59,7 @@ fun ListingCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(4f / 3f)
+                    .height(GridCardImageHeight)
             ) {
                 SubcomposeAsyncImage(
                     model              = listing.primaryImage,
@@ -206,8 +209,8 @@ fun ListingCard(
 
             // ── Info section ─────────────────────────────────────────────────
             Column(
-                Modifier.fillMaxWidth().padding(14.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
                     listing.title,
@@ -222,13 +225,13 @@ fun ListingCard(
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(
                         listing.formattedPrice,
-                        fontSize   = 18.sp,
+                        fontSize   = 16.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color      = OceanBlue900,
                         letterSpacing = (-0.3).sp
                     )
                     listing.formattedConvertedPrice?.let {
-                        Text(it, fontSize = 11.sp, color = Gray400, fontWeight = FontWeight.Medium)
+                        Text(it, fontSize = 10.sp, color = Gray400, fontWeight = FontWeight.Medium, maxLines = 1)
                     }
                 }
 
@@ -239,9 +242,6 @@ fun ListingCard(
                 ) {
                     listing.year?.let {
                         SmallInfoPill(Icons.Default.CalendarMonth, it, OceanBlue900)
-                    }
-                    listing.wilaya?.let {
-                        SmallInfoPill(Icons.Default.LocationOn, it, Teal500)
                     }
                     listing.power?.let {
                         SmallInfoPill(Icons.Default.Bolt, "$it CV", Gold500)
@@ -255,7 +255,7 @@ fun ListingCard(
                         "offert"     -> "Offert" to Color(0xFF27AE60)
                         else         -> offer to Gray500
                     }
-                    Text(label, fontSize = 10.sp, color = color, fontWeight = FontWeight.SemiBold)
+                    Text(label, fontSize = 10.sp, color = color, fontWeight = FontWeight.SemiBold, maxLines = 1)
                 }
             }
         }

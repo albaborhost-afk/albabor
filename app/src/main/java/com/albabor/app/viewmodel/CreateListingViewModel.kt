@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 
@@ -52,35 +51,65 @@ class CreateListingViewModel : ViewModel() {
     var description by mutableStateOf("")
     var wilaya      by mutableStateOf("")   // selected country
     var ville       by mutableStateOf("")   // city / region free text
+
+    // ── Step 3 – Prix & conditions ────────────────────────────────────────────
+
     var condition   by mutableStateOf("")   // new | like_new | good | average | needs_revision
     var offerType   by mutableStateOf("")   // negotiable | fixed | free
-
-    // ── Step 3 – Prix ─────────────────────────────────────────────────────────
-
     var price             by mutableStateOf("")
     var currency          by mutableStateOf("DZD")   // DZD | EUR
     var mediationEnabled  by mutableStateOf(false)
 
     // ── Step 4 – Caractéristiques ─────────────────────────────────────────────
 
-    // General (boat / jetski)
-    var year   by mutableStateOf("")
-    var brand  by mutableStateOf("")
-    var model  by mutableStateOf("")
-    var color  by mutableStateOf("")
-    var length by mutableStateOf("")   // metres
+    // General (boat / jetski / engine)
+    var year           by mutableStateOf("")
+    var manufacturer   by mutableStateOf("")
+    var model          by mutableStateOf("")
+    var color          by mutableStateOf("")
+    var registration   by mutableStateOf("")
+
+    // Dimensions (boat / jetski)
+    var length         by mutableStateOf("")   // metres
+    var width          by mutableStateOf("")   // metres
+    var tonnage        by mutableStateOf("")   // tonnes
+    var waterDraft     by mutableStateOf("")   // boat only
+    var airDraft       by mutableStateOf("")   // boat only
 
     // Motorisation (boat / jetski / engine)
-    var power      by mutableStateOf("")   // CV
-    var engineType by mutableStateOf("")   // inboard | outboard | jet
-    var nbEngines  by mutableStateOf("")
+    var engineBrand    by mutableStateOf("")
+    var propulsion     by mutableStateOf("")
+    var fuelType       by mutableStateOf("")
+    var powerPerEngine by mutableStateOf("")   // CV
+    var engineCount    by mutableStateOf("")
+    var engineHours    by mutableStateOf("")
+    var cylinders      by mutableStateOf("")   // engine only
 
-    // Engine-only
-    var engineBrand by mutableStateOf("")
+    // Reservoirs (boat)
+    var reservoirCount         by mutableStateOf("")
+    var fuelTankCapacity       by mutableStateOf("")
+    var freshWaterTankCapacity by mutableStateOf("")
+    var storageCapacity        by mutableStateOf("")
+
+    // Amenities (boat)
+    var berthCount     by mutableStateOf("")
+    var cabinCount     by mutableStateOf("")
+    var sanitaryCount  by mutableStateOf("")
+    var kitchenCount   by mutableStateOf("")
+
+    // Extras (boat / jetski)
+    var trailerIncluded by mutableStateOf("")
+    var trailerBrand    by mutableStateOf("")
+    var berthAvailable  by mutableStateOf("")
+    var portAddress     by mutableStateOf("")
+    var berthLength     by mutableStateOf("")
+    var berthWidth      by mutableStateOf("")
 
     // Parts
+    var partType        by mutableStateOf("")
     var partBrand       by mutableStateOf("")
     var compatibleWith  by mutableStateOf("")
+    var partNumber      by mutableStateOf("")
 
     // ── Step 5 – Photos ───────────────────────────────────────────────────────
 
@@ -101,11 +130,11 @@ class CreateListingViewModel : ViewModel() {
             title.isBlank()       -> "Le titre est obligatoire"
             description.isBlank() -> "La description est obligatoire"
             wilaya.isBlank()      -> "Le pays est obligatoire"
-            condition.isBlank()   -> "L'état est obligatoire"
-            offerType.isBlank()   -> "Le type d'offre est obligatoire"
             else                  -> null
         }
         3 -> when {
+            condition.isBlank()   -> "L'état est obligatoire"
+            offerType.isBlank()   -> "Le type d'offre est obligatoire"
             price.isBlank()                            -> "Le prix est obligatoire"
             price.toDoubleOrNull() == null             -> "Le prix doit être un nombre valide"
             (price.toDoubleOrNull() ?: 0.0) <= 0      -> "Le prix doit être supérieur à 0"
@@ -141,6 +170,35 @@ class CreateListingViewModel : ViewModel() {
         _submitState.value = SubmitState.Idle
     }
 
+    private fun formatCalculatedValue(value: Double): String {
+        val rounded = value.toLong()
+        return if (value == rounded.toDouble()) rounded.toString() else value.toString()
+    }
+
+    val totalPower: String
+        get() {
+            val unitPower = powerPerEngine.toDoubleOrNull() ?: return ""
+
+            return when (category) {
+                "boat", "jetski" -> {
+                    val count = engineCount.toDoubleOrNull() ?: return ""
+                    formatCalculatedValue(count * unitPower)
+                }
+                "engine" -> formatCalculatedValue(unitPower)
+                else     -> ""
+            }
+        }
+
+    val totalReservoirCapacity: String
+        get() {
+            val values = listOf(fuelTankCapacity, freshWaterTankCapacity, storageCapacity)
+                .mapNotNull { it.toDoubleOrNull() }
+
+            if (values.isEmpty()) return ""
+
+            return formatCalculatedValue(values.sum())
+        }
+
     // ── Submit ────────────────────────────────────────────────────────────────
 
     fun submit(context: Context) {
@@ -148,45 +206,93 @@ class CreateListingViewModel : ViewModel() {
             _submitState.value = SubmitState.Loading
 
             try {
-                // Build text fields map
-                val data = buildMap<String, @JvmSuppressWildcards okhttp3.RequestBody> {
-                    fun str(value: String) = value.toRequestBody("text/plain".toMediaTypeOrNull())
+                val parts = buildList {
+                    fun textPart(name: String, value: String) {
+                        if (value.isNotBlank()) add(MultipartBody.Part.createFormData(name, value))
+                    }
 
-                    put("title",        str(title.trim()))
-                    put("description",  str(description.trim()))
-                    put("category",     str(category))
-                    put("wilaya",       str(wilaya))
-                    if (ville.isNotBlank()) put("ville", str(ville.trim()))
-                    put("condition",    str(condition))
-                    put("offer_type",   str(offerType))
-                    put("price_dzd",    str(price.trim()))
-                    put("currency",     str(currency))
-                    put("mediation_enabled", str(if (mediationEnabled) "1" else "0"))
+                    textPart("title", title.trim())
+                    textPart("description", description.trim())
+                    textPart("category", category)
+                    textPart("wilaya", wilaya)
+                    textPart("ville", ville.trim())
+                    textPart("etat", condition)
+                    textPart("type_offre", offerType)
+                    textPart("price_dzd", price.trim())
+                    textPart("currency", currency)
+                    textPart("mediation_enabled", if (mediationEnabled) "1" else "0")
 
-                    // Specs packaged as flat keys: specs[group][key]
-                    fun specStr(group: String, key: String, value: String) {
-                        if (value.isNotBlank()) put("specs[$group][$key]", str(value))
+                    fun specPart(group: String, key: String, value: String) {
+                        textPart("specs[$group][$key]", value)
                     }
 
                     when (category) {
                         "boat", "jetski" -> {
-                            specStr("general",      "annee_construction", year)
-                            specStr("general",      "marque",             brand)
-                            specStr("general",      "modele",             model)
-                            specStr("general",      "couleur",            color)
-                            specStr("dimensions",   "longueur",           length)
-                            specStr("motorisation", "puissance_totale",   power)
-                            specStr("motorisation", "type_moteur",        engineType)
-                            specStr("motorisation", "nb_moteurs",         nbEngines)
+                            specPart("general",      "annee_construction", year)
+                            specPart("general",      "fabricant",          manufacturer)
+                            specPart("general",      "modele",             model)
+                            specPart("general",      "couleur",            color)
+                            specPart("general",      "immatriculation",    registration)
+
+                            specPart("dimensions",   "longueur",           length)
+                            specPart("dimensions",   "largeur",            width)
+                            specPart("dimensions",   "tonnage",            tonnage)
+
+                            specPart("motorisation", "marque_moteur",      engineBrand)
+                            specPart("motorisation", "propulsion",         propulsion)
+                            specPart("motorisation", "type_carburant",     fuelType)
+                            specPart("motorisation", "nombre_moteurs",     engineCount)
+                            specPart("motorisation", "puissance_par_moteur", powerPerEngine)
+                            specPart("motorisation", "puissance_totale",   totalPower)
+                            specPart("motorisation", "nombre_heures",      engineHours)
+
+                            specPart("extras",       "remorque",           trailerIncluded)
+                            if (trailerIncluded == "oui") {
+                                specPart("extras",   "marque_remorque",    trailerBrand)
+                            }
+
+                            specPart("extras",       "place_au_port",      berthAvailable)
+                            if (berthAvailable == "oui") {
+                                specPart("extras",   "adresse_port",       portAddress)
+                                specPart("extras",   "longueur_place",     berthLength)
+                                specPart("extras",   "largeur_place",      berthWidth)
+                            }
+
+                            if (category == "boat") {
+                                specPart("dimensions",   "tirant_eau",            waterDraft)
+                                specPart("dimensions",   "tirant_air",            airDraft)
+
+                                specPart("reservoirs",   "nombre_reservoirs",     reservoirCount)
+                                specPart("reservoirs",   "reservoir_carburant",   fuelTankCapacity)
+                                specPart("reservoirs",   "reservoir_eau_douce",   freshWaterTankCapacity)
+                                specPart("reservoirs",   "stockage",              storageCapacity)
+
+                                specPart("amenagements", "nombre_couchettes",     berthCount)
+                                specPart("amenagements", "nombre_cabines",        cabinCount)
+                                specPart("amenagements", "nombre_sanitaire",      sanitaryCount)
+                                specPart("amenagements", "nombre_cuisine",        kitchenCount)
+                            }
                         }
+
                         "engine" -> {
-                            specStr("general",      "marque",           engineBrand)
-                            specStr("motorisation", "puissance_totale", power)
-                            specStr("motorisation", "type_moteur",      engineType)
+                            specPart("general",      "annee_construction", year)
+                            specPart("general",      "fabricant",          manufacturer)
+                            specPart("general",      "modele",             model)
+
+                            specPart("motorisation", "marque_moteur",      engineBrand)
+                            specPart("motorisation", "propulsion",         propulsion)
+                            specPart("motorisation", "type_carburant",     fuelType)
+                            specPart("motorisation", "puissance_par_moteur", powerPerEngine)
+                            specPart("motorisation", "puissance_totale",   totalPower)
+                            specPart("motorisation", "nombre_heures",      engineHours)
+                            specPart("motorisation", "cylindree",          cylinders)
                         }
+
                         "parts" -> {
-                            specStr("general", "marque",          partBrand)
-                            specStr("general", "compatible_avec", compatibleWith)
+                            specPart("general", "marque",          partBrand)
+                            specPart("general", "part_type",       partType)
+                            specPart("general", "compatible_with", compatibleWith)
+                            specPart("general", "part_number",     partNumber)
                         }
                     }
                 }
@@ -209,7 +315,7 @@ class CreateListingViewModel : ViewModel() {
                     MultipartBody.Part.createFormData("images[]", tempFile.name, requestBody)
                 }
 
-                val response = api.createListing(data, imageParts)
+                val response = api.createListing(parts + imageParts)
 
                 if (response.isSuccessful) {
                     val listing = response.body()?.listing

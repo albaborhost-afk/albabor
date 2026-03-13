@@ -62,8 +62,7 @@ interface ApiService {
     @Multipart
     @POST("listings")
     suspend fun createListing(
-        @PartMap data: Map<String, @JvmSuppressWildcards RequestBody>,
-        @Part images: List<MultipartBody.Part>
+        @Part parts: List<MultipartBody.Part>
     ): Response<CreateListingResponse>
 
     @Multipart

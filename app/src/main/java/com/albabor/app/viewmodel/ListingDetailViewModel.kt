@@ -8,6 +8,8 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.albabor.app.data.model.Listing
 import com.albabor.app.data.repository.FavoriteRepository
 import com.albabor.app.data.repository.ListingRepository
+import com.albabor.app.data.repository.MediationRepository
+import com.albabor.app.data.repository.ProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +19,8 @@ class ListingDetailViewModel(private val listingId: Int) : ViewModel() {
 
     private val repo     = ListingRepository()
     private val favRepo  = FavoriteRepository()
+    private val convoRepo = MediationRepository()
+    private val profileRepo = ProfileRepository()
 
     // ── UI State ──────────────────────────────────────────────────────────────
 
@@ -37,16 +41,33 @@ class ListingDetailViewModel(private val listingId: Int) : ViewModel() {
     private val _favLoading = MutableStateFlow(false)
     val favLoading: StateFlow<Boolean> = _favLoading.asStateFlow()
 
+    private val _currentUserId = MutableStateFlow(0)
+    val currentUserId: StateFlow<Int> = _currentUserId.asStateFlow()
+
+    private val _isStartingConversation = MutableStateFlow(false)
+    val isStartingConversation: StateFlow<Boolean> = _isStartingConversation.asStateFlow()
+
+    private val _startedConversationId = MutableStateFlow<Int?>(null)
+    val startedConversationId: StateFlow<Int?> = _startedConversationId.asStateFlow()
+
     private val _snackbar = MutableStateFlow<String?>(null)
     val snackbar: StateFlow<String?> = _snackbar.asStateFlow()
 
     // ── Init ──────────────────────────────────────────────────────────────────
 
     init {
+        loadCurrentUser()
         loadListing()
     }
 
     // ── Actions ───────────────────────────────────────────────────────────────
+
+    private fun loadCurrentUser() {
+        viewModelScope.launch {
+            profileRepo.getProfile()
+                .onSuccess { _currentUserId.value = it.id }
+        }
+    }
 
     fun loadListing() {
         viewModelScope.launch {
@@ -59,6 +80,24 @@ class ListingDetailViewModel(private val listingId: Int) : ViewModel() {
                 .onFailure { e ->
                     _state.value = State.Error(e.message ?: "Impossible de charger l'annonce")
                 }
+        }
+    }
+
+    fun startConversation(body: String) {
+        val message = body.trim()
+        if (message.isEmpty() || _isStartingConversation.value) return
+
+        viewModelScope.launch {
+            _isStartingConversation.value = true
+            convoRepo.startConversation(listingId, message)
+                .onSuccess { conversation ->
+                    _startedConversationId.value = conversation.id
+                    _snackbar.value = "Message envoyé"
+                }
+                .onFailure { error ->
+                    _snackbar.value = error.message ?: "Impossible d'envoyer le message"
+                }
+            _isStartingConversation.value = false
         }
     }
 
@@ -90,6 +129,10 @@ class ListingDetailViewModel(private val listingId: Int) : ViewModel() {
 
     fun clearSnackbar() {
         _snackbar.value = null
+    }
+
+    fun clearStartedConversation() {
+        _startedConversationId.value = null
     }
 
     // ── Factory ───────────────────────────────────────────────────────────────

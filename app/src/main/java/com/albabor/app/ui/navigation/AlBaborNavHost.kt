@@ -3,35 +3,40 @@ package com.albabor.app.ui.navigation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -57,11 +62,8 @@ import com.albabor.app.ui.screens.profile.EditProfileScreen
 import com.albabor.app.ui.screens.profile.ProfileScreen
 import com.albabor.app.ui.screens.payments.SubscriptionsScreen
 import com.albabor.app.ui.screens.verification.VerificationScreen
-import com.albabor.app.ui.theme.AppBackground
-import com.albabor.app.ui.theme.GlassSurfaceStrong
 import com.albabor.app.ui.theme.Gray400
 import com.albabor.app.ui.theme.OceanBlue900
-import com.albabor.app.ui.theme.Teal500
 import com.albabor.app.ui.theme.White
 import kotlinx.coroutines.runBlocking
 
@@ -89,6 +91,7 @@ fun AlBaborNavHost() {
     val bottomNavItems = listOf(
         BottomNavItem(Screen.Home, "Accueil", Icons.Filled.Home, Icons.Outlined.Home),
         BottomNavItem(Screen.Explore, "Explorer", Icons.Filled.Search, Icons.Outlined.Search),
+        BottomNavItem(Screen.Conversations, "Messages", Icons.AutoMirrored.Filled.Chat, Icons.Outlined.ChatBubbleOutline),
         BottomNavItem(Screen.CreateListing, "Publier", Icons.Filled.Add, Icons.Filled.Add),
         BottomNavItem(Screen.Favorites, "Favoris", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder),
         BottomNavItem(Screen.Profile, "Profil", Icons.Filled.Person, Icons.Outlined.Person),
@@ -99,6 +102,7 @@ fun AlBaborNavHost() {
     val showBottomBar = currentRoute == Screen.Home.route ||
         currentRoute == Screen.Explore.route ||
         currentRoute == Screen.Explore.pattern ||
+        currentRoute == Screen.Conversations.route ||
         currentRoute == Screen.Favorites.route ||
         currentRoute == Screen.Profile.route
 
@@ -192,6 +196,9 @@ fun AlBaborNavHost() {
                 ListingDetailScreen(
                     listingId = listingId,
                     onBack = { navController.popBackStack() },
+                    onConversationRequested = { conversationId ->
+                        navController.navigate(Screen.ConversationDetail.route(conversationId))
+                    },
                     onMediationRequested = { id ->
                         navController.navigate(Screen.MediationDetail.route(id))
                     }
@@ -257,7 +264,10 @@ fun AlBaborNavHost() {
 
             // ── Conversations ─────────────────────────────────────────────────────
             composable(Screen.Conversations.route) {
-                ConversationsScreen(navController = navController)
+                ConversationsScreen(
+                    navController = navController,
+                    showBackButton = false
+                )
             }
             composable(
                 route = Screen.ConversationDetail.route,
@@ -279,149 +289,98 @@ private fun FloatingBottomBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(AppBackground)
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 30.dp)
+            .shadow(
+                elevation = 24.dp,
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                ambientColor = OceanBlue900.copy(alpha = 0.10f),
+                spotColor = OceanBlue900.copy(alpha = 0.16f)
+            )
+            .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+            .background(White)
     ) {
-        Surface(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 18.dp),
-            shape = RoundedCornerShape(28.dp),
-            color = GlassSurfaceStrong,
-            shadowElevation = 16.dp,
-            tonalElevation = 0.dp
+                .padding(horizontal = 4.dp, vertical = 8.dp)
+                .navigationBarsPadding(),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, top = 10.dp, bottom = 6.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                items.forEach { item ->
-                    if (item.screen == Screen.CreateListing) {
-                        Box(modifier = Modifier.width(72.dp))
-                    } else {
-                        FloatingTabItem(
-                            item = item,
-                            selected = when (item.screen) {
-                                Screen.Explore -> currentRoute == Screen.Explore.route || currentRoute == Screen.Explore.pattern
-                                else -> currentRoute == item.screen.route
-                            },
-                            onClick = { onNavigate(item) },
-                            modifier = Modifier.weight(1f, fill = true)
-                        )
-                    }
+            items.forEach { item ->
+                val isSelected = when (item.screen) {
+                    Screen.Explore -> currentRoute == Screen.Explore.route || currentRoute == Screen.Explore.pattern
+                    else -> currentRoute == item.screen.route
                 }
+                NavTabItem(
+                    item = item,
+                    selected = isSelected,
+                    onClick = { onNavigate(item) },
+                    modifier = Modifier.weight(1f)
+                )
             }
-        }
-
-        items.firstOrNull { it.screen == Screen.CreateListing }?.let { publishItem ->
-            PublishTabButton(
-                modifier = Modifier.align(Alignment.TopCenter),
-                onClick = { onNavigate(publishItem) }
-            )
         }
     }
 }
 
 @Composable
-private fun FloatingTabItem(
+private fun NavTabItem(
     item: BottomNavItem,
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val pillAlpha by animateFloatAsState(
+        targetValue = if (selected) 1f else 0f,
+        animationSpec = tween(220),
+        label = "pillAlpha"
+    )
+    val iconColor by animateColorAsState(
+        targetValue = if (selected) OceanBlue900 else Gray400,
+        animationSpec = tween(220),
+        label = "iconColor"
+    )
+    val labelColor by animateColorAsState(
+        targetValue = if (selected) OceanBlue900 else Gray400,
+        animationSpec = tween(220),
+        label = "labelColor"
+    )
+    val iconScale by animateFloatAsState(
+        targetValue = if (selected) 1.08f else 1f,
+        animationSpec = spring(dampingRatio = 0.48f, stiffness = 360f),
+        label = "iconScale"
+    )
+
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(14.dp))
             .clickable(onClick = onClick)
-            .padding(vertical = 6.dp),
+            .padding(vertical = 8.dp, horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(999.dp))
-                .background(
-                    if (selected) {
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Teal500.copy(alpha = 0.16f),
-                                OceanBlue900.copy(alpha = 0.08f)
-                            )
-                        )
-                    } else {
-                        Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent))
-                    }
-                )
-                .padding(horizontal = 12.dp, vertical = 4.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(OceanBlue900.copy(alpha = 0.09f * pillAlpha))
+                .padding(horizontal = 13.dp, vertical = 5.dp),
+            contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
                 contentDescription = item.label,
-                tint = if (selected) OceanBlue900 else Gray400,
-                modifier = Modifier.size(20.dp)
+                tint = iconColor,
+                modifier = Modifier
+                    .size(22.dp)
+                    .scale(iconScale)
             )
         }
-
         Text(
             text = item.label,
-            color = if (selected) OceanBlue900 else Gray400,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium
+            color = labelColor,
+            fontSize = 9.sp,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            maxLines = 1,
+            letterSpacing = 0.2.sp
         )
-    }
-}
-
-@Composable
-private fun PublishTabButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = modifier
-            .offset(y = (-2).dp)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(68.dp)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(Teal500.copy(alpha = 0.20f), Color.Transparent)
-                    ),
-                    CircleShape
-                )
-        )
-
-        Surface(
-            modifier = Modifier.size(58.dp),
-            shape = CircleShape,
-            color = White,
-            shadowElevation = 10.dp,
-            tonalElevation = 0.dp
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Box(
-                    modifier = Modifier
-                        .size(52.dp)
-                        .clip(CircleShape)
-                        .background(
-                            Brush.linearGradient(
-                                colors = listOf(OceanBlue900, Teal500)
-                            )
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Publier",
-                        tint = White,
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-            }
-        }
     }
 }

@@ -19,17 +19,17 @@ fun ShimmerListingCard(modifier: Modifier = Modifier) {
     val cardShape = RoundedCornerShape(12.dp)
 
     Surface(
-        modifier = modifier,
+        modifier = modifier.heightIn(min = 272.dp),
         shape = cardShape,
         tonalElevation = 1.dp,
         shadowElevation = 2.dp
     ) {
         Column {
-            // Image placeholder — 16:10 ratio
+            // Image placeholder — closer to the final explore card height
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(16f / 10f)
+                    .height(182.dp)
                     .placeholder(
                         visible = true,
                         highlight = PlaceholderHighlight.fade()

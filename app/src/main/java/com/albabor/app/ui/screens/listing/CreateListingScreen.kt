@@ -65,6 +65,27 @@ private val MEDITERRANEAN_COUNTRIES = listOf(
     CountryEntry("🇲🇨", "Monaco"),
 )
 
+private val IMMATRICULATION_OPTIONS = listOf(
+    "Algérien",
+    "Polonais",
+    "Espagnol",
+    "Français",
+    "Italien",
+    "Autre",
+)
+
+private val PROPULSION_OPTIONS = listOf(
+    "Hors-Bord",
+    "In-bord",
+)
+
+private val FUEL_OPTIONS = listOf(
+    "Essence",
+    "Diesel",
+    "Électrique",
+    "Hybride",
+)
+
 // ── Entry Point ───────────────────────────────────────────────────────────────
 
 @Composable
@@ -507,34 +528,6 @@ private fun Step2Info(vm: CreateListingViewModel) {
                 maxLength     = 100
             )
         }
-
-        FormCard {
-            SelectorGroup(
-                title   = "État *",
-                options = listOf(
-                    "new"            to "Neuf",
-                    "like_new"       to "Comme neuf",
-                    "good"           to "Bon état",
-                    "average"        to "État moyen",
-                    "needs_revision" to "À réviser"
-                ),
-                selected  = vm.condition,
-                onSelect  = { vm.condition = it }
-            )
-        }
-
-        FormCard {
-            SelectorGroup(
-                title   = "Type d'offre *",
-                options = listOf(
-                    "negotiable" to "Négociable",
-                    "fixed"      to "Prix ferme",
-                    "free"       to "Gratuit"
-                ),
-                selected  = vm.offerType,
-                onSelect  = { vm.offerType = it }
-            )
-        }
     }
 }
 
@@ -550,7 +543,7 @@ private fun Step3Price(vm: CreateListingViewModel) {
     ) {
         StepHeader(
             title    = "Prix",
-            subtitle = "Définissez le prix de votre annonce"
+            subtitle = "Définissez le prix et les conditions de votre annonce"
         )
 
         // Currency toggle
@@ -566,7 +559,7 @@ private fun Step3Price(vm: CreateListingViewModel) {
                 modifier              = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(14.dp))
-                    .background(AppBackground),
+                    .background(Gray100),
                 horizontalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 listOf("DZD" to "DA – Dinar algérien", "EUR" to "€ – Euro").forEach { (value, label) ->
@@ -583,13 +576,42 @@ private fun Step3Price(vm: CreateListingViewModel) {
                         Text(
                             text       = label,
                             color      = if (isSelected) Color.White
-                                         else MaterialTheme.colorScheme.onSurfaceVariant,
+                                         else Gray700,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                             style      = MaterialTheme.typography.bodyMedium
                         )
                     }
                 }
             }
+        }
+
+        FormCard {
+            SelectorGroup(
+                title   = "État *",
+                options = listOf(
+                    "jamais_utilise" to "Neuf",
+                    "comme_neuf"     to "Comme neuf",
+                    "bon_etat"       to "Bon état",
+                    "etat_moyen"     to "État moyen",
+                    "a_reviser"      to "À réviser"
+                ),
+                selected  = vm.condition,
+                onSelect  = { vm.condition = it }
+            )
+        }
+
+        FormCard {
+            SelectorGroup(
+                title   = "Type d'offre *",
+                options = listOf(
+                    "negociable" to "Négociable",
+                    "fix"        to "Prix ferme",
+                    "offert"     to "Gratuit"
+                ),
+                selected  = vm.offerType,
+                onSelect  = { vm.offerType = it },
+                compact   = true
+            )
         }
 
         // Price input
@@ -605,7 +627,12 @@ private fun Step3Price(vm: CreateListingViewModel) {
                 value         = vm.price,
                 onValueChange = { if (it.all { c -> c.isDigit() || c == '.' }) vm.price = it },
                 modifier      = Modifier.fillMaxWidth(),
-                placeholder   = { Text("0") },
+                placeholder   = {
+                    Text(
+                        text  = "0",
+                        color = Gray400
+                    )
+                },
                 prefix        = {
                     Icon(
                         imageVector        = Icons.Default.Sell,
@@ -623,7 +650,19 @@ private fun Step3Price(vm: CreateListingViewModel) {
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 shape           = RoundedCornerShape(12.dp),
-                singleLine      = true
+                singleLine      = true,
+                colors          = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor         = Gray900,
+                    unfocusedTextColor       = Gray900,
+                    disabledTextColor        = Gray900,
+                    focusedPlaceholderColor  = Gray400,
+                    unfocusedPlaceholderColor = Gray400,
+                    focusedContainerColor    = Color.White,
+                    unfocusedContainerColor  = Color.White,
+                    focusedBorderColor       = OceanBlue500,
+                    unfocusedBorderColor     = Gray300,
+                    cursorColor              = OceanBlue700
+                )
             )
 
             // Price preview
@@ -768,9 +807,9 @@ private fun BoatJetSkiSpecs(vm: CreateListingViewModel) {
         )
         HorizontalDivider(color = Gray100)
         FormField(
-            label         = "Marque",
-            value         = vm.brand,
-            onValueChange = { vm.brand = it },
+            label         = "Fabricant",
+            value         = vm.manufacturer,
+            onValueChange = { vm.manufacturer = it },
             placeholder   = "ex. Bayliner, Yamaha...",
             icon          = Icons.Default.LocalOffer
         )
@@ -790,6 +829,13 @@ private fun BoatJetSkiSpecs(vm: CreateListingViewModel) {
             placeholder   = "ex. Blanc, Bleu marine...",
             icon          = Icons.Default.Palette
         )
+        HorizontalDivider(color = Gray100)
+        SelectorGroup(
+            title   = "Immatriculation",
+            options = IMMATRICULATION_OPTIONS.map { it to it },
+            selected = vm.registration,
+            onSelect = { vm.registration = it }
+        )
     }
 
     // Dimensions
@@ -803,74 +849,344 @@ private fun BoatJetSkiSpecs(vm: CreateListingViewModel) {
             icon          = Icons.Default.Straighten,
             keyboardType  = KeyboardType.Decimal
         )
+        HorizontalDivider(color = Gray100)
+        FormField(
+            label         = "Largeur (mètres)",
+            value         = vm.width,
+            onValueChange = { vm.width = it },
+            placeholder   = "ex. 2.3",
+            icon          = Icons.Default.Straighten,
+            keyboardType  = KeyboardType.Decimal
+        )
+        HorizontalDivider(color = Gray100)
+        FormField(
+            label         = "Tonnage (T)",
+            value         = vm.tonnage,
+            onValueChange = { vm.tonnage = it },
+            placeholder   = "ex. 1.5",
+            icon          = Icons.Default.Scale,
+            keyboardType  = KeyboardType.Decimal
+        )
+
+        if (vm.category == "boat") {
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Tirant d'eau (mètres)",
+                value         = vm.waterDraft,
+                onValueChange = { vm.waterDraft = it },
+                placeholder   = "ex. 0.8",
+                icon          = Icons.Default.Water,
+                keyboardType  = KeyboardType.Decimal
+            )
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Tirant d'air (mètres)",
+                value         = vm.airDraft,
+                onValueChange = { vm.airDraft = it },
+                placeholder   = "ex. 3.2",
+                icon          = Icons.Default.Height,
+                keyboardType  = KeyboardType.Decimal
+            )
+        }
     }
 
     // Motorisation
     SpecsSectionHeader(title = "Motorisation", icon = Icons.Default.Speed)
     FormCard {
         FormField(
-            label         = "Puissance totale (CV)",
-            value         = vm.power,
-            onValueChange = { vm.power = it },
+            label         = "Marque du moteur",
+            value         = vm.engineBrand,
+            onValueChange = { vm.engineBrand = it },
+            placeholder   = "ex. Yamaha, Mercury...",
+            icon          = Icons.Default.Settings
+        )
+        HorizontalDivider(color = Gray100)
+        SelectorGroup(
+            title   = "Propulsion",
+            options = PROPULSION_OPTIONS.map { it to it },
+            selected = vm.propulsion,
+            onSelect = { vm.propulsion = it },
+            compact  = true
+        )
+        HorizontalDivider(color = Gray100)
+        SelectorGroup(
+            title   = "Type de carburant",
+            options = FUEL_OPTIONS.map { it to it },
+            selected = vm.fuelType,
+            onSelect = { vm.fuelType = it }
+        )
+        HorizontalDivider(color = Gray100)
+        FormField(
+            label         = "Nombre de moteurs",
+            value         = vm.engineCount,
+            onValueChange = { vm.engineCount = it },
+            placeholder   = "ex. 1",
+            icon          = Icons.Default.Numbers,
+            keyboardType  = KeyboardType.Number
+        )
+        HorizontalDivider(color = Gray100)
+        FormField(
+            label         = "Puissance par moteur (CV)",
+            value         = vm.powerPerEngine,
+            onValueChange = { vm.powerPerEngine = it },
             placeholder   = "ex. 150",
             icon          = Icons.Default.Speed,
             keyboardType  = KeyboardType.Number
         )
         HorizontalDivider(color = Gray100)
-        SelectorGroup(
-            title   = "Type de moteur",
-            options = listOf(
-                "inboard"  to "In-bord",
-                "outboard" to "Hors-bord",
-                "jet"      to "Jet"
-            ),
-            selected = vm.engineType,
-            onSelect = { vm.engineType = it },
-            compact  = true
+        FormField(
+            label         = "Puissance totale (CV)",
+            value         = vm.totalPower,
+            onValueChange = {},
+            placeholder   = "Calcul automatique",
+            icon          = Icons.Default.Bolt,
+            keyboardType  = KeyboardType.Number,
+            readOnly      = true,
+            supportingText = "Calculée à partir du nombre de moteurs et de la puissance par moteur."
         )
         HorizontalDivider(color = Gray100)
         FormField(
-            label         = "Nombre de moteurs",
-            value         = vm.nbEngines,
-            onValueChange = { vm.nbEngines = it },
-            placeholder   = "ex. 1",
-            icon          = Icons.Default.Numbers,
+            label         = "Nombre d'heures",
+            value         = vm.engineHours,
+            onValueChange = { vm.engineHours = it },
+            placeholder   = "ex. 250",
+            icon          = Icons.Default.Schedule,
             keyboardType  = KeyboardType.Number
         )
+    }
+
+    if (vm.category == "boat") {
+        SpecsSectionHeader(title = "Réservoirs", icon = Icons.Default.LocalGasStation)
+        FormCard {
+            FormField(
+                label         = "Nombre de réservoirs",
+                value         = vm.reservoirCount,
+                onValueChange = { vm.reservoirCount = it },
+                placeholder   = "ex. 1",
+                icon          = Icons.Default.Numbers,
+                keyboardType  = KeyboardType.Number
+            )
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Carburant (L)",
+                value         = vm.fuelTankCapacity,
+                onValueChange = { vm.fuelTankCapacity = it },
+                placeholder   = "ex. 200",
+                icon          = Icons.Default.LocalGasStation,
+                keyboardType  = KeyboardType.Number
+            )
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Eau douce (L)",
+                value         = vm.freshWaterTankCapacity,
+                onValueChange = { vm.freshWaterTankCapacity = it },
+                placeholder   = "ex. 100",
+                icon          = Icons.Default.WaterDrop,
+                keyboardType  = KeyboardType.Number
+            )
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Stockage (L)",
+                value         = vm.storageCapacity,
+                onValueChange = { vm.storageCapacity = it },
+                placeholder   = "ex. 50",
+                icon          = Icons.Default.Inventory2,
+                keyboardType  = KeyboardType.Number
+            )
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label          = "Capacité totale (L)",
+                value          = vm.totalReservoirCapacity,
+                onValueChange  = {},
+                placeholder    = "Calcul automatique",
+                icon           = Icons.Default.Calculate,
+                keyboardType   = KeyboardType.Number,
+                readOnly       = true,
+                supportingText = "Somme automatique carburant + eau douce + stockage."
+            )
+        }
+
+        SpecsSectionHeader(title = "Aménagements", icon = Icons.Default.Home)
+        FormCard {
+            FormField(
+                label         = "Couchettes",
+                value         = vm.berthCount,
+                onValueChange = { vm.berthCount = it },
+                placeholder   = "ex. 2",
+                icon          = Icons.Default.Hotel,
+                keyboardType  = KeyboardType.Number
+            )
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Cabines",
+                value         = vm.cabinCount,
+                onValueChange = { vm.cabinCount = it },
+                placeholder   = "ex. 1",
+                icon          = Icons.Default.MeetingRoom,
+                keyboardType  = KeyboardType.Number
+            )
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Sanitaires",
+                value         = vm.sanitaryCount,
+                onValueChange = { vm.sanitaryCount = it },
+                placeholder   = "ex. 1",
+                icon          = Icons.Default.Shower,
+                keyboardType  = KeyboardType.Number
+            )
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Cuisines",
+                value         = vm.kitchenCount,
+                onValueChange = { vm.kitchenCount = it },
+                placeholder   = "ex. 1",
+                icon          = Icons.Default.Restaurant,
+                keyboardType  = KeyboardType.Number
+            )
+        }
+    }
+
+    SpecsSectionHeader(title = "Extras", icon = Icons.Default.Add)
+    FormCard {
+        SelectorGroup(
+            title   = "Remorque",
+            options = listOf("oui" to "Oui, incluse", "non" to "Non"),
+            selected = vm.trailerIncluded,
+            onSelect = { vm.trailerIncluded = it },
+            compact  = true
+        )
+
+        if (vm.trailerIncluded == "oui") {
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Marque de la remorque",
+                value         = vm.trailerBrand,
+                onValueChange = { vm.trailerBrand = it },
+                placeholder   = "ex. Satellite...",
+                icon          = Icons.Default.LocalShipping
+            )
+        }
+
+        HorizontalDivider(color = Gray100)
+        SelectorGroup(
+            title   = "Place au port",
+            options = listOf("oui" to "Oui", "non" to "Non"),
+            selected = vm.berthAvailable,
+            onSelect = { vm.berthAvailable = it },
+            compact  = true
+        )
+
+        if (vm.berthAvailable == "oui") {
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Adresse du port",
+                value         = vm.portAddress,
+                onValueChange = { vm.portAddress = it },
+                placeholder   = "ex. Port de plaisance d'Oran",
+                icon          = Icons.Default.Place
+            )
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Longueur place (mètres)",
+                value         = vm.berthLength,
+                onValueChange = { vm.berthLength = it },
+                placeholder   = "ex. 8.0",
+                icon          = Icons.Default.Straighten,
+                keyboardType  = KeyboardType.Decimal
+            )
+            HorizontalDivider(color = Gray100)
+            FormField(
+                label         = "Largeur place (mètres)",
+                value         = vm.berthWidth,
+                onValueChange = { vm.berthWidth = it },
+                placeholder   = "ex. 3.0",
+                icon          = Icons.Default.Straighten,
+                keyboardType  = KeyboardType.Decimal
+            )
+        }
     }
 }
 
 @Composable
 private fun EngineSpecs(vm: CreateListingViewModel) {
-    SpecsSectionHeader(title = "Informations moteur", icon = Icons.Default.Settings)
+    SpecsSectionHeader(title = "Général", icon = Icons.Default.Info)
     FormCard {
         FormField(
-            label         = "Marque",
-            value         = vm.engineBrand,
-            onValueChange = { vm.engineBrand = it },
-            placeholder   = "ex. Mercury, Suzuki, Yamaha...",
+            label         = "Année de construction",
+            value         = vm.year,
+            onValueChange = { vm.year = it },
+            placeholder   = "ex. 2020",
+            icon          = Icons.Default.CalendarToday,
+            keyboardType  = KeyboardType.Number
+        )
+        HorizontalDivider(color = Gray100)
+        FormField(
+            label         = "Fabricant",
+            value         = vm.manufacturer,
+            onValueChange = { vm.manufacturer = it },
+            placeholder   = "ex. Mercury, Suzuki...",
             icon          = Icons.Default.LocalOffer
         )
         HorizontalDivider(color = Gray100)
         FormField(
+            label         = "Modèle",
+            value         = vm.model,
+            onValueChange = { vm.model = it },
+            placeholder   = "ex. F150",
+            icon          = Icons.Default.Settings
+        )
+    }
+
+    SpecsSectionHeader(title = "Motorisation", icon = Icons.Default.Settings)
+    FormCard {
+        FormField(
+            label         = "Marque du moteur",
+            value         = vm.engineBrand,
+            onValueChange = { vm.engineBrand = it },
+            placeholder   = "ex. Mercury, Suzuki, Yamaha...",
+            icon          = Icons.Default.Settings
+        )
+        HorizontalDivider(color = Gray100)
+        SelectorGroup(
+            title   = "Propulsion",
+            options = PROPULSION_OPTIONS.map { it to it },
+            selected = vm.propulsion,
+            onSelect = { vm.propulsion = it },
+            compact  = true
+        )
+        HorizontalDivider(color = Gray100)
+        SelectorGroup(
+            title   = "Type de carburant",
+            options = FUEL_OPTIONS.map { it to it },
+            selected = vm.fuelType,
+            onSelect = { vm.fuelType = it }
+        )
+        HorizontalDivider(color = Gray100)
+        FormField(
             label         = "Puissance (CV)",
-            value         = vm.power,
-            onValueChange = { vm.power = it },
+            value         = vm.powerPerEngine,
+            onValueChange = { vm.powerPerEngine = it },
             placeholder   = "ex. 90",
             icon          = Icons.Default.Speed,
             keyboardType  = KeyboardType.Number
         )
         HorizontalDivider(color = Gray100)
-        SelectorGroup(
-            title   = "Type de moteur",
-            options = listOf(
-                "inboard"  to "In-bord",
-                "outboard" to "Hors-bord",
-                "jet"      to "Jet"
-            ),
-            selected = vm.engineType,
-            onSelect = { vm.engineType = it },
-            compact  = true
+        FormField(
+            label         = "Nombre d'heures",
+            value         = vm.engineHours,
+            onValueChange = { vm.engineHours = it },
+            placeholder   = "ex. 250",
+            icon          = Icons.Default.Schedule,
+            keyboardType  = KeyboardType.Number
+        )
+        HorizontalDivider(color = Gray100)
+        FormField(
+            label         = "Cylindrée (cc)",
+            value         = vm.cylinders,
+            onValueChange = { vm.cylinders = it },
+            placeholder   = "ex. 2670",
+            icon          = Icons.Default.Tune,
+            keyboardType  = KeyboardType.Number
         )
     }
 }
@@ -879,6 +1195,14 @@ private fun EngineSpecs(vm: CreateListingViewModel) {
 private fun PartsSpecs(vm: CreateListingViewModel) {
     SpecsSectionHeader(title = "Informations pièce", icon = Icons.Default.Build)
     FormCard {
+        FormField(
+            label         = "Type de pièce",
+            value         = vm.partType,
+            onValueChange = { vm.partType = it },
+            placeholder   = "ex. Hélice, filtre...",
+            icon          = Icons.Default.Category
+        )
+        HorizontalDivider(color = Gray100)
         FormField(
             label         = "Marque",
             value         = vm.partBrand,
@@ -893,6 +1217,14 @@ private fun PartsSpecs(vm: CreateListingViewModel) {
             onValueChange = { vm.compatibleWith = it },
             placeholder   = "ex. Yamaha F115, 2015-2020",
             icon          = Icons.Default.Link
+        )
+        HorizontalDivider(color = Gray100)
+        FormField(
+            label         = "Référence / N° de pièce",
+            value         = vm.partNumber,
+            onValueChange = { vm.partNumber = it },
+            placeholder   = "ex. 6D8-WS24A-00-00",
+            icon          = Icons.Default.Tag
         )
     }
 }
@@ -1190,7 +1522,9 @@ private fun FormField(
     minLines: Int = 1,
     maxLines: Int = 1,
     maxLength: Int = Int.MAX_VALUE,
-    keyboardType: KeyboardType = KeyboardType.Text
+    keyboardType: KeyboardType = KeyboardType.Text,
+    readOnly: Boolean = false,
+    supportingText: String? = null
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
@@ -1203,6 +1537,7 @@ private fun FormField(
             value         = value,
             onValueChange = { if (it.length <= maxLength) onValueChange(it) },
             modifier      = Modifier.fillMaxWidth(),
+            readOnly      = readOnly,
             placeholder   = {
                 Text(
                     text  = placeholder,
@@ -1226,12 +1561,27 @@ private fun FormField(
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             shape           = RoundedCornerShape(14.dp),
             colors          = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor   = OceanBlue500,
-                unfocusedBorderColor = Gray200,
-                focusedContainerColor   = Color.White,
-                unfocusedContainerColor = AppBackground
+                focusedTextColor        = Gray900,
+                unfocusedTextColor      = Gray900,
+                disabledTextColor       = Gray900,
+                focusedPlaceholderColor = Gray400,
+                unfocusedPlaceholderColor = Gray400,
+                disabledPlaceholderColor = Gray400,
+                focusedBorderColor      = OceanBlue500,
+                unfocusedBorderColor    = Gray200,
+                disabledBorderColor     = Gray200,
+                cursorColor             = OceanBlue700,
+                focusedContainerColor   = if (readOnly) OceanBlue50 else Color.White,
+                unfocusedContainerColor = if (readOnly) OceanBlue50 else AppBackground
             )
         )
+        supportingText?.let {
+            Text(
+                text  = it,
+                style = MaterialTheme.typography.bodySmall,
+                color = Gray500
+            )
+        }
         if (maxLength < Int.MAX_VALUE) {
             Text(
                 text      = "${value.length} / $maxLength",
