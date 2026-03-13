@@ -2,9 +2,14 @@ package com.albabor.app.data.model
 
 import com.google.gson.annotations.SerializedName
 
-private const val LISTING_MEDIA_ROUTE = "https://albabor.com/media/listings"
+private const val LISTING_MEDIA_BASE = "https://albabor.com"
+private const val LISTING_MEDIA_ROUTE = "$LISTING_MEDIA_BASE/media/listings"
 
 private fun String?.ifNotBlank(): String? = this?.takeIf { it.isNotBlank() }
+
+/** Ensures URL is absolute so Coil can load it (API may send relative paths). */
+private fun String.ensureAbsoluteUrl(): String =
+    if (startsWith("http://") || startsWith("https://")) this else "$LISTING_MEDIA_BASE$this"
 
 private fun formatWholeAmount(value: Double): String =
     "%,.0f".format(value).replace(",", " ")
@@ -45,7 +50,7 @@ data class Listing(
     val category: String,                 // "boat" | "jetski" | "engine" | "parts"
     val status: String = "active",
     val wilaya: String?,
-    @SerializedName("media") val images: List<ListingImage> = emptyList(),
+    @SerializedName(value = "media", alternate = ["images"]) val images: List<ListingImage> = emptyList(),
     val specs: Map<String, Any?>? = null,
     val user: ListingUser?,
     @SerializedName("created_at") val createdAt: String = "",
@@ -168,11 +173,11 @@ data class ListingImage(
         get() = id.takeIf { it > 0 }?.let { "$LISTING_MEDIA_ROUTE/$it" }
 
     val detailUrl: String?
-        get() = url.ifNotBlank()
+        get() = url.ifNotBlank()?.ensureAbsoluteUrl()
             ?: mediaRouteBase
 
     val cardUrl: String?
-        get() = thumbnailUrl.ifNotBlank()
+        get() = thumbnailUrl.ifNotBlank()?.ensureAbsoluteUrl()
             ?: mediaRouteBase?.let { "$it/thumb" }
             ?: detailUrl
 }
