@@ -124,17 +124,30 @@ class ListingResource extends Resource
                                                     ->default('bon_etat')
                                                     ->required()
                                                     ->native(false),
-                                                Forms\Components\TextInput::make('wilaya')
-                                                    ->label('Wilaya')
-                                                    ->required()
-                                                    ->placeholder('Ex: Alger, Oran...'),
-                                                Forms\Components\TextInput::make('visible_a')
-                                                    ->label('Visible a')
-                                                    ->placeholder('Ex: Alger, Oran, Annaba...'),
-                                                Forms\Components\TextInput::make('pays')
+                                                Forms\Components\Select::make('pays')
                                                     ->label('Pays')
-                                                    ->default('Algerie')
-                                                    ->placeholder('Algerie'),
+                                                    ->options([
+                                                        'Algérie' => 'Algérie',
+                                                        'Tunisie' => 'Tunisie',
+                                                        'Maroc' => 'Maroc',
+                                                        'Égypte' => 'Égypte',
+                                                        'Espagne' => 'Espagne',
+                                                        'France' => 'France',
+                                                        'Italie' => 'Italie',
+                                                        'Grèce' => 'Grèce',
+                                                        'Croatie' => 'Croatie',
+                                                        'Slovénie' => 'Slovénie',
+                                                        'Turquie' => 'Turquie',
+                                                        'Liban' => 'Liban',
+                                                        'Malte' => 'Malte',
+                                                        'Monaco' => 'Monaco',
+                                                    ])
+                                                    ->default('Algérie')
+                                                    ->searchable()
+                                                    ->native(false),
+                                                Forms\Components\TextInput::make('wilaya')
+                                                    ->label('Ville / Région')
+                                                    ->placeholder('Ex: Alger, Oran, Paris...'),
                                             ]),
                                     ]),
 
@@ -235,13 +248,31 @@ class ListingResource extends Resource
                                         Forms\Components\TextInput::make('specs.motorisation.nombre_moteurs')
                                             ->label('Nombre de moteurs')
                                             ->numeric()
-                                            ->default(1),
+                                            ->default(1)
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                $puissance = (float) ($get('specs.motorisation.puissance_par_moteur') ?? 0);
+                                                $nombre = (float) ($state ?? 1);
+                                                if ($puissance > 0 && $nombre > 0) {
+                                                    $set('specs.motorisation.puissance_totale', (string) round($puissance * $nombre));
+                                                }
+                                            }),
                                         Forms\Components\TextInput::make('specs.motorisation.puissance_par_moteur')
                                             ->label('Puissance / moteur (CV)')
-                                            ->numeric(),
+                                            ->numeric()
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                $puissance = (float) ($state ?? 0);
+                                                $nombre = (float) ($get('specs.motorisation.nombre_moteurs') ?? 1);
+                                                if ($puissance > 0 && $nombre > 0) {
+                                                    $set('specs.motorisation.puissance_totale', (string) round($puissance * $nombre));
+                                                }
+                                            }),
                                         Forms\Components\TextInput::make('specs.motorisation.puissance_totale')
                                             ->label('Puissance totale (CV)')
-                                            ->numeric(),
+                                            ->numeric()
+                                            ->readOnly()
+                                            ->helperText('Calculé automatiquement'),
                                         Forms\Components\TextInput::make('specs.motorisation.nombre_heures')
                                             ->label('Heures de fonctionnement')
                                             ->numeric(),
@@ -383,11 +414,16 @@ class ListingResource extends Resource
                                                     return 'Aucune image';
                                                 }
 
+                                                $disk = config('filesystems.listing_disk', 'public');
                                                 $html = '<div style="display: flex; flex-wrap: wrap; gap: 12px;">';
                                                 foreach ($record->media as $media) {
-                                                    $url = route('listing-media.show', ['media' => $media->id]);
+                                                    try {
+                                                        $url = Storage::disk($disk)->url($media->path);
+                                                    } catch (\Throwable) {
+                                                        $url = route('listing-media.show', ['media' => $media->id]);
+                                                    }
                                                     $html .= '<div style="position: relative;">';
-                                                    $html .= '<img src="' . $url . '" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid #e5e7eb;" />';
+                                                    $html .= '<img src="' . e($url) . '" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid #e5e7eb;" />';
                                                     $html .= '<span style="position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">#' . ($media->order + 1) . '</span>';
                                                     $html .= '</div>';
                                                 }
@@ -506,7 +542,14 @@ class ListingResource extends Resource
                     ->defaultImageUrl(url('/images/placeholder-listing.png'))
                     ->getStateUsing(function (Listing $record) {
                         $media = $record->media->first();
-                        return $media ? route('listing-media.show', ['media' => $media->id]) : null;
+                        if (!$media) return null;
+                        $disk = config('filesystems.listing_disk', 'public');
+                        $path = $media->thumbnail_path ?? $media->path;
+                        try {
+                            return Storage::disk($disk)->url($path);
+                        } catch (\Throwable) {
+                            return route('listing-media.show', ['media' => $media->id]);
+                        }
                     }),
 
                 Tables\Columns\TextColumn::make('id')
@@ -571,11 +614,11 @@ class ListingResource extends Resource
                     ->formatStateUsing(fn (?string $state): string => Listing::TYPE_OFFRE_LABELS[$state] ?? ($state ?? '-'))
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('wilaya')
-                    ->label('Wilaya')
+                Tables\Columns\TextColumn::make('pays')
+                    ->label('Pays')
                     ->searchable()
                     ->sortable()
-                    ->icon('heroicon-o-map-pin')
+                    ->icon('heroicon-o-globe-alt')
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('etat')
@@ -728,24 +771,26 @@ class ListingResource extends Resource
                     ->options(Listing::TYPE_OFFRE_LABELS)
                     ->indicator('Type d\'offre'),
 
-                Tables\Filters\Filter::make('wilaya')
-                    ->form([
-                        Forms\Components\TextInput::make('wilaya')
-                            ->label('Wilaya')
-                            ->placeholder('Filtrer par wilaya'),
+                Tables\Filters\SelectFilter::make('pays')
+                    ->label('Pays')
+                    ->multiple()
+                    ->options([
+                        'Algérie' => 'Algérie',
+                        'Tunisie' => 'Tunisie',
+                        'Maroc' => 'Maroc',
+                        'Égypte' => 'Égypte',
+                        'Espagne' => 'Espagne',
+                        'France' => 'France',
+                        'Italie' => 'Italie',
+                        'Grèce' => 'Grèce',
+                        'Croatie' => 'Croatie',
+                        'Slovénie' => 'Slovénie',
+                        'Turquie' => 'Turquie',
+                        'Liban' => 'Liban',
+                        'Malte' => 'Malte',
+                        'Monaco' => 'Monaco',
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['wilaya'],
-                            fn (Builder $query, $wilaya): Builder => $query->where('wilaya', 'like', "%{$wilaya}%")
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (!$data['wilaya']) {
-                            return null;
-                        }
-                        return 'Wilaya: ' . $data['wilaya'];
-                    }),
+                    ->indicator('Pays'),
 
                 Tables\Filters\Filter::make('featured')
                     ->label('En vedette')

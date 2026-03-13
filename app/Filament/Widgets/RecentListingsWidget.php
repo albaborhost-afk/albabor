@@ -57,7 +57,13 @@ class RecentListingsWidget extends BaseWidget
                     ->defaultImageUrl(fn () => asset('images/placeholder.png'))
                     ->getStateUsing(function (Listing $record) {
                         $media = $record->media->first();
-                        return $media ? Storage::url($media->path) : null;
+                        if (!$media) return null;
+                        $disk = config('filesystems.listing_disk', 'public');
+                        try {
+                            return Storage::disk($disk)->url($media->thumbnail_path ?? $media->path);
+                        } catch (\Throwable) {
+                            return null;
+                        }
                     })
                     ->size(45),
 

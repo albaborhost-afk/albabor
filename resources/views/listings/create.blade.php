@@ -802,13 +802,13 @@
 
                         {{-- Type offre --}}
                         <div class="mb-5">
-                            <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Type d'offre *</label>
+                            <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Type d'offre</label>
                             <div class="flex flex-wrap gap-2">
                                 @foreach(['negociable' => 'Negociable', 'fix' => 'Prix fixe', 'offert' => 'Offert'] as $val => $label)
                                     <label class="relative cursor-pointer">
                                         <input type="radio" name="type_offre" value="{{ $val }}"
                                                {{ old('type_offre', 'negociable') == $val ? 'checked' : '' }}
-                                               class="peer sr-only" required>
+                                               class="peer sr-only">
                                         <span class="px-4 py-2 rounded-full text-xs font-bold inline-flex items-center gap-1.5 transition-all cursor-pointer peer-checked:text-white peer-checked:shadow-lg peer-checked:gradient-primary peer-checked:!border-transparent peer-checked:scale-105"
                                               style="border: 2px solid #E0E6ED; color: #6B7B8D;">
                                             <svg class="w-3.5 h-3.5 opacity-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>

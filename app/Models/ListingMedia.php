@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ListingMedia extends Model
 {
+    protected $appends = [
+        'url',
+        'thumbnail_url',
+    ];
+
     protected $fillable = [
         'listing_id',
         'path',
