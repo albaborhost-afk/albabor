@@ -1,6 +1,6 @@
 <x-app-layout
     :title="$listing->title"
-    :description="$listing->category_label . ' — ' . $listing->wilaya . ' — ' . $listing->formatted_price . '. ' . \Str::limit(strip_tags($listing->description ?? ''), 120)"
+    :description="$listing->category_label . ' — ' . ($listing->wilaya ?? '') . ' — ' . $listing->formatted_price . '. ' . \Str::limit(strip_tags((string) ($listing->description ?? '')), 120)"
     :ogImage="$listing->media->first()?->url ?? asset('images/og-image.png')"
 >
     @php

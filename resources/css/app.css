@@ -1726,12 +1726,14 @@ main {
     will-change: opacity, transform;
 }
 
-.reveal-stagger.active > *:nth-child(1) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.05s; }
-.reveal-stagger.active > *:nth-child(2) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.18s; }
-.reveal-stagger.active > *:nth-child(3) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.31s; }
-.reveal-stagger.active > *:nth-child(4) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.44s; }
-.reveal-stagger.active > *:nth-child(5) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.57s; }
-.reveal-stagger.active > *:nth-child(6) { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.70s; }
+.reveal-stagger.active > * { opacity: 1; transform: translateY(0) scale(1); }
+.reveal-stagger.active > *:nth-child(1) { transition-delay: 0.05s; }
+.reveal-stagger.active > *:nth-child(2) { transition-delay: 0.10s; }
+.reveal-stagger.active > *:nth-child(3) { transition-delay: 0.15s; }
+.reveal-stagger.active > *:nth-child(4) { transition-delay: 0.20s; }
+.reveal-stagger.active > *:nth-child(5) { transition-delay: 0.25s; }
+.reveal-stagger.active > *:nth-child(6) { transition-delay: 0.30s; }
+.reveal-stagger.active > *:nth-child(n+7) { transition-delay: 0.35s; }
 
 /* ============================================
    OCEAN WAVE SEPARATOR

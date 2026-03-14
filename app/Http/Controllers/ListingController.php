@@ -88,44 +88,29 @@ class ListingController extends Controller
 
     public function show(Listing $listing)
     {
-        try {
-            // Only show active listings to non-owners/non-admins
-            if ($listing->status !== 'active') {
-                $user = Auth::user();
-                if (!$user || ($user->id !== $listing->user_id && !$user->isAdmin())) {
-                    abort(404);
-                }
+        // Only show active listings to non-owners/non-admins
+        if ($listing->status !== 'active') {
+            $user = Auth::user();
+            if (!$user || ($user->id !== $listing->user_id && !$user->isAdmin())) {
+                abort(404);
             }
-
-            $listing->load(['user', 'media']);
-
-            // Track view (unique per day per IP)
-            $this->trackView($listing);
-
-            // Get related listings
-            $relatedListings = Listing::query()
-                ->with(['media'])
-                ->active()
-                ->where('id', '!=', $listing->id)
-                ->where('category', $listing->category)
-                ->limit(4)
-                ->get();
-
-            // Render explicitly inside try/catch so Blade errors are caught
-            $html = view('listings.show', compact('listing', 'relatedListings'))->render();
-
-            return response($html);
-        } catch (\Throwable $e) {
-            \Log::error('Listing show error', [
-                'listing_id' => $listing->id,
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return back()->with('error', 'Une erreur est survenue. Veuillez réessayer.');
         }
+
+        $listing->load(['user', 'media']);
+
+        // Track view (unique per day per IP)
+        $this->trackView($listing);
+
+        // Get related listings
+        $relatedListings = Listing::query()
+            ->with(['media'])
+            ->active()
+            ->where('id', '!=', $listing->id)
+            ->where('category', $listing->category)
+            ->limit(4)
+            ->get();
+
+        return view('listings.show', compact('listing', 'relatedListings'));
     }
 
     public function create()
@@ -240,38 +225,28 @@ class ListingController extends Controller
 
     public function edit(Listing $listing)
     {
-        try {
-            $this->authorize('update', $listing);
+        $this->authorize('update', $listing);
 
-            $listing->load('media');
+        $listing->load('media');
 
-            // Clean up orphaned media records (files missing from storage)
-            $disk = $this->listingDisk();
-            foreach ($listing->media as $media) {
-                if (!Storage::disk($disk)->exists($media->path)) {
-                    \Log::info('Removing orphaned ListingMedia record', [
-                        'media_id'   => $media->id,
-                        'path'       => $media->path,
-                        'listing_id' => $listing->id,
-                    ]);
-                    $media->delete();
-                }
+        // Clean up orphaned media records (files missing from storage)
+        $disk = $this->listingDisk();
+        foreach ($listing->media as $media) {
+            if (!Storage::disk($disk)->exists($media->path)) {
+                \Log::info('Removing orphaned ListingMedia record', [
+                    'media_id'   => $media->id,
+                    'path'       => $media->path,
+                    'listing_id' => $listing->id,
+                ]);
+                $media->delete();
             }
-            $listing->unsetRelation('media')->load('media');
-
-            $wilayas = $this->getWilayas();
-            $exchangeRate = Setting::getExchangeRate();
-
-            return view('listings.edit', compact('listing', 'wilayas', 'exchangeRate'));
-        } catch (\Throwable $e) {
-            \Log::error('Edit page error: ' . $e->getMessage(), [
-                'listing_id' => $listing->id,
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
-
-            return back()->with('error', 'Une erreur est survenue. Veuillez réessayer.');
         }
+        $listing->unsetRelation('media')->load('media');
+
+        $wilayas = $this->getWilayas();
+        $exchangeRate = Setting::getExchangeRate();
+
+        return view('listings.edit', compact('listing', 'wilayas', 'exchangeRate'));
     }
 
     public function update(Request $request, Listing $listing)
