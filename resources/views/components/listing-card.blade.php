@@ -29,8 +29,12 @@
     $puissance = $listing->getSpec('motorisation', 'puissance_totale');
 @endphp
 
-<div class="listing-card card-shine group bg-white rounded-2xl overflow-hidden relative {{ $isFeatured ? 'listing-card--featured' : '' }}"
-     style="{{ $isFeatured ? 'box-shadow: 0 0 0 1.5px rgba(255,184,0,0.35), 0 2px 12px rgba(0,0,0,0.06);' : '' }}">
+<div class="listing-card card-shine group bg-white rounded-2xl overflow-hidden relative cursor-pointer {{ $isFeatured ? 'listing-card--featured' : '' }}"
+     style="{{ $isFeatured ? 'box-shadow: 0 0 0 1.5px rgba(255,184,0,0.35), 0 2px 12px rgba(0,0,0,0.06);' : '' }}"
+     role="link"
+     tabindex="0"
+     onclick="if (!event.target.closest('form')) window.location.href='{{ route('listings.show', $listing) }}';"
+     onkeydown="if ((event.key === 'Enter' || event.key === ' ') && !event.target.closest('form')) { event.preventDefault(); window.location.href='{{ route('listings.show', $listing) }}'; }">
 
     {{-- Category accent bar at the top --}}
     <div class="h-[3px] w-full" style="background: linear-gradient(90deg, {{ $accentColor }}, {{ $accentColor }}99);"></div>
