@@ -423,7 +423,10 @@
                         @endphp
 
                         @foreach($tagSections as $tagKey => $tagInfo)
-                            @php $tags = data_get($specs, "tags.{$tagKey}", []); @endphp
+                            @php
+                                $tags = data_get($specs, "tags.{$tagKey}", []);
+                                $tags = is_array($tags) ? $tags : [];
+                            @endphp
                             @if(!empty($tags))
                                 <div class="{{ !$loop->first ? 'mt-5 pt-5' : '' }}" style="{{ !$loop->first ? 'border-top: 1px solid #E0E6ED;' : '' }}">
                                     <div class="flex items-center gap-2 mb-3">
