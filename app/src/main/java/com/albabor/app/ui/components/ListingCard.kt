@@ -31,8 +31,8 @@ import com.albabor.app.ui.theme.*
 
 private val CardShape = RoundedCornerShape(20.dp)
 private val HeartPink = Color(0xFFFF4D6D)
-private val GridCardMinHeight = 272.dp
-private val GridCardImageHeight = 182.dp
+private val GridCardMinHeight = 310.dp
+private val GridCardImageHeight = 220.dp
 
 // ─── Main listing card (2-column grid) ───────────────────────────────────────
 
