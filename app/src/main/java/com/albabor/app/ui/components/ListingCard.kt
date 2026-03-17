@@ -31,8 +31,8 @@ import com.albabor.app.ui.theme.*
 
 private val CardShape = RoundedCornerShape(20.dp)
 private val HeartPink = Color(0xFFFF4D6D)
-private val GridCardMinHeight = 310.dp
-private val GridCardImageHeight = 220.dp
+private val GridCardMinHeight = 320.dp
+private val GridCardImageHeight = 245.dp
 
 // ─── Main listing card (2-column grid) ───────────────────────────────────────
 
@@ -209,12 +209,12 @@ fun ListingCard(
 
             // ── Info section ─────────────────────────────────────────────────
             Column(
-                Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 7.dp),
+                verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 Text(
                     listing.title,
-                    style      = MaterialTheme.typography.titleSmall,
+                    fontSize   = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                     maxLines   = 1,
                     overflow   = TextOverflow.Ellipsis,
@@ -222,22 +222,17 @@ fun ListingCard(
                 )
 
                 // Price
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(
-                        listing.formattedPrice,
-                        fontSize   = 16.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color      = OceanBlue900,
-                        letterSpacing = (-0.3).sp
-                    )
-                    listing.formattedConvertedPrice?.let {
-                        Text(it, fontSize = 10.sp, color = Gray400, fontWeight = FontWeight.Medium, maxLines = 1)
-                    }
-                }
+                Text(
+                    listing.formattedPrice,
+                    fontSize   = 13.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color      = OceanBlue900,
+                    letterSpacing = (-0.3).sp
+                )
 
                 // Info chips row
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment     = Alignment.CenterVertically
                 ) {
                     listing.year?.let {
@@ -246,16 +241,6 @@ fun ListingCard(
                     listing.power?.let {
                         SmallInfoPill(Icons.Default.Bolt, "$it CV", Gold500)
                     }
-                }
-
-                listing.offerType?.let { offer ->
-                    val (label, color) = when (offer) {
-                        "negociable" -> "Négociable" to Teal500
-                        "fix"        -> "Prix fixe" to OceanBlue900
-                        "offert"     -> "Offert" to Color(0xFF27AE60)
-                        else         -> offer to Gray500
-                    }
-                    Text(label, fontSize = 10.sp, color = color, fontWeight = FontWeight.SemiBold, maxLines = 1)
                 }
             }
         }
