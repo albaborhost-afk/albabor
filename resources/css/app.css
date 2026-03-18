@@ -106,19 +106,21 @@ body {
 }
 
 .glass-nav {
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(24px) saturate(200%) brightness(105%);
-    -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(105%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(240,248,255,0.3) 50%, rgba(230,245,255,0.35) 100%);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-nav.scrolled {
-    background: rgba(255, 255, 255, 0.78);
-    border-bottom-color: rgba(224, 230, 237, 0.4);
+    background: linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(245,250,255,0.7) 50%, rgba(240,248,255,0.72) 100%);
+    border-bottom-color: rgba(224, 230, 237, 0.35);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04),
-                0 8px 32px rgba(27, 79, 114, 0.06);
+                0 8px 32px rgba(27, 79, 114, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 /* ---- Nav Link Underline Animation ---- */
