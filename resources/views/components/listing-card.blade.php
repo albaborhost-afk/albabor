@@ -124,7 +124,7 @@
             </h3>
 
             {{-- Info chips: Année · Ville · Puissance --}}
-            @if($annee || $listing->wilaya || $puissance)
+            @if($annee || $listing->wilaya || $listing->pays || $puissance)
             <div class="flex flex-wrap gap-1 mb-2">
                 @if($annee)
                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold" style="background: rgba(27,79,114,0.07); color: #1B4F72;">
@@ -134,13 +134,13 @@
                         {{ $annee }}
                     </span>
                 @endif
-                @if($listing->wilaya)
+                @if($listing->pays || $listing->wilaya)
                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold" style="background: rgba(23,162,184,0.07); color: #17A2B8;">
                         <svg class="w-2.5 h-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
-                        {{ $listing->wilaya }}
+                        {{ $listing->pays }}{{ $listing->wilaya ? ($listing->pays ? ', ' : '') . $listing->wilaya : '' }}
                     </span>
                 @endif
                 @if($puissance)
