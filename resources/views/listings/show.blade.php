@@ -56,8 +56,8 @@
                         })->filter()->values()->toArray();
                     @endphp
 
-                    {{-- Gallery: creative frame (double border + soft shadow) --}}
-                    <div class="listing-gallery-frame rounded-3xl overflow-hidden"
+                    {{-- Gallery: edge-to-edge --}}
+                    <div class="rounded-2xl sm:rounded-3xl overflow-hidden"
                          x-data="{
                             currentIndex: 0,
                             imageCount: {{ $imageCount }},
@@ -78,7 +78,7 @@
 
                         @if($hasImages)
                             {{-- Main image: one rounded clip area, corners aligned --}}
-                            <div class="listing-gallery-inner relative overflow-hidden cursor-pointer mx-3 mt-3 mb-2" style="aspect-ratio: 16/10; touch-action: manipulation;"
+                            <div class="relative overflow-hidden cursor-pointer" style="aspect-ratio: 16/10; touch-action: manipulation;"
                                  @click="openLightbox(currentIndex)">
                                 <img :src="currentImage"
                                      alt="{{ $listing->title }}"
@@ -113,7 +113,7 @@
 
                             {{-- Thumbnail Strip: creative frame --}}
                             @if($imageCount > 1)
-                                <div class="listing-thumb-strip flex gap-2.5 px-4 pb-4 pt-2 overflow-x-auto">
+                                <div class="listing-thumb-strip flex gap-2 px-3 pb-3 pt-2 overflow-x-auto" style="background: rgba(0,0,0,0.03);">
                                     @foreach((is_array($images) ? $images : $images->toArray()) as $index => $image)
                                         @php
                                             $imageUrl = is_string($image)
