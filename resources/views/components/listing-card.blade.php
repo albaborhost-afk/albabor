@@ -41,7 +41,7 @@
 
     <a href="{{ route('listings.show', $listing) }}" class="block">
         {{-- Image Section --}}
-        <div class="relative aspect-[4/4] overflow-hidden" style="background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);">
+        <div class="relative aspect-[3/4] sm:aspect-square overflow-hidden" style="background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);">
             @if($firstMedia)
                 <img src="{{ $firstMedia->url }}"
                      alt="{{ $listing->title }}"
@@ -117,15 +117,15 @@
         <div class="h-px w-full" style="background: linear-gradient(90deg, transparent, #E0E6ED, transparent);"></div>
 
         {{-- Content --}}
-        <div class="px-2.5 pt-2 pb-2">
+        <div class="px-2 pt-1.5 pb-1.5 sm:px-2.5 sm:pt-2 sm:pb-2">
             {{-- Title --}}
-            <h3 class="font-bold line-clamp-1 leading-snug text-[12px] group-hover:text-[#1B4F72] transition-colors duration-300 mb-1" style="color: #1B2A4A;">
+            <h3 class="font-bold line-clamp-1 leading-snug text-[11px] sm:text-[12px] group-hover:text-[#1B4F72] transition-colors duration-300 mb-0.5 sm:mb-1" style="color: #1B2A4A;">
                 {{ $listing->title }}
             </h3>
 
             {{-- Info chips: Année · Ville · Puissance --}}
             @if($annee || $listing->wilaya || $listing->pays || $puissance)
-            <div class="flex flex-wrap gap-0.5 mb-1">
+            <div class="flex flex-wrap gap-0.5 mb-0.5 sm:mb-1">
                 @if($annee)
                     <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-semibold" style="background: rgba(27,79,114,0.07); color: #1B4F72;">
                         <svg class="w-2 h-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -155,9 +155,9 @@
             @endif
 
             {{-- Price & Offer Type --}}
-            <div class="flex items-end justify-between pt-1.5" style="border-top: 1px solid #F0F4F8;">
+            <div class="flex items-end justify-between pt-1 sm:pt-1.5" style="border-top: 1px solid #F0F4F8;">
                 <div>
-                    <span class="text-[13px] font-extrabold block leading-tight transition-colors duration-300 group-hover:text-[#17A2B8]" style="color: #1B4F72; letter-spacing: -0.02em;">
+                    <span class="text-[12px] sm:text-[13px] font-extrabold block leading-tight transition-colors duration-300 group-hover:text-[#17A2B8]" style="color: #1B4F72; letter-spacing: -0.02em;">
                         {{ $listing->formatted_price }}
                     </span>
                     @if($listing->formatted_converted_price)
