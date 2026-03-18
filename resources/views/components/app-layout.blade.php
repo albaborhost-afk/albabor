@@ -54,9 +54,15 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center space-x-0.5">
-                    <a href="{{ route('listings.index', ['category' => 'boat']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Bateaux') }}</a>
-                    <a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Jet-Skis') }}</a>
-                    <a href="{{ route('listings.index', ['category' => 'engine']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Moteurs') }}</a>
+                    <a href="{{ route('listings.index', ['category' => 'boat']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
+                        <img src="/images/nav-boat.png" alt="" class="w-4 h-4 object-contain opacity-60">{{ __('Bateaux') }}
+                    </a>
+                    <a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
+                        <img src="/images/nav-jetski.png" alt="" class="w-4 h-4 object-contain opacity-60">{{ __('Jet-Skis') }}
+                    </a>
+                    <a href="{{ route('listings.index', ['category' => 'engine']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
+                        <img src="/images/nav-moteur.png" alt="" class="w-4 h-4 object-contain opacity-60">{{ __('Moteurs') }}
+                    </a>
                     <a href="{{ route('listings.index', ['category' => 'parts']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Pieces') }}</a>
                     <div style="width: 1px; height: 20px; background: linear-gradient(180deg, transparent, #E0E6ED, transparent); margin: 0 6px;"></div>
                     @auth
