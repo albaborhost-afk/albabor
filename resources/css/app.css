@@ -1181,26 +1181,28 @@ main {
     box-shadow: 0 8px 40px rgba(27, 79, 114, 0.08);
 }
 
+.mobile-category-chip {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(224, 230, 237, 0.5);
+}
+
+.mobile-category-chip:hover,
+.mobile-category-chip:active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border-color: rgba(23, 162, 184, 0.2);
+}
+
 .mobile-nav-item {
     color: var(--text-secondary);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 12px;
+    border-radius: 16px;
 }
 
-.mobile-nav-item:hover {
+.mobile-nav-item:hover,
+.mobile-nav-item:active {
     background: rgba(23, 162, 184, 0.05);
     color: var(--primary-deep);
-    transform: translateX(4px);
-}
-
-.mobile-category-chip {
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid transparent;
-}
-
-.mobile-category-chip:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* ============================================
