@@ -53,26 +53,22 @@
                 </div>
 
                 <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-0.5">
+                <div class="hidden md:flex items-center space-x-1">
                     <a href="{{ route('listings.index', ['category' => 'boat']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
-                        <img src="/images/nav-boat.png" alt="" class="w-4 h-4 object-contain opacity-60">{{ __('Bateaux') }}
+                        <img src="/images/nav-boat.png" alt="" class="w-5 h-5 object-contain" style="filter: invert(30%) sepia(20%) saturate(800%) hue-rotate(170deg) brightness(90%);">{{ __('Bateaux') }}
                     </a>
                     <a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
-                        <img src="/images/nav-jetski.png" alt="" class="w-4 h-4 object-contain opacity-60">{{ __('Jet-Skis') }}
+                        <img src="/images/nav-jetski.png" alt="" class="w-5 h-5 object-contain" style="filter: invert(30%) sepia(20%) saturate(800%) hue-rotate(170deg) brightness(90%);">{{ __('Jet-Skis') }}
                     </a>
                     <a href="{{ route('listings.index', ['category' => 'engine']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
-                        <img src="/images/nav-moteur.png" alt="" class="w-4 h-4 object-contain opacity-60">{{ __('Moteurs') }}
+                        <img src="/images/nav-moteur.png" alt="" class="w-5 h-5 object-contain" style="filter: invert(30%) sepia(20%) saturate(800%) hue-rotate(170deg) brightness(90%);">{{ __('Moteurs') }}
                     </a>
                     <a href="{{ route('listings.index', ['category' => 'parts']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
-                        <img src="/images/nav-pieces.png" alt="" class="w-4 h-4 object-contain opacity-60">{{ __('Pieces') }}
+                        <img src="/images/nav-pieces.png" alt="" class="w-5 h-5 object-contain" style="filter: invert(30%) sepia(20%) saturate(800%) hue-rotate(170deg) brightness(90%);">{{ __('Pieces') }}
                     </a>
                     <div style="width: 1px; height: 20px; background: linear-gradient(180deg, transparent, #E0E6ED, transparent); margin: 0 6px;"></div>
                     @auth
                         @php $unreadMsgCount = auth()->user()->totalUnreadMessagesCount(); @endphp
-                        <a href="{{ route('favorites.index') }}" class="nav-link-animated nav-item-favorites px-3.5 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                            {{ __('Favoris') }}
-                        </a>
                         <a href="{{ route('listings.my') }}" class="nav-link-animated nav-item-default px-3.5 py-2 rounded-xl font-medium text-sm">{{ __('Mes annonces') }}</a>
                         <a href="{{ route('conversations.index') }}" class="nav-link-animated nav-item-default px-3.5 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5 relative">
                             <span class="relative">
