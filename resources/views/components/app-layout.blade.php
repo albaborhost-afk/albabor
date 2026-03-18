@@ -65,13 +65,18 @@
                             {{ __('Favoris') }}
                         </a>
                         <a href="{{ route('listings.my') }}" class="nav-link-animated nav-item-default px-3.5 py-2 rounded-xl font-medium text-sm">{{ __('Mes annonces') }}</a>
-                        <a href="{{ route('conversations.index') }}" class="nav-link-animated nav-item-default px-3.5 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        <a href="{{ route('conversations.index') }}" class="nav-link-animated nav-item-default px-3.5 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5 relative">
+                            <span class="relative">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                @php $unreadMsgCount = auth()->user()->totalUnreadMessagesCount(); @endphp
+                                @if($unreadMsgCount > 0)
+                                    <span class="absolute -top-1.5 -right-2 flex items-center justify-center">
+                                        <span class="absolute inline-flex h-full w-full rounded-full opacity-60 animate-ping" style="background: #FF4757;"></span>
+                                        <span class="relative inline-flex items-center justify-center rounded-full text-[9px] font-black text-white shadow-lg" style="background: linear-gradient(135deg, #FF4757, #FF6B81); min-width: 16px; height: 16px; padding: 0 4px; box-shadow: 0 2px 8px rgba(255,71,87,0.5);">{{ $unreadMsgCount }}</span>
+                                    </span>
+                                @endif
+                            </span>
                             {{ __('messages.my_messages') }}
-                            @php $unreadMsgCount = auth()->user()->totalUnreadMessagesCount(); @endphp
-                            @if($unreadMsgCount > 0)
-                                <span class="inline-flex items-center justify-center w-4.5 h-4.5 rounded-full text-[9px] font-bold text-white" style="background: #FF6B6B; min-width: 18px; height: 18px; padding: 0 4px;">{{ $unreadMsgCount }}</span>
-                            @endif
                         </a>
                     @endauth
                 </div>
@@ -149,10 +154,15 @@
                                     {{ __('Mes annonces') }}
                                 </a>
                                 <a href="{{ route('conversations.index') }}" class="dropdown-item flex items-center gap-3 px-4 py-2.5 text-sm">
-                                    <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                    <span class="relative">
+                                        <svg class="w-4 h-4" style="color: {{ $unreadMsgCount > 0 ? '#FF4757' : '#9BA8B7' }};" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                        @if($unreadMsgCount > 0)
+                                            <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full" style="background: #FF4757; box-shadow: 0 0 6px rgba(255,71,87,0.6);"></span>
+                                        @endif
+                                    </span>
                                     {{ __('messages.my_messages') }}
                                     @if($unreadMsgCount > 0)
-                                        <span class="inline-flex items-center justify-center rounded-full text-[9px] font-bold text-white ml-auto" style="background: #FF6B6B; min-width: 18px; height: 18px; padding: 0 4px;">{{ $unreadMsgCount }}</span>
+                                        <span class="inline-flex items-center justify-center rounded-full text-[9px] font-black text-white ml-auto" style="background: linear-gradient(135deg, #FF4757, #FF6B81); min-width: 20px; height: 20px; padding: 0 5px; box-shadow: 0 2px 8px rgba(255,71,87,0.4);">{{ $unreadMsgCount }}</span>
                                     @endif
                                 </a>
                                 <a href="{{ route('favorites.index') }}" class="dropdown-item flex items-center gap-3 px-4 py-2.5 text-sm">
@@ -185,11 +195,19 @@
                             {{ __('Creer') }}
                         </a>
                     @endauth
-                    <button @click="mobileOpen = !mobileOpen" class="nav-mobile-btn w-10 h-10 flex items-center justify-center rounded-xl">
+                    <button @click="mobileOpen = !mobileOpen" class="nav-mobile-btn w-10 h-10 flex items-center justify-center rounded-xl relative">
                         <svg class="w-5 h-5 transition-transform duration-300" :class="{ 'rotate-90': mobileOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path x-show="!mobileOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                             <path x-show="mobileOpen" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
+                        @auth
+                            @if($unreadMsgCount > 0)
+                                <span class="absolute top-1 right-1 flex items-center justify-center">
+                                    <span class="absolute inline-flex w-3 h-3 rounded-full opacity-50 animate-ping" style="background: #FF4757;"></span>
+                                    <span class="relative inline-flex w-2.5 h-2.5 rounded-full" style="background: linear-gradient(135deg, #FF4757, #FF6B81); box-shadow: 0 0 6px rgba(255,71,87,0.5);"></span>
+                                </span>
+                            @endif
+                        @endauth
                     </button>
                 </div>
             </div>
@@ -237,10 +255,15 @@
                         {{ __('Mes annonces') }}
                     </a>
                     <a href="{{ route('conversations.index') }}" class="mobile-nav-item flex items-center gap-3 px-4 py-3 font-medium text-sm">
-                        <svg class="w-4 h-4" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        <span class="relative">
+                            <svg class="w-4 h-4" style="color: {{ $unreadMsgCount > 0 ? '#FF4757' : '#17A2B8' }};" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                            @if($unreadMsgCount > 0)
+                                <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full animate-pulse" style="background: #FF4757; box-shadow: 0 0 6px rgba(255,71,87,0.6);"></span>
+                            @endif
+                        </span>
                         {{ __('messages.my_messages') }}
                         @if($unreadMsgCount > 0)
-                            <span class="inline-flex items-center justify-center rounded-full text-[9px] font-bold text-white" style="background: #FF6B6B; min-width: 18px; height: 18px; padding: 0 4px;">{{ $unreadMsgCount }}</span>
+                            <span class="inline-flex items-center justify-center rounded-full text-[9px] font-black text-white ml-auto" style="background: linear-gradient(135deg, #FF4757, #FF6B81); min-width: 20px; height: 20px; padding: 0 5px; box-shadow: 0 2px 8px rgba(255,71,87,0.4);">{{ $unreadMsgCount }}</span>
                         @endif
                     </a>
                     <a href="{{ route('profile.show') }}" class="mobile-nav-item flex items-center gap-3 px-4 py-3 font-medium text-sm">
