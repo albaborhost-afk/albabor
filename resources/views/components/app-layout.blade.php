@@ -230,16 +230,16 @@
                 <!-- Category links with image icons -->
                 <div class="grid grid-cols-4 gap-2 mb-4 pb-4" style="border-bottom: 1px solid rgba(224,230,237,0.6);">
                     @foreach([
-                        'boat'   => ['label' => __('Bateaux'),  'img' => '/images/nav-boat.png',   'bg' => 'rgba(27,79,114,0.08)',  'color' => '#1B4F72'],
-                        'jetski' => ['label' => __('Jet-Skis'), 'img' => '/images/nav-jetski.png',  'bg' => 'rgba(23,162,184,0.08)', 'color' => '#17A2B8'],
-                        'engine' => ['label' => __('Moteurs'),  'img' => '/images/nav-moteur.png',  'bg' => 'rgba(243,156,18,0.08)', 'color' => '#F39C12'],
-                        'parts'  => ['label' => __('Pieces'),   'img' => '/images/nav-pieces.png',  'bg' => 'rgba(155,89,182,0.08)', 'color' => '#9B59B6'],
+                        'boat'   => ['label' => __('Bateaux'),  'img' => '/images/nav-boat.png'],
+                        'jetski' => ['label' => __('Jet-Skis'), 'img' => '/images/nav-jetski.png'],
+                        'engine' => ['label' => __('Moteurs'),  'img' => '/images/nav-moteur.png'],
+                        'parts'  => ['label' => __('Pieces'),   'img' => '/images/nav-pieces.png'],
                     ] as $catKey => $cat)
                         <a href="{{ route('listings.index', ['category' => $catKey]) }}"
                            class="mobile-category-chip flex flex-col items-center gap-1.5 py-3 rounded-2xl text-center transition-all active:scale-95"
-                           style="background: {{ $cat['bg'] }};">
+                           style="background: rgba(27,79,114,0.06);">
                             <img src="{{ $cat['img'] }}" alt="" class="w-7 h-7 object-contain" style="filter: invert(30%) sepia(20%) saturate(800%) hue-rotate(170deg) brightness(90%);">
-                            <span class="text-[11px] font-bold" style="color: {{ $cat['color'] }};">{{ $cat['label'] }}</span>
+                            <span class="text-[11px] font-bold" style="color: #1B4F72;">{{ $cat['label'] }}</span>
                         </a>
                     @endforeach
                 </div>
