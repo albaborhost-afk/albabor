@@ -242,7 +242,7 @@
                             </span>
                             Description
                         </h2>
-                        <div class="text-sm leading-relaxed pl-[42px]" style="color: #6B7B8D; line-height: 1.75;">{!! nl2br(e($listing->description)) !!}</div>
+                        <div class="text-sm leading-relaxed pl-[42px]" style="color: #6B7B8D; line-height: 1.75;">{!! nl2br(e(html_entity_decode(strip_tags($listing->description)))) !!}</div>
                     </div>
 
                     {{-- ======== INFOS GENERALES ======== --}}
