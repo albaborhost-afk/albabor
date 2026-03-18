@@ -53,30 +53,42 @@
                 </div>
 
                 <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-0.5">
-                    <a href="{{ route('listings.index', ['category' => 'boat']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Bateaux') }}</a>
-                    <a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Jet-Skis') }}</a>
-                    <a href="{{ route('listings.index', ['category' => 'engine']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Moteurs') }}</a>
-                    <a href="{{ route('listings.index', ['category' => 'parts']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm">{{ __('Pieces') }}</a>
-                    <div style="width: 1px; height: 20px; background: linear-gradient(180deg, transparent, #E0E6ED, transparent); margin: 0 6px;"></div>
-                    @auth
-                        <a href="{{ route('favorites.index') }}" class="nav-link-animated nav-item-favorites px-3.5 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                            {{ __('Favoris') }}
+                <div class="hidden lg:flex items-center gap-1">
+                    {{-- Category pills --}}
+                    <div class="flex items-center gap-0.5 px-1.5 py-1 rounded-2xl" style="background: rgba(27,79,114,0.04);">
+                        <a href="{{ route('listings.index', ['category' => 'boat']) }}" class="nav-link-animated px-3 py-1.5 rounded-xl font-semibold text-[13px] transition-all duration-200 hover:bg-white hover:shadow-sm" style="color: #1B4F72;">
+                            <svg class="w-3.5 h-3.5 inline -mt-0.5 mr-0.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17h18l-3-8H6L3 17zM12 3v6"/></svg>{{ __('Bateaux') }}
                         </a>
-                        <a href="{{ route('listings.my') }}" class="nav-link-animated nav-item-default px-3.5 py-2 rounded-xl font-medium text-sm">{{ __('Mes annonces') }}</a>
-                        <a href="{{ route('conversations.index') }}" class="nav-link-animated nav-item-default px-3.5 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5 relative">
-                            <span class="relative">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                                @php $unreadMsgCount = auth()->user()->totalUnreadMessagesCount(); @endphp
-                                @if($unreadMsgCount > 0)
-                                    <span class="absolute -top-1.5 -right-2 flex items-center justify-center">
-                                        <span class="absolute inline-flex h-full w-full rounded-full opacity-60 animate-ping" style="background: #FF4757;"></span>
-                                        <span class="relative inline-flex items-center justify-center rounded-full text-[9px] font-black text-white shadow-lg" style="background: linear-gradient(135deg, #FF4757, #FF6B81); min-width: 16px; height: 16px; padding: 0 4px; box-shadow: 0 2px 8px rgba(255,71,87,0.5);">{{ $unreadMsgCount }}</span>
-                                    </span>
-                                @endif
-                            </span>
-                            {{ __('messages.my_messages') }}
+                        <a href="{{ route('listings.index', ['category' => 'jetski']) }}" class="nav-link-animated px-3 py-1.5 rounded-xl font-semibold text-[13px] transition-all duration-200 hover:bg-white hover:shadow-sm" style="color: #17A2B8;">
+                            {{ __('Jet-Skis') }}
+                        </a>
+                        <a href="{{ route('listings.index', ['category' => 'engine']) }}" class="nav-link-animated px-3 py-1.5 rounded-xl font-semibold text-[13px] transition-all duration-200 hover:bg-white hover:shadow-sm" style="color: #E67E22;">
+                            {{ __('Moteurs') }}
+                        </a>
+                        <a href="{{ route('listings.index', ['category' => 'parts']) }}" class="nav-link-animated px-3 py-1.5 rounded-xl font-semibold text-[13px] transition-all duration-200 hover:bg-white hover:shadow-sm" style="color: #8E44AD;">
+                            {{ __('Pieces') }}
+                        </a>
+                    </div>
+
+                    @auth
+                        @php $unreadMsgCount = auth()->user()->totalUnreadMessagesCount(); @endphp
+                        <div style="width: 1px; height: 20px; background: linear-gradient(180deg, transparent, #E0E6ED, transparent); margin: 0 4px;"></div>
+
+                        {{-- Icon buttons: Favorites, My Listings, Messages --}}
+                        <a href="{{ route('favorites.index') }}" class="relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-red-50 group" title="{{ __('Favoris') }}">
+                            <svg class="w-[18px] h-[18px] transition-colors" style="color: #D5D9DE;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                        </a>
+                        <a href="{{ route('listings.my') }}" class="relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-blue-50 group" title="{{ __('Mes annonces') }}">
+                            <svg class="w-[18px] h-[18px] transition-colors" style="color: #D5D9DE;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        </a>
+                        <a href="{{ route('conversations.index') }}" class="relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-cyan-50 group" title="{{ __('Messages') }}">
+                            <svg class="w-[18px] h-[18px] transition-colors" style="color: #D5D9DE;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                            @if($unreadMsgCount > 0)
+                                <span class="absolute -top-0.5 -right-0.5 flex items-center justify-center">
+                                    <span class="absolute inline-flex w-4 h-4 rounded-full opacity-50 animate-ping" style="background: #FF4757;"></span>
+                                    <span class="relative inline-flex items-center justify-center rounded-full text-[8px] font-black text-white" style="background: linear-gradient(135deg, #FF4757, #FF6B81); min-width: 16px; height: 16px; padding: 0 3px; box-shadow: 0 2px 6px rgba(255,71,87,0.5);">{{ $unreadMsgCount }}</span>
+                                </span>
+                            @endif
                         </a>
                     @endauth
                 </div>
