@@ -145,6 +145,14 @@
                     <span x-show="isDragging">Lâchez pour ajouter</span>
                 </p>
                 <p class="text-[11px] mt-1" style="color:#9BA8B7;">JPEG, PNG, WebP · Max 5 Mo · {{ $hasExisting ? $maxNew : $max }} photos max</p>
+                <p
+                    x-show="!supportsManagedFiles"
+                    x-cloak
+                    class="text-[11px] mt-1.5"
+                    style="color:#F39C12;"
+                >
+                    Sur certains navigateurs mobiles, ajoutez toutes vos photos en une seule sélection.
+                </p>
             </div>
 
             {{-- Filled state — preview grid + add more button --}}
@@ -189,6 +197,8 @@
                             <button
                                 type="button"
                                 @click.stop="removeFile(index)"
+                                x-show="supportsManagedFiles"
+                                x-cloak
                                 class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
                                 style="background:rgba(231,76,60,0.9); color:white;"
                                 title="Supprimer"
@@ -204,7 +214,7 @@
                     </template>
 
                     {{-- Add more slot --}}
-                    <template x-if="slotsLeft > 0">
+                    <template x-if="supportsManagedFiles ? slotsLeft > 0 : true">
                         <div
                             class="aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all duration-200 hover:border-[#17A2B8] hover:bg-[#17A2B8]/5"
                             style="border-color:#E0E6ED;"
@@ -213,14 +223,19 @@
                             <svg class="w-5 h-5 mb-1" style="color:#9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
-                            <span class="text-[9px] font-medium" style="color:#9BA8B7;">Ajouter</span>
+                            <span
+                                class="text-[9px] font-medium"
+                                style="color:#9BA8B7;"
+                                x-text="supportsManagedFiles ? 'Ajouter' : 'Remplacer'"
+                            ></span>
                         </div>
                     </template>
                 </div>
 
                 {{-- Drag hint --}}
                 <p class="text-[10px] text-center" style="color:#C5D0DB;">
-                    La première photo sera la photo principale
+                    <span x-show="supportsManagedFiles">La première photo sera la photo principale</span>
+                    <span x-show="!supportsManagedFiles" x-cloak>La première photo sera principale. Pour modifier la sélection, choisissez à nouveau toutes les photos.</span>
                 </p>
             </div>
 
@@ -278,19 +293,26 @@ if (typeof photoUploader === 'undefined') {
             errors: [],
             maxFiles: maxFiles,
             isRequired: isRequired,
+            supportsManagedFiles: false,
 
             get slotsLeft() {
                 return Math.max(0, this.maxFiles - this.files.length);
             },
 
             init() {
+                this.supportsManagedFiles = this.detectManagedFileSupport();
+
                 // Re-sync files to input right before form submission
                 // (ensures DataTransfer is fresh; critical for all browsers)
                 this.$nextTick(() => {
                     const form = this.$el.closest('form');
                     if (form) {
                         form.addEventListener('submit', (e) => {
-                            this.syncInput();
+                            if (this.supportsManagedFiles) {
+                                this.syncInput();
+                            } else {
+                                this.syncFilesFromInput();
+                            }
                             // Manual required validation (browser native check runs before submit event)
                             if (this.isRequired && this.files.length === 0) {
                                 e.preventDefault();
@@ -309,15 +331,28 @@ if (typeof photoUploader === 'undefined') {
             },
 
             handleSelect(e) {
-                this.addFiles(Array.from(e.target.files));
-                // Reset so same file can be re-selected
-                e.target.value = '';
+                const selectedFiles = Array.from(e.target.files);
+
+                if (this.supportsManagedFiles) {
+                    this.addFiles(selectedFiles);
+                    // Reset so same file can be re-selected
+                    e.target.value = '';
+                    return;
+                }
+
+                this.replaceNativeSelection(selectedFiles);
             },
 
             handleDrop(e) {
                 this.isDragging = false;
                 const dropped = Array.from(e.dataTransfer.files)
                     .filter(f => f.type.startsWith('image/'));
+
+                if (!this.supportsManagedFiles) {
+                    this.errors = ['Veuillez utiliser le sélecteur de photos sur ce navigateur mobile.'];
+                    return;
+                }
+
                 this.addFiles(dropped);
             },
 
@@ -349,9 +384,103 @@ if (typeof photoUploader === 'undefined') {
             },
 
             removeFile(index) {
+                if (!this.supportsManagedFiles) {
+                    return;
+                }
                 URL.revokeObjectURL(this.files[index].preview);
                 this.files.splice(index, 1);
                 this.syncInput();
+            },
+
+            detectManagedFileSupport() {
+                try {
+                    if (typeof DataTransfer === 'undefined') {
+                        return false;
+                    }
+
+                    const input = document.createElement('input');
+                    input.type = 'file';
+
+                    const dt = new DataTransfer();
+                    input.files = dt.files;
+
+                    return input.files !== null;
+                } catch (e) {
+                    return false;
+                }
+            },
+
+            replaceNativeSelection(selectedFiles) {
+                this.errors = [];
+
+                if (selectedFiles.length === 0) {
+                    this.clearNativeSelection();
+                    return;
+                }
+
+                if (selectedFiles.length > this.maxFiles) {
+                    this.errors = [`Veuillez sélectionner au maximum ${this.maxFiles} photo(s) à la fois.`];
+                    this.clearNativeSelection();
+                    return;
+                }
+
+                const normalizedFiles = [];
+
+                for (const file of selectedFiles) {
+                    if (file.size > 5 * 1024 * 1024) {
+                        this.errors.push(`"${file.name}" dépasse la limite de 5 Mo.`);
+                    }
+
+                    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+                    if (!allowed.includes(file.type)) {
+                        this.errors.push(`"${file.name}" : format non supporté.`);
+                    }
+
+                    normalizedFiles.push(file);
+                }
+
+                if (this.errors.length > 0) {
+                    this.clearNativeSelection();
+                    return;
+                }
+
+                this.revokePreviews();
+                this.files = normalizedFiles.map(file => ({
+                    id: crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random()),
+                    file,
+                    preview: URL.createObjectURL(file),
+                    size: file.size,
+                    name: file.name,
+                }));
+            },
+
+            clearNativeSelection() {
+                this.revokePreviews();
+                this.files = [];
+                if (this.$refs.fileInput) {
+                    this.$refs.fileInput.value = '';
+                }
+            },
+
+            syncFilesFromInput() {
+                if (!this.$refs.fileInput) {
+                    return;
+                }
+
+                const selectedFiles = Array.from(this.$refs.fileInput.files || []);
+                if (selectedFiles.length === this.files.length) {
+                    return;
+                }
+
+                this.replaceNativeSelection(selectedFiles);
+            },
+
+            revokePreviews() {
+                this.files.forEach(file => {
+                    if (file.preview) {
+                        URL.revokeObjectURL(file.preview);
+                    }
+                });
             },
 
             syncInput() {
