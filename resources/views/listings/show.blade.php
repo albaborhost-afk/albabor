@@ -40,7 +40,7 @@
                 {{-- ============================================
                      MAIN CONTENT (Left Column)
                    ============================================ --}}
-                <div class="lg:col-span-2 space-y-6 reveal-left" style="transition-delay: 0.1s;">
+                <div class="lg:col-span-2 space-y-3 sm:space-y-6 reveal-left" style="transition-delay: 0.1s;">
 
                     {{-- ======== IMAGE GALLERY (Alpine.js) ======== --}}
                     @php
@@ -235,26 +235,26 @@
                     </div>
 
                     {{-- ======== DESCRIPTION ======== --}}
-                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
-                        <h2 class="text-base font-bold mb-4 flex items-center gap-2.5" style="color: #1B2A4A;">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                    <div class="listing-card-frame rounded-3xl p-3 sm:p-6">
+                        <h2 class="text-sm sm:text-base font-bold mb-2 sm:mb-4 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white gradient-primary flex-shrink-0" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
                             </span>
                             Description
                         </h2>
-                        <div class="text-sm leading-relaxed pl-[42px]" style="color: #6B7B8D; line-height: 1.75;">{!! nl2br(e(html_entity_decode(strip_tags($listing->description)))) !!}</div>
+                        <div class="text-xs sm:text-sm leading-relaxed pl-9 sm:pl-[42px]" style="color: #6B7B8D; line-height: 1.65;">{!! nl2br(e(html_entity_decode(strip_tags($listing->description)))) !!}</div>
                     </div>
 
                     {{-- ======== INFOS GENERALES ======== --}}
                     @if($listing->hasSpecSection('general'))
-                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
-                        <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div class="listing-card-frame rounded-3xl p-3 sm:p-6">
+                        <h2 class="text-sm sm:text-base font-bold mb-2.5 sm:mb-5 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white gradient-primary flex-shrink-0" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </span>
                             {{ __('Informations generales') }}
                         </h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                             @php $specIndex = 0; @endphp
                             @foreach([
                                 'fabricant' => ['label' => 'Fabricant', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>'],
@@ -266,12 +266,12 @@
                                 'part_number' => ['label' => 'Reference', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>'],
                             ] as $key => $info)
                                 @if($listing->getSpec('general', $key))
-                                    <div class="spec-item group p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
-                                        <div class="flex items-center gap-1.5 mb-1">
+                                    <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
+                                        <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                             <span style="color: #9BA8B7;" class="group-hover:text-[#17A2B8] transition-colors">{!! $info['icon'] !!}</span>
-                                            <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
+                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
                                         </div>
-                                        <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('general', $key) }}</p>
+                                        <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('general', $key) }}</p>
                                     </div>
                                     @php $specIndex++; @endphp
                                 @endif
@@ -282,14 +282,14 @@
 
                     {{-- ======== DIMENSIONS ======== --}}
                     @if($listing->hasSpecSection('dimensions'))
-                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
-                        <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                    <div class="listing-card-frame rounded-3xl p-3 sm:p-6">
+                        <h2 class="text-sm sm:text-base font-bold mb-2.5 sm:mb-5 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white gradient-primary flex-shrink-0" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                             </span>
                             {{ __('Dimensions') }}
                         </h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                             @foreach([
                                 'longueur' => ['label' => 'Longueur', 'unit' => 'm', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>'],
                                 'largeur' => ['label' => 'Largeur', 'unit' => 'm', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7l4-4m0 0l4 4m-4-4v18"/></svg>'],
@@ -298,12 +298,12 @@
                                 'tirant_air' => ['label' => "Tirant d'air", 'unit' => 'm', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>'],
                             ] as $key => $info)
                                 @if($listing->getSpec('dimensions', $key))
-                                    <div class="spec-item group p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
-                                        <div class="flex items-center gap-1.5 mb-1">
+                                    <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
+                                        <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                             <span style="color: #9BA8B7;" class="group-hover:text-[#17A2B8] transition-colors">{!! $info['icon'] !!}</span>
-                                            <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
+                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
                                         </div>
-                                        <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('dimensions', $key) }} <span class="font-normal text-xs" style="color: #9BA8B7;">{{ $info['unit'] }}</span></p>
+                                        <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('dimensions', $key) }} <span class="font-normal text-[10px] sm:text-xs" style="color: #9BA8B7;">{{ $info['unit'] }}</span></p>
                                     </div>
                                 @endif
                             @endforeach
@@ -313,14 +313,14 @@
 
                     {{-- ======== MOTORISATION ======== --}}
                     @if($listing->hasSpecSection('motorisation'))
-                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
-                        <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <div class="listing-card-frame rounded-3xl p-3 sm:p-6">
+                        <h2 class="text-sm sm:text-base font-bold mb-2.5 sm:mb-5 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white gradient-primary flex-shrink-0" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             </span>
                             {{ __('Motorisation') }}
                         </h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                             @foreach([
                                 'marque_moteur' => ['label' => 'Marque', 'unit' => '', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/></svg>'],
                                 'propulsion' => ['label' => 'Propulsion', 'unit' => '', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>'],
@@ -332,12 +332,12 @@
                                 'cylindree' => ['label' => 'Cylindree', 'unit' => 'cc', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>'],
                             ] as $key => $info)
                                 @if($listing->getSpec('motorisation', $key))
-                                    <div class="spec-item group p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
-                                        <div class="flex items-center gap-1.5 mb-1">
+                                    <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
+                                        <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                             <span style="color: #9BA8B7;" class="group-hover:text-[#17A2B8] transition-colors">{!! $info['icon'] !!}</span>
-                                            <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
+                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
                                         </div>
-                                        <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('motorisation', $key) }}@if($info['unit']) <span class="font-normal text-xs" style="color: #9BA8B7;">{{ $info['unit'] }}</span>@endif</p>
+                                        <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('motorisation', $key) }}@if($info['unit']) <span class="font-normal text-[10px] sm:text-xs" style="color: #9BA8B7;">{{ $info['unit'] }}</span>@endif</p>
                                     </div>
                                 @endif
                             @endforeach
@@ -347,26 +347,26 @@
 
                     {{-- ======== RESERVOIRS ======== --}}
                     @if($listing->hasSpecSection('reservoirs'))
-                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
-                        <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                    <div class="listing-card-frame rounded-3xl p-3 sm:p-6">
+                        <h2 class="text-sm sm:text-base font-bold mb-2.5 sm:mb-5 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white gradient-primary flex-shrink-0" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
                             </span>
                             {{ __('Reservoirs') }}
                         </h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                             @foreach([
                                 'reservoir_carburant' => ['label' => 'Carburant', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>'],
                                 'reservoir_eau_douce' => ['label' => 'Eau douce', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>'],
                                 'stockage' => ['label' => 'Stockage', 'icon' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>'],
                             ] as $key => $info)
                                 @if($listing->getSpec('reservoirs', $key))
-                                    <div class="spec-item group p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
-                                        <div class="flex items-center gap-1.5 mb-1">
+                                    <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
+                                        <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                             <span style="color: #9BA8B7;" class="group-hover:text-[#17A2B8] transition-colors">{!! $info['icon'] !!}</span>
-                                            <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
+                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
                                         </div>
-                                        <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('reservoirs', $key) }} <span class="font-normal text-xs" style="color: #9BA8B7;">L</span></p>
+                                        <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('reservoirs', $key) }} <span class="font-normal text-[10px] sm:text-xs" style="color: #9BA8B7;">L</span></p>
                                     </div>
                                 @endif
                             @endforeach
@@ -376,27 +376,27 @@
 
                     {{-- ======== AMENAGEMENTS ======== --}}
                     @if($listing->hasSpecSection('amenagements'))
-                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
-                        <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    <div class="listing-card-frame rounded-3xl p-3 sm:p-6">
+                        <h2 class="text-sm sm:text-base font-bold mb-2.5 sm:mb-5 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white gradient-primary flex-shrink-0" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                             </span>
                             {{ __('Amenagements') }}
                         </h2>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
                             @foreach([
-                                'nombre_couchettes' => ['label' => 'Couchettes', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18"/></svg>'],
-                                'nombre_cabines' => ['label' => 'Cabines', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>'],
-                                'nombre_sanitaire' => ['label' => 'Sanitaires', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>'],
-                                'nombre_cuisine' => ['label' => 'Cuisines', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>'],
+                                'nombre_couchettes' => ['label' => 'Couchettes', 'icon' => '<svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18"/></svg>'],
+                                'nombre_cabines' => ['label' => 'Cabines', 'icon' => '<svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>'],
+                                'nombre_sanitaire' => ['label' => 'Sanitaires', 'icon' => '<svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>'],
+                                'nombre_cuisine' => ['label' => 'Cuisines', 'icon' => '<svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>'],
                             ] as $key => $info)
                                 @if($listing->getSpec('amenagements', $key))
-                                    <div class="spec-item group p-4 rounded-xl border text-center transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
-                                        <div class="w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors" style="background: rgba(27,79,114,0.06); color: #1B4F72;">
+                                    <div class="spec-item group p-2.5 sm:p-4 rounded-xl border text-center transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
+                                        <div class="w-8 h-8 sm:w-10 sm:h-10 mx-auto rounded-xl flex items-center justify-center mb-1.5 sm:mb-2 transition-colors" style="background: rgba(27,79,114,0.06); color: #1B4F72;">
                                             {!! $info['icon'] !!}
                                         </div>
-                                        <p class="text-2xl font-extrabold" style="color: #1B4F72;">{{ $listing->getSpec('amenagements', $key) }}</p>
-                                        <p class="text-[10px] font-bold uppercase tracking-wider mt-0.5" style="color: #9BA8B7;">{{ $info['label'] }}</p>
+                                        <p class="text-xl sm:text-2xl font-extrabold" style="color: #1B4F72;">{{ $listing->getSpec('amenagements', $key) }}</p>
+                                        <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-0.5" style="color: #9BA8B7;">{{ $info['label'] }}</p>
                                     </div>
                                 @endif
                             @endforeach
@@ -406,10 +406,10 @@
 
                     {{-- ======== EQUIPEMENTS / OPTIONS / ELECTRONIQUE ======== --}}
                     @if($listing->hasSpecSection('tags'))
-                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
-                        <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div class="listing-card-frame rounded-3xl p-3 sm:p-6">
+                        <h2 class="text-sm sm:text-base font-bold mb-2.5 sm:mb-5 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white gradient-primary flex-shrink-0" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </span>
                             {{ __('Equipements & Options') }}
                         </h2>
@@ -449,17 +449,17 @@
 
                     {{-- ======== EXTRAS ======== --}}
                     @if($listing->hasSpecSection('extras'))
-                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
-                        <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                    <div class="listing-card-frame rounded-3xl p-3 sm:p-6">
+                        <h2 class="text-sm sm:text-base font-bold mb-2.5 sm:mb-5 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white gradient-primary flex-shrink-0" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                             </span>
                             {{ __('Extras') }}
                         </h2>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                             @if($listing->getSpec('extras', 'annexe'))
-                                <div class="spec-item group p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
-                                    <div class="flex items-center gap-1.5 mb-1">
+                                <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
+                                    <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                         <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                                         <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">Annexe</p>
                                     </div>
@@ -467,8 +467,8 @@
                                 </div>
                             @endif
                             @if($listing->getSpec('extras', 'remorque'))
-                                <div class="spec-item group p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
-                                    <div class="flex items-center gap-1.5 mb-1">
+                                <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
+                                    <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                         <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4"/></svg>
                                         <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">Remorque</p>
                                     </div>
@@ -476,8 +476,8 @@
                                 </div>
                             @endif
                             @if($listing->getSpec('extras', 'place_au_port') === 'oui')
-                                <div class="spec-item group p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
-                                    <div class="flex items-center gap-1.5 mb-1">
+                                <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
+                                    <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                         <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                         <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">Place au port</p>
                                     </div>
@@ -499,10 +499,10 @@
                         $services = is_array($services) ? $services : [];
                     @endphp
                     @if(!empty($services))
-                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
-                        <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white" style="background: linear-gradient(135deg, #F39C12, #F8C471); box-shadow: 0 3px 8px rgba(243,156,18,0.25);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                    <div class="listing-card-frame rounded-3xl p-3 sm:p-6">
+                        <h2 class="text-sm sm:text-base font-bold mb-2.5 sm:mb-5 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white flex-shrink-0" style="background: linear-gradient(135deg, #F39C12, #F8C471); box-shadow: 0 3px 8px rgba(243,156,18,0.25);">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                             </span>
                             {{ __('Services AlBabor demandes') }}
                         </h2>
@@ -537,10 +537,10 @@
                     @endif
 
                     {{-- ======== SHARE ======== --}}
-                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
-                        <h2 class="text-base font-bold mb-4 flex items-center gap-2.5" style="color: #1B2A4A;">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white gradient-primary" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                    <div class="listing-card-frame rounded-3xl p-3 sm:p-6">
+                        <h2 class="text-sm sm:text-base font-bold mb-2 sm:mb-4 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white gradient-primary flex-shrink-0" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                             </span>
                             {{ __('Partager cette annonce') }}
                         </h2>
