@@ -5,10 +5,9 @@
             @php
                 $startStep = 1;
                 if ($errors->any()) {
-                    if ($errors->has('images')) $startStep = 8;
-                    elseif ($errors->hasAny(['numero_whatsapp', 'numero_mobile', 'contact_email', 'mediation_enabled'])) $startStep = 6;
-                    elseif ($errors->hasAny(['wilaya', 'pays', 'visible_a'])) $startStep = 5;
-                    elseif ($errors->hasAny(['price_dzd', 'currency', 'type_offre', 'etat', 'remarque_echange'])) $startStep = 4;
+                    if ($errors->has('images')) $startStep = 6;
+                    elseif ($errors->hasAny(['numero_whatsapp', 'numero_mobile', 'contact_email', 'mediation_enabled'])) $startStep = 5;
+                    elseif ($errors->hasAny(['wilaya', 'pays', 'visible_a', 'price_dzd', 'currency', 'type_offre', 'etat', 'remarque_echange'])) $startStep = 4;
                     elseif ($errors->has('category')) $startStep = 1;
                     else $startStep = 2;
                 }
@@ -106,7 +105,7 @@
                     <div class="relative">
                         {{-- Connector lines --}}
                         <div class="absolute top-5 left-0 right-0 flex items-center" aria-hidden="true" style="padding: 0 20px;">
-                            <template x-for="i in 7" :key="i">
+                            <template x-for="i in 5" :key="i">
                                 <div class="flex-1 h-0.5 transition-colors duration-500"
                                      :class="isStepCompleted(i) ? 'bg-[#17A2B8]' : 'bg-gray-200'">
                                 </div>
@@ -189,8 +188,8 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
                                             </svg>
                                         </div>
-                                        <div class="icon-bg w-14 h-14 mx-auto mb-2 rounded-xl flex items-center justify-center" style="background: #F0F4F8; transition: all 0.3s;">
-                                            <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}" class="w-10 h-10 object-contain">
+                                        <div class="icon-bg w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-2 rounded-xl flex items-center justify-center" style="background: #F0F4F8; transition: all 0.3s;">
+                                            <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}" class="w-20 h-20 sm:w-24 sm:h-24 object-contain">
                                         </div>
                                         <span class="label-text text-sm font-medium" style="color: #6B7B8D; display: block; transition: all 0.3s;">{{ $cat['label'] }}</span>
                                     </div>
@@ -861,126 +860,116 @@
                                 </label>
                             </div>
                         </div>
+
+                        {{-- ---- Divider: Localisation section merged here ---- --}}
+                        <div class="my-6 border-t" style="border-color: #E0E6ED;"></div>
+
+                        <div class="rounded-2xl overflow-hidden" style="border: 1px solid #E0E6ED;">
+                            {{-- Gradient header --}}
+                            <div class="px-6 py-6 text-center" style="background: linear-gradient(135deg, #1B4F72 0%, #17A2B8 55%, #2ECC71 100%);">
+                                <div class="text-4xl mb-2">🌍</div>
+                                <h3 class="text-lg font-bold text-white">Où se trouve votre annonce ?</h3>
+                                <p class="text-xs mt-1" style="color: rgba(255,255,255,0.75);">Mer Méditerranée — 20 pays disponibles</p>
+                            </div>
+
+                            <div class="p-5"
+                                 x-data="{
+                                     selected: '{{ old('pays', '') }}',
+                                     countries: [
+                                         { code: 'Algérie',            flag: '🇩🇿', name: 'Algérie' },
+                                         { code: 'Tunisie',            flag: '🇹🇳', name: 'Tunisie' },
+                                         { code: 'Maroc',              flag: '🇲🇦', name: 'Maroc' },
+                                         { code: 'Égypte',             flag: '🇪🇬', name: 'Égypte' },
+                                         { code: 'Espagne',            flag: '🇪🇸', name: 'Espagne' },
+                                         { code: 'France',             flag: '🇫🇷', name: 'France' },
+                                         { code: 'Italie',             flag: '🇮🇹', name: 'Italie' },
+                                         { code: 'Grèce',              flag: '🇬🇷', name: 'Grèce' },
+                                         { code: 'Croatie',            flag: '🇭🇷', name: 'Croatie' },
+                                         { code: 'Slovénie',           flag: '🇸🇮', name: 'Slovénie' },
+                                         { code: 'Turquie',            flag: '🇹🇷', name: 'Turquie' },
+                                         { code: 'Liban',              flag: '🇱🇧', name: 'Liban' },
+                                         { code: 'Malte',              flag: '🇲🇹', name: 'Malte' },
+                                         { code: 'Monaco',             flag: '🇲🇨', name: 'Monaco' },
+                                     ]
+                                 }">
+                                <input type="hidden" name="pays" :value="selected">
+
+                                {{-- Selected country banner --}}
+                                <div x-show="selected"
+                                     class="mb-4 rounded-2xl p-3 flex items-center gap-3"
+                                     style="background: linear-gradient(135deg, #E8F8FA, #D4F1F4); border: 2px solid #17A2B8;">
+                                    <span class="text-3xl leading-none" x-text="countries.find(c => c.code === selected)?.flag || ''"></span>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #17A2B8;">Pays sélectionné</p>
+                                        <p class="text-sm font-bold truncate" style="color: #1B2A4A;" x-text="selected"></p>
+                                    </div>
+                                    <button type="button" @click="selected = ''"
+                                            class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 transition-all hover:scale-110"
+                                            style="background: #17A2B8;">✕</button>
+                                </div>
+
+                                {{-- Empty state --}}
+                                <div x-show="!selected"
+                                     class="mb-4 rounded-2xl p-3 text-center"
+                                     style="background: #F7F9FB; border: 2px dashed #D0D9E3;">
+                                    <p class="text-xs" style="color: #9BA8B7;">Faites défiler et cliquez sur votre pays</p>
+                                </div>
+
+                                {{-- Scrolling flag strip --}}
+                                <div class="relative mb-5">
+                                    <div class="absolute left-0 top-0 bottom-0 w-10 z-10 pointer-events-none" style="background: linear-gradient(to right, white 20%, transparent);"></div>
+                                    <div class="absolute right-0 top-0 bottom-0 w-10 z-10 pointer-events-none" style="background: linear-gradient(to left, white 20%, transparent);"></div>
+                                    <div class="flex gap-3 overflow-x-auto py-3 px-3 country-scroll-lg"
+                                         style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
+                                        <template x-for="c in countries" :key="c.code">
+                                            <button type="button"
+                                                    @click="selected = c.code"
+                                                    class="flex-shrink-0 flex flex-col items-center rounded-2xl transition-all duration-200 relative"
+                                                    :class="selected === c.code ? 'scale-110' : 'hover:scale-105 active:scale-95'"
+                                                    :style="selected === c.code
+                                                        ? 'border: 3px solid #17A2B8; background: linear-gradient(135deg, #E8F8FA, #D4F1F4); box-shadow: 0 8px 24px rgba(23,162,184,0.4); padding: 14px 16px; gap: 8px;'
+                                                        : 'border: 2px solid #E8EDF2; background: #FAFBFC; box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: 14px 16px; gap: 8px;'"
+                                                    style="min-width: 86px; scroll-snap-align: start;">
+                                                {{-- Checkmark badge --}}
+                                                <div x-show="selected === c.code"
+                                                     class="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center z-10"
+                                                     style="background: linear-gradient(135deg, #17A2B8, #1B4F72); box-shadow: 0 3px 8px rgba(23,162,184,0.5);">
+                                                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                </div>
+                                                <span class="text-4xl leading-none" x-text="c.flag"></span>
+                                                <span class="text-[11px] font-bold text-center leading-tight"
+                                                      :style="selected === c.code ? 'color: #17A2B8;' : 'color: #6B7B8D;'"
+                                                      x-text="c.name"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                {{-- Ville / Région --}}
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase mb-2 flex items-center gap-1.5" style="color: #6B7B8D;">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        Ville / Région
+                                    </label>
+                                    <input type="text" name="wilaya" value="{{ old('wilaya') }}"
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                           placeholder="Ex: Alger, Oran, Tunis, Paris...">
+                                </div>
+                            </div>
+                        </div>
+                        <style>.country-scroll-lg::-webkit-scrollbar { display: none; }</style>
                     </div>
                 </div>
 
                 {{-- ===================================================== --}}
-                {{-- STEP 5 : Localisation                                  --}}
+                {{-- STEP 5 : Contact + Services                            --}}
                 {{-- ===================================================== --}}
                 <div x-show="currentStep === 5"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-3"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0">
-
-                    <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);">
-                        {{-- Gradient header --}}
-                        <div class="px-6 py-8 text-center" style="background: linear-gradient(135deg, #1B4F72 0%, #17A2B8 55%, #2ECC71 100%);">
-                            <div class="text-5xl mb-3">🌍</div>
-                            <h2 class="text-xl font-bold text-white">Où se trouve votre annonce ?</h2>
-                            <p class="text-sm mt-1" style="color: rgba(255,255,255,0.75);">Mer Méditerranée — 20 pays disponibles</p>
-                        </div>
-
-                        <div class="p-6"
-                             x-data="{
-                                 selected: '{{ old('pays', '') }}',
-                                 countries: [
-                                     { code: 'Algérie',            flag: '🇩🇿', name: 'Algérie' },
-                                     { code: 'Tunisie',            flag: '🇹🇳', name: 'Tunisie' },
-                                     { code: 'Maroc',              flag: '🇲🇦', name: 'Maroc' },
-                                     { code: 'Égypte',             flag: '🇪🇬', name: 'Égypte' },
-                                     { code: 'Espagne',            flag: '🇪🇸', name: 'Espagne' },
-                                     { code: 'France',             flag: '🇫🇷', name: 'France' },
-                                     { code: 'Italie',             flag: '🇮🇹', name: 'Italie' },
-                                     { code: 'Grèce',              flag: '🇬🇷', name: 'Grèce' },
-                                     { code: 'Croatie',            flag: '🇭🇷', name: 'Croatie' },
-                                     { code: 'Slovénie',           flag: '🇸🇮', name: 'Slovénie' },
-                                     { code: 'Turquie',            flag: '🇹🇷', name: 'Turquie' },
-                                     { code: 'Liban',              flag: '🇱🇧', name: 'Liban' },
-                                     { code: 'Malte',              flag: '🇲🇹', name: 'Malte' },
-                                     { code: 'Monaco',             flag: '🇲🇨', name: 'Monaco' },
-                                 ]
-                             }">
-                            <input type="hidden" name="pays" :value="selected">
-
-                            {{-- Selected country banner --}}
-                            <div x-show="selected"
-                                 class="mb-5 rounded-2xl p-4 flex items-center gap-3"
-                                 style="background: linear-gradient(135deg, #E8F8FA, #D4F1F4); border: 2px solid #17A2B8;">
-                                <span class="text-4xl leading-none" x-text="countries.find(c => c.code === selected)?.flag || ''"></span>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #17A2B8;">Pays sélectionné ✓</p>
-                                    <p class="text-base font-bold truncate" style="color: #1B2A4A;" x-text="selected"></p>
-                                </div>
-                                <button type="button" @click="selected = ''"
-                                        class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 transition-all hover:scale-110"
-                                        style="background: #17A2B8;">✕</button>
-                            </div>
-
-                            {{-- Empty state --}}
-                            <div x-show="!selected"
-                                 class="mb-5 rounded-2xl p-4 text-center"
-                                 style="background: #F7F9FB; border: 2px dashed #D0D9E3;">
-                                <span class="text-2xl">👆</span>
-                                <p class="text-xs mt-1" style="color: #9BA8B7;">Faites défiler et cliquez sur votre pays</p>
-                            </div>
-
-                            {{-- Scrolling flag strip --}}
-                            <div class="relative mb-6">
-                                <div class="absolute left-0 top-0 bottom-0 w-10 z-10 pointer-events-none" style="background: linear-gradient(to right, white 20%, transparent);"></div>
-                                <div class="absolute right-0 top-0 bottom-0 w-10 z-10 pointer-events-none" style="background: linear-gradient(to left, white 20%, transparent);"></div>
-                                <div class="flex gap-3 overflow-x-auto py-3 px-3 country-scroll-lg"
-                                     style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
-                                    <template x-for="c in countries" :key="c.code">
-                                        <button type="button"
-                                                @click="selected = c.code"
-                                                class="flex-shrink-0 flex flex-col items-center rounded-2xl transition-all duration-200 relative"
-                                                :class="selected === c.code ? 'scale-110' : 'hover:scale-105 active:scale-95'"
-                                                :style="selected === c.code
-                                                    ? 'border: 3px solid #17A2B8; background: linear-gradient(135deg, #E8F8FA, #D4F1F4); box-shadow: 0 8px 24px rgba(23,162,184,0.4); padding: 14px 16px; gap: 8px;'
-                                                    : 'border: 2px solid #E8EDF2; background: #FAFBFC; box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: 14px 16px; gap: 8px;'"
-                                                style="min-width: 86px; scroll-snap-align: start;">
-                                            {{-- Checkmark badge --}}
-                                            <div x-show="selected === c.code"
-                                                 class="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center z-10"
-                                                 style="background: linear-gradient(135deg, #17A2B8, #1B4F72); box-shadow: 0 3px 8px rgba(23,162,184,0.5);">
-                                                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                            </div>
-                                            <span class="text-4xl leading-none" x-text="c.flag"></span>
-                                            <span class="text-[11px] font-bold text-center leading-tight"
-                                                  :style="selected === c.code ? 'color: #17A2B8;' : 'color: #6B7B8D;'"
-                                                  x-text="c.name"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-
-                            {{-- Ville / Région --}}
-                            <div>
-                                <label class="block text-xs font-semibold uppercase mb-2 flex items-center gap-1.5" style="color: #6B7B8D;">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    </svg>
-                                    Ville / Région
-                                </label>
-                                <input type="text" name="wilaya" value="{{ old('wilaya') }}"
-                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                       placeholder="Ex: Alger, Oran, Tunis, Paris...">
-                            </div>
-                        </div>
-                    </div>
-                    <style>.country-scroll-lg::-webkit-scrollbar { display: none; }</style>
-                </div>
-
-                {{-- ===================================================== --}}
-                {{-- STEP 6 : Contact                                       --}}
-                {{-- ===================================================== --}}
-                <div x-show="currentStep === 6"
                      x-transition:enter="transition ease-out duration-300"
                      x-transition:enter-start="opacity-0 translate-y-3"
                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -1142,6 +1131,7 @@
                         <div class="mt-5 pt-5" style="border-top: 1px solid #E0E6ED;">
                             <label class="flex items-start gap-3 cursor-pointer">
                                 <input type="checkbox" name="mediation_enabled" value="1"
+                                       x-model="mediationEnabled"
                                        {{ old('mediation_enabled') ? 'checked' : '' }}
                                        class="mt-1 rounded text-[#17A2B8] focus:ring-[#17A2B8]/30" style="border-color: #E0E6ED;">
                                 <span>
@@ -1150,170 +1140,164 @@
                                 </span>
                             </label>
                         </div>
+
+                        {{-- ---- Services AlBabor (shown when mediation enabled) ---- --}}
+                        <div x-show="mediationEnabled"
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 -translate-y-2"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100"
+                             x-transition:leave-end="opacity-0 -translate-y-2">
+
+                            <div class="mt-5 rounded-2xl p-5" style="border: 1px solid rgba(243,156,18,0.3); background: linear-gradient(160deg, #fff 0%, #FEFAF2 100%);">
+
+                                {{-- Header --}}
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #F39C12, #F8C471);">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-bold" style="color: #1B2A4A;">Services AlBabor</h3>
+                                        <p class="text-xs" style="color: #9BA8B7;">Optionnel — Boostez votre annonce avec nos services premium</p>
+                                    </div>
+                                </div>
+
+                                {{-- Badge optionnel --}}
+                                <div class="mb-4 mt-1">
+                                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full" style="background: rgba(243,156,18,0.12); color: #D68910;">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                        Sélectionnez un ou plusieurs services — nous vous contactons pour confirmer
+                                    </span>
+                                </div>
+
+                                {{-- Service cards --}}
+                                <div class="grid grid-cols-1 gap-3" x-data="{ services: {{ json_encode(old('specs.services', [])) }} }">
+
+                                    {{-- Service 1 : Shooting Photo --}}
+                                    <label class="relative flex gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group"
+                                           style="border: 2px solid #E0E6ED; background: white;"
+                                           :style="services.includes('photo') ? 'border-color: #F39C12; background: linear-gradient(135deg, #FEFAF2, #FEF9E7); box-shadow: 0 6px 20px rgba(243,156,18,0.18);' : ''">
+                                        <input type="checkbox" name="specs[services][]" value="photo"
+                                               class="sr-only" x-model="services">
+                                        <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+                                             :style="services.includes('photo') ? 'background: linear-gradient(135deg, #F39C12, #F8C471);' : 'background: #F0F4F8;'">
+                                            <svg class="w-6 h-6 transition-colors duration-300" :style="services.includes('photo') ? 'color: white;' : 'color: #9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-start justify-between gap-2">
+                                                <div>
+                                                    <p class="text-sm font-bold" style="color: #1B2A4A;">Shooting photo professionnel</p>
+                                                    <p class="text-xs mt-0.5" style="color: #6B7B8D;">Notre photographe se déplace, met en valeur chaque détail de votre embarcation et vous livre des photos haute définition prêtes à publier.</p>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
+                                                         :style="services.includes('photo') ? 'background: #F39C12; border-color: #F39C12;' : 'border-color: #D1D5DB;'">
+                                                        <svg x-show="services.includes('photo')" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-3 mt-2">
+                                                <span class="text-xs font-semibold px-2.5 py-1 rounded-lg" style="background: rgba(243,156,18,0.12); color: #D68910;">Sur devis</span>
+                                                <span class="text-xs" style="color: #9BA8B7;">Déplacement inclus • Livraison sous 24h</span>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    {{-- Service 2 : Réception des appels --}}
+                                    <label class="relative flex gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group"
+                                           style="border: 2px solid #E0E6ED; background: white;"
+                                           :style="services.includes('reception') ? 'border-color: #27AE60; background: linear-gradient(135deg, #F0FFF4, #E8F8F5); box-shadow: 0 6px 20px rgba(39,174,96,0.18);' : ''">
+                                        <input type="checkbox" name="specs[services][]" value="reception"
+                                               class="sr-only" x-model="services">
+                                        <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+                                             :style="services.includes('reception') ? 'background: linear-gradient(135deg, #27AE60, #58D68D);' : 'background: #F0F4F8;'">
+                                            <svg class="w-6 h-6 transition-colors duration-300" :style="services.includes('reception') ? 'color: white;' : 'color: #9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-start justify-between gap-2">
+                                                <div>
+                                                    <p class="text-sm font-bold" style="color: #1B2A4A;">Réception des appels</p>
+                                                    <p class="text-xs mt-0.5" style="color: #6B7B8D;">AlBabor prend en charge tous les appels des acheteurs à votre place. Vous vendez sereinement sans être dérangé — on vous transmet uniquement les contacts sérieux.</p>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
+                                                         :style="services.includes('reception') ? 'background: #27AE60; border-color: #27AE60;' : 'border-color: #D1D5DB;'">
+                                                        <svg x-show="services.includes('reception')" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-3 mt-2">
+                                                <span class="text-xs font-semibold px-2.5 py-1 rounded-lg" style="background: rgba(39,174,96,0.12); color: #1E8449;">Sur devis</span>
+                                                <span class="text-xs" style="color: #9BA8B7;">Filtrage des appels • Rapport hebdomadaire</span>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    {{-- Service 3 : Vidéo de présentation --}}
+                                    <label class="relative flex gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group"
+                                           style="border: 2px solid #E0E6ED; background: white;"
+                                           :style="services.includes('video') ? 'border-color: #8E44AD; background: linear-gradient(135deg, #FDF2FF, #F5EAF9); box-shadow: 0 6px 20px rgba(142,68,173,0.18);' : ''">
+                                        <input type="checkbox" name="specs[services][]" value="video"
+                                               class="sr-only" x-model="services">
+                                        <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+                                             :style="services.includes('video') ? 'background: linear-gradient(135deg, #8E44AD, #BB8FCE);' : 'background: #F0F4F8;'">
+                                            <svg class="w-6 h-6 transition-colors duration-300" :style="services.includes('video') ? 'color: white;' : 'color: #9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-start justify-between gap-2">
+                                                <div>
+                                                    <p class="text-sm font-bold" style="color: #1B2A4A;">Vidéo de présentation professionnelle</p>
+                                                    <p class="text-xs mt-0.5" style="color: #6B7B8D;">Notre équipe réalise une vidéo cinématique de votre bateau ou jet-ski — intérieur, extérieur, moteur — pour une annonce qui se démarque vraiment.</p>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
+                                                         :style="services.includes('video') ? 'background: #8E44AD; border-color: #8E44AD;' : 'border-color: #D1D5DB;'">
+                                                        <svg x-show="services.includes('video')" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-3 mt-2">
+                                                <span class="text-xs font-semibold px-2.5 py-1 rounded-lg" style="background: rgba(142,68,173,0.12); color: #7D3C98;">Sur devis</span>
+                                                <span class="text-xs" style="color: #9BA8B7;">Drone & caméra • Montage pro inclus</span>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                </div>
+
+                                {{-- Footer info --}}
+                                <div class="mt-4 rounded-xl p-3 flex items-start gap-3" style="background: rgba(39,174,96,0.07); border: 1px solid rgba(39,174,96,0.18);">
+                                    <div class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center" style="background: #27AE60;">
+                                        <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold" style="color: #1E8449;">Comment ça marche ?</p>
+                                        <p class="text-xs mt-0.5" style="color: #4A6B55;">Après activation de votre annonce, notre équipe vous contactera directement sur <strong>WhatsApp</strong> pour confirmer et planifier les services sélectionnés.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 {{-- ===================================================== --}}
-                {{-- STEP 7 : Services AlBabor (bateau & jetski seulement) --}}
+                {{-- STEP 6 : Photos                                        --}}
                 {{-- ===================================================== --}}
-                <div x-show="currentStep === 7"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-3"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0">
-
-                    <div class="rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-top: 4px solid #F39C12; background: linear-gradient(160deg, #fff 0%, #FEFAF2 100%);">
-
-                        {{-- Header --}}
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #F39C12, #F8C471);">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
-                            </div>
-                            <div>
-                                <h2 class="text-base font-bold" style="color: #1B2A4A;">Services AlBabor</h2>
-                                <p class="text-xs" style="color: #9BA8B7;">Optionnel — Boostez votre annonce avec nos services premium</p>
-                            </div>
-                        </div>
-
-                        {{-- Badge optionnel --}}
-                        <div class="mb-5 mt-1">
-                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full" style="background: rgba(243,156,18,0.12); color: #D68910;">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                Sélectionnez un ou plusieurs services — nous vous contactons pour confirmer
-                            </span>
-                        </div>
-
-                        {{-- Service cards --}}
-                        <div class="grid grid-cols-1 gap-4" x-data="{ services: {{ json_encode(old('specs.services', [])) }} }">
-
-                            {{-- Service 1 : Shooting Photo --}}
-                            <label class="relative flex gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group"
-                                   style="border: 2px solid #E0E6ED; background: white;"
-                                   :style="services.includes('photo') ? 'border-color: #F39C12; background: linear-gradient(135deg, #FEFAF2, #FEF9E7); box-shadow: 0 6px 20px rgba(243,156,18,0.18);' : ''">
-                                <input type="checkbox" name="specs[services][]" value="photo"
-                                       class="sr-only" x-model="services">
-                                <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
-                                     :style="services.includes('photo') ? 'background: linear-gradient(135deg, #F39C12, #F8C471);' : 'background: #F0F4F8;'">
-                                    <svg class="w-6 h-6 transition-colors duration-300" :style="services.includes('photo') ? 'color: white;' : 'color: #9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-start justify-between gap-2">
-                                        <div>
-                                            <p class="text-sm font-bold" style="color: #1B2A4A;">Shooting photo professionnel</p>
-                                            <p class="text-xs mt-0.5" style="color: #6B7B8D;">Notre photographe se déplace, met en valeur chaque détail de votre embarcation et vous livre des photos haute définition prêtes à publier.</p>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
-                                                 :style="services.includes('photo') ? 'background: #F39C12; border-color: #F39C12;' : 'border-color: #D1D5DB;'">
-                                                <svg x-show="services.includes('photo')" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-3 mt-2">
-                                        <span class="text-xs font-semibold px-2.5 py-1 rounded-lg" style="background: rgba(243,156,18,0.12); color: #D68910;">Sur devis</span>
-                                        <span class="text-xs" style="color: #9BA8B7;">Déplacement inclus • Livraison sous 24h</span>
-                                    </div>
-                                </div>
-                            </label>
-
-                            {{-- Service 2 : Réception des appels --}}
-                            <label class="relative flex gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group"
-                                   style="border: 2px solid #E0E6ED; background: white;"
-                                   :style="services.includes('reception') ? 'border-color: #27AE60; background: linear-gradient(135deg, #F0FFF4, #E8F8F5); box-shadow: 0 6px 20px rgba(39,174,96,0.18);' : ''">
-                                <input type="checkbox" name="specs[services][]" value="reception"
-                                       class="sr-only" x-model="services">
-                                <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
-                                     :style="services.includes('reception') ? 'background: linear-gradient(135deg, #27AE60, #58D68D);' : 'background: #F0F4F8;'">
-                                    <svg class="w-6 h-6 transition-colors duration-300" :style="services.includes('reception') ? 'color: white;' : 'color: #9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-start justify-between gap-2">
-                                        <div>
-                                            <p class="text-sm font-bold" style="color: #1B2A4A;">Réception des appels</p>
-                                            <p class="text-xs mt-0.5" style="color: #6B7B8D;">AlBabor prend en charge tous les appels des acheteurs à votre place. Vous vendez sereinement sans être dérangé — on vous transmet uniquement les contacts sérieux.</p>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
-                                                 :style="services.includes('reception') ? 'background: #27AE60; border-color: #27AE60;' : 'border-color: #D1D5DB;'">
-                                                <svg x-show="services.includes('reception')" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-3 mt-2">
-                                        <span class="text-xs font-semibold px-2.5 py-1 rounded-lg" style="background: rgba(39,174,96,0.12); color: #1E8449;">Sur devis</span>
-                                        <span class="text-xs" style="color: #9BA8B7;">Filtrage des appels • Rapport hebdomadaire</span>
-                                    </div>
-                                </div>
-                            </label>
-
-                            {{-- Service 3 : Vidéo de présentation --}}
-                            <label class="relative flex gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group"
-                                   style="border: 2px solid #E0E6ED; background: white;"
-                                   :style="services.includes('video') ? 'border-color: #8E44AD; background: linear-gradient(135deg, #FDF2FF, #F5EAF9); box-shadow: 0 6px 20px rgba(142,68,173,0.18);' : ''">
-                                <input type="checkbox" name="specs[services][]" value="video"
-                                       class="sr-only" x-model="services">
-                                <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
-                                     :style="services.includes('video') ? 'background: linear-gradient(135deg, #8E44AD, #BB8FCE);' : 'background: #F0F4F8;'">
-                                    <svg class="w-6 h-6 transition-colors duration-300" :style="services.includes('video') ? 'color: white;' : 'color: #9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-start justify-between gap-2">
-                                        <div>
-                                            <p class="text-sm font-bold" style="color: #1B2A4A;">Vidéo de présentation professionnelle</p>
-                                            <p class="text-xs mt-0.5" style="color: #6B7B8D;">Notre équipe réalise une vidéo cinématique de votre bateau ou jet-ski — intérieur, extérieur, moteur — pour une annonce qui se démarque vraiment.</p>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
-                                                 :style="services.includes('video') ? 'background: #8E44AD; border-color: #8E44AD;' : 'border-color: #D1D5DB;'">
-                                                <svg x-show="services.includes('video')" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-3 mt-2">
-                                        <span class="text-xs font-semibold px-2.5 py-1 rounded-lg" style="background: rgba(142,68,173,0.12); color: #7D3C98;">Sur devis</span>
-                                        <span class="text-xs" style="color: #9BA8B7;">Drone & caméra • Montage pro inclus</span>
-                                    </div>
-                                </div>
-                            </label>
-
-                        </div>
-
-                        {{-- Footer info --}}
-                        <div class="mt-5 rounded-xl p-4 flex items-start gap-3" style="background: rgba(39,174,96,0.07); border: 1px solid rgba(39,174,96,0.18);">
-                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background: #27AE60;">
-                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold" style="color: #1E8449;">Comment ça marche ?</p>
-                                <p class="text-xs mt-0.5" style="color: #4A6B55;">Après activation de votre annonce, notre équipe vous contactera directement sur <strong>WhatsApp</strong> pour confirmer et planifier les services sélectionnés. Vous pouvez aussi nous contacter à tout moment.</p>
-                                <p class="text-xs mt-1 font-bold" style="color: #1B2A4A;">Vous ne communiquez qu'avec l'équipe AlBabor — jamais avec d'autres acheteurs.</p>
-                            </div>
-                        </div>
-                        <p class="mt-3 text-center text-xs" style="color: #B0BEC5;">
-                            Ces services sont entièrement optionnels — passez si vous n'en avez pas besoin.
-                        </p>
-                    </div>
-                </div>
-
-                {{-- ===================================================== --}}
-                {{-- STEP 8 : Photos                                        --}}
-                {{-- ===================================================== --}}
-                <div x-show="currentStep === 8"
+                <div x-show="currentStep === 6"
                      x-transition:enter="transition ease-out duration-300"
                      x-transition:enter-start="opacity-0 translate-y-3"
                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -1361,7 +1345,7 @@
 
                         {{-- Bouton Suivant --}}
                         <button type="button"
-                                x-show="currentStep < 8"
+                                x-show="currentStep < 6"
                                 @click="nextStep()"
                                 :disabled="currentStep === 1 && !category"
                                 :class="currentStep === 1 && !category
@@ -1374,7 +1358,7 @@
 
                         {{-- Bouton Soumettre (dernier step) --}}
                         <button type="submit"
-                                x-show="currentStep === 8"
+                                x-show="currentStep === 6"
                                 class="px-8 py-3 rounded-xl text-white text-sm font-semibold btn-gradient-animated"
                                 style="box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">
                             Continuer vers le paiement
@@ -1394,6 +1378,7 @@
                 currency: '{{ old('currency', 'DZD') }}',
                 hasRemorque: '{{ old('specs.extras.remorque', '') }}',
                 hasPort: '{{ old('specs.extras.place_au_port', '') }}',
+                mediationEnabled: {{ old('mediation_enabled') ? 'true' : 'false' }},
 
                 get stepsList() {
                     return [
@@ -1401,22 +1386,18 @@
                         { n: 2, label: 'Infos' },
                         { n: 3, label: 'Specs' },
                         { n: 4, label: 'Prix' },
-                        { n: 5, label: 'Pays' },
-                        { n: 6, label: 'Contact' },
-                        { n: 7, label: 'Services' },
-                        { n: 8, label: 'Photos' },
+                        { n: 5, label: 'Contact' },
+                        { n: 6, label: 'Photos' },
                     ];
                 },
 
                 // Steps skipped based on category
                 isStepCompleted(n) {
                     if (n === 3 && this.category === 'parts' && this.currentStep >= 4) return true;
-                    if (n === 7 && (this.category === 'engine' || this.category === 'parts') && this.currentStep >= 8) return true;
                     return this.currentStep > n;
                 },
                 isStepActive(n) {
                     if (n === 3 && this.category === 'parts') return false;
-                    if (n === 7 && (this.category === 'engine' || this.category === 'parts')) return false;
                     return this.currentStep === n;
                 },
 
@@ -1424,24 +1405,20 @@
                 get visualStep() {
                     let skipped = 0;
                     if (this.category === 'parts' && this.currentStep >= 4) skipped++;
-                    if ((this.category === 'engine' || this.category === 'parts') && this.currentStep >= 8) skipped++;
                     return this.currentStep - skipped;
                 },
                 get totalVisualSteps() {
-                    if (this.category === 'parts') return 6;
-                    if (this.category === 'engine') return 7;
-                    return 8;
+                    if (this.category === 'parts') return 5;
+                    return 6;
                 },
                 get currentStepLabel() {
                     const labels = {
                         1: 'Categorie',
                         2: 'Informations generales',
                         3: 'Specifications',
-                        4: 'Prix & Etat',
-                        5: 'Localisation',
-                        6: 'Contact',
-                        7: 'Services AlBabor',
-                        8: 'Photos',
+                        4: 'Prix, Etat & Localisation',
+                        5: 'Contact & Services',
+                        6: 'Photos',
                     };
                     return labels[this.currentStep] || '';
                 },
@@ -1453,9 +1430,7 @@
                     let next = this.currentStep + 1;
                     // Skip specs step (3) for parts
                     if (next === 3 && this.category === 'parts') next = 4;
-                    // Skip services step (7) for engine/parts
-                    if (next === 7 && (this.category === 'engine' || this.category === 'parts')) next = 8;
-                    if (next <= 8) {
+                    if (next <= 6) {
                         this.currentStep = next;
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
@@ -1465,8 +1440,6 @@
                     let prev = this.currentStep - 1;
                     // Skip back over specs step (3) for parts
                     if (prev === 3 && this.category === 'parts') prev = 2;
-                    // Skip back over services step (7) for engine/parts
-                    if (prev === 7 && (this.category === 'engine' || this.category === 'parts')) prev = 6;
                     if (prev >= 1) {
                         this.currentStep = prev;
                         window.scrollTo({ top: 0, behavior: 'smooth' });
