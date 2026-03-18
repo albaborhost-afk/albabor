@@ -493,6 +493,49 @@
                     </div>
                     @endif
 
+                    {{-- ======== SERVICES ALBABOR ======== --}}
+                    @php
+                        $services = data_get($specs, 'services', []);
+                        $services = is_array($services) ? $services : [];
+                    @endphp
+                    @if(!empty($services))
+                    <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
+                        <h2 class="text-base font-bold mb-5 flex items-center gap-2.5" style="color: #1B2A4A;">
+                            <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white" style="background: linear-gradient(135deg, #F39C12, #F8C471); box-shadow: 0 3px 8px rgba(243,156,18,0.25);">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                            </span>
+                            {{ __('Services AlBabor demandes') }}
+                        </h2>
+                        <div class="grid grid-cols-1 gap-3">
+                            @php
+                                $serviceDetails = [
+                                    'photo' => ['label' => 'Shooting photo professionnel', 'color' => '#F39C12', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>'],
+                                    'reception' => ['label' => 'Reception des appels', 'color' => '#27AE60', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>'],
+                                    'video' => ['label' => 'Video de presentation professionnelle', 'color' => '#8E44AD', 'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>'],
+                                ];
+                            @endphp
+                            @foreach($services as $service)
+                                @php $detail = $serviceDetails[$service] ?? null; @endphp
+                                @if($detail)
+                                    <div class="flex items-center gap-3 p-3.5 rounded-xl border transition-all duration-200" style="background: {{ $detail['color'] }}08; border-color: {{ $detail['color'] }}20;">
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: {{ $detail['color'] }}15; color: {{ $detail['color'] }};">
+                                            {!! $detail['icon'] !!}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $detail['label'] }}</p>
+                                            <p class="text-xs" style="color: #9BA8B7;">Service demande — notre equipe vous contactera</p>
+                                        </div>
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider flex-shrink-0" style="background: {{ $detail['color'] }}12; color: {{ $detail['color'] }};">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                            Demande
+                                        </span>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- ======== SHARE ======== --}}
                     <div class="listing-card-frame rounded-3xl p-4 sm:p-6">
                         <h2 class="text-base font-bold mb-4 flex items-center gap-2.5" style="color: #1B2A4A;">

@@ -6,8 +6,9 @@
                 $startStep = 1;
                 if ($errors->any()) {
                     if ($errors->has('images')) $startStep = 8;
-                    elseif ($errors->hasAny(['numero_whatsapp', 'numero_mobile', 'contact_email'])) $startStep = 5;
-                    elseif ($errors->hasAny(['price_dzd', 'type_offre', 'etat'])) $startStep = 4;
+                    elseif ($errors->hasAny(['numero_whatsapp', 'numero_mobile', 'contact_email', 'mediation_enabled'])) $startStep = 6;
+                    elseif ($errors->hasAny(['wilaya', 'pays', 'visible_a'])) $startStep = 5;
+                    elseif ($errors->hasAny(['price_dzd', 'currency', 'type_offre', 'etat', 'remarque_echange'])) $startStep = 4;
                     elseif ($errors->has('category')) $startStep = 1;
                     else $startStep = 2;
                 }
@@ -105,7 +106,7 @@
                     <div class="relative">
                         {{-- Connector lines --}}
                         <div class="absolute top-5 left-0 right-0 flex items-center" aria-hidden="true" style="padding: 0 20px;">
-                            <template x-for="i in 6" :key="i">
+                            <template x-for="i in 7" :key="i">
                                 <div class="flex-1 h-0.5 transition-colors duration-500"
                                      :class="isStepCompleted(i) ? 'bg-[#17A2B8]' : 'bg-gray-200'">
                                 </div>
