@@ -284,10 +284,10 @@
                 <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);"
                      x-show="category === 'boat'" x-transition
                      x-data="{
-                         nbRes: {{ old('specs.reservoirs.nombre_reservoirs', data_get($specs, 'reservoirs.nombre_reservoirs', 1)) }},
-                         carb:  {{ old('specs.reservoirs.reservoir_carburant', data_get($specs, 'reservoirs.reservoir_carburant', 0)) }},
-                         eau:   {{ old('specs.reservoirs.reservoir_eau_douce', data_get($specs, 'reservoirs.reservoir_eau_douce', 0)) }},
-                         stk:   {{ old('specs.reservoirs.stockage', data_get($specs, 'reservoirs.stockage', 0)) }},
+                         nbRes: {{ (int) old('specs.reservoirs.nombre_reservoirs', data_get($specs, 'reservoirs.nombre_reservoirs', 1)) ?: 1 }},
+                         carb:  {{ (int) old('specs.reservoirs.reservoir_carburant', data_get($specs, 'reservoirs.reservoir_carburant', 0)) }},
+                         eau:   {{ (int) old('specs.reservoirs.reservoir_eau_douce', data_get($specs, 'reservoirs.reservoir_eau_douce', 0)) }},
+                         stk:   {{ (int) old('specs.reservoirs.stockage', data_get($specs, 'reservoirs.stockage', 0)) }},
                          get total() { return (Number(this.carb)||0) + (Number(this.eau)||0) + (Number(this.stk)||0); }
                      }">
                     <h2 class="text-base font-semibold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
@@ -376,6 +376,11 @@
                         $existingEquipement = old('specs.tags.equipement', data_get($specs, 'tags.equipement', []));
                         $existingOptions = old('specs.tags.options', data_get($specs, 'tags.options', []));
                         $existingElectronique = old('specs.tags.electronique', data_get($specs, 'tags.electronique', []));
+
+                        // Ensure these are arrays (could be strings if stored incorrectly)
+                        if (!is_array($existingEquipement)) $existingEquipement = $existingEquipement ? [$existingEquipement] : [];
+                        if (!is_array($existingOptions)) $existingOptions = $existingOptions ? [$existingOptions] : [];
+                        if (!is_array($existingElectronique)) $existingElectronique = $existingElectronique ? [$existingElectronique] : [];
 
                         $customEquipement = array_values(array_diff($existingEquipement, $predefinedEquipement));
                         $customOptions = array_values(array_diff($existingOptions, $predefinedOptions));
