@@ -2,13 +2,13 @@
   Photo Uploader Component
   Props:
     - inputName: string  (e.g. 'images' → field name="images[]")
-    - max: int           (max total photos, default 10)
+    - max: int           (max total photos, default 20)
     - required: bool     (default false)
     - existingMedia: Collection of ListingMedia (for edit mode, default empty)
 --}}
 @props([
     'inputName'     => 'images',
-    'max'           => 10,
+    'max'           => 20,
     'required'      => false,
     'existingMedia' => collect(),
 ])

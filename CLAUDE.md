@@ -32,7 +32,8 @@ Auth:
 Listings:
 - Categories: boat, jetski, engine, parts
 - Wilaya only
-- Images only, max 10; compress/resize on upload; no video
+- Max 20 images per listing; compress/resize on upload
+- Optional YouTube video URL per listing (embedded on detail page)
 
 Business:
 - Boats/JetSki publish: 5000 DZD one-time, valid up to 365 days OR until deleted/sold

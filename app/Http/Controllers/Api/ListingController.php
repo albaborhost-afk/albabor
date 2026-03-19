@@ -208,8 +208,9 @@ class ListingController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
-            'images' => 'required|array|min:1|max:10',
+            'images' => 'required|array|min:1|max:20',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'video_url' => 'nullable|url|max:500',
         ]);
 
         // Créer l'annonce
@@ -231,6 +232,7 @@ class ListingController extends Controller
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
+            'video_url' => $request->video_url,
             'status' => 'awaiting_payment',
         ]);
 
@@ -336,9 +338,10 @@ class ListingController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
-            'new_images' => 'nullable|array|max:10',
+            'new_images' => 'nullable|array|max:20',
             'new_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             'delete_images' => 'nullable|array',
+            'video_url' => 'nullable|url|max:500',
         ]);
 
         $listing->update([
@@ -358,6 +361,7 @@ class ListingController extends Controller
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
+            'video_url' => $request->video_url,
         ]);
 
         // Supprimer les images sélectionnées
@@ -374,14 +378,14 @@ class ListingController extends Controller
             }
         }
 
-        // Ajouter de nouvelles images (max 10 au total)
+        // Ajouter de nouvelles images (max 20 au total)
         if ($request->hasFile('new_images')) {
             $currentCount = $listing->media()->count();
-            $maxNew = 10 - $currentCount;
+            $maxNew = 20 - $currentCount;
 
             if ($maxNew <= 0) {
                 return response()->json([
-                    'message' => 'Nombre maximum d\'images atteint (10). Supprimez des images avant d\'en ajouter.',
+                    'message' => 'Nombre maximum d\'images atteint (20). Supprimez des images avant d\'en ajouter.',
                     'listing' => $listing->load(['user', 'media']),
                 ], 422);
             }

@@ -460,20 +460,34 @@ class ListingResource extends Resource
                                     ]),
 
                                 Forms\Components\Section::make('Ajouter des images')
-                                    ->description('Ajoutez jusqu\'à 10 images (JPEG, PNG, WebP — max 5 Mo chacune)')
+                                    ->description('Ajoutez jusqu\'à 20 images (JPEG, PNG, WebP — max 5 Mo chacune)')
                                     ->icon('heroicon-o-camera')
                                     ->schema([
                                         Forms\Components\FileUpload::make('new_images')
                                             ->label('Nouvelles images')
                                             ->multiple()
                                             ->image()
-                                            ->maxFiles(10)
+                                            ->maxFiles(20)
                                             ->maxSize(5120)
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->disk('local')
                                             ->directory('tmp-listing-uploads')
                                             ->dehydrated(false)
                                             ->helperText('Les images seront redimensionnées automatiquement.')
+                                            ->columnSpanFull(),
+                                    ]),
+
+                                Forms\Components\Section::make('Vidéo')
+                                    ->description('Lien vidéo YouTube pour l\'annonce')
+                                    ->icon('heroicon-o-video-camera')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('video_url')
+                                            ->label('URL Vidéo YouTube')
+                                            ->type('url')
+                                            ->placeholder('https://www.youtube.com/watch?v=...')
+                                            ->helperText('Ajoutez un lien YouTube pour présenter votre annonce en vidéo')
+                                            ->nullable()
+                                            ->maxLength(500)
                                             ->columnSpanFull(),
                                     ]),
                             ]),

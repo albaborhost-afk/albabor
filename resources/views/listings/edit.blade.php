@@ -953,9 +953,28 @@
 
                     <x-photo-uploader
                         input-name="new_images"
-                        :max="10"
+                        :max="20"
                         :existing-media="$listing->media"
                     />
+
+                    {{-- YouTube Video URL --}}
+                    <div class="mt-6 pt-6" style="border-top: 1px solid #E0E6ED;">
+                        <label class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">
+                            <span class="flex items-center gap-2">
+                                <svg class="w-4 h-4" style="color: #E74C3C;" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><path fill="#fff" d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                Video YouTube (optionnel)
+                            </span>
+                        </label>
+                        <input type="url"
+                               name="video_url"
+                               value="{{ old('video_url', $listing->video_url) }}"
+                               placeholder="https://www.youtube.com/watch?v=..."
+                               class="w-full px-4 py-3 rounded-xl text-sm transition-all focus:ring-2 focus:ring-opacity-50"
+                               style="border: 1.5px solid #E0E6ED; color: #1B2A4A; background: #F8FAFC; outline: none;"
+                               onfocus="this.style.borderColor='#17A2B8'; this.style.boxShadow='0 0 0 3px rgba(23,162,184,0.1)'"
+                               onblur="this.style.borderColor='#E0E6ED'; this.style.boxShadow='none'">
+                        <p class="mt-1.5 text-xs" style="color: #9BA8B7;">Ajoutez un lien YouTube pour presenter votre annonce en video</p>
+                    </div>
                 </div>
 
                 {{-- SUBMIT --}}

@@ -158,8 +158,9 @@ class ListingController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
-            'images' => 'required|array|min:1|max:10',
+            'images' => 'required|array|min:1|max:20',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'video_url' => 'nullable|url|max:500',
         ]);
 
         // Create listing
@@ -182,6 +183,7 @@ class ListingController extends Controller
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
+            'video_url' => $validated['video_url'] ?? null,
             'status' => 'awaiting_payment',
         ]);
 
@@ -283,9 +285,10 @@ class ListingController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
-            'new_images' => 'nullable|array|max:10',
+            'new_images' => 'nullable|array|max:20',
             'new_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             'delete_images' => 'nullable|array',
+            'video_url' => 'nullable|url|max:500',
         ]);
 
         $updateData = [
@@ -306,6 +309,7 @@ class ListingController extends Controller
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
+            'video_url' => $validated['video_url'] ?? null,
         ];
 
         // Re-submit rejected listings for review
@@ -334,7 +338,7 @@ class ListingController extends Controller
         // Add new images
         if ($request->hasFile('new_images')) {
             $currentCount = $listing->media()->count();
-            $maxNew = max(0, 10 - $currentCount);
+            $maxNew = max(0, 20 - $currentCount);
             \Log::info('Listing image upload', [
                 'listing_id'    => $listing->id,
                 'disk'          => $this->listingDisk(),
@@ -350,7 +354,7 @@ class ListingController extends Controller
                     'saved'      => $saved,
                 ]);
             } else {
-                \Log::warning('Listing image upload skipped – 10 photo limit reached', [
+                \Log::warning('Listing image upload skipped – 20 photo limit reached', [
                     'listing_id' => $listing->id,
                     'existing'   => $currentCount,
                 ]);

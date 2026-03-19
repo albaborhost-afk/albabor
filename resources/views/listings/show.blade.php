@@ -147,6 +147,36 @@
                         @endif
                     </div>
 
+                    {{-- ======== YOUTUBE VIDEO ======== --}}
+                    @if($listing->video_url)
+                        @php
+                            $videoId = null;
+                            if (preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $listing->video_url, $m)) {
+                                $videoId = $m[1];
+                            }
+                        @endphp
+                        @if($videoId)
+                            <div class="listing-card-frame rounded-3xl overflow-hidden mt-4">
+                                <div class="p-4 sm:p-5">
+                                    <h3 class="text-sm font-semibold mb-3 flex items-center gap-2" style="color: #1B2A4A;">
+                                        <svg class="w-5 h-5" style="color: #E74C3C;" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><path fill="#fff" d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                        Video
+                                    </h3>
+                                    <div class="rounded-2xl overflow-hidden" style="aspect-ratio: 16/9;">
+                                        <iframe
+                                            src="https://www.youtube.com/embed/{{ $videoId }}"
+                                            class="w-full h-full"
+                                            frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen
+                                            loading="lazy"
+                                        ></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @endif
+
                     {{-- ======== TITLE & PRICE SECTION ======== --}}
                     <div class="listing-card-frame listing-hero-card rounded-3xl overflow-hidden">
                         {{-- Price Hero Area --}}

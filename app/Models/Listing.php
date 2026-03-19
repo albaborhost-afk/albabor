@@ -35,6 +35,7 @@ class Listing extends Model
         'views_count',
         'favorites_count',
         'specs',
+        'video_url',
     ];
 
     protected function casts(): array
