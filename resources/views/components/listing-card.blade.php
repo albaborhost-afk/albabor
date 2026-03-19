@@ -157,7 +157,7 @@
             {{-- Price & Offer Type --}}
             <div class="flex items-end justify-between pt-1 sm:pt-1.5" style="border-top: 1px solid #F0F4F8;">
                 <div>
-                    <span class="text-[12px] sm:text-[13px] font-extrabold block leading-tight transition-colors duration-300 group-hover:text-[#17A2B8]" style="color: #1B4F72; letter-spacing: -0.02em;">
+                    <span class="text-[12px] sm:text-[13px] font-extrabold block leading-tight" style="color: #E67E22; letter-spacing: -0.02em;">
                         {{ $listing->formatted_price }}
                     </span>
                     @if($listing->formatted_converted_price)
