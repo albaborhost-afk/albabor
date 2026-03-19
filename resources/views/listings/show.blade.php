@@ -78,7 +78,7 @@
 
                         @if($hasImages)
                             {{-- Main image --}}
-                            <div class="relative overflow-hidden cursor-pointer" style="aspect-ratio: 4/3; touch-action: manipulation;"
+                            <div class="relative overflow-hidden cursor-pointer aspect-[3/4] sm:aspect-[4/3]" style="touch-action: manipulation;"
                                  @click="openLightbox(currentIndex)">
                                 <img :src="currentImage"
                                      alt="{{ $listing->title }}"
