@@ -57,7 +57,7 @@
                     @endphp
 
                     {{-- Gallery: edge-to-edge --}}
-                    <div class="rounded-2xl sm:rounded-3xl overflow-hidden"
+                    <div class="rounded-2xl sm:rounded-3xl overflow-hidden" style="box-shadow: 0 8px 30px rgba(27, 79, 114, 0.12);"
                          x-data="{
                             currentIndex: 0,
                             imageCount: {{ $imageCount }},
@@ -77,14 +77,17 @@
                          }">
 
                         @if($hasImages)
-                            {{-- Main image: one rounded clip area, corners aligned --}}
-                            <div class="relative overflow-hidden cursor-pointer" style="aspect-ratio: 16/10; touch-action: manipulation;"
+                            {{-- Main image --}}
+                            <div class="relative overflow-hidden cursor-pointer" style="aspect-ratio: 4/3; touch-action: manipulation;"
                                  @click="openLightbox(currentIndex)">
                                 <img :src="currentImage"
                                      alt="{{ $listing->title }}"
                                      class="listing-gallery-main-img w-full h-full object-cover transition-all duration-500 ease-out"
                                      :class="{ 'opacity-0 scale-95': transitioning, 'opacity-100 scale-100': !transitioning }"
                                      style="will-change: transform, opacity; touch-action: manipulation;">
+
+                                {{-- Bottom gradient overlay --}}
+                                <div class="absolute inset-x-0 bottom-0 h-24 pointer-events-none" style="background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);"></div>
 
                                 {{-- Featured Badge --}}
                                 @if($listing->isFeatured())
@@ -102,18 +105,18 @@
 
                                 {{-- Navigation Arrows (only if multiple images) --}}
                                 @if($imageCount > 1)
-                                    <button @click.stop="prev()" class="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white z-10 transition-all duration-200 hover:scale-110 listing-nav-btn">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                    <button @click.stop="prev()" class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white z-10 transition-all duration-200 hover:scale-110 listing-nav-btn" style="background: rgba(0,0,0,0.35); backdrop-filter: blur(8px);">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                                     </button>
-                                    <button @click.stop="next()" class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white z-10 transition-all duration-200 hover:scale-110 listing-nav-btn">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    <button @click.stop="next()" class="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white z-10 transition-all duration-200 hover:scale-110 listing-nav-btn" style="background: rgba(0,0,0,0.35); backdrop-filter: blur(8px);">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                                     </button>
                                 @endif
                             </div>
 
-                            {{-- Thumbnail Strip: creative frame --}}
+                            {{-- Thumbnail Strip --}}
                             @if($imageCount > 1)
-                                <div class="listing-thumb-strip flex gap-2 px-3 pb-3 pt-2 overflow-x-auto" style="background: rgba(0,0,0,0.03);">
+                                <div class="listing-thumb-strip flex gap-2 px-3 pb-3 pt-2.5 overflow-x-auto" style="background: linear-gradient(to bottom, rgba(27,79,114,0.04), rgba(27,79,114,0.01));">
                                     @foreach((is_array($images) ? $images : $images->toArray()) as $index => $image)
                                         @php
                                             $imageUrl = is_string($image)
@@ -128,7 +131,7 @@
                                                         : $imageUrl));
                                         @endphp
                                         <button @click="goTo({{ $index }})"
-                                                class="listing-thumb flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl overflow-hidden transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#17A2B8]"
+                                                class="listing-thumb flex-shrink-0 w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] md:w-[5.5rem] md:h-[5.5rem] rounded-xl overflow-hidden transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#17A2B8]"
                                                 :class="currentIndex === {{ $index }} ? 'listing-thumb-active' : 'listing-thumb-inactive'">
                                             <img src="{{ $thumbUrl }}" alt="Image {{ $index + 1 }}" class="w-full h-full object-cover">
                                         </button>
