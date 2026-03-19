@@ -41,7 +41,7 @@
 
     <a href="{{ route('listings.show', $listing) }}" class="block">
         {{-- Image Section --}}
-        <div class="relative aspect-square overflow-hidden" style="background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);">
+        <div class="relative aspect-[3/4] sm:aspect-square overflow-hidden" style="background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);">
             @if($firstMedia)
                 <img src="{{ $firstMedia->url }}"
                      alt="{{ $listing->title }}"
