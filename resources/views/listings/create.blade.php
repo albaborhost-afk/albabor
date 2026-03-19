@@ -42,7 +42,7 @@
             @endif
 
             <form action="{{ route('listings.store') }}" method="POST" enctype="multipart/form-data"
-                  x-data="listingForm()">
+                  x-data="listingForm()" novalidate>
                 @csrf
 
                 <style>
