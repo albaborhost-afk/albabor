@@ -232,9 +232,8 @@ class ListingController extends Controller
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
-            'video_url' => $request->video_url,
             'status' => 'awaiting_payment',
-        ]);
+        ] + (\Schema::hasColumn('listings', 'video_url') ? ['video_url' => $request->video_url] : []));
 
         // Gérer les images
         $savedCount = $this->handleImageUpload($listing, $request->file('images'));
@@ -362,8 +361,7 @@ class ListingController extends Controller
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
-            'video_url' => $request->video_url,
-        ]);
+        ] + (\Schema::hasColumn('listings', 'video_url') ? ['video_url' => $request->video_url] : []));
 
         // Supprimer les images sélectionnées
         if (!empty($validated['delete_images'])) {

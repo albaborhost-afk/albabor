@@ -164,7 +164,7 @@ class ListingController extends Controller
         ]);
 
         // Create listing
-        $listing = Listing::create([
+        $listingData = [
             'user_id' => $user->id,
             'title' => $validated['title'],
             'description' => $validated['description'],
@@ -183,9 +183,23 @@ class ListingController extends Controller
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
-            'video_url' => $validated['video_url'] ?? null,
             'status' => 'awaiting_payment',
-        ]);
+        ];
+
+        // Only include video_url if the column exists (migration may not have run yet)
+        if (\Schema::hasColumn('listings', 'video_url')) {
+            $listingData['video_url'] = $validated['video_url'] ?? null;
+        }
+
+        try {
+            $listing = Listing::create($listingData);
+        } catch (\Throwable $e) {
+            \Log::error('Listing creation failed', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id,
+            ]);
+            return back()->withInput()->withErrors(['general' => 'Une erreur est survenue lors de la création de l\'annonce. Veuillez réessayer.']);
+        }
 
         // Handle images
         $savedCount = $this->handleImageUpload($listing, $request->file('images'));
@@ -310,8 +324,12 @@ class ListingController extends Controller
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
-            'video_url' => $validated['video_url'] ?? null,
         ];
+
+        // Only include video_url if the column exists
+        if (\Schema::hasColumn('listings', 'video_url')) {
+            $updateData['video_url'] = $validated['video_url'] ?? null;
+        }
 
         // Re-submit rejected listings for review
         if ($listing->status === 'rejected') {
