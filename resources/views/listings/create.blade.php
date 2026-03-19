@@ -820,19 +820,20 @@
                         </div>
 
                         {{-- Etat --}}
-                        <div class="mb-5">
+                        <div class="mb-5" x-data="{ etat: '{{ old('etat', 'bon_etat') }}' }">
                             <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Etat *</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                            <div class="rounded-xl overflow-hidden" style="border: 1.5px solid #E0E6ED;">
                                 @foreach(\App\Models\Listing::ETAT_LABELS as $val => $label)
-                                    <label class="relative cursor-pointer">
-                                        <input type="radio" name="etat" value="{{ $val }}"
-                                               {{ old('etat', 'bon_etat') == $val ? 'checked' : '' }}
-                                               class="peer sr-only" required>
-                                        <div class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 peer-checked:text-white peer-checked:shadow-lg peer-checked:gradient-primary peer-checked:!border-transparent peer-checked:scale-105"
-                                             style="border: 2px solid #E0E6ED; color: #6B7B8D;">
-                                            <svg class="w-4 h-4 opacity-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                            {{ $label }}
-                                        </div>
+                                    <label class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 {{ !$loop->last ? 'border-b' : '' }}"
+                                           style="{{ !$loop->last ? 'border-color: #E0E6ED;' : '' }}"
+                                           :style="etat === '{{ $val }}' ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8);' : ''"
+                                           @click="etat = '{{ $val }}'">
+                                        <input type="radio" name="etat" value="{{ $val }}" x-model="etat" class="sr-only" required>
+                                        <span class="text-sm font-medium transition-colors flex-1"
+                                              :style="etat === '{{ $val }}' ? 'color: white;' : 'color: #3D4F61;'">{{ $label }}</span>
+                                        <svg x-show="etat === '{{ $val }}'" class="w-4 h-4 flex-shrink-0" style="color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                        </svg>
                                     </label>
                                 @endforeach
                             </div>
@@ -861,108 +862,35 @@
                             </div>
                         </div>
 
-                        {{-- ---- Divider: Localisation section merged here ---- --}}
+                        {{-- ---- Divider: Localisation ---- --}}
                         <div class="my-6 border-t" style="border-color: #E0E6ED;"></div>
 
-                        <div class="rounded-2xl overflow-hidden" style="border: 1px solid #E0E6ED;">
-                            {{-- Gradient header --}}
-                            <div class="px-6 py-6 text-center" style="background: linear-gradient(135deg, #1B4F72 0%, #17A2B8 55%, #2ECC71 100%);">
-                                <div class="text-4xl mb-2">🌍</div>
-                                <h3 class="text-lg font-bold text-white">Où se trouve votre annonce ?</h3>
-                                <p class="text-xs mt-1" style="color: rgba(255,255,255,0.75);">Mer Méditerranée — 20 pays disponibles</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {{-- Pays --}}
+                            <div>
+                                <label class="block text-xs font-semibold uppercase mb-2 flex items-center gap-1.5" style="color: #6B7B8D;">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/></svg>
+                                    Pays
+                                </label>
+                                <select name="pays" class="glass-input w-full rounded-xl px-4 py-3 text-sm" style="color: #1B2A4A;">
+                                    <option value="">— Choisir un pays —</option>
+                                    @foreach(['Algérie' => '🇩🇿', 'Tunisie' => '🇹🇳', 'Maroc' => '🇲🇦', 'Égypte' => '🇪🇬', 'Espagne' => '🇪🇸', 'France' => '🇫🇷', 'Italie' => '🇮🇹', 'Grèce' => '🇬🇷', 'Croatie' => '🇭🇷', 'Turquie' => '🇹🇷', 'Liban' => '🇱🇧', 'Malte' => '🇲🇹', 'Monaco' => '🇲🇨', 'Slovénie' => '🇸🇮'] as $country => $flag)
+                                        <option value="{{ $country }}" {{ old('pays', 'Algérie') == $country ? 'selected' : '' }}>{{ $flag }} {{ $country }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
-                            <div class="p-5"
-                                 x-data="{
-                                     selected: '{{ old('pays', '') }}',
-                                     countries: [
-                                         { code: 'Algérie',            flag: '🇩🇿', name: 'Algérie' },
-                                         { code: 'Tunisie',            flag: '🇹🇳', name: 'Tunisie' },
-                                         { code: 'Maroc',              flag: '🇲🇦', name: 'Maroc' },
-                                         { code: 'Égypte',             flag: '🇪🇬', name: 'Égypte' },
-                                         { code: 'Espagne',            flag: '🇪🇸', name: 'Espagne' },
-                                         { code: 'France',             flag: '🇫🇷', name: 'France' },
-                                         { code: 'Italie',             flag: '🇮🇹', name: 'Italie' },
-                                         { code: 'Grèce',              flag: '🇬🇷', name: 'Grèce' },
-                                         { code: 'Croatie',            flag: '🇭🇷', name: 'Croatie' },
-                                         { code: 'Slovénie',           flag: '🇸🇮', name: 'Slovénie' },
-                                         { code: 'Turquie',            flag: '🇹🇷', name: 'Turquie' },
-                                         { code: 'Liban',              flag: '🇱🇧', name: 'Liban' },
-                                         { code: 'Malte',              flag: '🇲🇹', name: 'Malte' },
-                                         { code: 'Monaco',             flag: '🇲🇨', name: 'Monaco' },
-                                     ]
-                                 }">
-                                <input type="hidden" name="pays" :value="selected">
-
-                                {{-- Selected country banner --}}
-                                <div x-show="selected"
-                                     class="mb-4 rounded-2xl p-3 flex items-center gap-3"
-                                     style="background: linear-gradient(135deg, #E8F8FA, #D4F1F4); border: 2px solid #17A2B8;">
-                                    <span class="text-3xl leading-none" x-text="countries.find(c => c.code === selected)?.flag || ''"></span>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #17A2B8;">Pays sélectionné</p>
-                                        <p class="text-sm font-bold truncate" style="color: #1B2A4A;" x-text="selected"></p>
-                                    </div>
-                                    <button type="button" @click="selected = ''"
-                                            class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 transition-all hover:scale-110"
-                                            style="background: #17A2B8;">✕</button>
-                                </div>
-
-                                {{-- Empty state --}}
-                                <div x-show="!selected"
-                                     class="mb-4 rounded-2xl p-3 text-center"
-                                     style="background: #F7F9FB; border: 2px dashed #D0D9E3;">
-                                    <p class="text-xs" style="color: #9BA8B7;">Faites défiler et cliquez sur votre pays</p>
-                                </div>
-
-                                {{-- Scrolling flag strip --}}
-                                <div class="relative mb-5">
-                                    <div class="absolute left-0 top-0 bottom-0 w-10 z-10 pointer-events-none" style="background: linear-gradient(to right, white 20%, transparent);"></div>
-                                    <div class="absolute right-0 top-0 bottom-0 w-10 z-10 pointer-events-none" style="background: linear-gradient(to left, white 20%, transparent);"></div>
-                                    <div class="flex gap-3 overflow-x-auto py-3 px-3 country-scroll-lg"
-                                         style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
-                                        <template x-for="c in countries" :key="c.code">
-                                            <button type="button"
-                                                    @click="selected = c.code"
-                                                    class="flex-shrink-0 flex flex-col items-center rounded-2xl transition-all duration-200 relative"
-                                                    :class="selected === c.code ? 'scale-110' : 'hover:scale-105 active:scale-95'"
-                                                    :style="selected === c.code
-                                                        ? 'border: 3px solid #17A2B8; background: linear-gradient(135deg, #E8F8FA, #D4F1F4); box-shadow: 0 8px 24px rgba(23,162,184,0.4); padding: 14px 16px; gap: 8px;'
-                                                        : 'border: 2px solid #E8EDF2; background: #FAFBFC; box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: 14px 16px; gap: 8px;'"
-                                                    style="min-width: 86px; scroll-snap-align: start;">
-                                                {{-- Checkmark badge --}}
-                                                <div x-show="selected === c.code"
-                                                     class="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center z-10"
-                                                     style="background: linear-gradient(135deg, #17A2B8, #1B4F72); box-shadow: 0 3px 8px rgba(23,162,184,0.5);">
-                                                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                                    </svg>
-                                                </div>
-                                                <span class="text-4xl leading-none" x-text="c.flag"></span>
-                                                <span class="text-[11px] font-bold text-center leading-tight"
-                                                      :style="selected === c.code ? 'color: #17A2B8;' : 'color: #6B7B8D;'"
-                                                      x-text="c.name"></span>
-                                            </button>
-                                        </template>
-                                    </div>
-                                </div>
-
-                                {{-- Ville / Région --}}
-                                <div>
-                                    <label class="block text-xs font-semibold uppercase mb-2 flex items-center gap-1.5" style="color: #6B7B8D;">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        </svg>
-                                        Ville / Région
-                                    </label>
-                                    <input type="text" name="wilaya" value="{{ old('wilaya') }}"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                           placeholder="Ex: Alger, Oran, Tunis, Paris...">
-                                </div>
+                            {{-- Ville / Région --}}
+                            <div>
+                                <label class="block text-xs font-semibold uppercase mb-2 flex items-center gap-1.5" style="color: #6B7B8D;">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    Ville / Région
+                                </label>
+                                <input type="text" name="wilaya" value="{{ old('wilaya') }}"
+                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                       placeholder="Ex: Alger, Oran, Tunis...">
                             </div>
                         </div>
-                        <style>.country-scroll-lg::-webkit-scrollbar { display: none; }</style>
                     </div>
                 </div>
 
