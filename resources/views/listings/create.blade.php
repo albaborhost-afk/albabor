@@ -802,8 +802,8 @@
                                 <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
                                     Type d'offre
                                 </label>
-                                <div class="grid grid-cols-3 gap-2">
-                                    @foreach(['offert' => ['label'=>'Offert','desc'=>'Gratuit','icon'=>'🎁'], 'negociable' => ['label'=>'Négociable','desc'=>'Prix ouvert','icon'=>'🤝'], 'fix' => ['label'=>'Prix fixe','desc'=>'Non négociable','icon'=>'🔒']] as $val => $item)
+                                <div class="grid grid-cols-2 gap-2">
+                                    @foreach(['negociable' => ['label'=>'Négociable','desc'=>'Prix ouvert','icon'=>'🤝'], 'fix' => ['label'=>'Prix fixe','desc'=>'Non négociable','icon'=>'🔒']] as $val => $item)
                                         <label class="cursor-pointer">
                                             <input type="radio" name="type_offre" value="{{ $val }}"
                                                    {{ old('type_offre', 'negociable') == $val ? 'checked' : '' }}
