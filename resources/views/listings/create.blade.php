@@ -803,15 +803,15 @@
                         {{-- Type offre --}}
                         <div class="mb-5">
                             <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Type d'offre</label>
-                            <div class="flex flex-wrap gap-2">
-                                @foreach(['negociable' => 'Negociable', 'fix' => 'Prix fixe', 'offert' => 'Offert'] as $val => $label)
-                                    <label class="relative cursor-pointer">
+                            <div class="flex gap-2">
+                                @foreach(['offert' => 'Offert', 'negociable' => 'Négo', 'fix' => 'Fixe'] as $val => $label)
+                                    <label class="flex-1 relative cursor-pointer">
                                         <input type="radio" name="type_offre" value="{{ $val }}"
                                                {{ old('type_offre', 'negociable') == $val ? 'checked' : '' }}
                                                class="peer sr-only">
-                                        <span class="px-4 py-2 rounded-full text-xs font-bold inline-flex items-center gap-1.5 transition-all cursor-pointer peer-checked:text-white peer-checked:shadow-lg peer-checked:gradient-primary peer-checked:!border-transparent peer-checked:scale-105"
+                                        <span class="w-full py-2.5 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all cursor-pointer peer-checked:text-white peer-checked:shadow-lg peer-checked:gradient-primary peer-checked:!border-transparent peer-checked:scale-105"
                                               style="border: 2px solid #E0E6ED; color: #6B7B8D;">
-                                            <svg class="w-3.5 h-3.5 opacity-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                            <svg class="w-3.5 h-3.5 opacity-0 peer-checked:opacity-100 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                                             {{ $label }}
                                         </span>
                                     </label>
@@ -836,29 +836,6 @@
                                         </svg>
                                     </label>
                                 @endforeach
-                            </div>
-                        </div>
-
-                        {{-- Echange --}}
-                        <div>
-                            <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Echange</label>
-                            <div class="flex gap-2">
-                                <label class="relative cursor-pointer">
-                                    <input type="radio" name="remarque_echange" value="accepte" {{ old('remarque_echange') == 'accepte' ? 'checked' : '' }} class="peer sr-only">
-                                    <span class="px-4 py-2 rounded-full text-xs font-bold inline-flex items-center gap-1.5 transition-all cursor-pointer peer-checked:!border-[#27AE60] peer-checked:!text-white peer-checked:!bg-[#27AE60] peer-checked:shadow-lg peer-checked:scale-105"
-                                          style="border: 2px solid #E0E6ED; color: #6B7B8D;">
-                                        <svg class="w-3.5 h-3.5 opacity-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                        Accepte l'echange
-                                    </span>
-                                </label>
-                                <label class="relative cursor-pointer">
-                                    <input type="radio" name="remarque_echange" value="refuse" {{ old('remarque_echange') == 'refuse' ? 'checked' : '' }} class="peer sr-only">
-                                    <span class="px-4 py-2 rounded-full text-xs font-bold inline-flex items-center gap-1.5 transition-all cursor-pointer peer-checked:!border-[#E74C3C] peer-checked:!text-white peer-checked:!bg-[#E74C3C] peer-checked:shadow-lg peer-checked:scale-105"
-                                          style="border: 2px solid #E0E6ED; color: #6B7B8D;">
-                                        <svg class="w-3.5 h-3.5 opacity-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
-                                        N'accepte pas
-                                    </span>
-                                </label>
                             </div>
                         </div>
 
