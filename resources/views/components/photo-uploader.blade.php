@@ -42,8 +42,8 @@
                 x-data="{ marked: false }"
                 class="relative group"
             >
-                {{-- Hidden delete input (only active when marked) --}}
-                <input x-show="marked" x-cloak type="hidden" name="delete_images[]" value="{{ $media->id }}">
+                {{-- Hidden delete input (only submitted when marked) --}}
+                <input type="hidden" name="delete_images[]" value="{{ $media->id }}" :disabled="!marked">
 
                 {{-- Image tile --}}
                 <div

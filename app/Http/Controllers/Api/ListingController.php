@@ -341,6 +341,7 @@ class ListingController extends Controller
             'new_images' => 'nullable|array|max:20',
             'new_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             'delete_images' => 'nullable|array',
+            'delete_images.*' => 'integer|exists:listing_media,id',
             'video_url' => 'nullable|url|max:500',
         ]);
 
