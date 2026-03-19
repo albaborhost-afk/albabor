@@ -180,28 +180,28 @@
                     {{-- ======== TITLE & PRICE SECTION ======== --}}
                     <div class="listing-card-frame listing-hero-card rounded-3xl overflow-hidden">
                         {{-- Price Hero Area --}}
-                        <div class="p-6 sm:p-8 pb-6 annonce-price-hero">
-                            <h1 class="text-xl md:text-2xl lg:text-[1.75rem] font-bold leading-tight mb-5 text-slate-800 tracking-tight">{{ $listing->title }}</h1>
+                        <div class="p-4 sm:p-5 pb-4 annonce-price-hero">
+                            <h1 class="text-base sm:text-lg md:text-xl font-bold leading-tight mb-3 text-slate-800 tracking-tight">{{ $listing->title }}</h1>
 
-                            <div class="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4">
+                            <div class="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-3">
                                 {{-- Main Price --}}
                                 <div class="flex items-baseline gap-2">
-                                    <span class="annonce-price text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">{{ $listing->formatted_price }}</span>
+                                    <span class="annonce-price text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight">{{ $listing->formatted_price }}</span>
                                 </div>
 
                                 {{-- Converted Price + Type Offre --}}
-                                <div class="flex items-center gap-3 flex-wrap">
-                                    <span class="text-sm font-medium px-3 py-1 rounded-lg" style="color: #9BA8B7; background: rgba(155,168,183,0.08);">{{ $listing->formatted_converted_price }}</span>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-xs font-medium px-2.5 py-0.5 rounded-lg" style="color: #9BA8B7; background: rgba(155,168,183,0.08);">{{ $listing->formatted_converted_price }}</span>
 
                                     @if($listing->type_offre)
                                         @php $offreStyle = $typeOffreColors[$listing->type_offre] ?? ['bg' => '#f0f0f0', 'color' => '#666', 'border' => '#ddd']; @endphp
-                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wide" style="background: {{ $offreStyle['bg'] }}; color: {{ $offreStyle['color'] }}; border: 1px solid {{ $offreStyle['border'] }};">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-bold uppercase tracking-wide" style="background: {{ $offreStyle['bg'] }}; color: {{ $offreStyle['color'] }}; border: 1px solid {{ $offreStyle['border'] }};">
                                             @if($listing->type_offre === 'negociable')
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                                             @elseif($listing->type_offre === 'fix')
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                                             @elseif($listing->type_offre === 'offert')
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
+                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
                                             @endif
                                             {{ $typeOffreLabels[$listing->type_offre] ?? '' }}
                                         </span>
@@ -211,11 +211,11 @@
                         </div>
 
                         {{-- Badges Row --}}
-                        <div class="px-6 py-4" style="border-top: 1px solid #E0E6ED;">
-                            <div class="flex flex-wrap gap-2">
+                        <div class="px-4 sm:px-5 py-3" style="border-top: 1px solid #E0E6ED;">
+                            <div class="flex flex-wrap gap-1.5">
                                 {{-- Category --}}
                                 @php $badgeClasses = ['boat' => 'badge-soft-boat', 'jetski' => 'badge-soft-jetski', 'engine' => 'badge-soft-engine', 'parts' => 'badge-soft-parts']; @endphp
-                                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold {{ $badgeClasses[$listing->category] ?? 'bg-gray-100' }}">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold {{ $badgeClasses[$listing->category] ?? 'bg-gray-100' }}">
                                     {!! $categoryIcons[$listing->category] ?? '' !!}
                                     {{ $categoryLabels[$listing->category] ?? ucfirst($listing->category) }}
                                 </span>
@@ -223,7 +223,7 @@
                                 {{-- Etat (Condition) --}}
                                 @if($listing->etat)
                                     @php $etatColor = $etatColors[$listing->etat] ?? '#6B7B8D'; @endphp
-                                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold" style="background: {{ $etatColor }}12; color: {{ $etatColor }}; border: 1px solid {{ $etatColor }}20;">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold" style="background: {{ $etatColor }}12; color: {{ $etatColor }}; border: 1px solid {{ $etatColor }}20;">
                                         {!! $etatIcons[$listing->etat] ?? '' !!}
                                         {{ $listing->etat_short_label }}
                                     </span>
@@ -231,34 +231,34 @@
 
                                 {{-- Echange --}}
                                 @if($listing->remarque_echange === 'accepte')
-                                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold" style="background: rgba(39, 174, 96, 0.1); color: #27AE60; border: 1px solid rgba(39, 174, 96, 0.2);">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold" style="background: rgba(39, 174, 96, 0.1); color: #27AE60; border: 1px solid rgba(39, 174, 96, 0.2);">
+                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                                         {{ __('Echange accepte') }}
                                     </span>
                                 @endif
 
                                 {{-- Location --}}
-                                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold" style="background: rgba(255, 107, 107, 0.08); color: #FF6B6B; border: 1px solid rgba(255, 107, 107, 0.15);">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold" style="background: rgba(255, 107, 107, 0.08); color: #FF6B6B; border: 1px solid rgba(255, 107, 107, 0.15);">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                                     @if($listing->pays){{ $listing->pays }}@endif{{ $listing->wilaya ? ($listing->pays ? ', ' : '') . $listing->wilaya : '' }}{{ $listing->visible_a ? ', ' . $listing->visible_a : '' }}
                                 </span>
                             </div>
                         </div>
 
                         {{-- Stats Row --}}
-                        <div class="px-6 py-3.5 flex items-center gap-2 flex-wrap" style="border-top: 1px solid #E0E6ED; background: #FAFBFC;">
-                            <div class="stat-card inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg" style="color: #9BA8B7;">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <div class="px-4 sm:px-5 py-2.5 flex items-center gap-2 flex-wrap" style="border-top: 1px solid #E0E6ED; background: #FAFBFC;">
+                            <div class="stat-card inline-flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-lg" style="color: #9BA8B7;">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 <span style="color: #6B7B8D; font-weight: 600;">{{ number_format($listing->views_count ?? 0) }}</span> {{ __('vues') }}
                             </div>
                             <div class="w-1 h-1 rounded-full" style="background: #D0D7DE;"></div>
-                            <div class="stat-card inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg" style="color: #9BA8B7;">
-                                <svg class="w-4 h-4" style="color: #FF6B6B;" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                            <div class="stat-card inline-flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-lg" style="color: #9BA8B7;">
+                                <svg class="w-3.5 h-3.5" style="color: #FF6B6B;" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                                 <span style="color: #6B7B8D; font-weight: 600;">{{ number_format($listing->favorites_count ?? 0) }}</span> {{ __('favoris') }}
                             </div>
                             <div class="w-1 h-1 rounded-full" style="background: #D0D7DE;"></div>
-                            <div class="stat-card inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg" style="color: #9BA8B7;">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="stat-card inline-flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-lg" style="color: #9BA8B7;">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 {{ $listing->created_at->diffForHumans() }}
                             </div>
                         </div>
