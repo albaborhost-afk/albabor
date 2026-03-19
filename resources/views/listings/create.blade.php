@@ -709,164 +709,155 @@
                      x-transition:leave-start="opacity-100"
                      x-transition:leave-end="opacity-0">
 
-                    <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-top: 4px solid #27AE60;">
-                        <h2 class="text-base font-semibold mb-4 flex items-center gap-3" style="color: #1B2A4A;">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #27AE60, #2ECC71);">
+                    <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 4px 20px rgba(0,0,0,0.07);">
+
+                        {{-- Section header --}}
+                        <div class="px-5 py-4 flex items-center gap-3" style="border-bottom: 1px solid #F0F4F8;">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #1B4F72, #17A2B8);">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
                             <div>
-                                <span class="block">Prix & Etat</span>
-                                <span class="block text-xs font-normal" style="color: #9BA8B7;">Tarif et condition</span>
+                                <p class="font-bold text-sm" style="color: #1B2A4A;">Prix & Etat</p>
+                                <p class="text-xs" style="color: #9BA8B7;">Tarif et condition de l'article</p>
                             </div>
-                        </h2>
-
-                        {{-- Devise --}}
-                        <div class="mb-5">
-                            <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Devise *</label>
-                            <div class="flex gap-3">
-                                <label class="flex-1 relative cursor-pointer">
-                                    <input type="radio" name="currency" value="DZD" x-model="currency" class="peer sr-only" required>
-                                    <div class="p-3 border-[3px] border-gray-200 rounded-xl text-center bg-white transition-all duration-300
-                                                peer-checked:!border-[#27AE60] peer-checked:!bg-gradient-to-br peer-checked:!from-green-50 peer-checked:!to-emerald-50
-                                                peer-checked:shadow-[0_0_0_4px_rgba(39,174,96,0.2),0_8px_25px_rgba(39,174,96,0.4)]
-                                                peer-checked:-translate-y-1 hover:border-green-300 hover:shadow-md">
-                                        <div class="absolute top-1 right-1 w-6 h-6 rounded-full bg-[#27AE60] flex items-center justify-center opacity-0 scale-0 transition-all duration-300
-                                                    peer-checked:opacity-100 peer-checked:scale-100 shadow-lg">
-                                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                        </div>
-                                        <span class="block text-2xl mb-0.5">🇩🇿</span>
-                                        <span class="block text-sm font-medium text-gray-700 transition-all peer-checked:!font-bold peer-checked:!text-[#27AE60]">DZD</span>
-                                        <span class="block text-[10px] text-gray-500">Dinar Algerien</span>
-                                    </div>
-                                </label>
-                                <label class="flex-1 relative cursor-pointer">
-                                    <input type="radio" name="currency" value="EUR" x-model="currency" class="peer sr-only">
-                                    <div class="p-3 border-[3px] border-gray-200 rounded-xl text-center bg-white transition-all duration-300
-                                                peer-checked:!border-[#27AE60] peer-checked:!bg-gradient-to-br peer-checked:!from-green-50 peer-checked:!to-emerald-50
-                                                peer-checked:shadow-[0_0_0_4px_rgba(39,174,96,0.2),0_8px_25px_rgba(39,174,96,0.4)]
-                                                peer-checked:-translate-y-1 hover:border-green-300 hover:shadow-md">
-                                        <div class="absolute top-1 right-1 w-6 h-6 rounded-full bg-[#27AE60] flex items-center justify-center opacity-0 scale-0 transition-all duration-300
-                                                    peer-checked:opacity-100 peer-checked:scale-100 shadow-lg">
-                                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                        </div>
-                                        <span class="block text-2xl mb-0.5">🇪🇺</span>
-                                        <span class="block text-sm font-medium text-gray-700 transition-all peer-checked:!font-bold peer-checked:!text-[#27AE60]">EUR</span>
-                                        <span class="block text-[10px] text-gray-500">Euro</span>
-                                    </div>
-                                </label>
-                                <label class="flex-1 relative cursor-pointer">
-                                    <input type="radio" name="currency" value="OTHER" x-model="currency" class="peer sr-only">
-                                    <div class="p-3 border-[3px] border-gray-200 rounded-xl text-center bg-white transition-all duration-300
-                                                peer-checked:!border-[#27AE60] peer-checked:!bg-gradient-to-br peer-checked:!from-green-50 peer-checked:!to-emerald-50
-                                                peer-checked:shadow-[0_0_0_4px_rgba(39,174,96,0.2),0_8px_25px_rgba(39,174,96,0.4)]
-                                                peer-checked:-translate-y-1 hover:border-green-300 hover:shadow-md">
-                                        <div class="absolute top-1 right-1 w-6 h-6 rounded-full bg-[#27AE60] flex items-center justify-center opacity-0 scale-0 transition-all duration-300
-                                                    peer-checked:opacity-100 peer-checked:scale-100 shadow-lg">
-                                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                        </div>
-                                        <span class="block text-2xl mb-0.5">🌐</span>
-                                        <span class="block text-sm font-medium text-gray-700 transition-all peer-checked:!font-bold peer-checked:!text-[#27AE60]">Autre</span>
-                                        <span class="block text-[10px] text-gray-500">Autre devise</span>
-                                    </div>
-                                </label>
-                            </div>
-
-                            <!-- Champ custom si Autre -->
-                            <div x-show="currency === 'OTHER'" x-transition class="mt-3">
-                                <input type="text" name="currency_label" value="{{ old('currency_label') }}"
-                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                       placeholder="Ex: GBP, CHF, CAD, TND..." maxlength="10"
-                                       :required="currency === 'OTHER'">
-                            </div>
-
-                            <p class="mt-2 text-xs flex items-center gap-1" style="color: #9BA8B7;" x-show="currency !== 'OTHER'">
-                                <svg class="w-3.5 h-3.5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                Taux : 1 EUR ≈ {{ number_format($exchangeRate ?? 238, 2) }} DZD
-                            </p>
                         </div>
 
-                        {{-- Prix --}}
-                        <div class="mb-5">
-                            <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Prix *</label>
-                            <div class="relative">
-                                <input type="number" name="price_dzd" value="{{ old('price_dzd') }}" required min="0"
-                                       class="glass-input w-full rounded-xl px-4 py-3 pr-20 text-lg font-semibold" style="color: #1B4F72;">
-                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                    <span class="font-semibold text-sm" style="color: #17A2B8;"
-                                          x-text="currency === 'EUR' ? '€' : (currency === 'OTHER' ? ($el.closest('form').querySelector('[name=currency_label]')?.value || '?') : 'DA')">DA</span>
+                        <div class="p-5 space-y-5">
+
+                            {{-- ① DEVISE --}}
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wide mb-3" style="color: #6B7B8D;">
+                                    Devise <span style="color: #E74C3C;">*</span>
+                                </label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    {{-- DZD --}}
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="currency" value="DZD" x-model="currency" class="peer sr-only" required>
+                                        <div class="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all duration-200
+                                                    peer-checked:border-[#1B4F72] peer-checked:bg-[#EBF2FA]
+                                                    border-gray-200 bg-gray-50 hover:border-gray-300">
+                                            <span class="text-xl">🇩🇿</span>
+                                            <span class="text-xs font-bold" :style="currency === 'DZD' ? 'color:#1B4F72' : 'color:#6B7B8D'">DZD</span>
+                                            <span class="text-[10px]" style="color:#9BA8B7;">Dinar</span>
+                                        </div>
+                                    </label>
+                                    {{-- EUR --}}
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="currency" value="EUR" x-model="currency" class="peer sr-only">
+                                        <div class="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all duration-200
+                                                    peer-checked:border-[#1B4F72] peer-checked:bg-[#EBF2FA]
+                                                    border-gray-200 bg-gray-50 hover:border-gray-300">
+                                            <span class="text-xl">🇪🇺</span>
+                                            <span class="text-xs font-bold" :style="currency === 'EUR' ? 'color:#1B4F72' : 'color:#6B7B8D'">EUR</span>
+                                            <span class="text-[10px]" style="color:#9BA8B7;">Euro</span>
+                                        </div>
+                                    </label>
+                                    {{-- Autre --}}
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="currency" value="OTHER" x-model="currency" class="peer sr-only">
+                                        <div class="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all duration-200
+                                                    peer-checked:border-[#1B4F72] peer-checked:bg-[#EBF2FA]
+                                                    border-gray-200 bg-gray-50 hover:border-gray-300">
+                                            <span class="text-xl">🌐</span>
+                                            <span class="text-xs font-bold" :style="currency === 'OTHER' ? 'color:#1B4F72' : 'color:#6B7B8D'">Autre</span>
+                                            <span class="text-[10px]" style="color:#9BA8B7;">Devise</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                {{-- Custom currency name --}}
+                                <div x-show="currency === 'OTHER'" x-transition class="mt-2">
+                                    <input type="text" name="currency_label" value="{{ old('currency_label') }}"
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                           placeholder="Ex: GBP, CHF, TND..." maxlength="10"
+                                           :required="currency === 'OTHER'">
+                                </div>
+
+                                {{-- Exchange rate --}}
+                                <div x-show="currency === 'EUR'" x-transition class="mt-2 flex items-center gap-1.5 text-xs rounded-lg px-3 py-2" style="background:#EBF8FA; color:#17A2B8;">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    Taux indicatif : 1 EUR ≈ {{ number_format($exchangeRate ?? 238, 2) }} DZD
                                 </div>
                             </div>
-                        </div>
 
-                        {{-- Type offre --}}
-                        <div class="mb-5">
-                            <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Type d'offre</label>
-                            <div class="flex gap-2">
-                                @foreach(['offert' => 'Offert', 'negociable' => 'Négo', 'fix' => 'Fixe'] as $val => $label)
-                                    <label class="flex-1 relative cursor-pointer">
-                                        <input type="radio" name="type_offre" value="{{ $val }}"
-                                               {{ old('type_offre', 'negociable') == $val ? 'checked' : '' }}
-                                               class="peer sr-only">
-                                        <span class="w-full py-2.5 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all cursor-pointer peer-checked:text-white peer-checked:shadow-lg peer-checked:gradient-primary peer-checked:!border-transparent peer-checked:scale-105"
-                                              style="border: 2px solid #E0E6ED; color: #6B7B8D;">
-                                            <svg class="w-3.5 h-3.5 opacity-0 peer-checked:opacity-100 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                            {{ $label }}
-                                        </span>
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        {{-- Etat --}}
-                        <div class="mb-5" x-data="{ etat: '{{ old('etat', 'bon_etat') }}' }">
-                            <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Etat *</label>
-                            <div class="rounded-xl overflow-hidden" style="border: 1.5px solid #E0E6ED;">
-                                @foreach(\App\Models\Listing::ETAT_LABELS as $val => $label)
-                                    <label class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 {{ !$loop->last ? 'border-b' : '' }}"
-                                           style="{{ !$loop->last ? 'border-color: #E0E6ED;' : '' }}"
-                                           :style="etat === '{{ $val }}' ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8);' : ''"
-                                           @click="etat = '{{ $val }}'">
-                                        <input type="radio" name="etat" value="{{ $val }}" x-model="etat" class="sr-only" required>
-                                        <span class="text-sm font-medium transition-colors flex-1"
-                                              :style="etat === '{{ $val }}' ? 'color: white;' : 'color: #3D4F61;'">{{ $label }}</span>
-                                        <svg x-show="etat === '{{ $val }}'" class="w-4 h-4 flex-shrink-0" style="color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        {{-- ---- Divider: Localisation ---- --}}
-                        <div class="my-6 border-t" style="border-color: #E0E6ED;"></div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {{-- Pays --}}
+                            {{-- ② PRIX --}}
                             <div>
-                                <label class="block text-xs font-semibold uppercase mb-2 flex items-center gap-1.5" style="color: #6B7B8D;">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/></svg>
-                                    Pays
+                                <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
+                                    Prix <span style="color: #E74C3C;">*</span>
                                 </label>
-                                <select name="pays" class="glass-input w-full rounded-xl px-4 py-3 text-sm" style="color: #1B2A4A;">
-                                    <option value="">— Choisir un pays —</option>
-                                    @foreach(['Algérie' => '🇩🇿', 'Tunisie' => '🇹🇳', 'Maroc' => '🇲🇦', 'Égypte' => '🇪🇬', 'Espagne' => '🇪🇸', 'France' => '🇫🇷', 'Italie' => '🇮🇹', 'Grèce' => '🇬🇷', 'Croatie' => '🇭🇷', 'Turquie' => '🇹🇷', 'Liban' => '🇱🇧', 'Malte' => '🇲🇹', 'Monaco' => '🇲🇨', 'Slovénie' => '🇸🇮'] as $country => $flag)
-                                        <option value="{{ $country }}" {{ old('pays', 'Algérie') == $country ? 'selected' : '' }}>{{ $flag }} {{ $country }}</option>
+                                <div class="relative">
+                                    <input type="number" name="price_dzd" value="{{ old('price_dzd') }}"
+                                           required min="0" placeholder="0"
+                                           class="glass-input w-full rounded-xl px-4 py-3.5 pr-16 text-xl font-bold"
+                                           style="color: #1B2A4A;">
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                        <span class="text-sm font-bold px-2 py-1 rounded-lg" style="background:#EBF2FA; color:#1B4F72;"
+                                              x-text="currency === 'EUR' ? '€' : (currency === 'OTHER' ? ($el.closest('form').querySelector('[name=currency_label]')?.value || '?') : 'DA')">DA</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- ③ TYPE D'OFFRE --}}
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
+                                    Type d'offre
+                                </label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    @foreach(['offert' => ['label'=>'Offert','desc'=>'Gratuit','icon'=>'🎁'], 'negociable' => ['label'=>'Négociable','desc'=>'Prix ouvert','icon'=>'🤝'], 'fix' => ['label'=>'Prix fixe','desc'=>'Non négociable','icon'=>'🔒']] as $val => $item)
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="type_offre" value="{{ $val }}"
+                                                   {{ old('type_offre', 'negociable') == $val ? 'checked' : '' }}
+                                                   class="peer sr-only">
+                                            <div class="flex flex-col items-center gap-1 py-3 px-1 rounded-xl border-2 text-center transition-all duration-200
+                                                        peer-checked:border-[#1B4F72] peer-checked:bg-[#EBF2FA]
+                                                        border-gray-200 bg-gray-50 hover:border-gray-300">
+                                                <span class="text-lg">{{ $item['icon'] }}</span>
+                                                <span class="text-[11px] font-bold leading-tight" :style="''" style="color:#1B2A4A;">{{ $item['label'] }}</span>
+                                                <span class="text-[9px]" style="color:#9BA8B7;">{{ $item['desc'] }}</span>
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            {{-- ④ ÉTAT --}}
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
+                                    État de l'article <span style="color: #E74C3C;">*</span>
+                                </label>
+                                <select name="etat" required
+                                        class="glass-input w-full rounded-xl px-4 py-3.5 text-sm font-medium"
+                                        style="color: #1B2A4A;">
+                                    @foreach(\App\Models\Listing::ETAT_LABELS as $val => $label)
+                                        <option value="{{ $val }}" {{ old('etat', 'bon_etat') == $val ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
 
-                            {{-- Ville / Région --}}
-                            <div>
-                                <label class="block text-xs font-semibold uppercase mb-2 flex items-center gap-1.5" style="color: #6B7B8D;">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                    Ville / Région
-                                </label>
-                                <input type="text" name="wilaya" value="{{ old('wilaya') }}"
-                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                       placeholder="Ex: Alger, Oran, Tunis...">
+                            {{-- ⑤ LOCALISATION --}}
+                            <div style="border-top: 1px solid #F0F4F8; padding-top: 1.25rem;">
+                                <p class="text-xs font-bold uppercase tracking-wide mb-3" style="color: #6B7B8D;">📍 Localisation</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1.5" style="color: #6B7B8D;">Pays</label>
+                                        <select name="pays" class="glass-input w-full rounded-xl px-4 py-3 text-sm" style="color: #1B2A4A;">
+                                            <option value="">— Sélectionner —</option>
+                                            @foreach(['Algérie'=>'🇩🇿','Tunisie'=>'🇹🇳','Maroc'=>'🇲🇦','Égypte'=>'🇪🇬','Espagne'=>'🇪🇸','France'=>'🇫🇷','Italie'=>'🇮🇹','Grèce'=>'🇬🇷','Croatie'=>'🇭🇷','Turquie'=>'🇹🇷','Liban'=>'🇱🇧','Malte'=>'🇲🇹','Monaco'=>'🇲🇨','Slovénie'=>'🇸🇮'] as $country => $flag)
+                                                <option value="{{ $country }}" {{ old('pays','Algérie') == $country ? 'selected' : '' }}>{{ $flag }} {{ $country }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1.5" style="color: #6B7B8D;">Ville / Région</label>
+                                        <input type="text" name="wilaya" value="{{ old('wilaya') }}"
+                                               class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                               placeholder="Ex: Alger, Oran, Skikda...">
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
