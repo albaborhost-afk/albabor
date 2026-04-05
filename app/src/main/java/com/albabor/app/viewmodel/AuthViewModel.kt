@@ -83,10 +83,16 @@ class AuthViewModel(context: Context) : ViewModel() {
             _registerState.value = RegisterState.Error("Les mots de passe ne correspondent pas")
             return
         }
+        val phoneError = validateAlgerianPhone(phone)
+        if (phoneError != null) {
+            _registerState.value = RegisterState.Error(phoneError)
+            return
+        }
         val fullName = "${firstName.trim()} ${lastName.trim()}".trim()
+        val normalizedPhone = normalizeAlgerianPhone(phone)
         viewModelScope.launch {
             _registerState.value = RegisterState.Loading
-            repo.register(fullName, email.trim(), phone.trim(), password).fold(
+            repo.register(fullName, email.trim(), normalizedPhone, password).fold(
                 onSuccess = { _registerState.value = RegisterState.Success(it) },
                 onFailure = { _registerState.value = RegisterState.Error(parseError(it.message)) }
             )
@@ -117,6 +123,39 @@ class AuthViewModel(context: Context) : ViewModel() {
     fun resetRegisterState() { _registerState.value = RegisterState.Idle }
     fun resetForgotState()   { _forgotState.value   = ForgotState.Idle }
     fun resetGoogleAuthState() { _googleAuthState.value = GoogleAuthState.Idle }
+
+    // ─── Phone Validation ─────────────────────────────────────────────────────
+
+    /**
+     * Valide un numéro de téléphone algérien.
+     * Formats acceptés : 0[5-7]XXXXXXXX (10 chiffres) ou +213[5-7]XXXXXXXX
+     * Retourne null si valide, sinon un message d'erreur en français.
+     */
+    fun validateAlgerianPhone(phone: String): String? {
+        val cleaned = stripPhone(phone)
+        val localRegex = Regex("^0[5-7]\\d{8}$")
+        val intlRegex  = Regex("^\\+213[5-7]\\d{8}$")
+        return if (localRegex.matches(cleaned) || intlRegex.matches(cleaned)) null
+        else "Numéro invalide. Utilisez le format 0676085441 ou +213676085441 (10 chiffres)"
+    }
+
+    /**
+     * Normalise vers le format local 0XXXXXXXXX.
+     * +213676085441 → 0676085441
+     */
+    fun normalizeAlgerianPhone(phone: String): String {
+        val cleaned = stripPhone(phone)
+        return when {
+            cleaned.startsWith("+213") -> "0" + cleaned.drop(4)
+            else -> cleaned
+        }
+    }
+
+    private fun stripPhone(phone: String): String {
+        var s = phone.trim().replace(Regex("[\\s\\-\\.\\(\\)]"), "")
+        if (s.startsWith("00213")) s = "+213" + s.drop(5)
+        return s
+    }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
 

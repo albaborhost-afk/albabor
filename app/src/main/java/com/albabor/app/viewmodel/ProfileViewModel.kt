@@ -61,9 +61,17 @@ class ProfileViewModel(private val context: Context) : ViewModel() {
             _updateState.value = UpdateState.Error("Le nom ne peut pas etre vide")
             return
         }
+        if (phone.isNotBlank()) {
+            val phoneError = validateAlgerianPhone(phone)
+            if (phoneError != null) {
+                _updateState.value = UpdateState.Error(phoneError)
+                return
+            }
+        }
+        val normalizedPhone = if (phone.isBlank()) phone else normalizeAlgerianPhone(phone)
         viewModelScope.launch {
             _updateState.value = UpdateState.Loading
-            repo.updateProfile(name, phone)
+            repo.updateProfile(name, normalizedPhone)
                 .onSuccess { updated ->
                     _user.value = updated
                     _updateState.value = UpdateState.Success
@@ -72,6 +80,30 @@ class ProfileViewModel(private val context: Context) : ViewModel() {
                     _updateState.value = UpdateState.Error(it.message ?: "Echec de la mise a jour")
                 }
         }
+    }
+
+    // ── Phone validation (shared logic) ──────────────────────────────────────
+
+    /**
+     * Valide un numéro algérien : 0[5-7]XXXXXXXX ou +213[5-7]XXXXXXXX
+     * Retourne null si valide, sinon un message d'erreur.
+     */
+    fun validateAlgerianPhone(phone: String): String? {
+        val cleaned = stripPhone(phone)
+        return if (Regex("^0[5-7]\\d{8}$").matches(cleaned) || Regex("^\\+213[5-7]\\d{8}$").matches(cleaned)) null
+        else "Numéro invalide. Utilisez le format 0676085441 ou +213676085441 (10 chiffres)"
+    }
+
+    /** Normalise vers le format local 0XXXXXXXXX. */
+    fun normalizeAlgerianPhone(phone: String): String {
+        val cleaned = stripPhone(phone)
+        return if (cleaned.startsWith("+213")) "0" + cleaned.drop(4) else cleaned
+    }
+
+    private fun stripPhone(phone: String): String {
+        var s = phone.trim().replace(Regex("[\\s\\-\\.\\(\\)]"), "")
+        if (s.startsWith("00213")) s = "+213" + s.drop(5)
+        return s
     }
 
     // ── Change password ───────────────────────────────────────────────────────
