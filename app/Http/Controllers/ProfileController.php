@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\VerificationRequest;
+use App\Rules\AlgerianPhoneNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -39,12 +40,12 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => ['nullable', AlgerianPhoneNumber::nullable()],
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         $validated['name'] = trim($validated['name']);
-        $validated['phone'] = $this->normalizePhone($validated['phone'] ?? null);
+        $validated['phone'] = AlgerianPhoneNumber::normalize($validated['phone'] ?? null);
 
         if ($request->hasFile('profile_picture')) {
             $disk = config('filesystems.listing_disk', 'public');
@@ -78,16 +79,6 @@ class ProfileController extends Controller
             ->with('success', __('messages.profile_updated'));
     }
 
-    private function normalizePhone(?string $phone): ?string
-    {
-        if ($phone === null) {
-            return null;
-        }
-
-        $normalizedPhone = preg_replace('/\s+/', '', trim($phone));
-
-        return $normalizedPhone === '' ? null : $normalizedPhone;
-    }
 
     public function updatePassword(Request $request)
     {
