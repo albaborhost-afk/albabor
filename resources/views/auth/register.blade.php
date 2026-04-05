@@ -564,7 +564,17 @@
                                 const s = this.search.toLowerCase();
                                 return this.countries.filter(c => c.name.toLowerCase().includes(s) || c.code.includes(s));
                             },
-                            get fullPhone() { return this.selected.code + this.phoneNumber; },
+                            get fullPhone() {
+                                // Strip leading zero — the country code already replaces it
+                                const num = this.phoneNumber.replace(/^0+/, '');
+                                return num ? this.selected.code + num : '';
+                            },
+                            handlePhoneInput() {
+                                // Auto-remove leading 0 as the user types so they see the correction instantly
+                                if (this.phoneNumber.startsWith('0')) {
+                                    this.phoneNumber = this.phoneNumber.replace(/^0+/, '');
+                                }
+                            },
                             selectCountry(country) {
                                 this.selected = country;
                                 this.open = false;
@@ -580,6 +590,12 @@
                                             this.phoneNumber = oldPhone.substring(c.code.length);
                                             return;
                                         }
+                                    }
+                                    // Handle local format 0XXXXXXXXX — default to Algeria
+                                    if (oldPhone.startsWith('0')) {
+                                        this.selected = { name: 'Algerie', code: '+213', flag: '🇩🇿' };
+                                        this.phoneNumber = oldPhone.substring(1);
+                                        return;
                                     }
                                     this.phoneNumber = oldPhone;
                                 }
@@ -633,8 +649,9 @@
                                 <!-- Phone number input -->
                                 <div class="flex-1">
                                     <input id="phone_number" type="tel" x-model="phoneNumber" required autocomplete="tel"
+                                           @input="handlePhoneInput()"
                                            class="auth-input w-full px-4 py-3 text-sm font-medium @error('phone') !border-red-400 @enderror"
-                                           placeholder="XXXXXXXXX">
+                                           placeholder="676085441">
                                 </div>
                             </div>
                             @error('phone')

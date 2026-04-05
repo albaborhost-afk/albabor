@@ -795,13 +795,20 @@
                                 const s = this.search.toLowerCase();
                                 return this.countries.filter(c => c.name.toLowerCase().includes(s) || c.code.includes(s));
                             },
-                            get fullPhone() { return this.phoneNumber ? this.selected.code + this.phoneNumber : ''; },
+                            get fullPhone() {
+                                const num = this.phoneNumber.replace(/^0+/, '');
+                                return num ? this.selected.code + num : '';
+                            },
+                            handlePhoneInput() {
+                                if (this.phoneNumber.startsWith('0')) this.phoneNumber = this.phoneNumber.replace(/^0+/, '');
+                            },
                             selectCountry(country) { this.selected = country; this.open = false; this.search = ''; },
                             init() {
                                 const old = this.$el.dataset.oldPhone || '';
                                 if (old) {
                                     const sorted = [...this.countries].sort((a, b) => b.code.length - a.code.length);
                                     for (const c of sorted) { if (old.startsWith(c.code)) { this.selected = c; this.phoneNumber = old.substring(c.code.length); return; } }
+                                    if (old.startsWith('0')) { this.selected = { name: 'Algerie', code: '+213', flag: '🇩🇿' }; this.phoneNumber = old.substring(1); return; }
                                     this.phoneNumber = old;
                                 }
                             }
@@ -833,7 +840,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <input type="tel" x-model="phoneNumber" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" placeholder="5XX XX XX XX" style="min-width: 0;">
+                                <input type="tel" x-model="phoneNumber" @input="handlePhoneInput()" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" placeholder="676085441" style="min-width: 0;">
                             </div>
                         </div>
                         <div data-old-phone="{{ old('numero_mobile', $listing->numero_mobile) }}" x-data="{
@@ -875,13 +882,20 @@
                                 const s = this.search.toLowerCase();
                                 return this.countries.filter(c => c.name.toLowerCase().includes(s) || c.code.includes(s));
                             },
-                            get fullPhone() { return this.phoneNumber ? this.selected.code + this.phoneNumber : ''; },
+                            get fullPhone() {
+                                const num = this.phoneNumber.replace(/^0+/, '');
+                                return num ? this.selected.code + num : '';
+                            },
+                            handlePhoneInput() {
+                                if (this.phoneNumber.startsWith('0')) this.phoneNumber = this.phoneNumber.replace(/^0+/, '');
+                            },
                             selectCountry(country) { this.selected = country; this.open = false; this.search = ''; },
                             init() {
                                 const old = this.$el.dataset.oldPhone || '';
                                 if (old) {
                                     const sorted = [...this.countries].sort((a, b) => b.code.length - a.code.length);
                                     for (const c of sorted) { if (old.startsWith(c.code)) { this.selected = c; this.phoneNumber = old.substring(c.code.length); return; } }
+                                    if (old.startsWith('0')) { this.selected = { name: 'Algerie', code: '+213', flag: '🇩🇿' }; this.phoneNumber = old.substring(1); return; }
                                     this.phoneNumber = old;
                                 }
                             }
@@ -913,7 +927,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <input type="tel" x-model="phoneNumber" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" placeholder="5XX XX XX XX" style="min-width: 0;">
+                                <input type="tel" x-model="phoneNumber" @input="handlePhoneInput()" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" placeholder="676085441" style="min-width: 0;">
                             </div>
                         </div>
                     </div>
