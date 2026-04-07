@@ -446,41 +446,25 @@
                 </div>
             </div>
 
-            <!-- Payment Methods -->
-            <div class="pt-8 pb-2 mb-8" style="border-top: 1px solid rgba(255,255,255,0.06);">
-                <p class="text-xs font-semibold uppercase tracking-widest text-center mb-5" style="color: rgba(23,162,184,0.7); letter-spacing: 0.15em;">{{ __('Moyens de paiement acceptes') }}</p>
-                <div class="flex flex-wrap items-center justify-center gap-5">
-                    {{-- BaridiMob --}}
-                    <div class="flex items-center gap-3 px-5 py-3 rounded-xl" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
-                        <img src="/images/baridimob.png" alt="BaridiMob" class="w-8 h-8 object-contain">
-                        <div>
-                            <p class="text-xs font-bold" style="color: rgba(255,255,255,0.75);">BaridiMob</p>
-                            <p class="text-[10px]" style="color: rgba(255,255,255,0.35);">{{ __('Paiement mobile') }}</p>
-                        </div>
-                    </div>
-                    {{-- PayPal --}}
-                    <div class="flex items-center gap-3 px-5 py-3 rounded-xl" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
-                        <img src="/images/paypal.png" alt="PayPal" class="w-8 h-8 object-contain">
-                        <div>
-                            <p class="text-xs font-bold" style="color: rgba(255,255,255,0.75);">PayPal</p>
-                            <p class="text-[10px]" style="color: rgba(255,255,255,0.35);">{{ __('International') }}</p>
-                        </div>
-                    </div>
-                    {{-- Carte Bancaire --}}
-                    <div class="flex items-center gap-3 px-5 py-3 rounded-xl" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
-                        <img src="/images/mastercard-visa.webp" alt="Mastercard Visa" class="w-8 h-8 object-contain">
-                        <div>
-                            <p class="text-xs font-bold" style="color: rgba(255,255,255,0.75);">Carte Bancaire</p>
-                            <p class="text-[10px]" style="color: rgba(255,255,255,0.35);">Mastercard · Visa</p>
+            <!-- Bottom bar with payment icons -->
+            <div class="pt-8" style="border-top: 1px solid rgba(255,255,255,0.06);">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-5">
+                    <p class="text-xs font-medium" style="color: rgba(255,255,255,0.25);">&copy; {{ date('Y') }} AlBabor. Tous droits reserves.</p>
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] uppercase tracking-wider font-medium hidden sm:inline" style="color: rgba(255,255,255,0.2);">{{ __('Paiements') }}</span>
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-7 rounded-md flex items-center justify-center" style="background: rgba(255,255,255,0.08);">
+                                <img src="/images/baridimob.png" alt="BaridiMob" class="w-5 h-5 object-contain">
+                            </div>
+                            <div class="w-10 h-7 rounded-md flex items-center justify-center" style="background: rgba(255,255,255,0.08);">
+                                <img src="/images/paypal.png" alt="PayPal" class="w-5 h-5 object-contain">
+                            </div>
+                            <div class="w-10 h-7 rounded-md flex items-center justify-center" style="background: rgba(255,255,255,0.08);">
+                                <img src="/images/mastercard-visa.webp" alt="Visa Mastercard" class="w-6 h-5 object-contain">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <p class="text-center text-[10px] mt-4" style="color: rgba(255,255,255,0.2);">{{ __('Paiement manuel securise · Approbation admin sous 24h · Justificatif requis') }}</p>
-            </div>
-
-            <!-- Bottom bar -->
-            <div class="pt-7 flex flex-col sm:flex-row items-center justify-between gap-4" style="border-top: 1px solid rgba(255,255,255,0.06);">
-                <p class="text-xs font-medium" style="color: rgba(255,255,255,0.25);">&copy; {{ date('Y') }} AlBabor. Tous droits reserves.</p>
             </div>
         </div>
     </footer>
