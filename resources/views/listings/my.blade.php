@@ -301,7 +301,7 @@
                                                 </form>
                                             @endif
 
-                                            @if(in_array($listing->status, ['draft', 'rejected', 'paused']))
+                                            @if(in_array($listing->status, ['draft', 'rejected', 'paused', 'pending_review', 'awaiting_payment']))
                                                 <a href="{{ route('listings.edit', $listing) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(107, 123, 141, 0.1); color: #6B7B8D;">
                                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                                     {{ __('Modifier') }}
