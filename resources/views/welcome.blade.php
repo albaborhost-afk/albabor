@@ -412,69 +412,7 @@
         </div>
     </div>
 
-    {{-- ─── Payment Methods Strip (just above footer) ─────────────────────── --}}
-    <div class="reveal" style="background: linear-gradient(180deg, #F0F4F8 0%, #E8EEF4 100%);">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-            {{-- Title --}}
-            <div class="text-center mb-10">
-                <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color: #17A2B8; letter-spacing: 0.18em;">{{ __('Paiements sécurisés') }}</p>
-                <h2 class="text-xl sm:text-2xl font-black" style="color: #1B2A4A;">{{ __('Moyens de paiement acceptes') }}</h2>
-                <p class="text-sm mt-2" style="color: #9BA8B7;">{{ __('Payez facilement avec la methode qui vous convient') }}</p>
-            </div>
-
-            {{-- 3 Cards --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
-
-                {{-- BaridiMob --}}
-                <div class="group bg-white rounded-2xl p-7 flex flex-col items-center gap-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
-                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 6px 20px rgba(0,0,0,0.05);">
-                    <div class="w-18 h-18 rounded-2xl flex items-center justify-center overflow-hidden" style="background: linear-gradient(135deg, #FFF8E1, #FFECB3);">
-                        <img src="/images/baridimob.png" alt="BaridiMob" class="w-14 h-14 object-contain">
-                    </div>
-                    <div class="text-center">
-                        <p class="text-base font-bold" style="color: #1B2A4A;">BaridiMob</p>
-                        <p class="text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Algérie Poste') }}</p>
-                    </div>
-                    <span class="text-xs font-semibold px-4 py-1.5 rounded-full" style="background: #FFF3CD; color: #856404;">{{ __('Paiement mobile') }}</span>
-                </div>
-
-                {{-- PayPal --}}
-                <div class="group bg-white rounded-2xl p-7 flex flex-col items-center gap-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
-                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 6px 20px rgba(0,0,0,0.05);">
-                    <div class="w-18 h-18 rounded-2xl flex items-center justify-center overflow-hidden" style="background: linear-gradient(135deg, #E8F4FD, #D1ECFD);">
-                        <img src="/images/paypal.png" alt="PayPal" class="w-14 h-14 object-contain">
-                    </div>
-                    <div class="text-center">
-                        <p class="text-base font-bold" style="color: #1B2A4A;">PayPal</p>
-                        <p class="text-xs mt-0.5" style="color: #9BA8B7;">{{ __('International') }}</p>
-                    </div>
-                    <span class="text-xs font-semibold px-4 py-1.5 rounded-full" style="background: #E8F4FD; color: #003087;">{{ __('Paiement en ligne') }}</span>
-                </div>
-
-                {{-- Carte Bancaire – Mastercard / Visa --}}
-                <div class="group bg-white rounded-2xl p-7 flex flex-col items-center gap-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
-                     style="border: 1.5px solid #E0E6ED; box-shadow: 0 6px 20px rgba(0,0,0,0.05);">
-                    <div class="w-18 h-18 rounded-2xl flex items-center justify-center overflow-hidden" style="background: linear-gradient(135deg, #F8F9FA, #EAECEF);">
-                        <img src="/images/mastercard-visa.webp" alt="Mastercard Visa" class="w-14 h-14 object-contain">
-                    </div>
-                    <div class="text-center">
-                        <p class="text-base font-bold" style="color: #1B2A4A;">Carte Bancaire</p>
-                        <p class="text-xs mt-0.5" style="color: #9BA8B7;">Mastercard · Visa</p>
-                    </div>
-                    <span class="text-xs font-semibold px-4 py-1.5 rounded-full" style="background: linear-gradient(135deg, #E8F0FE, #EDE9FE); color: #1A1F71;">💳 {{ __('International') }}</span>
-                </div>
-
-            </div>
-
-            {{-- Security note --}}
-            <div class="mt-8 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl mx-auto max-w-lg" style="background: rgba(39,174,96,0.06);">
-                <svg class="w-4.5 h-4.5 flex-shrink-0" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                </svg>
-                <p class="text-xs font-medium" style="color: #27AE60;">{{ __('Paiement manuel securise · Approbation admin sous 24h · Justificatif requis') }}</p>
-            </div>
-        </div>
-    </div>
+    {{-- Payment section moved to footer in app-layout --}}
 
 <script>
 // Scroll Reveal with stagger support
