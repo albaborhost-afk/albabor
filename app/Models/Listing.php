@@ -54,6 +54,7 @@ class Listing extends Model
 
     // ---- Media limits ----
     const MAX_IMAGES = 20;
+    const MAX_IMAGE_SIZE_KB = 15360; // 15 MB — server resizes to 1200px anyway
 
     // ---- Etat (Condition) constants ----
     const ETAT_JAMAIS_UTILISE = 'jamais_utilise';

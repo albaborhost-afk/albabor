@@ -160,7 +160,7 @@ class ListingController extends Controller
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
             'images' => 'required|array|min:1|max:' . Listing::MAX_IMAGES,
-            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:' . Listing::MAX_IMAGE_SIZE_KB,
             'video_url' => 'nullable|url|max:500',
         ]);
 
@@ -301,7 +301,7 @@ class ListingController extends Controller
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
             'new_images' => 'nullable|array|max:' . Listing::MAX_IMAGES,
-            'new_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'new_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:' . Listing::MAX_IMAGE_SIZE_KB,
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'integer|exists:listing_media,id',
             'video_url' => 'nullable|url|max:500',

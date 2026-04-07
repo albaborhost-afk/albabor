@@ -460,7 +460,7 @@ class ListingResource extends Resource
                                     ]),
 
                                 Forms\Components\Section::make('Ajouter des images')
-                                    ->description('Ajoutez jusqu\'à ' . \App\Models\Listing::MAX_IMAGES . ' images (JPEG, PNG, WebP — max 5 Mo chacune)')
+                                    ->description('Ajoutez jusqu\'à ' . \App\Models\Listing::MAX_IMAGES . ' images (JPEG, PNG, WebP — max 15 Mo chacune)')
                                     ->icon('heroicon-o-camera')
                                     ->schema([
                                         Forms\Components\FileUpload::make('new_images')
@@ -468,7 +468,7 @@ class ListingResource extends Resource
                                             ->multiple()
                                             ->image()
                                             ->maxFiles(\App\Models\Listing::MAX_IMAGES)
-                                            ->maxSize(5120)
+                                            ->maxSize(\App\Models\Listing::MAX_IMAGE_SIZE_KB)
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->disk('local')
                                             ->directory('tmp-listing-uploads')

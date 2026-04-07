@@ -144,7 +144,7 @@
                     <span x-show="!isDragging">Cliquez ou glissez vos photos ici</span>
                     <span x-show="isDragging">Lâchez pour ajouter</span>
                 </p>
-                <p class="text-[11px] mt-1" style="color:#9BA8B7;">JPEG, PNG, WebP · Max 5 Mo · {{ $hasExisting ? $maxNew : $max }} photos max</p>
+                <p class="text-[11px] mt-1" style="color:#9BA8B7;">JPEG, PNG, WebP · Max 15 Mo · {{ $hasExisting ? $maxNew : $max }} photos max</p>
                 <p
                     x-show="!supportsManagedFiles"
                     x-cloak
@@ -366,8 +366,8 @@ if (typeof photoUploader === 'undefined') {
                         this.errors.push(`Limite de ${this.maxFiles} photo(s) atteinte.`);
                         break;
                     }
-                    if (file.size > 5 * 1024 * 1024) {
-                        this.errors.push(`"${file.name}" dépasse la limite de 5 Mo.`);
+                    if (file.size > 15 * 1024 * 1024) {
+                        this.errors.push(`"${file.name}" dépasse la limite de 15 Mo.`);
                         continue;
                     }
                     const allowed = ['image/jpeg','image/jpg','image/png','image/webp'];
@@ -427,8 +427,8 @@ if (typeof photoUploader === 'undefined') {
                 const normalizedFiles = [];
 
                 for (const file of selectedFiles) {
-                    if (file.size > 5 * 1024 * 1024) {
-                        this.errors.push(`"${file.name}" dépasse la limite de 5 Mo.`);
+                    if (file.size > 15 * 1024 * 1024) {
+                        this.errors.push(`"${file.name}" dépasse la limite de 15 Mo.`);
                     }
 
                     const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];

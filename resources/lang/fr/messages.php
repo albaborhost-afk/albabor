@@ -76,7 +76,7 @@ return [
     'upload_images' => 'Photos de l\'article',
     'upload_files' => 'Téléverser des fichiers',
     'or_drag_drop' => 'ou glisser-déposer',
-    'image_requirements' => 'PNG, JPG jusqu\'à 5 MB (max 10 images)',
+    'image_requirements' => 'PNG, JPG jusqu\'à 15 MB (max 20 images)',
     'current_images' => 'Images actuelles',
     'add_new_images' => 'Ajouter de nouvelles images',
     'click_to_delete_images' => 'Cliquez sur les images pour les supprimer',
