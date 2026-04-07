@@ -69,10 +69,17 @@ class ListingResource extends Resource
                                                             ->options([
                                                                 'DZD' => 'DZD - Dinar Algerien',
                                                                 'EUR' => 'EUR - Euro',
+                                                                'OTHER' => 'Autre devise',
                                                             ])
                                                             ->default('DZD')
                                                             ->required()
-                                                            ->native(false),
+                                                            ->native(false)
+                                                            ->live(),
+                                                        Forms\Components\TextInput::make('currency_label')
+                                                            ->label('Nom de la devise')
+                                                            ->placeholder('Ex: GBP, CHF, TND...')
+                                                            ->maxLength(10)
+                                                            ->visible(fn (Forms\Get $get) => $get('currency') === 'OTHER'),
                                                         Forms\Components\Select::make('type_offre')
                                                             ->label('Type d\'offre')
                                                             ->options(Listing::TYPE_OFFRE_LABELS)
@@ -148,6 +155,9 @@ class ListingResource extends Resource
                                                 Forms\Components\TextInput::make('wilaya')
                                                     ->label('Ville / Région')
                                                     ->placeholder('Ex: Alger, Oran, Paris...'),
+                                                Forms\Components\TextInput::make('visible_a')
+                                                    ->label('Visible a')
+                                                    ->placeholder('Zone de visibilite'),
                                             ]),
                                     ]),
 
