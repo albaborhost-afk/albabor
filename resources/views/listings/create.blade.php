@@ -42,7 +42,8 @@
             @endif
 
             <form action="{{ route('listings.store') }}" method="POST" enctype="multipart/form-data"
-                  x-data="listingForm()" novalidate>
+                  x-data="listingForm()" novalidate
+                  @submit.prevent="submitForm($event)">
                 @csrf
 
                 <style>
@@ -147,6 +148,22 @@
                             sur <span x-text="totalVisualSteps" class="font-bold" style="color: #1B2A4A;"></span>
                         </span>
                         <span class="text-xs font-semibold" style="color: #1B2A4A;" x-text="currentStepLabel"></span>
+                    </div>
+                </div>
+
+                {{-- Client-side step validation errors --}}
+                <div x-show="stepErrors.length > 0" x-transition
+                     class="bg-white rounded-2xl p-4 mb-4"
+                     style="border: 1.5px solid rgba(231, 76, 60, 0.35); box-shadow: 0 4px 12px rgba(231,76,60,0.08);">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 mt-0.5 shrink-0" style="color: #E74C3C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <ul class="text-sm space-y-1" style="color: #E74C3C;">
+                            <template x-for="err in stepErrors" :key="err">
+                                <li x-text="err"></li>
+                            </template>
+                        </ul>
                     </div>
                 </div>
 
@@ -1203,9 +1220,15 @@
                         {{-- Bouton Soumettre (dernier step) --}}
                         <button type="submit"
                                 x-show="currentStep === 6"
+                                :disabled="submitting"
+                                :class="submitting ? 'opacity-50 cursor-wait' : ''"
                                 class="px-8 py-3 rounded-xl text-white text-sm font-semibold btn-gradient-animated"
                                 style="box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">
-                            Continuer vers le paiement
+                            <span x-show="!submitting">Continuer vers le paiement</span>
+                            <span x-show="submitting" class="flex items-center gap-2">
+                                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                                Envoi en cours...
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -1223,6 +1246,8 @@
                 hasRemorque: '{{ old('specs.extras.remorque', '') }}',
                 hasPort: '{{ old('specs.extras.place_au_port', '') }}',
                 mediationEnabled: {{ old('mediation_enabled') ? 'true' : 'false' }},
+                stepErrors: [],
+                submitting: false,
 
                 get stepsList() {
                     return [
@@ -1235,7 +1260,6 @@
                     ];
                 },
 
-                // Steps skipped based on category
                 isStepCompleted(n) {
                     if (n === 3 && this.category === 'parts' && this.currentStep >= 4) return true;
                     return this.currentStep > n;
@@ -1245,7 +1269,6 @@
                     return this.currentStep === n;
                 },
 
-                // Visual step number (for "Etape X sur Y" counter)
                 get visualStep() {
                     let skipped = 0;
                     if (this.category === 'parts' && this.currentStep >= 4) skipped++;
@@ -1267,12 +1290,74 @@
                     return labels[this.currentStep] || '';
                 },
 
+                // ── Validation helpers ──
+                clearFieldErrors() {
+                    document.querySelectorAll('.step-field-error').forEach(el => {
+                        el.style.borderColor = '';
+                        el.style.boxShadow = '';
+                    });
+                },
+
+                markField(name) {
+                    const el = this.$root.querySelector('[name="' + name + '"]');
+                    if (el) {
+                        el.classList.add('step-field-error');
+                        el.style.borderColor = '#E74C3C';
+                        el.style.boxShadow = '0 0 0 3px rgba(231,76,60,0.1)';
+                    }
+                },
+
+                validateStep(step) {
+                    let errors = [];
+                    const val = (name) => {
+                        const el = this.$root.querySelector('[name="' + name + '"]');
+                        return el ? (el.value || '').trim() : '';
+                    };
+
+                    if (step === 1) {
+                        if (!this.category) errors.push('Veuillez choisir une categorie.');
+                    }
+
+                    if (step === 2) {
+                        if (!val('title')) { errors.push('Le titre de l\'annonce est obligatoire.'); this.markField('title'); }
+                        if (!val('description')) { errors.push('La description est obligatoire.'); this.markField('description'); }
+                    }
+
+                    // Step 3: specs are optional
+
+                    if (step === 4) {
+                        const price = val('price_dzd');
+                        if (!price || parseFloat(price) <= 0) { errors.push('Le prix est obligatoire.'); this.markField('price_dzd'); }
+                    }
+
+                    // Step 5: contact is optional
+
+                    if (step === 6) {
+                        // Check if photo uploader has files
+                        const uploaderComp = this.$root.querySelector('[x-ref="photoUploader"], [data-photo-uploader]');
+                        const fileInputs = this.$root.querySelectorAll('input[type="file"][name="images[]"]');
+                        let hasFiles = false;
+                        fileInputs.forEach(input => { if (input.files && input.files.length > 0) hasFiles = true; });
+                        // Also check for preview thumbnails (already added photos)
+                        const previews = this.$root.querySelectorAll('.photo-preview-item, .preview-thumb, [data-photo-item]');
+                        if (!hasFiles && previews.length === 0) {
+                            errors.push('Veuillez ajouter au moins une photo.');
+                        }
+                    }
+
+                    return errors;
+                },
+
+                // ── Navigation ──
                 nextStep() {
-                    // Validation step 1: category required
-                    if (this.currentStep === 1 && !this.category) return;
+                    this.clearFieldErrors();
+                    this.stepErrors = this.validateStep(this.currentStep);
+                    if (this.stepErrors.length > 0) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        return;
+                    }
 
                     let next = this.currentStep + 1;
-                    // Skip specs step (3) for parts
                     if (next === 3 && this.category === 'parts') next = 4;
                     if (next <= 6) {
                         this.currentStep = next;
@@ -1281,13 +1366,41 @@
                 },
 
                 prevStep() {
+                    this.stepErrors = [];
+                    this.clearFieldErrors();
                     let prev = this.currentStep - 1;
-                    // Skip back over specs step (3) for parts
                     if (prev === 3 && this.category === 'parts') prev = 2;
                     if (prev >= 1) {
                         this.currentStep = prev;
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
+                },
+
+                // ── Submit with full validation ──
+                submitForm(event) {
+                    if (this.submitting) return;
+                    this.clearFieldErrors();
+
+                    // Validate all required steps in order
+                    const stepsToCheck = this.category === 'parts' ? [1, 2, 4, 6] : [1, 2, 4, 6];
+                    for (const step of stepsToCheck) {
+                        const errors = this.validateStep(step);
+                        if (errors.length > 0) {
+                            this.currentStep = step;
+                            this.$nextTick(() => {
+                                this.stepErrors = errors;
+                                // Re-mark fields after step change
+                                if (step === 2) { if (!this.$root.querySelector('[name="title"]')?.value?.trim()) this.markField('title'); if (!this.$root.querySelector('[name="description"]')?.value?.trim()) this.markField('description'); }
+                                if (step === 4) { const p = this.$root.querySelector('[name="price_dzd"]')?.value?.trim(); if (!p || parseFloat(p) <= 0) this.markField('price_dzd'); }
+                            });
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            return;
+                        }
+                    }
+
+                    // All valid — submit
+                    this.submitting = true;
+                    event.target.submit();
                 },
             }
         }
