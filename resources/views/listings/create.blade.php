@@ -1238,6 +1238,8 @@
     </div>
 
     <script>
+        const DRAFT_KEY = 'albabor_listing_draft';
+
         function listingForm() {
             return {
                 currentStep: {{ $startStep ?? 1 }},
@@ -1248,6 +1250,99 @@
                 mediationEnabled: {{ old('mediation_enabled') ? 'true' : 'false' }},
                 stepErrors: [],
                 submitting: false,
+                _saveTimer: null,
+
+                // ── Lifecycle: restore draft on init ──
+                init() {
+                    const hasServerData = {{ ($errors->any() || old('title')) ? 'true' : 'false' }};
+                    if (!hasServerData) {
+                        this.restoreFromStorage();
+                    } else {
+                        // Server sent old() data after validation failure — save it to storage as backup
+                        this.$nextTick(() => this.saveToStorage());
+                    }
+                    // Auto-save on every input/change
+                    this.$nextTick(() => {
+                        const save = () => { clearTimeout(this._saveTimer); this._saveTimer = setTimeout(() => this.saveToStorage(), 400); };
+                        this.$root.addEventListener('input', save);
+                        this.$root.addEventListener('change', save);
+                    });
+                },
+
+                // ── sessionStorage persistence ──
+                saveToStorage() {
+                    try {
+                        const form = this.$root;
+                        const state = {
+                            _step: this.currentStep,
+                            _category: this.category,
+                            _currency: this.currency,
+                            _hasRemorque: this.hasRemorque,
+                            _hasPort: this.hasPort,
+                            _mediationEnabled: this.mediationEnabled,
+                        };
+                        // Capture all non-file inputs
+                        form.querySelectorAll('input:not([type=file]), select, textarea').forEach(el => {
+                            if (!el.name || el.name === '_token') return;
+                            if (el.type === 'radio') { if (el.checked) state[el.name] = el.value; }
+                            else if (el.type === 'checkbox') {
+                                if (el.name.endsWith('[]')) {
+                                    if (!state[el.name]) state[el.name] = [];
+                                    if (el.checked) state[el.name].push(el.value);
+                                } else {
+                                    state[el.name] = el.checked;
+                                }
+                            }
+                            else { state[el.name] = el.value; }
+                        });
+                        sessionStorage.setItem(DRAFT_KEY, JSON.stringify(state));
+                    } catch(e) { /* storage full or unavailable */ }
+                },
+
+                restoreFromStorage() {
+                    try {
+                        const raw = sessionStorage.getItem(DRAFT_KEY);
+                        if (!raw) return;
+                        const state = JSON.parse(raw);
+
+                        // Restore Alpine reactive properties first (controls visibility)
+                        if (state._category) this.category = state._category;
+                        if (state._currency) this.currency = state._currency;
+                        if (state._hasRemorque) this.hasRemorque = state._hasRemorque;
+                        if (state._hasPort) this.hasPort = state._hasPort;
+                        if (state._mediationEnabled !== undefined) this.mediationEnabled = !!state._mediationEnabled;
+                        if (state._step && state._step >= 1 && state._step <= 6) this.currentStep = state._step;
+
+                        // Restore DOM form fields after Alpine renders the correct step
+                        this.$nextTick(() => {
+                            const form = this.$root;
+                            Object.entries(state).forEach(([name, value]) => {
+                                if (name.startsWith('_')) return;
+                                if (Array.isArray(value)) {
+                                    // Checkbox array (e.g. specs[tags][equipement][])
+                                    form.querySelectorAll('[name="' + name + '"]').forEach(cb => {
+                                        cb.checked = value.includes(cb.value);
+                                    });
+                                    return;
+                                }
+                                const els = form.querySelectorAll('[name="' + name + '"]');
+                                if (!els.length) return;
+                                const el = els[0];
+                                if (el.type === 'radio') {
+                                    els.forEach(r => { r.checked = (r.value === value); });
+                                } else if (el.type === 'checkbox') {
+                                    el.checked = !!value;
+                                } else if (el.type !== 'file') {
+                                    el.value = value;
+                                }
+                            });
+                        });
+                    } catch(e) { /* ignore */ }
+                },
+
+                clearDraft() {
+                    sessionStorage.removeItem(DRAFT_KEY);
+                },
 
                 get stepsList() {
                     return [
@@ -1292,7 +1387,7 @@
 
                 // ── Validation helpers ──
                 clearFieldErrors() {
-                    document.querySelectorAll('.step-field-error').forEach(el => {
+                    this.$root.querySelectorAll('.step-field-error').forEach(el => {
                         el.style.borderColor = '';
                         el.style.boxShadow = '';
                     });
@@ -1317,34 +1412,23 @@
                     if (step === 1) {
                         if (!this.category) errors.push('Veuillez choisir une categorie.');
                     }
-
                     if (step === 2) {
                         if (!val('title')) { errors.push('Le titre de l\'annonce est obligatoire.'); this.markField('title'); }
                         if (!val('description')) { errors.push('La description est obligatoire.'); this.markField('description'); }
                     }
-
-                    // Step 3: specs are optional
-
                     if (step === 4) {
                         const price = val('price_dzd');
                         if (!price || parseFloat(price) <= 0) { errors.push('Le prix est obligatoire.'); this.markField('price_dzd'); }
                     }
-
-                    // Step 5: contact is optional
-
                     if (step === 6) {
-                        // Check if photo uploader has files
-                        const uploaderComp = this.$root.querySelector('[x-ref="photoUploader"], [data-photo-uploader]');
                         const fileInputs = this.$root.querySelectorAll('input[type="file"][name="images[]"]');
                         let hasFiles = false;
                         fileInputs.forEach(input => { if (input.files && input.files.length > 0) hasFiles = true; });
-                        // Also check for preview thumbnails (already added photos)
                         const previews = this.$root.querySelectorAll('.photo-preview-item, .preview-thumb, [data-photo-item]');
                         if (!hasFiles && previews.length === 0) {
                             errors.push('Veuillez ajouter au moins une photo.');
                         }
                     }
-
                     return errors;
                 },
 
@@ -1361,6 +1445,7 @@
                     if (next === 3 && this.category === 'parts') next = 4;
                     if (next <= 6) {
                         this.currentStep = next;
+                        this.saveToStorage();
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 },
@@ -1372,6 +1457,7 @@
                     if (prev === 3 && this.category === 'parts') prev = 2;
                     if (prev >= 1) {
                         this.currentStep = prev;
+                        this.saveToStorage();
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 },
@@ -1381,7 +1467,6 @@
                     if (this.submitting) return;
                     this.clearFieldErrors();
 
-                    // Validate all required steps in order
                     const stepsToCheck = this.category === 'parts' ? [1, 2, 4, 6] : [1, 2, 4, 6];
                     for (const step of stepsToCheck) {
                         const errors = this.validateStep(step);
@@ -1389,7 +1474,6 @@
                             this.currentStep = step;
                             this.$nextTick(() => {
                                 this.stepErrors = errors;
-                                // Re-mark fields after step change
                                 if (step === 2) { if (!this.$root.querySelector('[name="title"]')?.value?.trim()) this.markField('title'); if (!this.$root.querySelector('[name="description"]')?.value?.trim()) this.markField('description'); }
                                 if (step === 4) { const p = this.$root.querySelector('[name="price_dzd"]')?.value?.trim(); if (!p || parseFloat(p) <= 0) this.markField('price_dzd'); }
                             });
@@ -1398,8 +1482,9 @@
                         }
                     }
 
-                    // All valid — submit
+                    // All valid — clear draft and submit
                     this.submitting = true;
+                    this.clearDraft();
                     event.target.submit();
                 },
             }
