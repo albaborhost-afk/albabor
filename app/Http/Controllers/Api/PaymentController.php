@@ -60,6 +60,9 @@ class PaymentController extends Controller
             'status' => 'pending',
         ]);
 
+        // Move listing to pending_review so user sees payment is under review
+        $listing->update(['status' => 'pending_review']);
+
         return response()->json([
             'message' => 'Votre preuve de paiement a été soumise avec succès. Elle sera vérifiée par un administrateur.',
             'payment' => $payment,

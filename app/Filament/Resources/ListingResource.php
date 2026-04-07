@@ -863,7 +863,7 @@ class ListingResource extends Resource
                     ->color('success')
                     ->button()
                     ->size('sm')
-                    ->visible(fn (Listing $record) => in_array($record->status, ['pending_review', 'awaiting_payment']))
+                    ->visible(fn (Listing $record) => $record->status === 'pending_review')
                     ->requiresConfirmation()
                     ->modalHeading('Approuver cette annonce')
                     ->modalDescription('L\'annonce sera publiee et visible par tous les utilisateurs.')

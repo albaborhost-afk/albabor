@@ -41,13 +41,13 @@ Route::get('/', function () {
 // Guest routes
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'create'])->name('login');
-    Route::post('login', [LoginController::class, 'store']);
+    Route::post('login', [LoginController::class, 'store'])->middleware('throttle:5,1');
 
     Route::get('register', [RegisterController::class, 'create'])->name('register');
-    Route::post('register', [RegisterController::class, 'store']);
+    Route::post('register', [RegisterController::class, 'store'])->middleware('throttle:3,1');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->middleware('throttle:3,1')->name('password.email');
 
     // Google OAuth
     Route::get('auth/google', [SocialAuthController::class, 'redirect'])->name('auth.google');
@@ -107,7 +107,7 @@ Route::middleware('auth')->group(function () {
     // My Listings
     Route::get('mes-annonces', [ListingController::class, 'myListings'])->name('listings.my');
     Route::get('annonces/creer', [ListingController::class, 'create'])->name('listings.create');
-    Route::post('annonces', [ListingController::class, 'store'])->name('listings.store');
+    Route::post('annonces', [ListingController::class, 'store'])->middleware('throttle:10,1')->name('listings.store');
     Route::get('annonces/{listing}/modifier', [ListingController::class, 'edit'])->name('listings.edit');
     Route::put('annonces/{listing}', [ListingController::class, 'update'])->name('listings.update');
     Route::delete('annonces/{listing}', [ListingController::class, 'destroy'])->name('listings.destroy');
@@ -132,13 +132,13 @@ Route::middleware('auth')->group(function () {
     // Messages
     Route::get('messages', [ConversationController::class, 'index'])->name('conversations.index');
     Route::get('messages/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
-    Route::post('messages/annonce/{listing}', [ConversationController::class, 'store'])->name('conversations.store');
-    Route::post('messages/{conversation}/repondre', [ConversationController::class, 'reply'])->name('conversations.reply');
+    Route::post('messages/annonce/{listing}', [ConversationController::class, 'store'])->middleware('throttle:10,1')->name('conversations.store');
+    Route::post('messages/{conversation}/repondre', [ConversationController::class, 'reply'])->middleware('throttle:30,1')->name('conversations.reply');
 
     // Mediation
     Route::get('mediation', [MediationController::class, 'index'])->name('mediation.index');
     Route::get('mediation/creer/{listing}', [MediationController::class, 'create'])->name('mediation.create');
-    Route::post('mediation/{listing}', [MediationController::class, 'store'])->name('mediation.store');
+    Route::post('mediation/{listing}', [MediationController::class, 'store'])->middleware('throttle:5,1')->name('mediation.store');
     Route::get('mediation/{ticket}', [MediationController::class, 'show'])->name('mediation.show');
     Route::post('mediation/{ticket}/message', [MediationController::class, 'addMessage'])->name('mediation.message');
     Route::post('mediation/{ticket}/annuler', [MediationController::class, 'cancel'])->name('mediation.cancel');

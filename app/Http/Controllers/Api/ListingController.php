@@ -95,13 +95,24 @@ class ListingController extends Controller
             });
         }
 
+        // Hide seller contact info when mediation is enabled (non-owner, non-admin)
+        $requestUser = $request->user();
+        $listings->getCollection()->transform(function ($listing) use ($requestUser) {
+            if ($listing->mediation_enabled) {
+                if (!$requestUser || ($requestUser->id !== $listing->user_id && !$requestUser->isAdmin())) {
+                    $listing->makeHidden(['numero_whatsapp', 'numero_mobile']);
+                }
+            }
+            return $listing;
+        });
+
         return response()->json($listings);
     }
 
     /**
      * Annonces mises en avant.
      */
-    public function featured(): JsonResponse
+    public function featured(Request $request): JsonResponse
     {
         $listings = Listing::query()
             ->with(['user', 'media'])
@@ -110,6 +121,17 @@ class ListingController extends Controller
             ->orderByDesc('featured_until')
             ->limit(10)
             ->get();
+
+        // Hide seller contact info when mediation is enabled (non-owner, non-admin)
+        $requestUser = $request->user();
+        $listings->transform(function ($listing) use ($requestUser) {
+            if ($listing->mediation_enabled) {
+                if (!$requestUser || ($requestUser->id !== $listing->user_id && !$requestUser->isAdmin())) {
+                    $listing->makeHidden(['numero_whatsapp', 'numero_mobile']);
+                }
+            }
+            return $listing;
+        });
 
         return response()->json([
             'data' => $listings,
@@ -149,6 +171,14 @@ class ListingController extends Controller
         $isFavorited = false;
         if ($user = $request->user()) {
             $isFavorited = $user->hasFavorited($listing);
+        }
+
+        // Hide seller contact info when mediation is enabled (non-owner, non-admin)
+        if ($listing->mediation_enabled) {
+            $requestUser = $request->user();
+            if (!$requestUser || ($requestUser->id !== $listing->user_id && !$requestUser->isAdmin())) {
+                $listing->makeHidden(['numero_whatsapp', 'numero_mobile']);
+            }
         }
 
         return response()->json([

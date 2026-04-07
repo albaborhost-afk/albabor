@@ -275,7 +275,7 @@
                             </span>
                             Description
                         </h2>
-                        <div class="text-xs sm:text-sm leading-relaxed pl-9 sm:pl-[42px]" style="color: #6B7B8D; line-height: 1.65;">{!! nl2br(e(html_entity_decode(strip_tags($listing->description)))) !!}</div>
+                        <div class="text-xs sm:text-sm leading-relaxed pl-9 sm:pl-[42px]" style="color: #6B7B8D; line-height: 1.65;">{!! nl2br(e($listing->description)) !!}</div>
                     </div>
 
                     {{-- ======== INFOS GENERALES ======== --}}

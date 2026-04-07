@@ -16,9 +16,9 @@ Route::prefix('v1')->group(function () {
     // ── Public (no auth) ──────────────────────────────────────
 
     // Auth
-    Route::post('/auth/login', [AuthController::class, 'login']);
-    Route::post('/auth/register', [AuthController::class, 'register']);
-    Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+    Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:3,1');
+    Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:3,1');
     Route::post('/auth/google', [App\Http\Controllers\Auth\GoogleMobileAuthController::class, 'login']);
 
     // Public listings
@@ -53,7 +53,7 @@ Route::prefix('v1')->group(function () {
 
         // My Listings
         Route::get('/my-listings', [ListingController::class, 'myListings']);
-        Route::post('/listings', [ListingController::class, 'store']);
+        Route::post('/listings', [ListingController::class, 'store'])->middleware('throttle:10,1');
         Route::put('/listings/{listing}', [ListingController::class, 'update']);
         Route::delete('/listings/{listing}', [ListingController::class, 'destroy']);
         Route::post('/listings/{listing}/sold', [ListingController::class, 'markAsSold']);
@@ -66,9 +66,9 @@ Route::prefix('v1')->group(function () {
 
         // Payments
         Route::get('/payments', [PaymentController::class, 'index']);
-        Route::post('/payments/listing/{listing}', [PaymentController::class, 'storeListingPayment']);
-        Route::post('/payments/feature/{listing}', [PaymentController::class, 'storeFeaturePayment']);
-        Route::post('/payments/subscription', [PaymentController::class, 'storeSubscriptionPayment']);
+        Route::post('/payments/listing/{listing}', [PaymentController::class, 'storeListingPayment'])->middleware('throttle:5,1');
+        Route::post('/payments/feature/{listing}', [PaymentController::class, 'storeFeaturePayment'])->middleware('throttle:5,1');
+        Route::post('/payments/subscription', [PaymentController::class, 'storeSubscriptionPayment'])->middleware('throttle:5,1');
         Route::post('/payments/mediation', [PaymentController::class, 'storeMediationPayment']);
 
         // Subscriptions
@@ -78,13 +78,13 @@ Route::prefix('v1')->group(function () {
         // Conversations
         Route::get('/conversations', [ConversationController::class, 'index']);
         Route::get('/conversations/unread-count', [ConversationController::class, 'unreadCount']);
-        Route::post('/conversations/listing/{listing}', [ConversationController::class, 'store']);
+        Route::post('/conversations/listing/{listing}', [ConversationController::class, 'store'])->middleware('throttle:10,1');
         Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
-        Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'sendMessage']);
+        Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'sendMessage'])->middleware('throttle:30,1');
 
         // Mediation
         Route::get('/mediation', [MediationController::class, 'index']);
-        Route::post('/mediation/{listing}', [MediationController::class, 'store']);
+        Route::post('/mediation/{listing}', [MediationController::class, 'store'])->middleware('throttle:5,1');
         Route::get('/mediation/{ticket}', [MediationController::class, 'show']);
         Route::post('/mediation/{ticket}/message', [MediationController::class, 'addMessage']);
         Route::post('/mediation/{ticket}/cancel', [MediationController::class, 'cancel']);
