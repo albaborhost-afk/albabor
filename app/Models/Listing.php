@@ -52,6 +52,9 @@ class Listing extends Model
         ];
     }
 
+    // ---- Media limits ----
+    const MAX_IMAGES = 20;
+
     // ---- Etat (Condition) constants ----
     const ETAT_JAMAIS_UTILISE = 'jamais_utilise';
     const ETAT_COMME_NEUF = 'comme_neuf';

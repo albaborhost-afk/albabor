@@ -209,7 +209,7 @@ class ListingController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
-            'images' => 'required|array|min:1|max:20',
+            'images' => 'required|array|min:1|max:' . Listing::MAX_IMAGES,
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             'video_url' => 'nullable|url|max:500',
         ]);
@@ -338,7 +338,7 @@ class ListingController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
-            'new_images' => 'nullable|array|max:20',
+            'new_images' => 'nullable|array|max:' . Listing::MAX_IMAGES,
             'new_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'integer|exists:listing_media,id',
@@ -381,11 +381,11 @@ class ListingController extends Controller
         // Ajouter de nouvelles images (max 20 au total)
         if ($request->hasFile('new_images')) {
             $currentCount = $listing->media()->count();
-            $maxNew = 20 - $currentCount;
+            $maxNew = Listing::MAX_IMAGES - $currentCount;
 
             if ($maxNew <= 0) {
                 return response()->json([
-                    'message' => 'Nombre maximum d\'images atteint (20). Supprimez des images avant d\'en ajouter.',
+                    'message' => 'Nombre maximum d\'images atteint (' . Listing::MAX_IMAGES . '). Supprimez des images avant d\'en ajouter.',
                     'listing' => $listing->load(['user', 'media']),
                 ], 422);
             }

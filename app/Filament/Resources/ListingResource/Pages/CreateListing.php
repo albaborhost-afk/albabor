@@ -26,6 +26,10 @@ class CreateListing extends CreateRecord
         $disk = config('filesystems.listing_disk', 'public');
         $order = 0;
         $saved = 0;
+        $max = \App\Models\Listing::MAX_IMAGES;
+
+        // Enforce the image limit
+        $uploadedFiles = array_slice($uploadedFiles, 0, $max);
 
         foreach ($uploadedFiles as $tmpPath) {
             if (!$tmpPath || !Storage::disk('local')->exists($tmpPath)) {

@@ -159,7 +159,7 @@ class ListingController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
-            'images' => 'required|array|min:1|max:20',
+            'images' => 'required|array|min:1|max:' . Listing::MAX_IMAGES,
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             'video_url' => 'nullable|url|max:500',
         ]);
@@ -300,7 +300,7 @@ class ListingController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
-            'new_images' => 'nullable|array|max:20',
+            'new_images' => 'nullable|array|max:' . Listing::MAX_IMAGES,
             'new_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'integer|exists:listing_media,id',
@@ -358,7 +358,7 @@ class ListingController extends Controller
         // Add new images
         if ($request->hasFile('new_images')) {
             $currentCount = $listing->media()->count();
-            $maxNew = max(0, 20 - $currentCount);
+            $maxNew = max(0, Listing::MAX_IMAGES - $currentCount);
             \Log::info('Listing image upload', [
                 'listing_id'    => $listing->id,
                 'disk'          => $this->listingDisk(),

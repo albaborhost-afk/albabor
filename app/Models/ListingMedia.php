@@ -19,6 +19,20 @@ class ListingMedia extends Model
         'order',
     ];
 
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (ListingMedia $media) {
+            $count = static::where('listing_id', $media->listing_id)->count();
+            if ($count >= Listing::MAX_IMAGES) {
+                throw new \OverflowException(
+                    "Nombre maximum d'images atteint (" . Listing::MAX_IMAGES . ") pour l'annonce #{$media->listing_id}."
+                );
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [

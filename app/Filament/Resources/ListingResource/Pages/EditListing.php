@@ -34,6 +34,21 @@ class EditListing extends EditRecord
         $disk = config('filesystems.listing_disk', 'public');
         $order = $listing->media()->max('order') ?? 0;
         $saved = 0;
+        $max = \App\Models\Listing::MAX_IMAGES;
+
+        // Enforce the image limit: only allow uploads up to the max
+        $currentCount = $listing->media()->count();
+        $slotsLeft = max(0, $max - $currentCount);
+
+        if ($slotsLeft <= 0) {
+            Notification::make()
+                ->title("Limite de {$max} images atteinte")
+                ->warning()
+                ->send();
+            return;
+        }
+
+        $uploadedFiles = array_slice($uploadedFiles, 0, $slotsLeft);
 
         foreach ($uploadedFiles as $tmpPath) {
             if (!$tmpPath || !Storage::disk('local')->exists($tmpPath)) {
