@@ -92,7 +92,7 @@
             </div>
 
             <!-- Messages -->
-            <div class="bg-white rounded-2xl p-6 mb-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03);" x-data x-init="$nextTick(() => { const el = document.getElementById('messages-container'); if(el) el.scrollTop = el.scrollHeight; })">
+            <div class="bg-white rounded-2xl p-6 mb-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03);">
                 <h2 class="text-lg font-bold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
                     <svg class="w-5 h-5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -100,45 +100,134 @@
                     {{ __('messages.conversation') }}
                 </h2>
 
-                <div id="messages-container" class="space-y-4 max-h-[500px] overflow-y-auto mb-6 scroll-smooth" style="scrollbar-width: thin;">
-                    @forelse($conversation->messages as $message)
-                        @php $isCurrentUser = $message->sender_id === auth()->id(); @endphp
-                        <div class="flex {{ $isCurrentUser ? 'justify-end' : 'justify-start' }}">
-                            <div class="max-w-xs lg:max-w-md">
-                                <div class="rounded-2xl px-4 py-3" style="{{ $isCurrentUser ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8); color: white;' : 'background: #F0F4F8; color: #1B2A4A;' }}">
-                                    <p class="text-sm whitespace-pre-wrap break-words">{{ $message->body }}</p>
-                                </div>
-                                <div class="flex items-center gap-1.5 mt-1 {{ $isCurrentUser ? 'justify-end' : 'justify-start' }}">
-                                    <span class="text-[10px] font-medium" style="color: #9BA8B7;">{{ $message->sender?->name }}</span>
-                                    <span class="text-[10px]" style="color: #C5D0DB;">{{ $message->created_at->format('d/m H:i') }}</span>
+                <div x-data="chatRoom()" x-init="init()">
+                    {{-- Messages --}}
+                    <div id="messages-container" class="space-y-4 max-h-[500px] overflow-y-auto mb-6 scroll-smooth" x-ref="msgContainer">
+                        <template x-for="msg in messages" :key="msg.id">
+                            <div :class="msg.sender_id == currentUserId ? 'flex justify-end' : 'flex justify-start'">
+                                <div class="max-w-xs lg:max-w-md">
+                                    <div class="rounded-2xl px-4 py-3"
+                                         :style="msg.sender_id == currentUserId
+                                            ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8); color: white;'
+                                            : 'background: #F0F4F8; color: #1B2A4A;'">
+                                        <p class="text-sm whitespace-pre-wrap break-words" x-text="msg.body"></p>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 mt-1" :class="msg.sender_id == currentUserId ? 'justify-end' : 'justify-start'">
+                                        <span class="text-[10px] font-medium" style="color: #9BA8B7;" x-text="msg.sender?.name || ''"></span>
+                                        <span class="text-[10px]" style="color: #C5D0DB;" x-text="formatTime(msg.created_at)"></span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @empty
-                        <div class="text-center py-8">
-                            <p class="text-sm" style="color: #9BA8B7;">{{ __('messages.no_messages_in_conversation') }}</p>
-                        </div>
-                    @endforelse
+                        </template>
+                        <template x-if="messages.length === 0">
+                            <p class="text-center text-sm py-8" style="color: #9BA8B7;">Aucun message pour le moment.</p>
+                        </template>
+                    </div>
+
+                    {{-- Reply form --}}
+                    <form @submit.prevent="sendMessage()" class="flex gap-3 items-end">
+                        <textarea x-model="newMessage" rows="2" required maxlength="2000"
+                                  placeholder="{{ __('messages.type_message') ?? 'Tapez votre message...' }}"
+                                  class="flex-1 px-4 py-3 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 transition-all duration-200"
+                                  style="background: #F0F4F8; border: 1.5px solid #E0E6ED; color: #1B2A4A;"
+                                  @keydown.enter.meta.prevent="sendMessage()"
+                                  @keydown.ctrl.enter.prevent="sendMessage()"
+                                  :disabled="sending"></textarea>
+                        <button type="submit" :disabled="sending || !newMessage.trim()"
+                                class="px-6 py-3 rounded-xl text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 flex-shrink-0"
+                                :style="sending ? 'opacity:0.5;' : ''"
+                                style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27,79,114,0.3);">
+                            <span x-show="!sending">{{ __('messages.send') ?? 'Envoyer' }}</span>
+                            <span x-show="sending">...</span>
+                        </button>
+                    </form>
                 </div>
 
-                <!-- Reply Form -->
-                <form action="{{ route('conversations.reply', $conversation) }}" method="POST">
-                    @csrf
-                    <div class="flex gap-3">
-                        <div class="flex-1">
-                            <textarea name="body" rows="2" required maxlength="2000"
-                                      class="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 transition-all duration-200"
-                                      style="background: #F0F4F8; border: 1.5px solid #E0E6ED; color: #1B2A4A; focus:ring-color: rgba(23,162,184,0.3);"
-                                      placeholder="{{ __('messages.type_message') }}">{{ old('body') }}</textarea>
-                            @error('body')
-                                <p class="text-xs mt-1" style="color: #E74C3C;">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <button type="submit" class="self-end px-5 py-3 rounded-xl text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5" style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">
-                            {{ __('messages.send') }}
-                        </button>
-                    </div>
-                </form>
+                <script>
+                function chatRoom() {
+                    return {
+                        messages: @json($conversation->messages->map(fn($m) => ['id' => $m->id, 'body' => $m->body, 'sender_id' => $m->sender_id, 'sender' => $m->sender ? ['name' => $m->sender->name] : null, 'created_at' => $m->created_at->toISOString()])),
+                        currentUserId: {{ auth()->id() }},
+                        newMessage: '',
+                        sending: false,
+                        pollInterval: null,
+                        pollUrl: '{{ route("conversations.messages", $conversation) }}',
+                        replyUrl: '{{ route("conversations.reply", $conversation) }}',
+                        csrfToken: '{{ csrf_token() }}',
+
+                        init() {
+                            this.$nextTick(() => this.scrollToBottom());
+                            this.pollInterval = setInterval(() => this.fetchMessages(), 5000);
+                        },
+
+                        destroy() {
+                            if (this.pollInterval) clearInterval(this.pollInterval);
+                        },
+
+                        async fetchMessages() {
+                            try {
+                                const res = await fetch(this.pollUrl, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } });
+                                if (!res.ok) return;
+                                const data = await res.json();
+                                if (data.length > this.messages.length) {
+                                    const mapped = data.map(m => ({
+                                        id: m.id,
+                                        body: m.body,
+                                        sender_id: m.sender_id,
+                                        sender: m.sender ? { name: m.sender.name } : null,
+                                        created_at: m.created_at
+                                    }));
+                                    this.messages = mapped;
+                                    this.$nextTick(() => this.scrollToBottom());
+                                }
+                            } catch(e) { /* silent */ }
+                        },
+
+                        async sendMessage() {
+                            if (this.sending || !this.newMessage.trim()) return;
+                            this.sending = true;
+                            const body = this.newMessage.trim();
+                            try {
+                                const res = await fetch(this.replyUrl, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.csrfToken, 'X-Requested-With': 'XMLHttpRequest' },
+                                    body: JSON.stringify({ body })
+                                });
+                                if (res.ok) {
+                                    this.newMessage = '';
+                                    // Immediately add optimistic message
+                                    this.messages.push({
+                                        id: Date.now(),
+                                        body: body,
+                                        sender_id: this.currentUserId,
+                                        sender: { name: 'Moi' },
+                                        created_at: new Date().toISOString()
+                                    });
+                                    this.$nextTick(() => this.scrollToBottom());
+                                    // Fetch real data shortly after
+                                    setTimeout(() => this.fetchMessages(), 1000);
+                                }
+                            } catch(e) { /* silent */ }
+                            this.sending = false;
+                        },
+
+                        scrollToBottom() {
+                            const el = this.$refs.msgContainer;
+                            if (el) el.scrollTop = el.scrollHeight;
+                        },
+
+                        formatTime(iso) {
+                            if (!iso) return '';
+                            const d = new Date(iso);
+                            const day = String(d.getDate()).padStart(2, '0');
+                            const month = String(d.getMonth() + 1).padStart(2, '0');
+                            const hours = String(d.getHours()).padStart(2, '0');
+                            const mins = String(d.getMinutes()).padStart(2, '0');
+                            return day + '/' + month + ' ' + hours + ':' + mins;
+                        }
+                    }
+                }
+                </script>
             </div>
 
             <!-- Back link -->

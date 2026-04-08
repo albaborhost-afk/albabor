@@ -212,7 +212,7 @@ class ListingResource extends Resource
                                     ->description('Mesures de l\'embarcation')
                                     ->icon('heroicon-o-arrows-pointing-out')
                                     ->visible(fn ($get) => in_array($get('category'), ['boat', 'jetski']))
-                                    ->columns(5)
+                                    ->columns(6)
                                     ->schema([
                                         Forms\Components\TextInput::make('specs.dimensions.longueur')
                                             ->label('Longueur (m)')
@@ -231,9 +231,16 @@ class ListingResource extends Resource
                                             ->numeric()
                                             ->step(0.01),
                                         Forms\Components\TextInput::make('specs.dimensions.tonnage')
-                                            ->label('Tonnage (t)')
+                                            ->label('Tonnage')
                                             ->numeric()
                                             ->step(0.01),
+                                        Forms\Components\Select::make('specs.dimensions.tonnage_unit')
+                                            ->label('Unité tonnage')
+                                            ->options([
+                                                'kg' => 'KG',
+                                                't' => 'T',
+                                            ])
+                                            ->default('kg'),
                                     ]),
 
                                 // Motorisation (boat/jetski/engine)

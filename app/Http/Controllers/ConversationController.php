@@ -112,6 +112,19 @@ class ConversationController extends Controller
         $conversation->update(['last_message_at' => now()]);
         $conversation->markAsReadFor($request->user());
 
+        if ($request->expectsJson()) {
+            return response()->json($conversation->messages()->with('sender')->latest()->first(), 201);
+        }
         return back()->with('success', __('messages.message_sent'));
+    }
+
+    public function messages(Conversation $conversation)
+    {
+        $this->authorize('view', $conversation);
+        $conversation->markAsReadFor(auth()->user());
+
+        return response()->json(
+            $conversation->messages()->with('sender')->orderBy('created_at')->get()
+        );
     }
 }

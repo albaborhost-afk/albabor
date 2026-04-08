@@ -168,9 +168,16 @@
                                    class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="2.30">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Tonnage (T)</label>
-                            <input type="number" step="0.01" name="specs[dimensions][tonnage]" value="{{ old('specs.dimensions.tonnage', data_get($specs, 'dimensions.tonnage')) }}"
-                                   class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="1.5">
+                            <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Tonnage</label>
+                            <div class="flex gap-2">
+                                <input type="number" step="0.01" name="specs[dimensions][tonnage]" value="{{ old('specs.dimensions.tonnage', data_get($specs, 'dimensions.tonnage')) }}"
+                                       class="glass-input w-full rounded-xl px-4 py-3 text-sm flex-1" placeholder="1500">
+                                <select name="specs[dimensions][tonnage_unit]"
+                                        class="glass-input rounded-xl px-3 py-3 text-sm font-semibold" style="min-width: 70px;">
+                                    <option value="kg" {{ old('specs.dimensions.tonnage_unit', data_get($specs, 'dimensions.tonnage_unit', 'kg')) === 'kg' ? 'selected' : '' }}>KG</option>
+                                    <option value="t" {{ old('specs.dimensions.tonnage_unit', data_get($specs, 'dimensions.tonnage_unit', 'kg')) === 't' ? 'selected' : '' }}>T</option>
+                                </select>
+                            </div>
                         </div>
                         <div x-show="category === 'boat'">
                             <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Tirant d'eau (m)</label>

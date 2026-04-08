@@ -132,6 +132,7 @@ Route::middleware('auth')->group(function () {
     // Messages
     Route::get('messages', [ConversationController::class, 'index'])->name('conversations.index');
     Route::get('messages/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
+    Route::get('messages/{conversation}/json', [ConversationController::class, 'messages'])->name('conversations.messages');
     Route::post('messages/annonce/{listing}', [ConversationController::class, 'store'])->middleware('throttle:10,1')->name('conversations.store');
     Route::post('messages/{conversation}/repondre', [ConversationController::class, 'reply'])->middleware('throttle:30,1')->name('conversations.reply');
 
