@@ -140,7 +140,7 @@ class ProfileController extends Controller
     public function updatePicture(Request $request): JsonResponse
     {
         $request->validate([
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp,heic,heif|max:5120',
         ]);
 
         $user = $request->user();

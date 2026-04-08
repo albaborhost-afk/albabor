@@ -277,7 +277,7 @@
                             </div>
                             <h3 class="text-xl font-bold text-gray-900 mb-2">Cliquez pour ajouter des photos</h3>
                             <p class="text-gray-600">ou glissez-déposez vos images ici</p>
-                            <p class="text-sm text-gray-500 mt-4">JPEG, PNG, WebP • Max 5 Mo • 10 photos max</p>
+                            <p class="text-sm text-gray-500 mt-4">JPEG, PNG, WebP, HEIC • Max 15 Mo • 20 photos max</p>
                         </div>
                         <input id="images" name="images[]" type="file" class="sr-only" multiple accept="image/*" required>
                     </label>

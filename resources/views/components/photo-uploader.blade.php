@@ -144,7 +144,7 @@
                     <span x-show="!isDragging">Cliquez ou glissez vos photos ici</span>
                     <span x-show="isDragging">Lâchez pour ajouter</span>
                 </p>
-                <p class="text-[11px] mt-1" style="color:#9BA8B7;">JPEG, PNG, WebP · Max 15 Mo · {{ $hasExisting ? $maxNew : $max }} photos max</p>
+                <p class="text-[11px] mt-1" style="color:#9BA8B7;">JPEG, PNG, WebP, HEIC · Max 15 Mo · {{ $hasExisting ? $maxNew : $max }} photos max</p>
                 <p
                     x-show="!supportsManagedFiles"
                     x-cloak
@@ -274,7 +274,7 @@
             type="file"
             name="{{ $inputName }}[]"
             multiple
-            accept="image/jpeg,image/png,image/webp,image/jpg"
+            accept="image/jpeg,image/png,image/webp,image/jpg,image/heic,image/heif,.heic,.heif"
             class="sr-only"
             @change="handleSelect($event)"
         >
@@ -370,7 +370,7 @@ if (typeof photoUploader === 'undefined') {
                         this.errors.push(`"${file.name}" dépasse la limite de 15 Mo.`);
                         continue;
                     }
-                    const allowed = ['image/jpeg','image/jpg','image/png','image/webp'];
+                    const allowed = ['image/jpeg','image/jpg','image/png','image/webp','image/heic','image/heif',''];
                     if (!allowed.includes(file.type)) {
                         this.errors.push(`"${file.name}" : format non supporté.`);
                         continue;
@@ -431,7 +431,7 @@ if (typeof photoUploader === 'undefined') {
                         this.errors.push(`"${file.name}" dépasse la limite de 15 Mo.`);
                     }
 
-                    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+                    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif', ''];
                     if (!allowed.includes(file.type)) {
                         this.errors.push(`"${file.name}" : format non supporté.`);
                     }

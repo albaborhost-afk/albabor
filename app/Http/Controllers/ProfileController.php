@@ -41,7 +41,7 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => ['nullable', AlgerianPhoneNumber::nullable()],
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,webp,heic,heif|max:5120',
         ]);
 
         $validated['name'] = trim($validated['name']);

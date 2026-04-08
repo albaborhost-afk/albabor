@@ -479,7 +479,7 @@ class ListingResource extends Resource
                                             ->image()
                                             ->maxFiles(\App\Models\Listing::MAX_IMAGES)
                                             ->maxSize(\App\Models\Listing::MAX_IMAGE_SIZE_KB)
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'])
                                             ->disk('local')
                                             ->directory('tmp-listing-uploads')
                                             ->dehydrated(false)
