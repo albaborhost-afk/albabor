@@ -474,7 +474,8 @@
                                  carb:  {{ old('specs.reservoirs.reservoir_carburant', 0) }},
                                  eau:   {{ old('specs.reservoirs.reservoir_eau_douce', 0) }},
                                  stk:   {{ old('specs.reservoirs.stockage', 0) }},
-                                 get total() { return (Number(this.carb)||0) + (Number(this.eau)||0) + (Number(this.stk)||0); }
+                                 get totalCarb() { return (Number(this.nbRes)||1) * (Number(this.carb)||0); },
+                                 get total() { return this.totalCarb + (Number(this.eau)||0) + (Number(this.stk)||0); }
                              }">
                             <h2 class="text-base font-semibold mb-4 flex items-center gap-3" style="color: #1B2A4A;">
                                 <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #1ABC9C, #48C9B0);">
@@ -495,7 +496,7 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Carburant (L)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Carburant / reservoir (L)</label>
                                     <input type="number" name="specs[reservoirs][reservoir_carburant]" x-model="carb"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="200">
                                 </div>
@@ -512,11 +513,17 @@
                             </div>
 
                             <!-- Capacité totale auto -->
-                            <div class="mt-4 flex items-center gap-3 px-4 py-3 rounded-xl" style="background: rgba(26,188,156,0.08); border: 1px solid rgba(26,188,156,0.2);">
-                                <svg class="w-4 h-4 flex-shrink-0" style="color: #1ABC9C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 7v10a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2z"/></svg>
-                                <span class="text-xs font-semibold" style="color: #6B7B8D;">Capacite totale :</span>
-                                <span class="text-sm font-bold" style="color: #1ABC9C;" x-text="total + ' L'"></span>
-                                <span class="text-[10px] ml-1" style="color: #9BA8B7;">calcule automatiquement</span>
+                            <div class="mt-4 px-4 py-3 rounded-xl" style="background: rgba(26,188,156,0.08); border: 1px solid rgba(26,188,156,0.2);">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-4 h-4 flex-shrink-0" style="color: #1ABC9C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 7v10a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2z"/></svg>
+                                    <span class="text-xs font-semibold" style="color: #6B7B8D;">Capacite totale :</span>
+                                    <span class="text-sm font-bold" style="color: #1ABC9C;" x-text="total + ' L'"></span>
+                                </div>
+                                <div x-show="nbRes > 1 && carb > 0" x-transition class="mt-1.5 pl-7 text-[10px]" style="color: #9BA8B7;">
+                                    <span x-text="nbRes + ' reservoirs × ' + carb + ' L = ' + totalCarb + ' L carburant'"></span>
+                                    <span x-show="eau > 0" x-text="' + ' + eau + ' L eau'"></span>
+                                    <span x-show="stk > 0" x-text="' + ' + stk + ' L stockage'"></span>
+                                </div>
                             </div>
                         </div>
 
