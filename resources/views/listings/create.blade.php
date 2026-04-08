@@ -797,20 +797,70 @@
                                 </div>
                             </div>
 
-                            {{-- ② PRIX --}}
-                            <div>
+                            {{-- ② PRIX with multiplier --}}
+                            <div x-data="{
+                                rawPrice: '{{ old('price_dzd', '') }}',
+                                multiplier: 1,
+                                init() {
+                                    // Detect multiplier from old value
+                                    const v = parseInt(this.rawPrice) || 0;
+                                    if (v >= 1000000000 && v % 1000000000 === 0) {
+                                        this.multiplier = 1000000000;
+                                        this.rawPrice = String(v / 1000000000);
+                                    } else if (v >= 1000000 && v % 1000000 === 0) {
+                                        this.multiplier = 1000000;
+                                        this.rawPrice = String(v / 1000000);
+                                    }
+                                },
+                                get actualPrice() { return (parseFloat(this.rawPrice) || 0) * this.multiplier; },
+                                get formattedTotal() {
+                                    const v = this.actualPrice;
+                                    if (v <= 0) return '';
+                                    return v.toLocaleString('fr-FR');
+                                },
+                                get currencySymbol() {
+                                    if (this.currency === 'EUR') return '€';
+                                    if (this.currency === 'OTHER') return '';
+                                    return 'DA';
+                                }
+                            }">
                                 <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
                                     Prix <span style="color: #E74C3C;">*</span>
                                 </label>
-                                <div class="relative">
-                                    <input type="number" name="price_dzd" value="{{ old('price_dzd') }}"
-                                           required min="0" placeholder="0"
-                                           class="glass-input w-full rounded-xl px-4 py-3.5 pr-16 text-xl font-bold"
-                                           style="color: #1B2A4A;">
-                                    <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                                        <span class="text-sm font-bold px-2 py-1 rounded-lg" style="background:#EBF2FA; color:#1B4F72;"
-                                              x-text="currency === 'EUR' ? '€' : (currency === 'OTHER' ? ($el.closest('form').querySelector('[name=currency_label]')?.value || '?') : 'DA')">DA</span>
+                                {{-- Hidden actual value for form submission --}}
+                                <input type="hidden" name="price_dzd" :value="actualPrice">
+
+                                <div class="flex gap-2">
+                                    {{-- Number input --}}
+                                    <div class="relative flex-1">
+                                        <input type="number" x-model="rawPrice"
+                                               required min="0" step="any" placeholder="0"
+                                               class="glass-input w-full rounded-xl px-4 py-3.5 pr-16 text-xl font-bold"
+                                               style="color: #1B2A4A;">
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                            <span class="text-sm font-bold px-2 py-1 rounded-lg" style="background:#EBF2FA; color:#1B4F72;"
+                                                  x-text="currency === 'EUR' ? '€' : (currency === 'OTHER' ? ($el.closest('form').querySelector('[name=currency_label]')?.value || '?') : 'DA')">DA</span>
+                                        </div>
                                     </div>
+
+                                    {{-- Multiplier selector (DZD only) --}}
+                                    <div x-show="currency === 'DZD'" class="flex rounded-xl overflow-hidden" style="border: 1.5px solid #E0E6ED;">
+                                        <button type="button" @click="multiplier = 1"
+                                                :style="multiplier === 1 ? 'background: #1B4F72; color: white;' : 'background: white; color: #6B7B8D;'"
+                                                class="px-3 py-2 text-xs font-bold transition-all whitespace-nowrap">DA</button>
+                                        <button type="button" @click="multiplier = 1000000"
+                                                :style="multiplier === 1000000 ? 'background: #1B4F72; color: white;' : 'background: white; color: #6B7B8D;'"
+                                                class="px-3 py-2 text-xs font-bold transition-all whitespace-nowrap" style="border-left: 1px solid #E0E6ED;">Million</button>
+                                        <button type="button" @click="multiplier = 1000000000"
+                                                :style="multiplier === 1000000000 ? 'background: #1B4F72; color: white;' : 'background: white; color: #6B7B8D;'"
+                                                class="px-3 py-2 text-xs font-bold transition-all whitespace-nowrap" style="border-left: 1px solid #E0E6ED;">Milliard</button>
+                                    </div>
+                                </div>
+
+                                {{-- Price preview --}}
+                                <div x-show="actualPrice > 0" x-transition class="mt-2 flex items-center gap-1.5 text-xs rounded-lg px-3 py-2" style="background: rgba(27,79,114,0.06); color: #1B4F72;">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                    <span class="font-semibold" x-text="formattedTotal + ' ' + (currency === 'EUR' ? '€' : (currency === 'OTHER' ? '' : 'DA'))"></span>
                                 </div>
                             </div>
 
