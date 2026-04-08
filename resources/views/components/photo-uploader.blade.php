@@ -356,7 +356,40 @@ if (typeof photoUploader === 'undefined') {
                 this.addFiles(dropped);
             },
 
-            addFiles(newFiles) {
+            // Compress image client-side before upload (max 2000px, JPEG 85%)
+            compressImage(file) {
+                return new Promise((resolve) => {
+                    // Skip small files (< 1MB) — no need to compress
+                    if (file.size < 1024 * 1024) { resolve(file); return; }
+
+                    const img = new Image();
+                    const url = URL.createObjectURL(file);
+                    img.onload = () => {
+                        URL.revokeObjectURL(url);
+                        const MAX = 2000;
+                        let w = img.width, h = img.height;
+                        if (w > MAX || h > MAX) {
+                            if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+                            else { w = Math.round(w * MAX / h); h = MAX; }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        canvas.toBlob((blob) => {
+                            if (blob && blob.size < file.size) {
+                                const compressed = new File([blob], file.name.replace(/\.\w+$/, '.jpg'), { type: 'image/jpeg' });
+                                resolve(compressed);
+                            } else {
+                                resolve(file); // Original is smaller, keep it
+                            }
+                        }, 'image/jpeg', 0.85);
+                    };
+                    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+                    img.src = url;
+                });
+            },
+
+            async addFiles(newFiles) {
                 this.errors = [];
                 const available = this.maxFiles - this.files.length;
                 let added = 0;
@@ -375,9 +408,11 @@ if (typeof photoUploader === 'undefined') {
                         this.errors.push(`"${file.name}" : format non supporté.`);
                         continue;
                     }
+                    // Compress before adding
+                    const optimized = await this.compressImage(file);
                     const id = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random());
-                    const preview = URL.createObjectURL(file);
-                    this.files.push({ id, file, preview, size: file.size, name: file.name });
+                    const preview = URL.createObjectURL(optimized);
+                    this.files.push({ id, file: optimized, preview, size: optimized.size, name: file.name });
                     added++;
                 }
                 this.syncInput();
