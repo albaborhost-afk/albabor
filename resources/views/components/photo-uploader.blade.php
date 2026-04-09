@@ -36,74 +36,40 @@
             </span>
         </div>
 
-        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3" x-data="{ markedIds: [] }">
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
             @foreach($existingMedia as $media)
-            <div
-                x-data="{ marked: false }"
-                class="relative group"
-            >
+            <div x-data="{ marked: false }" class="relative group">
                 {{-- Hidden delete input (only submitted when marked) --}}
                 <input type="hidden" name="delete_images[]" value="{{ $media->id }}" :disabled="!marked">
 
                 {{-- Image tile --}}
-                <div
-                    class="aspect-square rounded-xl overflow-hidden relative transition-all duration-200 cursor-pointer"
-                    :class="marked ? 'ring-2 ring-red-400 ring-offset-1' : 'ring-1 ring-[#E0E6ED]'"
-                    @click="marked = !marked"
-                >
-                    <img
-                        src="{{ $media->thumbnail_url ?? $media->url }}"
-                        alt=""
-                        class="w-full h-full object-cover transition-all duration-200"
-                        :class="marked ? 'opacity-30 scale-95' : ''"
-                        loading="lazy"
-                    >
+                <div class="aspect-square rounded-xl overflow-hidden relative transition-all duration-200"
+                     :class="marked ? 'ring-2 ring-red-400 ring-offset-1 opacity-40' : 'ring-1 ring-[#E0E6ED]'">
+                    <img src="{{ $media->thumbnail_url ?? $media->url }}" alt=""
+                         class="w-full h-full object-cover" loading="lazy">
 
-                    {{-- "Principale" badge on first --}}
                     @if($loop->first)
-                    <span
-                        x-show="!marked"
-                        class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-lg text-[9px] font-bold text-white backdrop-blur-sm"
-                        style="background:rgba(23,162,184,0.85);"
-                    >Principale</span>
+                    <span x-show="!marked" class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-lg text-[9px] font-bold text-white backdrop-blur-sm"
+                          style="background:rgba(23,162,184,0.85);">Principale</span>
                     @endif
-
-                    {{-- Delete overlay --}}
-                    <div
-                        x-show="marked"
-                        class="absolute inset-0 flex items-center justify-center"
-                        style="background:rgba(231,76,60,0.15);"
-                    >
-                        <div class="w-9 h-9 rounded-full flex items-center justify-center" style="background:rgba(231,76,60,0.9);">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </div>
-                    </div>
-
-                    {{-- Hover hint --}}
-                    <div
-                        x-show="!marked"
-                        class="absolute inset-0 flex items-end justify-center pb-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                        style="background:linear-gradient(to top, rgba(0,0,0,0.5), transparent);"
-                    >
-                        <span class="text-[10px] text-white font-medium">Cliquer pour supprimer</span>
-                    </div>
                 </div>
 
-                {{-- Status label --}}
-                <p
-                    class="text-[9px] text-center mt-1 font-medium transition-colors"
-                    :style="marked ? 'color:#E74C3C;' : 'color:#9BA8B7;'"
-                    x-text="marked ? 'À supprimer' : ''"
-                ></p>
+                {{-- Delete / Undo button --}}
+                <button type="button" @click="marked = !marked"
+                        class="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 z-10"
+                        :style="marked ? 'background:#27AE60; color:white;' : 'background:#E74C3C; color:white;'">
+                    <svg x-show="!marked" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    <svg x-show="marked" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                    </svg>
+                </button>
+
+                <p x-show="marked" class="text-[9px] text-center mt-1 font-semibold" style="color:#E74C3C;">A supprimer</p>
             </div>
             @endforeach
         </div>
-
-        <p class="text-[10px] mt-2" style="color:#9BA8B7;">
-            Cliquez sur une photo pour la marquer pour suppression
-        </p>
     </div>
 
     @if($maxNew > 0)
