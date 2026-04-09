@@ -14,6 +14,8 @@ class Payment extends Model
         'amount_dzd',
         'method',
         'proof_path',
+        'stripe_session_id',
+        'stripe_payment_intent',
         'status',
         'rejection_reason',
         'listing_id',

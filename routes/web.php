@@ -129,6 +129,10 @@ Route::middleware('auth')->group(function () {
     Route::post('paiements/abonnement', [PaymentController::class, 'storeSubscriptionPayment'])->name('payments.subscription');
     Route::post('paiements/mediation', [PaymentController::class, 'storeMediationPayment'])->name('payments.mediation');
 
+    // Stripe
+    Route::post('paiements/stripe/annonce/{listing}', [PaymentController::class, 'stripeCheckout'])->name('payments.stripe.checkout');
+    Route::get('paiements/stripe/success', [PaymentController::class, 'stripeSuccess'])->name('payments.stripe.success');
+
     // Messages
     Route::get('messages', [ConversationController::class, 'index'])->name('conversations.index');
     Route::get('messages/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
@@ -144,6 +148,9 @@ Route::middleware('auth')->group(function () {
     Route::post('mediation/{ticket}/message', [MediationController::class, 'addMessage'])->name('mediation.message');
     Route::post('mediation/{ticket}/annuler', [MediationController::class, 'cancel'])->name('mediation.cancel');
 });
+
+// Stripe Webhook (exempt from CSRF)
+Route::post('stripe/webhook', [PaymentController::class, 'stripeWebhook'])->name('payments.stripe.webhook');
 
 // Public listing detail (must be after /annonces/creer to avoid wildcard conflict)
 Route::get('annonces/{listing}', [ListingController::class, 'show'])->name('listings.show');

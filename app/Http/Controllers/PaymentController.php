@@ -6,11 +6,16 @@ use App\Models\Listing;
 use App\Models\MediationTicket;
 use App\Models\Payment;
 use App\Models\Plan;
+use App\Models\Setting;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Stripe\Stripe;
+use Stripe\Checkout\Session as StripeSession;
+use Stripe\Webhook as StripeWebhook;
+use Stripe\Exception\SignatureVerificationException;
 
 class PaymentController extends Controller
 {
@@ -202,5 +207,180 @@ class PaymentController extends Controller
 
         return redirect()->route('mediation.index')
             ->with('success', __('messages.mediation_payment_submitted'));
+    }
+
+    // ─── STRIPE ─────────────────────────────────────────────────────────────
+
+    public function stripeCheckout(Listing $listing)
+    {
+        $this->authorize('update', $listing);
+
+        if (!in_array($listing->status, ['awaiting_payment', 'draft'])) {
+            return redirect()->route('listings.my')
+                ->with('error', __('messages.listing_already_paid'));
+        }
+
+        // Check for existing pending/approved Stripe payment
+        $existing = Payment::where('listing_id', $listing->id)
+            ->where('method', 'stripe')
+            ->whereIn('status', ['pending', 'approved'])
+            ->first();
+        if ($existing && $existing->status === 'approved') {
+            return redirect()->route('listings.my')
+                ->with('info', 'Votre annonce est déjà payée.');
+        }
+
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        $amountDzd = in_array($listing->category, ['boat', 'jetski']) ? 5000 : 0;
+
+        // Convert DZD → EUR using platform exchange rate
+        $rate = (float) (Setting::where('key', 'exchange_rate_eur_dzd')->value('value') ?: 238);
+        $amountEur = $rate > 0 ? round($amountDzd / $rate, 2) : 21.00;
+        $amountCents = max(50, (int) ($amountEur * 100)); // Stripe minimum: 50 cents
+
+        try {
+            $session = StripeSession::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency'     => 'eur',
+                        'unit_amount'  => $amountCents,
+                        'product_data' => [
+                            'name'        => 'Publication AlBabor — ' . $listing->title,
+                            'description' => 'Frais de publication (valable 365 jours) — AlBabor Marketplace',
+                        ],
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode'        => 'payment',
+                'success_url' => route('payments.stripe.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url'  => route('listings.payment', $listing),
+                'metadata'    => [
+                    'listing_id' => $listing->id,
+                    'user_id'    => Auth::id(),
+                    'type'       => 'publish_listing',
+                ],
+                'customer_email' => Auth::user()->email,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Stripe checkout creation failed', [
+                'listing_id' => $listing->id,
+                'error'      => $e->getMessage(),
+            ]);
+            return back()->with('error', 'Erreur Stripe : ' . $e->getMessage());
+        }
+
+        // Create pending payment record (no proof needed for Stripe)
+        Payment::updateOrCreate(
+            ['listing_id' => $listing->id, 'method' => 'stripe', 'status' => 'pending'],
+            [
+                'user_id'           => Auth::id(),
+                'type'              => 'publish_listing',
+                'amount_dzd'        => $amountDzd,
+                'stripe_session_id' => $session->id,
+            ]
+        );
+
+        return redirect($session->url, 303);
+    }
+
+    public function stripeSuccess(Request $request)
+    {
+        $sessionId = $request->get('session_id');
+
+        if (!$sessionId) {
+            return redirect()->route('listings.my')->with('error', 'Session de paiement invalide.');
+        }
+
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        try {
+            $session = StripeSession::retrieve($sessionId);
+        } catch (\Exception $e) {
+            Log::error('Stripe session retrieval failed', ['session_id' => $sessionId, 'error' => $e->getMessage()]);
+            return redirect()->route('listings.my')->with('error', 'Impossible de vérifier le paiement Stripe.');
+        }
+
+        if ($session->payment_status !== 'paid') {
+            return redirect()->route('listings.my')
+                ->with('error', 'Le paiement Stripe n\'a pas été complété.');
+        }
+
+        $payment = Payment::where('stripe_session_id', $sessionId)->first();
+
+        if (!$payment) {
+            Log::error('Stripe success: payment record not found', ['session_id' => $sessionId]);
+            return redirect()->route('listings.my')
+                ->with('error', 'Paiement introuvable — contactez le support.');
+        }
+
+        if ($payment->status === 'approved') {
+            return redirect()->route('listings.my')
+                ->with('success', 'Paiement déjà confirmé — votre annonce est en cours de vérification.');
+        }
+
+        $this->activateStripePayment($payment, $session->payment_intent ?? null);
+
+        return redirect()->route('listings.my')
+            ->with('success', '✅ Paiement Stripe confirmé ! Votre annonce est en cours de vérification par notre équipe.');
+    }
+
+    public function stripeWebhook(Request $request)
+    {
+        $payload       = $request->getContent();
+        $sigHeader     = $request->header('Stripe-Signature');
+        $webhookSecret = config('services.stripe.webhook_secret');
+
+        if ($webhookSecret) {
+            try {
+                $event = StripeWebhook::constructEvent($payload, $sigHeader, $webhookSecret);
+            } catch (SignatureVerificationException $e) {
+                Log::warning('Stripe webhook: invalid signature');
+                return response('Invalid signature', 400);
+            }
+        } else {
+            // No webhook secret configured — decode payload directly (dev only)
+            $event = json_decode($payload);
+        }
+
+        $type = is_object($event) ? $event->type : ($event['type'] ?? '');
+
+        if ($type === 'checkout.session.completed') {
+            $session = is_object($event) ? $event->data->object : ($event['data']['object'] ?? null);
+            if (!$session) return response('OK', 200);
+
+            $sessionId = is_object($session) ? $session->id : ($session['id'] ?? null);
+            $paymentIntent = is_object($session) ? ($session->payment_intent ?? null) : ($session['payment_intent'] ?? null);
+
+            $payment = Payment::where('stripe_session_id', $sessionId)->first();
+            if ($payment && $payment->status === 'pending') {
+                $this->activateStripePayment($payment, $paymentIntent);
+            }
+        }
+
+        return response('OK', 200);
+    }
+
+    private function activateStripePayment(Payment $payment, ?string $paymentIntent): void
+    {
+        $payment->update([
+            'status'                 => 'approved',
+            'approved_at'            => now(),
+            'stripe_payment_intent'  => $paymentIntent,
+        ]);
+
+        $listing = $payment->listing;
+        if ($listing && $payment->type === 'publish_listing') {
+            $listing->update([
+                'status'           => 'pending_review',
+                'published_until'  => now()->addDays(365),
+            ]);
+        }
+
+        Log::info('Stripe payment activated', [
+            'payment_id' => $payment->id,
+            'listing_id' => $payment->listing_id,
+        ]);
     }
 }

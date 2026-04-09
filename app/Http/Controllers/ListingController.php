@@ -466,8 +466,9 @@ class ListingController extends Controller
 
             $listing->load('media');
             $amount = $this->getPublishPrice($listing->category);
+            $exchangeRate = Setting::getExchangeRate();
 
-            return view('listings.payment', compact('listing', 'amount'));
+            return view('listings.payment', compact('listing', 'amount', 'exchangeRate'));
         } catch (\Throwable $e) {
             \Log::error('Payment page error: ' . $e->getMessage(), [
                 'listing_id' => $listing->id,
