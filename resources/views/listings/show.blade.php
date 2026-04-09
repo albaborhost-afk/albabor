@@ -63,6 +63,8 @@
                             imageCount: {{ $imageCount }},
                             images: @js($imageUrls),
                             transitioning: false,
+                            // Swipe/drag state
+                            dragStartX: 0, dragCurrentX: 0, dragging: false,
                             get currentImage() { return this.images[this.currentIndex] || ''; },
                             goTo(index) {
                                 if (index === this.currentIndex || this.transitioning) return;
@@ -73,18 +75,38 @@
                                 }, 200);
                             },
                             next() { this.goTo((this.currentIndex + 1) % this.imageCount); },
-                            prev() { this.goTo((this.currentIndex - 1 + this.imageCount) % this.imageCount); }
+                            prev() { this.goTo((this.currentIndex - 1 + this.imageCount) % this.imageCount); },
+                            // Touch swipe
+                            onTouchStart(e) { this.dragStartX = e.touches[0].clientX; this.dragging = true; },
+                            onTouchMove(e) { if (this.dragging) this.dragCurrentX = e.touches[0].clientX; },
+                            onTouchEnd() { this.finishDrag(); },
+                            // Mouse drag
+                            onMouseDown(e) { this.dragStartX = e.clientX; this.dragging = true; e.preventDefault(); },
+                            onMouseMove(e) { if (this.dragging) this.dragCurrentX = e.clientX; },
+                            onMouseUp() { this.finishDrag(); },
+                            finishDrag() {
+                                if (!this.dragging) return;
+                                this.dragging = false;
+                                const diff = this.dragStartX - this.dragCurrentX;
+                                const threshold = 50;
+                                if (diff > threshold) this.next();
+                                else if (diff < -threshold) this.prev();
+                                this.dragStartX = 0; this.dragCurrentX = 0;
+                            }
                          }">
 
                         @if($hasImages)
                             {{-- Main image --}}
-                            <div class="relative overflow-hidden cursor-pointer aspect-video sm:aspect-[4/3]" style="touch-action: manipulation;"
-                                 @click="openLightbox(currentIndex)">
+                            <div class="relative overflow-hidden cursor-grab active:cursor-grabbing aspect-video sm:aspect-[4/3] select-none"
+                                 @touchstart="onTouchStart($event)" @touchmove="onTouchMove($event)" @touchend="onTouchEnd()"
+                                 @mousedown="onMouseDown($event)" @mousemove="onMouseMove($event)" @mouseup="onMouseUp()" @mouseleave="onMouseUp()"
+                                 @click="if(!dragging && Math.abs(dragStartX - dragCurrentX) < 10) openLightbox(currentIndex)">
                                 <img :src="currentImage"
                                      alt="{{ $listing->title }}"
-                                     class="listing-gallery-main-img w-full h-full object-cover transition-all duration-500 ease-out"
+                                     draggable="false"
+                                     class="listing-gallery-main-img w-full h-full object-cover transition-all duration-500 ease-out pointer-events-none"
                                      :class="{ 'opacity-0 scale-95': transitioning, 'opacity-100 scale-100': !transitioning }"
-                                     style="will-change: transform, opacity; touch-action: manipulation;">
+                                     style="will-change: transform, opacity;">
 
                                 {{-- Bottom gradient overlay --}}
                                 <div class="absolute inset-x-0 bottom-0 h-24 pointer-events-none" style="background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);"></div>
