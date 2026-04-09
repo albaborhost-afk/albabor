@@ -230,8 +230,6 @@ class PaymentController extends Controller
                 ->with('info', 'Votre annonce est déjà payée.');
         }
 
-        Stripe::setApiKey(config('services.stripe.secret'));
-
         $amountDzd = in_array($listing->category, ['boat', 'jetski']) ? 5000 : 0;
 
         // Convert DZD → EUR using platform exchange rate
@@ -240,46 +238,45 @@ class PaymentController extends Controller
         $amountCents = max(50, (int) ($amountEur * 100)); // Stripe minimum: 50 cents
 
         try {
-            $session = StripeSession::create([
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'price_data' => [
-                        'currency'     => 'eur',
-                        'unit_amount'  => $amountCents,
-                        'product_data' => [
-                            'name'        => 'Publication AlBabor — ' . $listing->title,
-                            'description' => 'Frais de publication (valable 365 jours) — AlBabor Marketplace',
-                        ],
-                    ],
-                    'quantity' => 1,
-                ]],
-                'mode'        => 'payment',
-                'success_url' => route('payments.stripe.success') . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url'  => route('listings.payment', $listing),
-                'metadata'    => [
-                    'listing_id' => $listing->id,
-                    'user_id'    => Auth::id(),
-                    'type'       => 'publish_listing',
+            // Use Guzzle directly — Stripe SDK cURL client fails on Laravel Cloud
+            $client = new \GuzzleHttp\Client(['timeout' => 30, 'verify' => true]);
+            $response = $client->post('https://api.stripe.com/v1/checkout/sessions', [
+                'auth' => [config('services.stripe.secret'), ''],
+                'form_params' => [
+                    'payment_method_types[0]'              => 'card',
+                    'line_items[0][price_data][currency]'   => 'eur',
+                    'line_items[0][price_data][unit_amount]' => $amountCents,
+                    'line_items[0][price_data][product_data][name]' => 'Publication AlBabor — ' . $listing->title,
+                    'line_items[0][price_data][product_data][description]' => 'Frais de publication (valable 365 jours)',
+                    'line_items[0][quantity]'               => 1,
+                    'mode'                                  => 'payment',
+                    'success_url'                           => route('payments.stripe.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                    'cancel_url'                            => route('listings.payment', $listing),
+                    'metadata[listing_id]'                  => $listing->id,
+                    'metadata[user_id]'                     => Auth::id(),
+                    'metadata[type]'                        => 'publish_listing',
+                    'customer_email'                        => Auth::user()->email,
                 ],
-                'customer_email' => Auth::user()->email,
             ]);
-            // Create pending payment record (no proof needed for Stripe)
+
+            $session = json_decode($response->getBody(), true);
+
+            // Create pending payment record
             Payment::updateOrCreate(
                 ['listing_id' => $listing->id, 'method' => 'stripe', 'status' => 'pending'],
                 [
                     'user_id'           => Auth::id(),
                     'type'              => 'publish_listing',
                     'amount_dzd'        => $amountDzd,
-                    'stripe_session_id' => $session->id,
+                    'stripe_session_id' => $session['id'],
                 ]
             );
 
-            return redirect($session->url, 303);
+            return redirect($session['url'], 303);
         } catch (\Exception $e) {
             Log::error('Stripe checkout failed', [
                 'listing_id' => $listing->id,
                 'error'      => $e->getMessage(),
-                'trace'      => $e->getTraceAsString(),
             ]);
             return back()->with('error', 'Erreur Stripe : ' . $e->getMessage());
         }
