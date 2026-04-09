@@ -672,17 +672,6 @@
                         {{-- Action Buttons --}}
                         <div class="p-5 space-y-3">
                             @auth
-                                {{-- Favorite Button --}}
-                                <form action="{{ route('favorites.toggle', $listing) }}" method="POST">
-                                    @csrf
-                                    @php $isFavorited = auth()->user()->hasFavorited($listing) ?? false; @endphp
-                                    <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5"
-                                            style="{{ $isFavorited ? 'background: rgba(255,107,107,0.08); color: #FF6B6B; border: 1.5px solid rgba(255,107,107,0.25); box-shadow: 0 2px 8px rgba(255,107,107,0.1);' : 'background: white; color: #6B7B8D; border: 1.5px solid #E0E6ED;' }}">
-                                        <svg class="w-5 h-5" fill="{{ $isFavorited ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                                        {{ $isFavorited ? __('Retirer des favoris') : __('Ajouter aux favoris') }}
-                                    </button>
-                                </form>
-
                                 @if(auth()->id() !== $listing->user_id)
                                     {{-- Direct Message — pre-filled like Facebook Marketplace --}}
                                     <div class="mb-3">
@@ -742,6 +731,17 @@
                                         @endif
                                     @endif
                                 @endif
+
+                                {{-- Favorite Button --}}
+                                <form action="{{ route('favorites.toggle', $listing) }}" method="POST">
+                                    @csrf
+                                    @php $isFavorited = auth()->user()->hasFavorited($listing) ?? false; @endphp
+                                    <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5"
+                                            style="{{ $isFavorited ? 'background: rgba(255,107,107,0.08); color: #FF6B6B; border: 1.5px solid rgba(255,107,107,0.25); box-shadow: 0 2px 8px rgba(255,107,107,0.1);' : 'background: white; color: #6B7B8D; border: 1.5px solid #E0E6ED;' }}">
+                                        <svg class="w-5 h-5" fill="{{ $isFavorited ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                        {{ $isFavorited ? __('Retirer des favoris') : __('Ajouter aux favoris') }}
+                                    </button>
+                                </form>
                             @else
                                 <div class="text-center py-5">
                                     <div class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4" style="background: linear-gradient(135deg, rgba(27,79,114,0.06), rgba(23,162,184,0.08));">
