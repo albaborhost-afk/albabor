@@ -143,22 +143,10 @@
                     </form>
                 </div>
 
-                @php
-                    $initialMessages = json_encode(
-                        $conversation->messages->map(fn($m) => [
-                            'id'         => $m->id,
-                            'body'       => $m->body,
-                            'sender_id'  => $m->sender_id,
-                            'sender'     => $m->sender ? ['name' => $m->sender->name] : null,
-                            'created_at' => $m->created_at->toIso8601String(),
-                        ]),
-                        JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE
-                    );
-                @endphp
                 <script>
                 function chatRoom() {
                     return {
-                        messages: {!! $initialMessages !!},
+                        messages: {!! $messagesJson !!},
                         currentUserId: {{ auth()->id() }},
                         newMessage: '',
                         sending: false,

@@ -6,6 +6,7 @@ use App\Models\Conversation;
 use App\Models\Listing;
 use App\Models\MediationTicket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ConversationController extends Controller
 {
@@ -50,12 +51,31 @@ class ConversationController extends Controller
 
     public function show(Request $request, Conversation $conversation)
     {
-        $this->authorize('view', $conversation);
+        try {
+            $this->authorize('view', $conversation);
 
-        $conversation->load(['listing.media', 'buyer', 'seller', 'messages.sender']);
-        $conversation->markAsReadFor($request->user());
+            $conversation->load(['listing.media', 'buyer', 'seller', 'messages.sender']);
+            $conversation->markAsReadFor($request->user());
 
-        return view('conversations.show', compact('conversation'));
+            $messagesJson = $conversation->messages->map(fn ($m) => [
+                'id'         => $m->id,
+                'body'       => $m->body,
+                'sender_id'  => $m->sender_id,
+                'sender'     => $m->sender ? ['name' => $m->sender->name] : null,
+                'created_at' => $m->created_at?->toISOString(),
+            ])->toJson(JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
+
+            return view('conversations.show', compact('conversation', 'messagesJson'));
+        } catch (\Throwable $e) {
+            Log::error('Conversation show error', [
+                'conversation_id' => $conversation->id,
+                'user_id' => $request->user()?->id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
     }
 
     public function store(Request $request, Listing $listing)
