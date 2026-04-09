@@ -201,7 +201,7 @@
                                         </svg>
                                         {{ __('Filtres') }}
                                     </h3>
-                                    @if(request()->anyFilled(['q', 'category', 'wilaya', 'etat', 'type_offre', 'currency', 'price_min', 'price_max']))
+                                    @if(request()->anyFilled(['q', 'category', 'wilaya', 'etat', 'type_offre', 'currency', 'price_min', 'price_max', 'fabricant', 'year_min', 'year_max', 'length_min', 'length_max', 'power_min', 'power_max', 'engine_brand', 'cabins_min', 'berths_min']))
                                         <a href="{{ route('listings.index') }}" class="text-sm font-medium transition-colors" style="color: #17A2B8;">
                                             {{ __('Effacer tout') }}
                                         </a>
@@ -378,9 +378,125 @@
                                     </div>
                                 </div>
 
+                                <!-- Divider -->
+                                <div style="border-top: 1px solid #E0E6ED;" class="my-5"></div>
+
+                                <!-- Filtres avancés (collapsible) -->
+                                <div x-data="{ advancedOpen: {{ request()->anyFilled(['fabricant', 'year_min', 'year_max', 'length_min', 'length_max', 'power_min', 'power_max', 'engine_brand', 'cabins_min', 'berths_min']) ? 'true' : 'false' }} }">
+                                    <button type="button" @click="advancedOpen = !advancedOpen"
+                                            class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all hover:opacity-90 mb-4"
+                                            style="color: #17A2B8; border-color: #17A2B8; background: rgba(23, 162, 184, 0.05);">
+                                        <svg class="w-4 h-4 mr-2 transition-transform duration-200" :class="advancedOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                        {{ __('Filtres avancés') }}
+                                    </button>
+
+                                    <div x-show="advancedOpen" x-collapse x-cloak class="space-y-4">
+                                        <!-- Fabricant -->
+                                        <div>
+                                            <label class="block text-[11px] font-semibold uppercase tracking-wider mb-2" style="color: #6B7B8D;">{{ __('Fabricant') }}</label>
+                                            <input type="text"
+                                                   name="fabricant"
+                                                   value="{{ request('fabricant') }}"
+                                                   placeholder="Ex: Yamaha, Beneteau..."
+                                                   class="glass-input w-full py-3 px-4 rounded-xl focus:outline-none transition-all duration-200 text-sm">
+                                        </div>
+
+                                        <!-- Année -->
+                                        <div>
+                                            <label class="block text-[11px] font-semibold uppercase tracking-wider mb-2" style="color: #6B7B8D;">{{ __('Année') }}</label>
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <input type="number"
+                                                       name="year_min"
+                                                       value="{{ request('year_min') }}"
+                                                       placeholder="{{ __('De') }}"
+                                                       min="1950"
+                                                       max="{{ date('Y') + 1 }}"
+                                                       class="glass-input w-full py-3 px-4 rounded-xl focus:outline-none transition-all duration-200 text-sm">
+                                                <input type="number"
+                                                       name="year_max"
+                                                       value="{{ request('year_max') }}"
+                                                       placeholder="{{ __('A') }}"
+                                                       min="1950"
+                                                       max="{{ date('Y') + 1 }}"
+                                                       class="glass-input w-full py-3 px-4 rounded-xl focus:outline-none transition-all duration-200 text-sm">
+                                            </div>
+                                        </div>
+
+                                        <!-- Longueur -->
+                                        <div>
+                                            <label class="block text-[11px] font-semibold uppercase tracking-wider mb-2" style="color: #6B7B8D;">{{ __('Longueur (m)') }}</label>
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <input type="number"
+                                                       name="length_min"
+                                                       value="{{ request('length_min') }}"
+                                                       placeholder="Min (m)"
+                                                       step="0.1"
+                                                       class="glass-input w-full py-3 px-4 rounded-xl focus:outline-none transition-all duration-200 text-sm">
+                                                <input type="number"
+                                                       name="length_max"
+                                                       value="{{ request('length_max') }}"
+                                                       placeholder="Max (m)"
+                                                       step="0.1"
+                                                       class="glass-input w-full py-3 px-4 rounded-xl focus:outline-none transition-all duration-200 text-sm">
+                                            </div>
+                                        </div>
+
+                                        <!-- Puissance moteur -->
+                                        <div>
+                                            <label class="block text-[11px] font-semibold uppercase tracking-wider mb-2" style="color: #6B7B8D;">{{ __('Puissance moteur (CV)') }}</label>
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <input type="number"
+                                                       name="power_min"
+                                                       value="{{ request('power_min') }}"
+                                                       placeholder="Min (CV)"
+                                                       class="glass-input w-full py-3 px-4 rounded-xl focus:outline-none transition-all duration-200 text-sm">
+                                                <input type="number"
+                                                       name="power_max"
+                                                       value="{{ request('power_max') }}"
+                                                       placeholder="Max (CV)"
+                                                       class="glass-input w-full py-3 px-4 rounded-xl focus:outline-none transition-all duration-200 text-sm">
+                                            </div>
+                                        </div>
+
+                                        <!-- Marque moteur -->
+                                        <div>
+                                            <label class="block text-[11px] font-semibold uppercase tracking-wider mb-2" style="color: #6B7B8D;">{{ __('Marque moteur') }}</label>
+                                            <input type="text"
+                                                   name="engine_brand"
+                                                   value="{{ request('engine_brand') }}"
+                                                   placeholder="Ex: Mercury, Volvo..."
+                                                   class="glass-input w-full py-3 px-4 rounded-xl focus:outline-none transition-all duration-200 text-sm">
+                                        </div>
+
+                                        <!-- Cabines minimum -->
+                                        <div>
+                                            <label class="block text-[11px] font-semibold uppercase tracking-wider mb-2" style="color: #6B7B8D;">{{ __('Cabines minimum') }}</label>
+                                            <input type="number"
+                                                   name="cabins_min"
+                                                   value="{{ request('cabins_min') }}"
+                                                   placeholder="Min cabines"
+                                                   min="0"
+                                                   class="glass-input w-full py-3 px-4 rounded-xl focus:outline-none transition-all duration-200 text-sm">
+                                        </div>
+
+                                        <!-- Couchettes minimum -->
+                                        <div>
+                                            <label class="block text-[11px] font-semibold uppercase tracking-wider mb-2" style="color: #6B7B8D;">{{ __('Couchettes minimum') }}</label>
+                                            <input type="number"
+                                                   name="berths_min"
+                                                   value="{{ request('berths_min') }}"
+                                                   placeholder="Min couchettes"
+                                                   min="0"
+                                                   class="glass-input w-full py-3 px-4 rounded-xl focus:outline-none transition-all duration-200 text-sm">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Apply Button -->
                                 <button type="submit"
-                                        class="w-full py-3.5 rounded-xl font-bold text-white transition-all duration-300 transform hover:-translate-y-0.5 gradient-primary"
+                                        class="w-full py-3.5 mt-5 rounded-xl font-bold text-white transition-all duration-300 transform hover:-translate-y-0.5 gradient-primary"
                                         style="box-shadow: 0 8px 25px rgba(27, 79, 114, 0.25);">
                                     <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -404,7 +520,7 @@
                                     {{ $listings->total() == 1 ? __('annonce trouvee') : __('annonces trouvees') }}
                                 </span>
                             </div>
-                            @if(request()->anyFilled(['q', 'category', 'wilaya', 'etat', 'type_offre', 'currency', 'price_min', 'price_max']))
+                            @if(request()->anyFilled(['q', 'category', 'wilaya', 'etat', 'type_offre', 'currency', 'price_min', 'price_max', 'fabricant', 'year_min', 'year_max', 'length_min', 'length_max', 'power_min', 'power_max', 'engine_brand', 'cabins_min', 'berths_min']))
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background: rgba(23, 162, 184, 0.1); color: #17A2B8;">
                                     {{ __('Filtres actifs') }}
                                 </span>
@@ -575,7 +691,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
             {{ __('Filtrer') }}
-            @if(request()->anyFilled(['q', 'category', 'wilaya', 'etat', 'type_offre', 'currency', 'price_min', 'price_max']))
+            @if(request()->anyFilled(['q', 'category', 'wilaya', 'etat', 'type_offre', 'currency', 'price_min', 'price_max', 'fabricant', 'year_min', 'year_max', 'length_min', 'length_max', 'power_min', 'power_max', 'engine_brand', 'cabins_min', 'berths_min']))
                 <span class="ml-2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold" style="background: rgba(255,255,255,0.3);">!</span>
             @endif
         </button>
@@ -655,7 +771,7 @@
                     <button type="submit" class="w-full py-3.5 rounded-xl font-bold text-white gradient-primary" style="box-shadow: 0 6px 20px rgba(27, 79, 114, 0.25);">
                         {{ __('Appliquer les filtres') }}
                     </button>
-                    @if(request()->anyFilled(['q', 'category', 'wilaya', 'etat', 'type_offre', 'currency', 'price_min', 'price_max']))
+                    @if(request()->anyFilled(['q', 'category', 'wilaya', 'etat', 'type_offre', 'currency', 'price_min', 'price_max', 'fabricant', 'year_min', 'year_max', 'length_min', 'length_max', 'power_min', 'power_max', 'engine_brand', 'cabins_min', 'berths_min']))
                         <a href="{{ route('listings.index') }}" class="block w-full text-center mt-3 py-3 rounded-xl font-medium text-sm" style="color: #17A2B8;">
                             {{ __('Effacer tous les filtres') }}
                         </a>

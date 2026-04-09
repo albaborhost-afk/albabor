@@ -60,6 +60,38 @@ class ListingController extends Controller
             $query->search($request->q);
         }
 
+        // Advanced spec filters
+        if ($request->filled('fabricant')) {
+            $query->whereRaw("json_extract(specs, '$.general.fabricant') LIKE ?", ['%' . $request->fabricant . '%']);
+        }
+        if ($request->filled('year_min')) {
+            $query->whereRaw("json_extract(specs, '$.general.annee_construction') >= ?", [(int) $request->year_min]);
+        }
+        if ($request->filled('year_max')) {
+            $query->whereRaw("json_extract(specs, '$.general.annee_construction') <= ?", [(int) $request->year_max]);
+        }
+        if ($request->filled('length_min')) {
+            $query->whereRaw("json_extract(specs, '$.dimensions.longueur') >= ?", [(float) $request->length_min]);
+        }
+        if ($request->filled('length_max')) {
+            $query->whereRaw("json_extract(specs, '$.dimensions.longueur') <= ?", [(float) $request->length_max]);
+        }
+        if ($request->filled('power_min')) {
+            $query->whereRaw("json_extract(specs, '$.motorisation.puissance_totale') >= ?", [(int) $request->power_min]);
+        }
+        if ($request->filled('power_max')) {
+            $query->whereRaw("json_extract(specs, '$.motorisation.puissance_totale') <= ?", [(int) $request->power_max]);
+        }
+        if ($request->filled('engine_brand')) {
+            $query->whereRaw("json_extract(specs, '$.motorisation.marque_moteur') LIKE ?", ['%' . $request->engine_brand . '%']);
+        }
+        if ($request->filled('cabins_min')) {
+            $query->whereRaw("json_extract(specs, '$.amenagements.nombre_cabines') >= ?", [(int) $request->cabins_min]);
+        }
+        if ($request->filled('berths_min')) {
+            $query->whereRaw("json_extract(specs, '$.amenagements.nombre_couchettes') >= ?", [(int) $request->berths_min]);
+        }
+
         // Sorting
         $sort = $request->get('sort', 'recent');
         switch ($sort) {
