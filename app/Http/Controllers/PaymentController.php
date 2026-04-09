@@ -290,16 +290,19 @@ class PaymentController extends Controller
             return redirect()->route('listings.my')->with('error', 'Session de paiement invalide.');
         }
 
-        Stripe::setApiKey(config('services.stripe.secret'));
-
         try {
-            $session = StripeSession::retrieve($sessionId);
+            // Use Guzzle — Stripe SDK cURL client fails on Laravel Cloud
+            $client = new \GuzzleHttp\Client(['timeout' => 30]);
+            $response = $client->get("https://api.stripe.com/v1/checkout/sessions/{$sessionId}", [
+                'auth' => [config('services.stripe.secret'), ''],
+            ]);
+            $session = json_decode($response->getBody(), true);
         } catch (\Exception $e) {
             Log::error('Stripe session retrieval failed', ['session_id' => $sessionId, 'error' => $e->getMessage()]);
             return redirect()->route('listings.my')->with('error', 'Impossible de vérifier le paiement Stripe.');
         }
 
-        if ($session->payment_status !== 'paid') {
+        if (($session['payment_status'] ?? '') !== 'paid') {
             return redirect()->route('listings.my')
                 ->with('error', 'Le paiement Stripe n\'a pas été complété.');
         }
@@ -317,7 +320,7 @@ class PaymentController extends Controller
                 ->with('success', 'Paiement déjà confirmé — votre annonce est en cours de vérification.');
         }
 
-        $this->activateStripePayment($payment, $session->payment_intent ?? null);
+        $this->activateStripePayment($payment, $session['payment_intent'] ?? null);
 
         return redirect()->route('listings.my')
             ->with('success', '✅ Paiement Stripe confirmé ! Votre annonce est en cours de vérification par notre équipe.');
