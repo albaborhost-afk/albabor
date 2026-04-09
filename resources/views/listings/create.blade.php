@@ -287,11 +287,66 @@
                                 </div>
                             </div>
 
+                            {{-- Type de bateau (boat only) --}}
+                            <div x-show="category === 'boat'">
+                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Type de bateau</label>
+                                <select name="specs[general][type_bateau]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
+                                    <option value="">-- Choisir le type --</option>
+                                    <option value="Voilier" {{ old('specs.general.type_bateau') == 'Voilier' ? 'selected' : '' }}>⛵ Voilier</option>
+                                    <option value="Yacht" {{ old('specs.general.type_bateau') == 'Yacht' ? 'selected' : '' }}>🛥️ Yacht</option>
+                                    <option value="Bateau de pêche" {{ old('specs.general.type_bateau') == 'Bateau de pêche' ? 'selected' : '' }}>🎣 Bateau de pêche</option>
+                                    <option value="Semi-rigide (RIB)" {{ old('specs.general.type_bateau') == 'Semi-rigide (RIB)' ? 'selected' : '' }}>🚤 Semi-rigide (RIB)</option>
+                                    <option value="Pneumatique" {{ old('specs.general.type_bateau') == 'Pneumatique' ? 'selected' : '' }}>🚣 Pneumatique / Zodiac</option>
+                                    <option value="Catamaran" {{ old('specs.general.type_bateau') == 'Catamaran' ? 'selected' : '' }}>⛵ Catamaran</option>
+                                    <option value="Trimaran" {{ old('specs.general.type_bateau') == 'Trimaran' ? 'selected' : '' }}>⛵ Trimaran</option>
+                                    <option value="Vedette" {{ old('specs.general.type_bateau') == 'Vedette' ? 'selected' : '' }}>🛳️ Vedette / Cruiser</option>
+                                    <option value="Canot" {{ old('specs.general.type_bateau') == 'Canot' ? 'selected' : '' }}>🚣 Canot / Chaloupe</option>
+                                    <option value="Hors-bord open" {{ old('specs.general.type_bateau') == 'Hors-bord open' ? 'selected' : '' }}>🚤 Hors-bord open</option>
+                                    <option value="Bateau cabine" {{ old('specs.general.type_bateau') == 'Bateau cabine' ? 'selected' : '' }}>🛥️ Bateau cabine</option>
+                                    <option value="Autre" {{ old('specs.general.type_bateau') == 'Autre' ? 'selected' : '' }}>Autre</option>
+                                </select>
+                            </div>
+
+                            {{-- Jet-ski: type + nombre de places --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-show="category === 'jetski'">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Type de jet-ski</label>
+                                    <select name="specs[general][type_jetski]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
+                                        <option value="">-- Choisir --</option>
+                                        <option value="Stand-up" {{ old('specs.general.type_jetski') == 'Stand-up' ? 'selected' : '' }}>Stand-up</option>
+                                        <option value="Sit-down Runabout" {{ old('specs.general.type_jetski') == 'Sit-down Runabout' ? 'selected' : '' }}>Sit-down (Runabout)</option>
+                                        <option value="Crossover" {{ old('specs.general.type_jetski') == 'Crossover' ? 'selected' : '' }}>Crossover</option>
+                                        <option value="Touring" {{ old('specs.general.type_jetski') == 'Touring' ? 'selected' : '' }}>Touring</option>
+                                        <option value="Performance" {{ old('specs.general.type_jetski') == 'Performance' ? 'selected' : '' }}>Performance / Sport</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre de places</label>
+                                    <select name="specs[general][nombre_places]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
+                                        <option value="">-- Choisir --</option>
+                                        <option value="1" {{ old('specs.general.nombre_places') == '1' ? 'selected' : '' }}>1 place</option>
+                                        <option value="2" {{ old('specs.general.nombre_places') == '2' ? 'selected' : '' }}>2 places</option>
+                                        <option value="3" {{ old('specs.general.nombre_places') == '3' ? 'selected' : '' }}>3 places</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div x-show="category === 'parts'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Type de piece</label>
-                                    <input type="text" name="specs[general][part_type]" value="{{ old('specs.general.part_type') }}"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="Ex: Helice, Filtre...">
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Categorie de piece</label>
+                                    <select name="specs[general][part_type]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
+                                        <option value="">-- Categorie --</option>
+                                        <option value="Hélice & Transmission" {{ old('specs.general.part_type') == 'Hélice & Transmission' ? 'selected' : '' }}>🔩 Hélice & Transmission</option>
+                                        <option value="Électronique & Navigation" {{ old('specs.general.part_type') == 'Électronique & Navigation' ? 'selected' : '' }}>📡 Électronique & Navigation</option>
+                                        <option value="Accastillage" {{ old('specs.general.part_type') == 'Accastillage' ? 'selected' : '' }}>⚓ Accastillage</option>
+                                        <option value="Moteur & Mécanique" {{ old('specs.general.part_type') == 'Moteur & Mécanique' ? 'selected' : '' }}>⚙️ Moteur & Mécanique</option>
+                                        <option value="Sécurité & Survie" {{ old('specs.general.part_type') == 'Sécurité & Survie' ? 'selected' : '' }}>🦺 Sécurité & Survie</option>
+                                        <option value="Pontage & Sellerie" {{ old('specs.general.part_type') == 'Pontage & Sellerie' ? 'selected' : '' }}>🪑 Pontage & Sellerie</option>
+                                        <option value="Remorquage & Accessoires" {{ old('specs.general.part_type') == 'Remorquage & Accessoires' ? 'selected' : '' }}>🔗 Remorquage & Accessoires</option>
+                                        <option value="Coque & Structure" {{ old('specs.general.part_type') == 'Coque & Structure' ? 'selected' : '' }}>🚤 Coque & Structure</option>
+                                        <option value="Voilure & Gréement" {{ old('specs.general.part_type') == 'Voilure & Gréement' ? 'selected' : '' }}>⛵ Voilure & Gréement</option>
+                                        <option value="Autre" {{ old('specs.general.part_type') == 'Autre' ? 'selected' : '' }}>Autre</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Compatible avec</label>
@@ -463,12 +518,33 @@
                                     <input type="number" name="specs[motorisation][cylindree]" value="{{ old('specs.motorisation.cylindree') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="2670">
                                 </div>
+                                <div x-show="category === 'engine' || category === 'jetski'">
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre de cylindres</label>
+                                    <select name="specs[motorisation][nombre_cylindres]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
+                                        <option value="">-- Choisir --</option>
+                                        <option value="1" {{ old('specs.motorisation.nombre_cylindres') == '1' ? 'selected' : '' }}>1 cylindre</option>
+                                        <option value="2" {{ old('specs.motorisation.nombre_cylindres') == '2' ? 'selected' : '' }}>2 cylindres</option>
+                                        <option value="3" {{ old('specs.motorisation.nombre_cylindres') == '3' ? 'selected' : '' }}>3 cylindres</option>
+                                        <option value="4" {{ old('specs.motorisation.nombre_cylindres') == '4' ? 'selected' : '' }}>4 cylindres</option>
+                                        <option value="6" {{ old('specs.motorisation.nombre_cylindres') == '6' ? 'selected' : '' }}>6 cylindres</option>
+                                        <option value="8" {{ old('specs.motorisation.nombre_cylindres') == '8' ? 'selected' : '' }}>8 cylindres</option>
+                                    </select>
+                                </div>
+                                <div x-show="category === 'engine'">
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Refroidissement</label>
+                                    <select name="specs[motorisation][refroidissement]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
+                                        <option value="">-- Choisir --</option>
+                                        <option value="Eau de mer" {{ old('specs.motorisation.refroidissement') == 'Eau de mer' ? 'selected' : '' }}>Eau de mer</option>
+                                        <option value="Eau douce (circuit fermé)" {{ old('specs.motorisation.refroidissement') == 'Eau douce (circuit fermé)' ? 'selected' : '' }}>Eau douce (circuit fermé)</option>
+                                        <option value="Air" {{ old('specs.motorisation.refroidissement') == 'Air' ? 'selected' : '' }}>Air</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
                         {{-- Reservoirs (boat) --}}
                         <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-top: 4px solid #1ABC9C;"
-                             x-show="category === 'boat'"
+                             x-show="category === 'boat' || category === 'jetski'"
                              x-data="{
                                  nbRes: {{ old('specs.reservoirs.nombre_reservoirs', 1) }},
                                  carb:  {{ old('specs.reservoirs.reservoir_carburant', 0) }},
@@ -488,7 +564,7 @@
                             </h2>
 
                             <!-- Nombre de réservoirs -->
-                            <div class="mb-4">
+                            <div class="mb-4" x-show="category === 'boat'">
                                 <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre de reservoirs</label>
                                 <input type="number" name="specs[reservoirs][nombre_reservoirs]" x-model="nbRes"
                                        class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="1" min="1" max="10">
