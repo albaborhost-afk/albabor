@@ -135,7 +135,7 @@
                                   :disabled="sending"></textarea>
                         <button type="submit" :disabled="sending || !newMessage.trim()"
                                 class="px-6 py-3 rounded-xl text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 flex-shrink-0"
-                                :style="sending ? 'opacity:0.5;' : ''"
+                                :class="{ 'opacity-50': sending }"
                                 style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27,79,114,0.3);">
                             <span x-show="!sending">{{ __('messages.send') ?? 'Envoyer' }}</span>
                             <span x-show="sending">...</span>
