@@ -166,13 +166,6 @@
                         </span>
                     @endif
                 </div>
-                @if($listing->type_offre === 'negociable')
-                    <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style="background: rgba(23,162,184,0.08); color: #17A2B8;">{{ __('Neg.') }}</span>
-                @elseif($listing->type_offre === 'offert')
-                    <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style="background: rgba(39,174,96,0.08); color: #27AE60;">{{ __('Offert') }}</span>
-                @elseif($listing->type_offre === 'fix')
-                    <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style="background: rgba(27,79,114,0.08); color: #1B4F72;">{{ __('Fixe') }}</span>
-                @endif
             </div>
         </div>
     </a>

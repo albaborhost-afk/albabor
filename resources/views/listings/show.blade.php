@@ -218,19 +218,6 @@
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <span class="text-xs font-medium px-2.5 py-0.5 rounded-lg" style="color: #9BA8B7; background: rgba(155,168,183,0.08);">{{ $listing->formatted_converted_price }}</span>
 
-                                    @if($listing->type_offre)
-                                        @php $offreStyle = $typeOffreColors[$listing->type_offre] ?? ['bg' => '#f0f0f0', 'color' => '#666', 'border' => '#ddd']; @endphp
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-bold uppercase tracking-wide" style="background: {{ $offreStyle['bg'] }}; color: {{ $offreStyle['color'] }}; border: 1px solid {{ $offreStyle['border'] }};">
-                                            @if($listing->type_offre === 'negociable')
-                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                                            @elseif($listing->type_offre === 'fix')
-                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                                            @elseif($listing->type_offre === 'offert')
-                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
-                                            @endif
-                                            {{ $typeOffreLabels[$listing->type_offre] ?? '' }}
-                                        </span>
-                                    @endif
                                 </div>
                             </div>
                         </div>
