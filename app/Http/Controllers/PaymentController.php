@@ -263,26 +263,26 @@ class PaymentController extends Controller
                 ],
                 'customer_email' => Auth::user()->email,
             ]);
+            // Create pending payment record (no proof needed for Stripe)
+            Payment::updateOrCreate(
+                ['listing_id' => $listing->id, 'method' => 'stripe', 'status' => 'pending'],
+                [
+                    'user_id'           => Auth::id(),
+                    'type'              => 'publish_listing',
+                    'amount_dzd'        => $amountDzd,
+                    'stripe_session_id' => $session->id,
+                ]
+            );
+
+            return redirect($session->url, 303);
         } catch (\Exception $e) {
-            Log::error('Stripe checkout creation failed', [
+            Log::error('Stripe checkout failed', [
                 'listing_id' => $listing->id,
                 'error'      => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
             ]);
             return back()->with('error', 'Erreur Stripe : ' . $e->getMessage());
         }
-
-        // Create pending payment record (no proof needed for Stripe)
-        Payment::updateOrCreate(
-            ['listing_id' => $listing->id, 'method' => 'stripe', 'status' => 'pending'],
-            [
-                'user_id'           => Auth::id(),
-                'type'              => 'publish_listing',
-                'amount_dzd'        => $amountDzd,
-                'stripe_session_id' => $session->id,
-            ]
-        );
-
-        return redirect($session->url, 303);
     }
 
     public function stripeSuccess(Request $request)
