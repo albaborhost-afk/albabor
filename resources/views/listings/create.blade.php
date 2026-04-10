@@ -197,7 +197,7 @@
                             ] as $value => $cat)
                                 <label class="relative cursor-pointer">
                                     <input type="radio" name="category" value="{{ $value }}"
-                                           x-model="category" class="peer sr-only" required>
+                                           x-model="category" @change="if(category !== 'boat') boatType = ''" class="peer sr-only" required>
                                     <div class="category-card-{{ $value }}">
                                         <div class="checkmark absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
                                              style="background: #17A2B8; display: none; box-shadow: 0 2px 8px rgba(23,162,184,0.4);">
@@ -237,7 +237,8 @@
                         </h2>
                         <select name="type" x-model="boatType"
                                 class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                :required="category === 'boat'">
+                                :required="category === 'boat'"
+                                :disabled="category !== 'boat'"
                             <option value="">-- Choisir le type de bateau --</option>
                             @foreach(\App\Models\Listing::BOAT_TYPES as $slug => $label)
                                 <option value="{{ $slug }}" {{ old('type') == $slug ? 'selected' : '' }}>{{ $label }}</option>
@@ -306,26 +307,6 @@
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
-
-                            {{-- Type de bateau (boat only) --}}
-                            <div x-show="category === 'boat'">
-                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Type de bateau</label>
-                                <select name="specs[general][type_bateau]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                    <option value="">-- Choisir le type --</option>
-                                    <option value="Voilier" {{ old('specs.general.type_bateau') == 'Voilier' ? 'selected' : '' }}>⛵ Voilier</option>
-                                    <option value="Yacht" {{ old('specs.general.type_bateau') == 'Yacht' ? 'selected' : '' }}>🛥️ Yacht</option>
-                                    <option value="Bateau de pêche" {{ old('specs.general.type_bateau') == 'Bateau de pêche' ? 'selected' : '' }}>🎣 Bateau de pêche</option>
-                                    <option value="Semi-rigide (RIB)" {{ old('specs.general.type_bateau') == 'Semi-rigide (RIB)' ? 'selected' : '' }}>🚤 Semi-rigide (RIB)</option>
-                                    <option value="Pneumatique" {{ old('specs.general.type_bateau') == 'Pneumatique' ? 'selected' : '' }}>🚣 Pneumatique / Zodiac</option>
-                                    <option value="Catamaran" {{ old('specs.general.type_bateau') == 'Catamaran' ? 'selected' : '' }}>⛵ Catamaran</option>
-                                    <option value="Trimaran" {{ old('specs.general.type_bateau') == 'Trimaran' ? 'selected' : '' }}>⛵ Trimaran</option>
-                                    <option value="Vedette" {{ old('specs.general.type_bateau') == 'Vedette' ? 'selected' : '' }}>🛳️ Vedette / Cruiser</option>
-                                    <option value="Canot" {{ old('specs.general.type_bateau') == 'Canot' ? 'selected' : '' }}>🚣 Canot / Chaloupe</option>
-                                    <option value="Hors-bord open" {{ old('specs.general.type_bateau') == 'Hors-bord open' ? 'selected' : '' }}>🚤 Hors-bord open</option>
-                                    <option value="Bateau cabine" {{ old('specs.general.type_bateau') == 'Bateau cabine' ? 'selected' : '' }}>🛥️ Bateau cabine</option>
-                                    <option value="Autre" {{ old('specs.general.type_bateau') == 'Autre' ? 'selected' : '' }}>Autre</option>
-                                </select>
                             </div>
 
                             {{-- Jet-ski: type + nombre de places --}}

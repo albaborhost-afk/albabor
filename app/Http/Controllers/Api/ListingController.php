@@ -265,12 +265,11 @@ class ListingController extends Controller
             'category' => 'required|in:boat,jetski,engine,parts',
             'type' => ['nullable', 'string', function ($attribute, $value, $fail) use ($request) {
                 $category = $request->input('category');
-                $allowedTypes = Listing::CATEGORY_TYPES[$category] ?? [];
-                if ($category === 'boat' && empty($value)) {
+                if ($category !== 'boat') return; // type only applies to boats
+                if (empty($value)) {
                     $fail('Le type de bateau est requis.');
-                }
-                if (!empty($value) && !array_key_exists($value, $allowedTypes)) {
-                    $fail('Le type sélectionné n\'est pas valide pour cette catégorie.');
+                } elseif (!array_key_exists($value, Listing::BOAT_TYPES)) {
+                    $fail('Le type sélectionné n\'est pas valide.');
                 }
             }],
             'price_dzd' => 'required|numeric|min:0',
@@ -290,6 +289,11 @@ class ListingController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,webp,heic,heif|max:' . Listing::MAX_IMAGE_SIZE_KB,
             'video_url' => 'nullable|url|max:500',
         ]);
+
+        // Strip type for non-boat categories
+        if (($validated['category'] ?? '') !== 'boat') {
+            $validated['type'] = null;
+        }
 
         // Créer l'annonce
         $listing = Listing::create([
@@ -405,12 +409,11 @@ class ListingController extends Controller
             'category' => 'required|in:boat,jetski,engine,parts',
             'type' => ['nullable', 'string', function ($attribute, $value, $fail) use ($request) {
                 $category = $request->input('category');
-                $allowedTypes = Listing::CATEGORY_TYPES[$category] ?? [];
-                if ($category === 'boat' && empty($value)) {
+                if ($category !== 'boat') return; // type only applies to boats
+                if (empty($value)) {
                     $fail('Le type de bateau est requis.');
-                }
-                if (!empty($value) && !array_key_exists($value, $allowedTypes)) {
-                    $fail('Le type sélectionné n\'est pas valide pour cette catégorie.');
+                } elseif (!array_key_exists($value, Listing::BOAT_TYPES)) {
+                    $fail('Le type sélectionné n\'est pas valide.');
                 }
             }],
             'price_dzd' => 'required|numeric|min:0',
@@ -432,6 +435,11 @@ class ListingController extends Controller
             'delete_images.*' => 'integer|exists:listing_media,id',
             'video_url' => 'nullable|url|max:500',
         ]);
+
+        // Strip type for non-boat categories
+        if (($validated['category'] ?? '') !== 'boat') {
+            $validated['type'] = null;
+        }
 
         $listing->update([
             'title' => $validated['title'],
