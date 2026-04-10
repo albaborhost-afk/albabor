@@ -197,7 +197,7 @@
                             ] as $value => $cat)
                                 <label class="relative cursor-pointer">
                                     <input type="radio" name="category" value="{{ $value }}"
-                                           x-model="category" @change="if(category !== 'boat') boatType = ''" class="peer sr-only" required>
+                                           x-model="category" @change="if(category !== 'boat') boatType = ''; if(category === 'boat') $nextTick(() => { document.getElementById('boat-type-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) })" class="peer sr-only" required>
                                     <div class="category-card-{{ $value }}">
                                         <div class="checkmark absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
                                              style="background: #17A2B8; display: none; box-shadow: 0 2px 8px rgba(23,162,184,0.4);">
@@ -205,8 +205,8 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
                                             </svg>
                                         </div>
-                                        <div class="icon-bg w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-2 rounded-xl flex items-center justify-center" style="background: #F0F4F8; transition: all 0.3s;">
-                                            <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}" class="w-20 h-20 sm:w-24 sm:h-24 object-contain">
+                                        <div class="icon-bg w-16 h-16 sm:w-28 sm:h-28 mx-auto mb-2 rounded-xl flex items-center justify-center" style="background: #F0F4F8; transition: all 0.3s;">
+                                            <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}" class="w-14 h-14 sm:w-24 sm:h-24 object-contain">
                                         </div>
                                         <span class="label-text text-sm font-medium" style="color: #6B7B8D; display: block; transition: all 0.3s;">{{ $cat['label'] }}</span>
                                     </div>
@@ -228,7 +228,7 @@
                     </div>
 
                     {{-- Type de bateau (visible only when category is boat) --}}
-                    <div class="mt-4 bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);" x-show="category === 'boat'" x-transition>
+                    <div id="boat-type-section" class="mt-4 bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);" x-show="category === 'boat'" x-transition>
                         <h2 class="text-base font-semibold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
                             <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-bold" style="background: linear-gradient(135deg, #17A2B8, #48C9B0);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
@@ -238,7 +238,7 @@
                         <select name="type" x-model="boatType"
                                 class="glass-input w-full rounded-xl px-4 py-3 text-sm"
                                 :required="category === 'boat'"
-                                :disabled="category !== 'boat'"
+                                :disabled="category !== 'boat'">
                             <option value="">-- Choisir le type de bateau --</option>
                             @foreach(\App\Models\Listing::BOAT_TYPES as $slug => $label)
                                 <option value="{{ $slug }}" {{ old('type') == $slug ? 'selected' : '' }}>{{ $label }}</option>
