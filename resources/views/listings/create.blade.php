@@ -90,71 +90,67 @@
                     input[name="category"]:checked ~ div .label-text { font-weight: 800 !important; color: #17A2B8 !important; }
                 </style>
 
-                {{-- ===== PROGRESS BAR ===== --}}
-                <div class="bg-white rounded-2xl px-6 py-5 mb-5" style="box-shadow: 0 4px 15px rgba(0,0,0,0.06);">
-                    <div class="relative">
-                        {{-- Connector lines --}}
-                        <div class="absolute top-5 left-0 right-0 flex items-center" aria-hidden="true" style="padding: 0 20px;">
-                            <template x-for="i in 5" :key="i">
-                                <div class="flex-1 h-0.5 transition-colors duration-500"
-                                     :class="isStepCompleted(i) ? 'bg-[#17A2B8]' : 'bg-gray-200'">
-                                </div>
-                            </template>
-                        </div>
-                        {{-- Step circles --}}
-                        <div class="relative flex justify-between">
-                            <template x-for="(step, idx) in stepsList" :key="step.n">
-                                <div class="flex flex-col items-center" style="min-width: 0;">
-                                    <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold relative z-10 transition-all duration-300"
-                                         :class="isStepCompleted(step.n)
-                                            ? 'text-white shadow-md'
-                                            : isStepActive(step.n)
-                                                ? 'text-white shadow-lg scale-110'
-                                                : 'bg-gray-100 text-gray-400'"
-                                         :style="(isStepCompleted(step.n) || isStepActive(step.n)) ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8);' : ''">
-                                        <template x-if="isStepCompleted(step.n)">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                            </svg>
-                                        </template>
-                                        <template x-if="!isStepCompleted(step.n)">
-                                            <span x-text="idx + 1"></span>
-                                        </template>
-                                    </div>
-                                    <span class="text-[10px] mt-1.5 font-medium text-center leading-tight transition-colors hidden sm:block"
-                                          style="max-width: 60px;"
-                                          x-text="step.label"
-                                          :class="(isStepCompleted(step.n) || isStepActive(step.n)) ? 'text-[#17A2B8]' : 'text-gray-400'">
-                                    </span>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-                    {{-- Step counter --}}
-                    <div class="mt-4 pt-3 flex items-center justify-between" style="border-top: 1px solid #F0F4F8;">
-                        <span class="text-xs font-medium" style="color: #9BA8B7;">
-                            Etape <span x-text="visualStep" class="font-bold" style="color: #17A2B8;"></span>
-                            sur <span x-text="totalVisualSteps" class="font-bold" style="color: #1B2A4A;"></span>
-                        </span>
-                        <span class="text-xs font-semibold" style="color: #1B2A4A;" x-text="currentStepLabel"></span>
-                    </div>
-                </div>
+                {{-- ===== UNIFIED PROGRESS + CONTENT WRAPPER ===== --}}
+                <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 4px 20px rgba(0,0,0,0.07);">
 
-                {{-- Client-side step validation errors --}}
-                <div x-show="stepErrors.length > 0" x-transition
-                     class="bg-white rounded-2xl p-4 mb-4"
-                     style="border: 1.5px solid rgba(231, 76, 60, 0.35); box-shadow: 0 4px 12px rgba(231,76,60,0.08);">
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 mt-0.5 shrink-0" style="color: #E74C3C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <ul class="text-sm space-y-1" style="color: #E74C3C;">
-                            <template x-for="err in stepErrors" :key="err">
-                                <li x-text="err"></li>
-                            </template>
-                        </ul>
+                    {{-- Progress bar strip --}}
+                    <div class="px-5 pt-4 pb-3" style="background: linear-gradient(135deg, rgba(27,79,114,0.04), rgba(23,162,184,0.06));">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-1.5">
+                                <template x-for="(step, idx) in stepsList" :key="step.n">
+                                    <div class="flex items-center">
+                                        <div class="flex items-center justify-center rounded-full text-[11px] font-bold transition-all duration-300"
+                                             :class="isStepCompleted(step.n)
+                                                ? 'w-7 h-7 text-white'
+                                                : isStepActive(step.n)
+                                                    ? 'w-8 h-8 text-white shadow-md'
+                                                    : 'w-7 h-7 text-gray-400'"
+                                             :style="(isStepCompleted(step.n) || isStepActive(step.n))
+                                                ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8);'
+                                                : 'background: #EDF0F4;'">
+                                            <template x-if="isStepCompleted(step.n)">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            </template>
+                                            <template x-if="!isStepCompleted(step.n)">
+                                                <span x-text="idx + 1"></span>
+                                            </template>
+                                        </div>
+                                        <div x-show="idx < stepsList.length - 1"
+                                             class="h-0.5 transition-all duration-500"
+                                             :class="isStepCompleted(step.n) ? 'w-3 sm:w-5' : 'w-3 sm:w-5'"
+                                             :style="isStepCompleted(step.n) ? 'background:#17A2B8;' : 'background:#E0E6ED;'">
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full" style="background: linear-gradient(135deg, #1B4F72, #17A2B8); color: white;">
+                                <span x-text="visualStep"></span>/<span x-text="totalVisualSteps"></span>
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold" style="color: #1B2A4A;" x-text="currentStepLabel"></span>
+                        </div>
                     </div>
-                </div>
+
+                    {{-- Validation errors --}}
+                    <div x-show="stepErrors.length > 0" x-transition
+                         class="px-5 py-3" style="background: #FEF2F2; border-bottom: 1px solid rgba(231,76,60,0.15);">
+                        <div class="flex items-start gap-2">
+                            <svg class="w-4 h-4 mt-0.5 shrink-0" style="color: #E74C3C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <ul class="text-xs space-y-0.5" style="color: #E74C3C;">
+                                <template x-for="err in stepErrors" :key="err">
+                                    <li x-text="err"></li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+
+                    {{-- Step content area --}}
+                    <div class="p-0">
 
                 {{-- ===================================================== --}}
                 {{-- STEP 1 : Catégorie                                     --}}
@@ -167,16 +163,7 @@
                      x-transition:leave-start="opacity-100"
                      x-transition:leave-end="opacity-0">
 
-                    <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-top: 4px solid #17A2B8;">
-                        <h2 class="text-base font-semibold mb-4 flex items-center gap-3" style="color: #1B2A4A;">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center gradient-primary">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                            </div>
-                            <div>
-                                <span class="block">Categorie</span>
-                                <span class="block text-xs font-normal" style="color: #9BA8B7;">Choisissez le type d'annonce</span>
-                            </div>
-                        </h2>
+                    <div class="px-5 py-5">
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                             @foreach([
                                 'boat'   => ['label' => 'Bateau',  'img' => '/images/yacht.png'],
@@ -250,16 +237,7 @@
                      x-transition:leave-start="opacity-100"
                      x-transition:leave-end="opacity-0">
 
-                    <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-top: 4px solid #2471A3;">
-                        <h2 class="text-base font-semibold mb-4 flex items-center gap-3" style="color: #1B2A4A;">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #2471A3, #5DADE2);">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            </div>
-                            <div>
-                                <span class="block">Informations generales</span>
-                                <span class="block text-xs font-normal" style="color: #9BA8B7;">Details de base</span>
-                            </div>
-                        </h2>
+                    <div class="px-5 py-5">
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Titre de l'annonce *</label>
@@ -807,20 +785,7 @@
                      x-transition:leave-start="opacity-100"
                      x-transition:leave-end="opacity-0">
 
-                    <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 4px 20px rgba(0,0,0,0.07);">
-
-                        {{-- Section header --}}
-                        <div class="px-5 py-4 flex items-center gap-3" style="border-bottom: 1px solid #F0F4F8;">
-                            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #1B4F72, #17A2B8);">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            </div>
-                            <div>
-                                <p class="font-bold text-sm" style="color: #1B2A4A;">Prix & Etat</p>
-                                <p class="text-xs" style="color: #9BA8B7;">Tarif et condition de l'article</p>
-                            </div>
-                        </div>
-
-                        <div class="p-5 space-y-5">
+                    <div class="px-5 py-5 space-y-5">
 
                             {{-- ① DEVISE --}}
                             <div>
@@ -1006,7 +971,6 @@
                                 </div>
                             </div>
 
-                        </div>
                     </div>
                 </div>
 
@@ -1021,16 +985,7 @@
                      x-transition:leave-start="opacity-100"
                      x-transition:leave-end="opacity-0">
 
-                    <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-top: 4px solid #3498DB;">
-                        <h2 class="text-base font-semibold mb-4 flex items-center gap-3" style="color: #1B2A4A;">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #3498DB, #5DADE2);">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                            </div>
-                            <div>
-                                <span class="block">Contact</span>
-                                <span class="block text-xs font-normal" style="color: #9BA8B7;">Vos coordonnees</span>
-                            </div>
-                        </h2>
+                    <div class="px-5 py-5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {{-- WhatsApp --}}
                             <div data-old-phone="{{ old('numero_whatsapp', '') }}" x-data="{
@@ -1278,16 +1233,7 @@
                      x-transition:leave-start="opacity-100"
                      x-transition:leave-end="opacity-0">
 
-                    <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-top: 4px solid #9B59B6;">
-                        <h2 class="text-base font-semibold mb-4 flex items-center gap-3" style="color: #1B2A4A;">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #9B59B6, #BB8FCE);">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            </div>
-                            <div>
-                                <span class="block">Photos *</span>
-                                <span class="block text-xs font-normal" style="color: #9BA8B7;">La premiere photo sera la photo principale</span>
-                            </div>
-                        </h2>
+                    <div class="px-5 py-5">
                         <x-photo-uploader
                             input-name="images"
                             :max="20"
@@ -1318,19 +1264,19 @@
                 {{-- ===================================================== --}}
                 {{-- NAVIGATION BUTTONS                                     --}}
                 {{-- ===================================================== --}}
-                <div class="flex justify-between items-center pt-2">
+                <div class="flex justify-between items-center px-5 py-4" style="border-top: 1px solid #EDF0F4;">
                     <a href="{{ route('listings.my') }}"
-                       class="px-5 py-3 rounded-xl text-sm font-medium transition-all hover:bg-gray-50"
+                       class="px-4 py-2.5 rounded-xl text-xs font-medium transition-all hover:bg-gray-50"
                        style="color: #9BA8B7; border: 1.5px solid #E0E6ED;">
                         Annuler
                     </a>
 
-                    <div class="flex gap-3">
+                    <div class="flex gap-2">
                         {{-- Bouton Précédent --}}
                         <button type="button"
                                 x-show="currentStep > 1"
                                 @click="prevStep()"
-                                class="px-6 py-3 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5"
+                                class="px-5 py-2.5 rounded-xl text-xs font-semibold transition-all hover:-translate-y-0.5"
                                 style="border: 2px solid #17A2B8; color: #17A2B8; background: white;">
                             ← Precedent
                         </button>
@@ -1343,7 +1289,7 @@
                                 :class="currentStep === 1 && !category
                                     ? 'opacity-40 cursor-not-allowed'
                                     : 'hover:-translate-y-0.5 hover:shadow-lg'"
-                                class="px-8 py-3 rounded-xl text-white text-sm font-semibold transition-all"
+                                class="px-6 py-2.5 rounded-xl text-white text-xs font-semibold transition-all"
                                 style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27,79,114,0.3);">
                             Suivant →
                         </button>
@@ -1353,7 +1299,7 @@
                                 x-show="currentStep === 6"
                                 :disabled="submitting"
                                 :class="submitting ? 'opacity-50 cursor-wait' : ''"
-                                class="px-8 py-3 rounded-xl text-white text-sm font-semibold btn-gradient-animated"
+                                class="px-6 py-2.5 rounded-xl text-white text-xs font-semibold btn-gradient-animated"
                                 style="box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">
                             <span x-show="!submitting">Continuer vers le paiement</span>
                             <span x-show="submitting" class="flex items-center gap-2">
@@ -1363,6 +1309,9 @@
                         </button>
                     </div>
                 </div>
+
+                </div> {{-- End step content area --}}
+                </div> {{-- End unified wrapper --}}
 
             </form>
         </div>
