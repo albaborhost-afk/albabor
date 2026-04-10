@@ -32,7 +32,9 @@
 
             <form action="{{ route('listings.store') }}" method="POST" enctype="multipart/form-data"
                   x-data="listingForm()" novalidate
-                  @submit.prevent="submitForm($event)">
+                  @submit.prevent="submitForm($event)"
+                  @photos-processing.window="photosProcessing = true"
+                  @photos-ready.window="photosProcessing = false">
                 @csrf
 
                 <style>
@@ -1297,11 +1299,15 @@
                         {{-- Bouton Soumettre (dernier step) --}}
                         <button type="submit"
                                 x-show="currentStep === 6"
-                                :disabled="submitting"
-                                :class="submitting ? 'opacity-50 cursor-wait' : ''"
+                                :disabled="submitting || photosProcessing"
+                                :class="(submitting || photosProcessing) ? 'opacity-50 cursor-wait' : ''"
                                 class="px-6 py-2.5 rounded-xl text-white text-xs font-semibold btn-gradient-animated"
                                 style="box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">
-                            <span x-show="!submitting">Continuer vers le paiement</span>
+                            <span x-show="!submitting && !photosProcessing">Continuer vers le paiement</span>
+                            <span x-show="photosProcessing && !submitting" class="flex items-center gap-2">
+                                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                                Optimisation...
+                            </span>
                             <span x-show="submitting" class="flex items-center gap-2">
                                 <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                                 Envoi en cours...
@@ -1331,6 +1337,7 @@
                 mediationEnabled: {{ old('mediation_enabled') ? 'true' : 'false' }},
                 stepErrors: [],
                 submitting: false,
+                photosProcessing: false,
                 _saveTimer: null,
 
                 // ── Lifecycle: restore draft on init ──

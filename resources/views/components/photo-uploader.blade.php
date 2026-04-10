@@ -220,6 +220,33 @@
             </div>
         </div>
 
+        {{-- Processing overlay --}}
+        <div x-show="isProcessing" x-transition class="mt-3 rounded-2xl overflow-hidden" style="background: linear-gradient(135deg, #F8FBFF, #EDF5FF); border: 1.5px solid rgba(23,162,184,0.2);">
+            <div class="px-4 py-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="relative w-10 h-10 flex-shrink-0">
+                        <svg class="w-10 h-10 animate-spin" viewBox="0 0 40 40" fill="none">
+                            <circle cx="20" cy="20" r="17" stroke="#E0E6ED" stroke-width="3"/>
+                            <circle cx="20" cy="20" r="17" stroke="url(#prog-grad)" stroke-width="3" stroke-linecap="round"
+                                    :stroke-dasharray="'107'" :stroke-dashoffset="107 - (107 * progressPercent / 100)"/>
+                            <defs><linearGradient id="prog-grad" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#1B4F72"/><stop offset="1" stop-color="#17A2B8"/></linearGradient></defs>
+                        </svg>
+                        <span class="absolute inset-0 flex items-center justify-center text-[9px] font-bold" style="color:#1B4F72;" x-text="progressPercent + '%'"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold" style="color:#1B2A4A;">Optimisation des photos...</p>
+                        <p class="text-xs mt-0.5" style="color:#6B7B8D;">
+                            <span x-text="processedCount"></span> / <span x-text="totalToProcess"></span> photos traitees
+                        </p>
+                    </div>
+                </div>
+                <div class="w-full h-2 rounded-full overflow-hidden" style="background:#E0E6ED;">
+                    <div class="h-full rounded-full transition-all duration-300 ease-out"
+                         :style="'width:' + progressPercent + '%; background: linear-gradient(90deg, #1B4F72, #17A2B8);'"></div>
+                </div>
+            </div>
+        </div>
+
         {{-- Error messages --}}
         <template x-if="errors.length > 0">
             <div class="mt-2 space-y-1">
@@ -260,6 +287,9 @@ if (typeof photoUploader === 'undefined') {
             maxFiles: maxFiles,
             isRequired: isRequired,
             supportsManagedFiles: false,
+            isProcessing: false,
+            processedCount: 0,
+            totalToProcess: 0,
 
             get slotsLeft() {
                 return Math.max(0, this.maxFiles - this.files.length);
@@ -358,10 +388,10 @@ if (typeof photoUploader === 'undefined') {
             async addFiles(newFiles) {
                 this.errors = [];
                 const available = this.maxFiles - this.files.length;
-                let added = 0;
+                let toProcess = [];
 
                 for (const file of newFiles) {
-                    if (added >= available) {
+                    if (toProcess.length >= available) {
                         this.errors.push(`Limite de ${this.maxFiles} photo(s) atteinte.`);
                         break;
                     }
@@ -374,14 +404,31 @@ if (typeof photoUploader === 'undefined') {
                         this.errors.push(`"${file.name}" : format non supporté.`);
                         continue;
                     }
-                    // Compress before adding
+                    toProcess.push(file);
+                }
+
+                if (toProcess.length === 0) return;
+
+                this.isProcessing = true;
+                this.processedCount = 0;
+                this.totalToProcess = toProcess.length;
+                this.$dispatch('photos-processing');
+
+                for (const file of toProcess) {
                     const optimized = await this.compressImage(file);
                     const id = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random());
                     const preview = URL.createObjectURL(optimized);
                     this.files.push({ id, file: optimized, preview, size: optimized.size, name: file.name });
-                    added++;
+                    this.processedCount++;
                 }
+                this.isProcessing = false;
+                this.$dispatch('photos-ready');
                 this.syncInput();
+            },
+
+            get progressPercent() {
+                if (this.totalToProcess === 0) return 0;
+                return Math.round((this.processedCount / this.totalToProcess) * 100);
             },
 
             removeFile(index) {
