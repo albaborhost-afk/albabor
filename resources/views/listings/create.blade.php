@@ -40,8 +40,9 @@
 
                 <style>
                     /* ── Unified Design System ── */
-                    .create-form label,
-                    .create-form .field-label {
+                    .create-form .field-label,
+                    .create-form .space-y-4 > div > label,
+                    .create-form .grid > div > label {
                         font-family: 'Inter', sans-serif;
                         font-size: 11px;
                         font-weight: 600;
