@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.albabor.app.data.model.BOAT_TYPES
 import com.albabor.app.data.model.ListingFilters
 import com.albabor.app.ui.components.ListingCard
 import com.albabor.app.ui.components.LoadingGrid
@@ -69,6 +70,11 @@ private val categoryOptions = listOf(
     RadioOption(null, "Tous"), RadioOption("boat", "Bateaux"), RadioOption("jetski", "Jet-Skis"),
     RadioOption("engine", "Moteurs"), RadioOption("parts", "Pièces"),
 )
+
+private val boatTypeOptions: List<RadioOption> = buildList {
+    add(RadioOption(null, "Tous"))
+    BOAT_TYPES.forEach { (slug, label) -> add(RadioOption(slug, label)) }
+}
 
 private val conditionOptions = listOf(
     RadioOption(null, "Tous"), RadioOption("jamais_utilise", "Jamais utilisé"), RadioOption("comme_neuf", "Comme neuf"),
@@ -113,7 +119,7 @@ fun ExploreScreen(
 
     val activeCount = remember(filters) {
         listOfNotNull(
-            filters.category, filters.wilaya, filters.condition, filters.offerType,
+            filters.category, filters.type, filters.wilaya, filters.condition, filters.offerType,
             filters.minPrice, filters.maxPrice, filters.sortBy?.takeIf { it != "recent" }
         ).size
     }
@@ -172,7 +178,7 @@ fun ExploreScreen(
                             ListingCard(
                                 listing = listing,
                                 onClick = { navController.navigate(Screen.ListingDetail.route(listing.id)) },
-                                onFavorite = { /* TODO */ }
+                                onFavorite = { viewModel.toggleFavorite(listing.id) }
                             )
                         }
                     }
@@ -625,6 +631,7 @@ private fun FilterSheet(
     onDismiss: () -> Unit
 ) {
     var cat       by remember { mutableStateOf(currentFilters.category) }
+    var boatType  by remember { mutableStateOf(currentFilters.type) }
     var wilaya    by remember { mutableStateOf(currentFilters.wilaya) }
     var minP      by remember { mutableStateOf(currentFilters.minPrice?.toLong()?.toString() ?: "") }
     var maxP      by remember { mutableStateOf(currentFilters.maxPrice?.toLong()?.toString() ?: "") }
@@ -648,7 +655,7 @@ private fun FilterSheet(
             ) {
                 Text("Filtres", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = Gray900)
                 TextButton(onClick = {
-                    cat = null; wilaya = null; minP = ""; maxP = ""
+                    cat = null; boatType = null; wilaya = null; minP = ""; maxP = ""
                     cond = null; offer = null; sort = "recent"; wSearch = ""
                 }) {
                     Text("Effacer tout", color = Error500, fontWeight = FontWeight.SemiBold)
@@ -663,8 +670,26 @@ private fun FilterSheet(
                     .padding(horizontal = 20.dp, vertical = 14.dp),
                 verticalArrangement = Arrangement.spacedBy(22.dp)
             ) {
-                Section("Catégorie") { categoryOptions.forEach { RadioRow(it.label, cat == it.key) { cat = it.key } } }
+                Section("Catégorie") {
+                    categoryOptions.forEach { opt ->
+                        RadioRow(opt.label, cat == opt.key) {
+                            cat = opt.key
+                            // Reset boat type when switching away from "boat"
+                            if (opt.key != "boat") boatType = null
+                        }
+                    }
+                }
                 HorizontalDivider(color = Gray100)
+
+                // Boat type filter — only visible when "Bateaux" category is selected
+                if (cat == "boat") {
+                    Section("Type de bateau") {
+                        boatTypeOptions.forEach { opt ->
+                            RadioRow(opt.label, boatType == opt.key) { boatType = opt.key }
+                        }
+                    }
+                    HorizontalDivider(color = Gray100)
+                }
 
                 Section("Pays") {
                     OutlinedTextField(
@@ -720,7 +745,9 @@ private fun FilterSheet(
                 Button(
                     onClick = {
                         onApply(ListingFilters(
-                            search = currentFilters.search, category = cat, wilaya = wilaya,
+                            search = currentFilters.search, category = cat,
+                            type = if (cat == "boat") boatType else null,
+                            wilaya = wilaya,
                             minPrice = minP.toDoubleOrNull(), maxPrice = maxP.toDoubleOrNull(),
                             condition = cond, offerType = offer,
                             sortBy = sort.takeIf { it != "recent" }, page = 1

@@ -44,6 +44,16 @@ class CreateListingViewModel : ViewModel() {
     // ── Step 1 – Catégorie ────────────────────────────────────────────────────
 
     var category by mutableStateOf("")
+        // Public setter so we can reset type when category changes
+    var selectedType by mutableStateOf<String?>(null)
+
+    fun updateCategory(newCategory: String) {
+        category = newCategory
+        // Reset type when switching categories — only boats have types
+        if (newCategory != "boat") {
+            selectedType = null
+        }
+    }
 
     // ── Step 2 – Informations ─────────────────────────────────────────────────
 
@@ -125,7 +135,11 @@ class CreateListingViewModel : ViewModel() {
 
     /** Returns null if valid, or an error message string. */
     fun validateCurrentStep(): String? = when (step) {
-        1 -> if (category.isBlank()) "Veuillez sélectionner une catégorie" else null
+        1 -> when {
+            category.isBlank() -> "Veuillez sélectionner une catégorie"
+            category == "boat" && selectedType.isNullOrBlank() -> "Veuillez sélectionner un type de bateau"
+            else -> null
+        }
         2 -> when {
             title.isBlank()       -> "Le titre est obligatoire"
             description.isBlank() -> "La description est obligatoire"
@@ -214,6 +228,7 @@ class CreateListingViewModel : ViewModel() {
                     textPart("title", title.trim())
                     textPart("description", description.trim())
                     textPart("category", category)
+                    selectedType?.let { textPart("type", it) }
                     textPart("wilaya", wilaya)
                     textPart("ville", ville.trim())
                     textPart("etat", condition)

@@ -14,6 +14,16 @@ private fun String.ensureAbsoluteUrl(): String =
 private fun formatWholeAmount(value: Double): String =
     "%,.0f".format(value).replace(",", " ")
 
+/** Boat types: API slug → French label. Only boats have types for now. */
+val BOAT_TYPES: Map<String, String> = linkedMapOf(
+    "yacht"           to "Yacht",
+    "voilier_catamaran" to "Voilier / Catamaran",
+    "bateau_moteur"   to "Bateaux \u00e0 moteur",
+    "cabine_cruiser"  to "Cabine Cruiser",
+    "semi_rigide"     to "Semi-rigides (RIBs / Bateaux pneumatiques)",
+    "bateau_peche"    to "Bateaux de p\u00eache",
+)
+
 // ─── User ───────────────────────────────────────────────────────────────────
 
 data class User(
@@ -48,6 +58,7 @@ data class Listing(
     val currency: String = "DZD",        // "DZD" or "EUR"
     @SerializedName("converted_price") val convertedPrice: Double? = null,
     val category: String,                 // "boat" | "jetski" | "engine" | "parts"
+    val type: String? = null,             // boat type slug (only for category "boat")
     val status: String = "active",
     val wilaya: String?,
     @SerializedName(value = "media", alternate = ["images"]) val images: List<ListingImage> = emptyList(),
@@ -114,6 +125,9 @@ data class Listing(
             "parts"  -> "🔩"
             else     -> "📋"
         }
+
+    val typeLabel: String?
+        get() = type?.let { BOAT_TYPES[it] ?: it }
 
     val conditionLabel: String
         get() = when (condition) {
@@ -395,6 +409,7 @@ data class ToggleFavoriteResponse(
 data class ListingFilters(
     val search: String? = null,
     val category: String? = null,
+    val type: String? = null,        // boat type slug (only when category == "boat")
     val wilaya: String? = null,
     val currency: String? = null,
     val minPrice: Double? = null,
@@ -407,6 +422,7 @@ data class ListingFilters(
     fun toQueryMap(): Map<String, String> = buildMap {
         search?.let    { put("q", it) }
         category?.let  { put("category", it) }
+        type?.let      { put("type", it) }
         wilaya?.let    { put("wilaya", it) }
         currency?.let  { put("currency", it) }
         minPrice?.let  { put("price_min", it.toString()) }

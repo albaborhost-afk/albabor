@@ -473,6 +473,7 @@ private fun PriceHeroCard(listing: Listing) {
             ) {
                 val accent = categoryAccentColor(listing.category)
                 Pill("${listing.categoryIcon} ${listing.categoryLabel}", accent)
+                listing.typeLabel?.let { Pill(it, OceanBlue500, Icons.Default.Sailing) }
                 listing.condition?.let { Pill(listing.conditionLabel, conditionColor(it)) }
                 if (listing.remarqueEchange == "accepte") Pill("Échange accepté", SafetyGreen, Icons.Default.SwapHoriz)
                 listing.wilaya?.let { Pill(it, Coral500, Icons.Default.LocationOn) }

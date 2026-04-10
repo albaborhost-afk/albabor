@@ -39,6 +39,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.albabor.app.data.model.BOAT_TYPES
 import com.albabor.app.ui.theme.*
 import com.albabor.app.viewmodel.CreateListingViewModel
 import com.albabor.app.viewmodel.SubmitState
@@ -400,11 +401,83 @@ private fun Step1Category(vm: CreateListingViewModel) {
                         CategoryCard(
                             item       = cat,
                             isSelected = vm.category == cat.key,
-                            onSelect   = { vm.category = cat.key },
+                            onSelect   = { vm.updateCategory(cat.key) },
                             modifier   = Modifier.weight(1f)
                         )
                     }
                     if (row.size == 1) Spacer(Modifier.weight(1f))
+                }
+            }
+        }
+
+        // ── Boat type selector (only when "boat" is selected) ────────────
+        AnimatedVisibility(
+            visible = vm.category == "boat",
+            enter   = fadeIn(tween(300)) + expandVertically(tween(300)),
+            exit    = fadeOut(tween(200)) + shrinkVertically(tween(200))
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text       = "Type de bateau *",
+                    style      = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color      = Gray900
+                )
+                Text(
+                    text  = "Sélectionnez le type qui correspond le mieux",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Gray500
+                )
+
+                val boatTypes = BOAT_TYPES.toList()  // List<Pair<String, String>>
+                val rows = boatTypes.chunked(2)
+                rows.forEach { row ->
+                    Row(
+                        modifier              = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        row.forEach { (slug, label) ->
+                            val isSelected = vm.selectedType == slug
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable { vm.selectedType = slug },
+                                shape    = RoundedCornerShape(14.dp),
+                                color    = if (isSelected) OceanBlue700 else Color.White,
+                                border   = BorderStroke(
+                                    if (isSelected) 2.dp else 1.dp,
+                                    if (isSelected) OceanBlue700 else Gray200
+                                ),
+                                shadowElevation = if (isSelected) 4.dp else 0.dp
+                            ) {
+                                Row(
+                                    Modifier
+                                        .padding(vertical = 13.dp, horizontal = 12.dp)
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment     = Alignment.CenterVertically
+                                ) {
+                                    if (isSelected) {
+                                        Icon(
+                                            Icons.Default.Check,
+                                            contentDescription = null,
+                                            tint     = Color.White,
+                                            modifier = Modifier.size(14.dp)
+                                        )
+                                        Spacer(Modifier.width(6.dp))
+                                    }
+                                    Text(
+                                        text       = label,
+                                        color      = if (isSelected) Color.White else Gray700,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        style      = MaterialTheme.typography.labelMedium,
+                                        textAlign  = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                        if (row.size == 1) Spacer(Modifier.weight(1f))
+                    }
                 }
             }
         }
