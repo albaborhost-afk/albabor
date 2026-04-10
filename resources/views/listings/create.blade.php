@@ -439,16 +439,25 @@
                                     <input type="number" step="0.01" name="specs[dimensions][largeur]" value="{{ old('specs.dimensions.largeur') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="2.30">
                                 </div>
-                                <div>
+                                <div x-data="{ unit: '{{ old('specs.dimensions.tonnage_unit', 'kg') }}' }">
                                     <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Tonnage</label>
-                                    <div class="flex gap-2">
+                                    <div class="flex items-stretch">
                                         <input type="number" step="0.01" name="specs[dimensions][tonnage]" value="{{ old('specs.dimensions.tonnage') }}"
-                                               class="glass-input w-full rounded-xl px-4 py-3 text-sm flex-1" placeholder="1500">
-                                        <select name="specs[dimensions][tonnage_unit]"
-                                                class="glass-input rounded-xl px-3 py-3 text-sm font-semibold" style="min-width: 70px;">
-                                            <option value="kg" {{ old('specs.dimensions.tonnage_unit', 'kg') === 'kg' ? 'selected' : '' }}>KG</option>
-                                            <option value="t" {{ old('specs.dimensions.tonnage_unit', 'kg') === 't' ? 'selected' : '' }}>T</option>
-                                        </select>
+                                               class="glass-input rounded-l-xl rounded-r-none px-4 py-3 text-sm flex-1" style="border-right: none;" placeholder="1500">
+                                        <input type="hidden" name="specs[dimensions][tonnage_unit]" :value="unit">
+                                        <div class="flex rounded-r-xl overflow-hidden" style="border: 1.5px solid #E0E6ED; border-left: none;">
+                                            <button type="button" @click="unit = 'kg'"
+                                                    class="px-3 py-2 text-xs font-bold transition-all duration-200"
+                                                    :style="unit === 'kg' ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8); color: white;' : 'background: #F8FAFC; color: #9BA8B7;'">
+                                                KG
+                                            </button>
+                                            <button type="button" @click="unit = 't'"
+                                                    class="px-3 py-2 text-xs font-bold transition-all duration-200"
+                                                    :style="unit === 't' ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8); color: white;' : 'background: #F8FAFC; color: #9BA8B7;'"
+                                                    style="border-left: 1px solid #E0E6ED;">
+                                                T
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div x-show="category === 'boat'">
