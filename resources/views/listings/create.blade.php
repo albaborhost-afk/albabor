@@ -13,18 +13,7 @@
                 }
             @endphp
 
-            {{-- Header --}}
-            <div class="mb-8 bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06); background: linear-gradient(135deg, rgba(27,79,114,0.03), rgba(23,162,184,0.03));">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center gradient-primary">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold" style="color: #1B2A4A;">Creer une annonce</h1>
-                        <p class="mt-1 text-sm" style="color: #6B7B8D;">Remplissez les informations de votre annonce etape par etape</p>
-                    </div>
-                </div>
-            </div>
+            {{-- Header removed for cleaner mobile experience --}}
 
             @if($errors->any())
                 <div class="bg-white rounded-2xl p-4 mb-6" style="border: 1px solid rgba(231, 76, 60, 0.3); box-shadow: 0 4px 12px rgba(231,76,60,0.08);">
