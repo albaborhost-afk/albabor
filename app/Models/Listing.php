@@ -15,6 +15,7 @@ class Listing extends Model
         'title',
         'description',
         'category',
+        'type',
         'price_dzd',
         'currency',
         'currency_label',
@@ -80,6 +81,21 @@ class Listing extends Model
     const REMARQUE_ECHANGE_LABELS = [
         'accepte' => 'Accepte l\'échange',
         'refuse' => 'N\'accepte pas l\'échange',
+    ];
+
+    // ---- Boat Types ----
+    const BOAT_TYPES = [
+        'yacht' => 'Yacht',
+        'voilier_catamaran' => 'Voilier / Catamaran',
+        'bateau_moteur' => 'Bateaux à moteur',
+        'cabine_cruiser' => 'Cabine Cruiser',
+        'semi_rigide' => 'Semi-rigides (RIBs / Bateaux pneumatiques)',
+        'bateau_peche' => 'Bateaux de pêche',
+    ];
+
+    // ---- Category Types map (extensible for future categories) ----
+    const CATEGORY_TYPES = [
+        'boat' => self::BOAT_TYPES,
     ];
 
     const PROPULSION_OPTIONS = ['Hors-Bord', 'In-bord'];
@@ -235,6 +251,16 @@ class Listing extends Model
             'parts' => 'Pièces détachées',
             default => $this->category,
         };
+    }
+
+    public function getTypeLabelAttribute(): ?string
+    {
+        if (!$this->type) {
+            return null;
+        }
+
+        $types = self::CATEGORY_TYPES[$this->category] ?? [];
+        return $types[$this->type] ?? $this->type;
     }
 
     public function getStatusLabelAttribute(): string

@@ -242,6 +242,14 @@
                                     {{ $categoryLabels[$listing->category] ?? ucfirst($listing->category) }}
                                 </span>
 
+                                {{-- Type (e.g. boat type) --}}
+                                @if($listing->type_label)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold" style="background: rgba(23, 162, 184, 0.1); color: #17A2B8; border: 1px solid rgba(23, 162, 184, 0.2);">
+                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                                        {{ $listing->type_label }}
+                                    </span>
+                                @endif
+
                                 {{-- Etat (Condition) --}}
                                 @if($listing->etat)
                                     @php $etatColor = $etatColors[$listing->etat] ?? '#6B7B8D'; @endphp
@@ -484,7 +492,12 @@
                         @foreach($tagSections as $tagKey => $tagInfo)
                             @php
                                 $tags = data_get($specs, "tags.{$tagKey}", []);
-                                $tags = is_array($tags) ? $tags : [];
+                                if (is_string($tags)) {
+                                    $tags = array_map('trim', explode(',', $tags));
+                                    $tags = array_values(array_filter($tags, fn($t) => $t !== ''));
+                                } elseif (!is_array($tags)) {
+                                    $tags = [];
+                                }
                             @endphp
                             @if(!empty($tags))
                                 <div class="{{ !$loop->first ? 'mt-5 pt-5' : '' }}" style="{{ !$loop->first ? 'border-top: 1px solid #E0E6ED;' : '' }}">

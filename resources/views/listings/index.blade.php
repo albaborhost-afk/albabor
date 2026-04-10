@@ -102,6 +102,18 @@
                             </select>
                             <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: #1E3A5F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </div>
+                        {{-- Type de bateau (visible when category=boat) --}}
+                        <div class="relative" id="typeFilterWrap" style="{{ request('category') === 'boat' ? '' : 'display:none;' }}">
+                            <select name="type" form="topFilterForm" onchange="this.form.submit()"
+                                    class="w-full appearance-none rounded-xl py-3 pl-4 pr-10 text-sm font-medium cursor-pointer border-0 focus:ring-2 focus:ring-blue-300 transition-all"
+                                    style="background: #DBEAFE; color: #1E3A5F;">
+                                <option value="">{{ __('Type de bateau') }}</option>
+                                @foreach(\App\Models\Listing::BOAT_TYPES as $slug => $label)
+                                    <option value="{{ $slug }}" {{ request('type') == $slug ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: #1E3A5F;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
                         {{-- État --}}
                         <div class="relative">
                             <select name="etat" form="topFilterForm" onchange="this.form.submit()"
@@ -838,6 +850,19 @@
                         priceMax.value = parts[1] || '';
                     }
                     form.submit();
+                });
+            }
+
+            // Show/hide type filter based on category
+            var categorySelect = form ? form.querySelector('select[name="category"]') : null;
+            var typeFilterWrap = document.getElementById('typeFilterWrap');
+            if (categorySelect && typeFilterWrap) {
+                categorySelect.addEventListener('change', function() {
+                    typeFilterWrap.style.display = this.value === 'boat' ? '' : 'none';
+                    if (this.value !== 'boat') {
+                        var typeSelect = typeFilterWrap.querySelector('select[name="type"]');
+                        if (typeSelect) typeSelect.value = '';
+                    }
                 });
             }
 

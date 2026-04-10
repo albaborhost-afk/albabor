@@ -42,6 +42,11 @@ class ListingController extends Controller
             $query->where('type_offre', $request->type_offre);
         }
 
+        // Type filter (e.g. boat type)
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
         // Price range
         if ($request->filled('price_min')) {
             $query->where('price_dzd', '>=', $request->price_min);
@@ -177,6 +182,16 @@ class ListingController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:5000',
             'category' => 'required|in:boat,jetski,engine,parts',
+            'type' => ['nullable', 'string', function ($attribute, $value, $fail) use ($request) {
+                $category = $request->input('category');
+                $allowedTypes = Listing::CATEGORY_TYPES[$category] ?? [];
+                if ($category === 'boat' && empty($value)) {
+                    $fail('Le type de bateau est requis.');
+                }
+                if (!empty($value) && !array_key_exists($value, $allowedTypes)) {
+                    $fail('Le type sélectionné n\'est pas valide pour cette catégorie.');
+                }
+            }],
             'price_dzd' => 'required|numeric|min:0',
             'currency' => 'required|in:DZD,EUR,OTHER',
             'currency_label' => 'nullable|string|max:10',
@@ -202,6 +217,7 @@ class ListingController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'],
             'category' => $validated['category'],
+            'type' => $validated['type'] ?? null,
             'price_dzd' => $validated['price_dzd'],
             'currency' => $validated['currency'],
             'currency_label' => $validated['currency'] === 'OTHER' ? ($validated['currency_label'] ?? null) : null,
@@ -318,6 +334,16 @@ class ListingController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:5000',
             'category' => 'required|in:boat,jetski,engine,parts',
+            'type' => ['nullable', 'string', function ($attribute, $value, $fail) use ($request) {
+                $category = $request->input('category');
+                $allowedTypes = Listing::CATEGORY_TYPES[$category] ?? [];
+                if ($category === 'boat' && empty($value)) {
+                    $fail('Le type de bateau est requis.');
+                }
+                if (!empty($value) && !array_key_exists($value, $allowedTypes)) {
+                    $fail('Le type sélectionné n\'est pas valide pour cette catégorie.');
+                }
+            }],
             'price_dzd' => 'required|numeric|min:0',
             'currency' => 'required|in:DZD,EUR,OTHER',
             'currency_label' => 'nullable|string|max:10',
@@ -343,6 +369,7 @@ class ListingController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'],
             'category' => $validated['category'],
+            'type' => $validated['type'] ?? null,
             'price_dzd' => $validated['price_dzd'],
             'currency' => $validated['currency'],
             'currency_label' => $validated['currency'] === 'OTHER' ? ($validated['currency_label'] ?? null) : null,

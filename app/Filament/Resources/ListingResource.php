@@ -124,7 +124,15 @@ class ListingResource extends Resource
                                                     ])
                                                     ->required()
                                                     ->native(false)
-                                                    ->live(),
+                                                    ->live()
+                                                    ->afterStateUpdated(fn (Forms\Set $set) => $set('type', null)),
+                                                Forms\Components\Select::make('type')
+                                                    ->label('Type de bateau')
+                                                    ->options(Listing::BOAT_TYPES)
+                                                    ->visible(fn (Forms\Get $get) => $get('category') === 'boat')
+                                                    ->required(fn (Forms\Get $get) => $get('category') === 'boat')
+                                                    ->native(false)
+                                                    ->placeholder('Selectionner le type...'),
                                                 Forms\Components\Select::make('etat')
                                                     ->label('Etat')
                                                     ->options(Listing::ETAT_LABELS)
@@ -661,6 +669,14 @@ class ListingResource extends Resource
                         default => $state,
                     }),
 
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Type')
+                    ->badge()
+                    ->color('gray')
+                    ->formatStateUsing(fn (?string $state): string => Listing::BOAT_TYPES[$state] ?? ($state ?? '-'))
+                    ->placeholder('-')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('price_dzd')
                     ->label('Prix')
                     ->formatStateUsing(function ($state, $record) {
@@ -829,6 +845,11 @@ class ListingResource extends Resource
                         'parts' => 'Pieces detachees',
                     ])
                     ->indicator('Categorie'),
+
+                Tables\Filters\SelectFilter::make('type')
+                    ->label('Type de bateau')
+                    ->options(Listing::BOAT_TYPES)
+                    ->indicator('Type'),
 
                 Tables\Filters\SelectFilter::make('etat')
                     ->label('Etat')

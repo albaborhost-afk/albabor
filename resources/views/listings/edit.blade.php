@@ -78,6 +78,29 @@
                     </div>
                 </div>
 
+                {{-- SECTION: Type de bateau (visible only when category is boat) --}}
+                <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);" x-show="category === 'boat'" x-transition>
+                    <h2 class="text-base font-semibold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
+                        <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-bold gradient-primary">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        </span>
+                        Type de bateau *
+                    </h2>
+                    <div>
+                        <select name="type" x-model="boatType"
+                                class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                :required="category === 'boat'">
+                            <option value="">-- Choisir le type --</option>
+                            @foreach(\App\Models\Listing::BOAT_TYPES as $slug => $label)
+                                <option value="{{ $slug }}" {{ old('type', $listing->type) == $slug ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('type')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 {{-- SECTION 2: Informations generales --}}
                 <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);" x-show="category" x-transition>
                     <h2 class="text-base font-semibold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
@@ -1024,6 +1047,7 @@
         function editForm() {
             return {
                 category: '{{ old('category', $listing->category) }}',
+                boatType: '{{ old('type', $listing->type ?? '') }}',
                 currency: '{{ old('currency', $listing->currency ?? 'DZD') }}',
                 hasRemorque: '{{ old('specs.extras.remorque', data_get($listing->specs, 'extras.remorque', '')) }}',
                 hasPort: '{{ old('specs.extras.place_au_port', data_get($listing->specs, 'extras.place_au_port', '')) }}',

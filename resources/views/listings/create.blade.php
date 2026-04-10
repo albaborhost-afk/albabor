@@ -8,7 +8,7 @@
                     if ($errors->has('images')) $startStep = 6;
                     elseif ($errors->hasAny(['numero_whatsapp', 'numero_mobile', 'contact_email', 'mediation_enabled'])) $startStep = 5;
                     elseif ($errors->hasAny(['wilaya', 'pays', 'visible_a', 'price_dzd', 'currency', 'type_offre', 'etat', 'remarque_echange'])) $startStep = 4;
-                    elseif ($errors->has('category')) $startStep = 1;
+                    elseif ($errors->hasAny(['category', 'type'])) $startStep = 1;
                     else $startStep = 2;
                 }
             @endphp
@@ -225,6 +225,27 @@
                                 Bateaux et Jet-skis : 5 000 DA de frais de publication. Moteurs et Pieces : gratuit avec abonnement.
                             </p>
                         @endif
+                    </div>
+
+                    {{-- Type de bateau (visible only when category is boat) --}}
+                    <div class="mt-4 bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);" x-show="category === 'boat'" x-transition>
+                        <h2 class="text-base font-semibold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-bold" style="background: linear-gradient(135deg, #17A2B8, #48C9B0);">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                            </span>
+                            Type de bateau *
+                        </h2>
+                        <select name="type" x-model="boatType"
+                                class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                :required="category === 'boat'">
+                            <option value="">-- Choisir le type de bateau --</option>
+                            @foreach(\App\Models\Listing::BOAT_TYPES as $slug => $label)
+                                <option value="{{ $slug }}" {{ old('type') == $slug ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('type')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 
@@ -1384,6 +1405,7 @@
             return {
                 currentStep: {{ $startStep ?? 1 }},
                 category: '{{ old('category', '') }}',
+                boatType: '{{ old('type', '') }}',
                 currency: '{{ old('currency', 'DZD') }}',
                 hasRemorque: '{{ old('specs.extras.remorque', '') }}',
                 hasPort: '{{ old('specs.extras.place_au_port', '') }}',
@@ -1416,6 +1438,7 @@
                         const state = {
                             _step: this.currentStep,
                             _category: this.category,
+                            _boatType: this.boatType,
                             _currency: this.currency,
                             _hasRemorque: this.hasRemorque,
                             _hasPort: this.hasPort,
@@ -1447,6 +1470,7 @@
 
                         // Restore Alpine reactive properties first (controls visibility)
                         if (state._category) this.category = state._category;
+                        if (state._boatType) this.boatType = state._boatType;
                         if (state._currency) this.currency = state._currency;
                         if (state._hasRemorque) this.hasRemorque = state._hasRemorque;
                         if (state._hasPort) this.hasPort = state._hasPort;
