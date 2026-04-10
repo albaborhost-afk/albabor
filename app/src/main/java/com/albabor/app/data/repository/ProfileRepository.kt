@@ -13,7 +13,7 @@ class ProfileRepository {
         val response = api.getProfile()
         if (!response.isSuccessful) throw Exception(response.errorMessage())
 
-        val body = response.body()!!
+        val body = response.body() ?: throw Exception("Empty response body")
         val stats = body.stats.orEmpty()
 
         body.user.copy(
@@ -30,7 +30,7 @@ class ProfileRepository {
 
     suspend fun updateProfile(name: String, phone: String): Result<User> = runCatching {
         val response = api.updateProfile(mapOf("name" to name, "phone" to phone))
-        if (response.isSuccessful) response.body()?.data!!
+        if (response.isSuccessful) response.body()?.data ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 
@@ -47,7 +47,7 @@ class ProfileRepository {
 
     suspend fun upgradeToVendor(): Result<User> = runCatching {
         val response = api.upgradeToVendor()
-        if (response.isSuccessful) response.body()?.data!!
+        if (response.isSuccessful) response.body()?.data ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 

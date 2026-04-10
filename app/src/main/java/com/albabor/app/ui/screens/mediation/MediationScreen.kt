@@ -86,7 +86,7 @@ private data class MediationTab(val key: String, val label: String)
 
 private val mediationTabs = listOf(
     MediationTab("all",         "Tous"),
-    MediationTab("open",        "Ouverts"),
+    MediationTab("new",         "Nouveaux"),
     MediationTab("in_progress", "En cours"),
     MediationTab("resolved",    "Resolus")
 )
@@ -381,9 +381,11 @@ private fun MediationEmptyState() {
 // ─── Status color helper ──────────────────────────────────────────────────────
 
 internal fun ticketStatusColors(status: String): Pair<Color, Color> = when (status) {
-    "open"        -> OceanBlue100 to OceanBlue700
-    "in_progress" -> Warning100  to Warning500
-    "resolved"    -> Success100  to Success500
-    "closed"      -> Gray100     to Gray500
-    else          -> Gray100     to Gray500
+    "new"              -> OceanBlue100 to OceanBlue700
+    "in_progress"      -> Warning100  to Warning500
+    "awaiting_payment" -> Warning100  to Warning500
+    "resolved"         -> Success100  to Success500
+    "closed"           -> Gray100     to Gray500
+    "cancelled"        -> Error100    to Error500
+    else               -> Gray100     to Gray500
 }

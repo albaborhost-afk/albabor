@@ -24,8 +24,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,7 +68,6 @@ import com.albabor.app.ui.screens.verification.VerificationScreen
 import com.albabor.app.ui.theme.Gray400
 import com.albabor.app.ui.theme.OceanBlue900
 import com.albabor.app.ui.theme.White
-import kotlinx.coroutines.runBlocking
 
 data class BottomNavItem(
     val screen: Screen,
@@ -79,14 +81,16 @@ fun AlBaborNavHost() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    // Check if user is logged in synchronously at startup only
-    val isLoggedIn = remember {
-        runBlocking {
-            TokenStore.get(context) != null
-        }
+    // Check if user is logged in asynchronously at startup
+    var isLoggedIn by remember { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(Unit) {
+        isLoggedIn = TokenStore.get(context) != null
     }
 
-    val startDestination = if (isLoggedIn) Screen.Home.route else Screen.Login.route
+    // Wait until token check completes before rendering navigation
+    val loggedIn = isLoggedIn ?: return
+
+    val startDestination = if (loggedIn) Screen.Home.route else Screen.Login.route
 
     val bottomNavItems = listOf(
         BottomNavItem(Screen.Home, "Accueil", Icons.Filled.Home, Icons.Outlined.Home),
@@ -114,7 +118,7 @@ fun AlBaborNavHost() {
                     currentRoute = currentRoute,
                     onNavigate = { item ->
                         if (item.screen == Screen.CreateListing) {
-                            if (isLoggedIn) {
+                            if (loggedIn) {
                                 navController.navigate(Screen.CreateListing.route)
                             } else {
                                 navController.navigate(Screen.Login.route)

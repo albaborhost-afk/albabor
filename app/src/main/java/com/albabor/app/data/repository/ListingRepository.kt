@@ -9,7 +9,7 @@ class ListingRepository {
 
     suspend fun getListings(filters: ListingFilters): Result<PaginatedResponse<Listing>> = runCatching {
         val response = api.getListings(filters.toQueryMap())
-        if (response.isSuccessful) response.body()!!
+        if (response.isSuccessful) response.body() ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 
@@ -22,7 +22,7 @@ class ListingRepository {
     suspend fun getListing(id: Int): Result<Listing> = runCatching {
         val response = api.getListing(id)
         if (response.isSuccessful) {
-            val body = response.body()!!
+            val body = response.body() ?: throw Exception("Empty response body")
             // Merge top-level is_favorited into the listing object
             body.listing.copy(isFavorited = body.isFavorited)
         } else throw Exception(response.errorMessage())
@@ -41,19 +41,19 @@ class ListingRepository {
 
     suspend fun markAsSold(id: Int): Result<Listing> = runCatching {
         val response = api.markAsSold(id)
-        if (response.isSuccessful) response.body()?.listing!!
+        if (response.isSuccessful) response.body()?.listing ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 
     suspend fun pauseListing(id: Int): Result<Listing> = runCatching {
         val response = api.pauseListing(id)
-        if (response.isSuccessful) response.body()?.listing!!
+        if (response.isSuccessful) response.body()?.listing ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 
     suspend fun reactivateListing(id: Int): Result<Listing> = runCatching {
         val response = api.reactivateListing(id)
-        if (response.isSuccessful) response.body()?.listing!!
+        if (response.isSuccessful) response.body()?.listing ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 }

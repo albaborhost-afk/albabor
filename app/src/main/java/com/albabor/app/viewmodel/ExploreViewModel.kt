@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.albabor.app.data.model.Listing
 import com.albabor.app.data.model.ListingFilters
+import com.albabor.app.data.repository.FavoriteRepository
 import com.albabor.app.data.repository.ListingRepository
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 @OptIn(FlowPreview::class)
 class ExploreViewModel : ViewModel() {
     private val repo = ListingRepository()
+    private val favRepo = FavoriteRepository()
 
     private val _filters = MutableStateFlow(ListingFilters())
     val filters: StateFlow<ListingFilters> = _filters.asStateFlow()
@@ -62,6 +64,19 @@ class ExploreViewModel : ViewModel() {
                 }
                 .onFailure { _error.value = it.message }
             _isLoading.value = false
+        }
+    }
+
+    fun toggleFavorite(listingId: Int) {
+        viewModelScope.launch {
+            favRepo.toggleFavorite(listingId)
+                .onSuccess { isFavorited ->
+                    // Update the listing's isFavorited state in the current list
+                    _listings.value = _listings.value.map { listing ->
+                        if (listing.id == listingId) listing.copy(isFavorited = isFavorited)
+                        else listing
+                    }
+                }
         }
     }
 

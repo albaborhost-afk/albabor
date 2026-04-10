@@ -13,21 +13,21 @@ class MediationRepository {
     suspend fun getTickets(): Result<List<MediationTicket>> = runCatching {
         val response = api.getMediationTickets()
         if (response.isSuccessful) {
-            val body = response.body()!!
+            val body = response.body() ?: throw Exception("Empty response body")
             (body.buyerTickets + body.sellerTickets).sortedByDescending { it.createdAt }
         } else throw Exception(response.errorMessage())
     }
 
     suspend fun getTicket(id: Int): Result<MediationTicket> = runCatching {
         val response = api.getMediationTicket(id)
-        if (response.isSuccessful) response.body()?.ticket!!
+        if (response.isSuccessful) response.body()?.ticket ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 
     /** listingId goes in the URL path; message is the opening message body. */
     suspend fun createTicket(listingId: Int, message: String): Result<MediationTicket> = runCatching {
         val response = api.createMediationTicket(listingId, mapOf("message" to message))
-        if (response.isSuccessful) response.body()?.ticket!!
+        if (response.isSuccessful) response.body()?.ticket ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 
@@ -51,13 +51,13 @@ class MediationRepository {
 
     suspend fun getConversation(id: Int): Result<Conversation> = runCatching {
         val response = api.getConversation(id)
-        if (response.isSuccessful) response.body()!!
+        if (response.isSuccessful) response.body() ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 
     suspend fun startConversation(listingId: Int, body: String): Result<Conversation> = runCatching {
         val response = api.startConversation(listingId, mapOf("body" to body))
-        if (response.isSuccessful) response.body()?.conversation!!
+        if (response.isSuccessful) response.body()?.conversation ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 
@@ -69,7 +69,7 @@ class MediationRepository {
 
     suspend fun sendConversationMessage(conversationId: Int, body: String): Result<ConversationMessage> = runCatching {
         val response = api.sendMessage(conversationId, mapOf("body" to body))
-        if (response.isSuccessful) response.body()!!
+        if (response.isSuccessful) response.body() ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 }

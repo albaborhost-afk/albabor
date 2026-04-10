@@ -30,15 +30,15 @@ class MediationViewModel : ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    // Tab filter: "all" | "open" | "in_progress" | "resolved"
+    // Tab filter: "all" | "new" | "in_progress" | "resolved"
     private val _activeTab = MutableStateFlow("all")
     val activeTab: StateFlow<String> = _activeTab.asStateFlow()
 
     val filteredTickets: List<MediationTicket>
         get() = when (_activeTab.value) {
-            "open"        -> _tickets.value.filter { it.status == "open" }
-            "in_progress" -> _tickets.value.filter { it.status == "in_progress" }
-            "resolved"    -> _tickets.value.filter { it.status == "resolved" || it.status == "closed" }
+            "new"         -> _tickets.value.filter { it.status == "new" }
+            "in_progress" -> _tickets.value.filter { it.status == "in_progress" || it.status == "awaiting_payment" }
+            "resolved"    -> _tickets.value.filter { it.status == "resolved" || it.status == "closed" || it.status == "cancelled" }
             else          -> _tickets.value
         }
 
