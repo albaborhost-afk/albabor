@@ -31,6 +31,7 @@
             @endif
 
             <form action="{{ route('listings.store') }}" method="POST" enctype="multipart/form-data"
+                  class="create-form"
                   x-data="listingForm()" novalidate
                   @submit.prevent="submitForm($event)"
                   @photos-processing.window="photosProcessing = true"
@@ -38,6 +39,58 @@
                 @csrf
 
                 <style>
+                    /* ── Unified Design System ── */
+                    .create-form label,
+                    .create-form .field-label {
+                        font-family: 'Inter', sans-serif;
+                        font-size: 11px;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        letter-spacing: 0.05em;
+                        color: #6B7B8D;
+                        margin-bottom: 6px;
+                        display: block;
+                    }
+                    .create-form input[type="text"],
+                    .create-form input[type="number"],
+                    .create-form input[type="email"],
+                    .create-form input[type="url"],
+                    .create-form input[type="tel"],
+                    .create-form select,
+                    .create-form textarea {
+                        font-family: 'Inter', sans-serif;
+                        font-size: 14px;
+                        font-weight: 400;
+                        color: #1B2A4A;
+                        background: #F8FAFC;
+                        border: 1.5px solid #E0E6ED;
+                        border-radius: 12px;
+                        padding: 10px 14px;
+                        width: 100%;
+                        transition: all 0.2s ease;
+                        outline: none;
+                    }
+                    .create-form input:focus,
+                    .create-form select:focus,
+                    .create-form textarea:focus {
+                        border-color: #17A2B8;
+                        box-shadow: 0 0 0 3px rgba(23,162,184,0.1);
+                        background: white;
+                    }
+                    .create-form input::placeholder,
+                    .create-form textarea::placeholder {
+                        color: #B0BEC5;
+                        font-weight: 400;
+                    }
+                    .create-form h2, .create-form h3,
+                    .create-form .section-title {
+                        font-family: 'Inter', sans-serif;
+                        color: #1B2A4A;
+                    }
+                    .create-form p, .create-form span {
+                        font-family: 'Inter', sans-serif;
+                    }
+
                     input[name="currency"]:checked + div {
                         border-color: #27AE60 !important;
                         background: linear-gradient(135deg, #E8F8F5 0%, #D5F4E6 100%) !important;
