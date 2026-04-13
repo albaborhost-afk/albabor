@@ -259,6 +259,20 @@
                         @endif
                     </div>
 
+                    {{-- Avertissement abonnement requis (Moteur / Pièces) --}}
+                    <div class="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg"
+                         style="background: linear-gradient(135deg, #fff3cd, #ffeaa7); border: 1px solid #ffc107;"
+                         x-show="(category === 'engine' || category === 'parts') && !canPublishEngineOrParts"
+                         x-transition>
+                        <svg class="w-5 h-5 flex-shrink-0" style="color: #856404;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <p class="text-sm font-medium" style="color: #856404;">
+                            Un abonnement actif est requis pour publier des moteurs et pièces.
+                            <a href="{{ route('subscription.plans') }}" class="underline font-semibold">Voir les abonnements</a>
+                        </p>
+                    </div>
+
                     {{-- Type de bateau (visible only when category is boat) --}}
                     <div id="boat-type-section" class="mt-4 bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);" x-show="category === 'boat'" x-transition>
                         <h2 class="text-base font-semibold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
@@ -1388,6 +1402,7 @@
                 hasRemorque: '{{ old('specs.extras.remorque', '') }}',
                 hasPort: '{{ old('specs.extras.place_au_port', '') }}',
                 mediationEnabled: {{ old('mediation_enabled') ? 'true' : 'false' }},
+                canPublishEngineOrParts: {{ $canPublishEngineOrParts ? 'true' : 'false' }},
                 stepErrors: [],
                 submitting: false,
                 photosProcessing: false,
@@ -1553,7 +1568,14 @@
                     };
 
                     if (step === 1) {
-                        if (!this.category) errors.push('Veuillez choisir une categorie.');
+                        if (!this.category) {
+                            errors.push('Veuillez choisir une catégorie.');
+                        } else if (this.category === 'boat' && !this.boatType) {
+                            errors.push('Veuillez choisir le type de bateau.');
+                            this.markField('type');
+                        } else if ((this.category === 'engine' || this.category === 'parts') && !this.canPublishEngineOrParts) {
+                            errors.push('Un abonnement actif est requis pour publier des moteurs et pièces.');
+                        }
                     }
                     if (step === 2) {
                         if (!val('title')) { errors.push('Le titre de l\'annonce est obligatoire.'); this.markField('title'); }

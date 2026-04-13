@@ -160,8 +160,9 @@ class ListingController extends Controller
 
         $isFirstListing = Listing::where('user_id', $user->id)->count() === 0;
         $hasFreePublishing = $user->hasFreePublishing();
+        $canPublishEngineOrParts = $user->canPublishEngineOrParts();
 
-        return view('listings.create', compact('wilayas', 'exchangeRate', 'isFirstListing', 'hasFreePublishing'));
+        return view('listings.create', compact('wilayas', 'exchangeRate', 'isFirstListing', 'hasFreePublishing', 'canPublishEngineOrParts'));
     }
 
     public function store(Request $request)
