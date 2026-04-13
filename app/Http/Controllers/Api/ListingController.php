@@ -347,6 +347,23 @@ class ListingController extends Controller
             ], 201);
         }
 
+        if (in_array($listing->category, ['engine', 'parts']) && $user->canPublishEngineOrParts()) {
+            $listing->update([
+                'status'          => 'pending_review',
+                'published_until' => now()->addYear(),
+            ]);
+
+            $listing->load(['user', 'media']);
+
+            return response()->json([
+                'message' => 'Votre annonce vendeur a été créée et sera examinée par notre équipe.',
+                'listing' => $listing,
+                'publish_price' => 0,
+                'is_first_listing' => false,
+                'vendor_subscription_applied' => true,
+            ], 201);
+        }
+
         // Première annonce gratuite
         $isFirstListing = Listing::where('user_id', $user->id)
             ->where('id', '!=', $listing->id)

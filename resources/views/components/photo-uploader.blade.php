@@ -11,6 +11,7 @@
     'max'           => 20,
     'required'      => false,
     'existingMedia' => collect(),
+    'persistKey'    => null,
 ])
 
 @php
@@ -20,7 +21,7 @@
 @endphp
 
 <div
-    x-data="photoUploader({{ $maxNew }}, {{ $required ? 'true' : 'false' }})"
+    x-data="photoUploader({{ $maxNew }}, {{ $required ? 'true' : 'false' }}, @js($persistKey))"
     x-init="init()"
 >
 
@@ -279,13 +280,14 @@
 {{-- ─── Alpine Component ─────────────────────────────────────────────── --}}
 <script>
 if (typeof photoUploader === 'undefined') {
-    function photoUploader(maxFiles, isRequired = false) {
+    function photoUploader(maxFiles, isRequired = false, persistKey = null) {
         return {
             files: [],
             isDragging: false,
             errors: [],
             maxFiles: maxFiles,
             isRequired: isRequired,
+            persistKey: persistKey,
             supportsManagedFiles: false,
             isProcessing: false,
             processedCount: 0,
@@ -320,10 +322,176 @@ if (typeof photoUploader === 'undefined') {
                     }
                 });
 
+                this.$nextTick(async () => {
+                    await this.restorePersistedFiles();
+                });
+
                 // Clean up previews on page unload
                 window.addEventListener('beforeunload', () => {
                     this.files.forEach(f => URL.revokeObjectURL(f.preview));
                 });
+            },
+
+            async openPersistDb() {
+                if (!this.persistKey || typeof indexedDB === 'undefined') {
+                    return null;
+                }
+
+                return await new Promise((resolve, reject) => {
+                    const request = indexedDB.open('albabor-photo-uploader', 1);
+
+                    request.onupgradeneeded = () => {
+                        const db = request.result;
+                        if (!db.objectStoreNames.contains('drafts')) {
+                            db.createObjectStore('drafts');
+                        }
+                    };
+
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            },
+
+            getPersistKey() {
+                if (!this.persistKey) {
+                    return null;
+                }
+
+                try {
+                    const sessionKey = 'albabor_listing_draft_session';
+                    let sessionId = sessionStorage.getItem(sessionKey);
+                    if (!sessionId) {
+                        sessionId = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
+                        sessionStorage.setItem(sessionKey, sessionId);
+                    }
+
+                    return `${this.persistKey}:${sessionId}`;
+                } catch (e) {
+                    return this.persistKey;
+                }
+            },
+
+            async persistFiles() {
+                if (!this.persistKey || !this.supportsManagedFiles) {
+                    return;
+                }
+
+                const key = this.getPersistKey();
+                if (!key) {
+                    return;
+                }
+
+                try {
+                    const db = await this.openPersistDb();
+                    if (!db) {
+                        return;
+                    }
+
+                    await new Promise((resolve, reject) => {
+                        const tx = db.transaction('drafts', 'readwrite');
+                        const store = tx.objectStore('drafts');
+                        const payload = this.files.map(file => ({
+                            id: file.id,
+                            name: file.name,
+                            file: file.file,
+                        }));
+
+                        store.put(payload, key);
+                        tx.oncomplete = () => resolve();
+                        tx.onerror = () => reject(tx.error);
+                        tx.onabort = () => reject(tx.error);
+                    });
+
+                    db.close();
+                } catch (e) {
+                    console.warn('[PhotoUploader] Persisting files failed:', e);
+                }
+            },
+
+            async clearPersistedFiles() {
+                if (!this.persistKey) {
+                    return;
+                }
+
+                const key = this.getPersistKey();
+                if (!key) {
+                    return;
+                }
+
+                try {
+                    const db = await this.openPersistDb();
+                    if (!db) {
+                        return;
+                    }
+
+                    await new Promise((resolve, reject) => {
+                        const tx = db.transaction('drafts', 'readwrite');
+                        tx.objectStore('drafts').delete(key);
+                        tx.oncomplete = () => resolve();
+                        tx.onerror = () => reject(tx.error);
+                        tx.onabort = () => reject(tx.error);
+                    });
+
+                    db.close();
+                } catch (e) {
+                    console.warn('[PhotoUploader] Clearing persisted files failed:', e);
+                }
+            },
+
+            async restorePersistedFiles() {
+                if (!this.persistKey || !this.supportsManagedFiles || this.files.length > 0) {
+                    return;
+                }
+
+                const key = this.getPersistKey();
+                if (!key) {
+                    return;
+                }
+
+                try {
+                    const db = await this.openPersistDb();
+                    if (!db) {
+                        return;
+                    }
+
+                    const payload = await new Promise((resolve, reject) => {
+                        const tx = db.transaction('drafts', 'readonly');
+                        const request = tx.objectStore('drafts').get(key);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+
+                    db.close();
+
+                    if (!Array.isArray(payload) || payload.length === 0) {
+                        return;
+                    }
+
+                    this.revokePreviews();
+                    this.files = payload
+                        .filter(item => item?.file instanceof Blob)
+                        .slice(0, this.maxFiles)
+                        .map(item => {
+                            const restoredFile = item.file instanceof File
+                                ? item.file
+                                : new File([item.file], item.name || 'photo.jpg', {
+                                    type: item.file?.type || 'image/jpeg',
+                                    lastModified: Date.now(),
+                                });
+
+                            return {
+                                id: item.id || (crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random())),
+                                file: restoredFile,
+                                preview: URL.createObjectURL(restoredFile),
+                                size: restoredFile.size,
+                                name: item.name || restoredFile.name,
+                            };
+                        });
+
+                    this.syncInput();
+                } catch (e) {
+                    console.warn('[PhotoUploader] Restoring files failed:', e);
+                }
             },
 
             handleSelect(e) {
@@ -424,6 +592,7 @@ if (typeof photoUploader === 'undefined') {
                 this.isProcessing = false;
                 this.$dispatch('photos-ready');
                 this.syncInput();
+                await this.persistFiles();
             },
 
             get progressPercent() {
@@ -438,6 +607,7 @@ if (typeof photoUploader === 'undefined') {
                 URL.revokeObjectURL(this.files[index].preview);
                 this.files.splice(index, 1);
                 this.syncInput();
+                this.persistFiles();
             },
 
             detectManagedFileSupport() {
@@ -500,6 +670,7 @@ if (typeof photoUploader === 'undefined') {
                     size: file.size,
                     name: file.name,
                 }));
+                this.persistFiles();
             },
 
             clearNativeSelection() {
@@ -508,6 +679,7 @@ if (typeof photoUploader === 'undefined') {
                 if (this.$refs.fileInput) {
                     this.$refs.fileInput.value = '';
                 }
+                this.clearPersistedFiles();
             },
 
             syncFilesFromInput() {

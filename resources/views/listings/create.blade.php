@@ -1307,6 +1307,7 @@
                             input-name="images"
                             :max="20"
                             :required="true"
+                            persist-key="albabor_listing_draft_files"
                         />
 
                         {{-- YouTube Video URL --}}
@@ -1335,6 +1336,7 @@
                 {{-- ===================================================== --}}
                 <div class="flex justify-between items-center px-5 py-4" style="border-top: 1px solid #EDF0F4;">
                     <a href="{{ route('listings.my') }}"
+                       @click="clearDraft()"
                        class="px-4 py-2.5 rounded-xl text-xs font-medium transition-all hover:bg-gray-50"
                        style="color: #9BA8B7; border: 1.5px solid #E0E6ED;">
                         Annuler
@@ -1370,7 +1372,7 @@
                                 :class="(submitting || photosProcessing) ? 'opacity-50 cursor-wait' : ''"
                                 class="px-6 py-2.5 rounded-xl text-white text-xs font-semibold btn-gradient-animated"
                                 style="box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">
-                            <span x-show="!submitting && !photosProcessing">Continuer vers le paiement</span>
+                            <span x-show="!submitting && !photosProcessing" x-text="submitButtonLabel"></span>
                             <span x-show="photosProcessing && !submitting" class="flex items-center gap-2">
                                 <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                                 Optimisation...
@@ -1392,6 +1394,7 @@
 
     <script>
         const DRAFT_KEY = 'albabor_listing_draft';
+        const DRAFT_SESSION_KEY = 'albabor_listing_draft_session';
 
         function listingForm() {
             return {
@@ -1402,6 +1405,8 @@
                 hasRemorque: '{{ old('specs.extras.remorque', '') }}',
                 hasPort: '{{ old('specs.extras.place_au_port', '') }}',
                 mediationEnabled: {{ old('mediation_enabled') ? 'true' : 'false' }},
+                hasFreePublishing: {{ $hasFreePublishing ? 'true' : 'false' }},
+                isFirstListing: {{ $isFirstListing ? 'true' : 'false' }},
                 canPublishEngineOrParts: {{ $canPublishEngineOrParts ? 'true' : 'false' }},
                 stepErrors: [],
                 submitting: false,
@@ -1410,6 +1415,7 @@
 
                 // ── Lifecycle: restore draft on init ──
                 init() {
+                    this.ensureDraftSession();
                     const hasServerData = {{ ($errors->any() || old('title')) ? 'true' : 'false' }};
                     if (!hasServerData) {
                         this.restoreFromStorage();
@@ -1425,9 +1431,22 @@
                     });
                 },
 
+                ensureDraftSession() {
+                    try {
+                        let sessionId = sessionStorage.getItem(DRAFT_SESSION_KEY);
+                        if (!sessionId) {
+                            sessionId = crypto.randomUUID ? crypto.randomUUID() : (String(Date.now()) + Math.random());
+                            sessionStorage.setItem(DRAFT_SESSION_KEY, sessionId);
+                        }
+                    } catch (e) {
+                        // Ignore unavailable sessionStorage
+                    }
+                },
+
                 // ── sessionStorage persistence ──
                 saveToStorage() {
                     try {
+                        this.ensureDraftSession();
                         const form = this.$root;
                         const state = {
                             _step: this.currentStep,
@@ -1499,7 +1518,33 @@
                 },
 
                 clearDraft() {
-                    sessionStorage.removeItem(DRAFT_KEY);
+                    try {
+                        const sessionId = sessionStorage.getItem(DRAFT_SESSION_KEY);
+                        sessionStorage.removeItem(DRAFT_KEY);
+                        sessionStorage.removeItem(DRAFT_SESSION_KEY);
+
+                        if (!sessionId || typeof indexedDB === 'undefined') {
+                            return;
+                        }
+
+                        const request = indexedDB.open('albabor-photo-uploader', 1);
+                        request.onupgradeneeded = () => {
+                            const db = request.result;
+                            if (!db.objectStoreNames.contains('drafts')) {
+                                db.createObjectStore('drafts');
+                            }
+                        };
+                        request.onsuccess = () => {
+                            const db = request.result;
+                            const tx = db.transaction('drafts', 'readwrite');
+                            tx.objectStore('drafts').delete(`albabor_listing_draft_files:${sessionId}`);
+                            tx.oncomplete = () => db.close();
+                            tx.onerror = () => db.close();
+                            tx.onabort = () => db.close();
+                        };
+                    } catch (e) {
+                        // Ignore unavailable sessionStorage
+                    }
                 },
 
                 get stepsList() {
@@ -1541,6 +1586,22 @@
                         6: 'Photos',
                     };
                     return labels[this.currentStep] || '';
+                },
+
+                get requiresPayment() {
+                    if (this.hasFreePublishing || this.isFirstListing) {
+                        return false;
+                    }
+
+                    if ((this.category === 'engine' || this.category === 'parts') && this.canPublishEngineOrParts) {
+                        return false;
+                    }
+
+                    return this.category === 'boat' || this.category === 'jetski';
+                },
+
+                get submitButtonLabel() {
+                    return this.requiresPayment ? 'Continuer vers le paiement' : 'Publier l’annonce';
                 },
 
                 // ── Validation helpers ──
@@ -1655,8 +1716,8 @@
                     // All valid — clear draft and let browser submit naturally
                     // (do NOT call event.preventDefault() or form.submit() — native submit
                     //  correctly includes DataTransfer-populated file inputs on all browsers)
+                    this.saveToStorage();
                     this.submitting = true;
-                    this.clearDraft();
                 },
             }
         }

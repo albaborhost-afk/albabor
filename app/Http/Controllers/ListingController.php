@@ -274,6 +274,18 @@ class ListingController extends Controller
                 ->with('listing_created', true);
         }
 
+        // Vendor subscription covers engine/parts publication without an extra payment step.
+        if (in_array($listing->category, ['engine', 'parts']) && $user->canPublishEngineOrParts()) {
+            $listing->update([
+                'status'          => 'pending_review',
+                'published_until' => now()->addYear(),
+            ]);
+
+            return redirect()->route('listings.my')
+                ->with('success', __('Votre annonce vendeur a été créée et sera examinée par notre équipe.'))
+                ->with('listing_created', true);
+        }
+
         // First listing is free — check if user has any other listing
         $isFirstListing = Listing::where('user_id', $user->id)
             ->where('id', '!=', $listing->id)

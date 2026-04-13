@@ -371,5 +371,39 @@
                 reader.readAsDataURL(e.target.files[0]);
             }
         });
+
+        (() => {
+            const draftKey = 'albabor_listing_draft';
+            const sessionKey = 'albabor_listing_draft_session';
+            const filesBaseKey = 'albabor_listing_draft_files';
+
+            try {
+                const sessionId = sessionStorage.getItem(sessionKey);
+                sessionStorage.removeItem(draftKey);
+                sessionStorage.removeItem(sessionKey);
+
+                if (!sessionId || typeof indexedDB === 'undefined') {
+                    return;
+                }
+
+                const request = indexedDB.open('albabor-photo-uploader', 1);
+                request.onupgradeneeded = () => {
+                    const db = request.result;
+                    if (!db.objectStoreNames.contains('drafts')) {
+                        db.createObjectStore('drafts');
+                    }
+                };
+                request.onsuccess = () => {
+                    const db = request.result;
+                    const tx = db.transaction('drafts', 'readwrite');
+                    tx.objectStore('drafts').delete(`${filesBaseKey}:${sessionId}`);
+                    tx.oncomplete = () => db.close();
+                    tx.onerror = () => db.close();
+                    tx.onabort = () => db.close();
+                };
+            } catch (e) {
+                // Ignore cleanup failures
+            }
+        })();
     </script>
 </x-app-layout>
