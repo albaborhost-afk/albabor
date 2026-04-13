@@ -298,21 +298,20 @@ if (typeof photoUploader === 'undefined') {
             },
 
             init() {
-                this.supportsManagedFiles = this.detectManagedFileSupport();
+                this.supportsManagedFiles = this.detectManagedFileSupport() && !this.prefersNativeSelection();
 
-                // Re-sync files to input right before form submission
-                // (ensures DataTransfer is fresh; critical for all browsers)
+                // Only validate the required state on submit.
+                // Rewriting input.files during submit is brittle on mobile browsers.
                 this.$nextTick(() => {
                     const form = this.$el.closest('form');
                     if (form) {
                         form.addEventListener('submit', (e) => {
-                            if (this.supportsManagedFiles) {
-                                this.syncInput();
-                            } else {
-                                this.syncFilesFromInput();
-                            }
+                            const selectedCount = this.supportsManagedFiles
+                                ? this.files.length
+                                : (this.$refs.fileInput?.files?.length || 0);
+
                             // Manual required validation (browser native check runs before submit event)
-                            if (this.isRequired && this.files.length === 0) {
+                            if (this.isRequired && selectedCount === 0) {
                                 e.preventDefault();
                                 e.stopImmediatePropagation();
                                 this.errors = ['Veuillez ajouter au moins une photo.'];
@@ -623,6 +622,18 @@ if (typeof photoUploader === 'undefined') {
                     input.files = dt.files;
 
                     return input.files !== null;
+                } catch (e) {
+                    return false;
+                }
+            },
+
+            prefersNativeSelection() {
+                try {
+                    const ua = navigator.userAgent || '';
+                    const touchPoints = navigator.maxTouchPoints || 0;
+                    const isiPadOs = /Macintosh/i.test(ua) && touchPoints > 1;
+
+                    return /Android|iPhone|iPad|iPod|Mobile|CriOS|FxiOS/i.test(ua) || isiPadOs;
                 } catch (e) {
                     return false;
                 }
