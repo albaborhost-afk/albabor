@@ -1570,8 +1570,11 @@
                         return;
                     }
 
-                    const firstStep = this.stepForField(entries[0][0]);
-                    this.currentStep = firstStep;
+                    // Navigate to the EARLIEST step that has an error so the user
+                    // can fix issues in form order (step 1 → step 6).
+                    const stepsWithErrors = entries.map(([field]) => this.stepForField(field));
+                    const earliestStep = Math.min(...stepsWithErrors);
+                    this.currentStep = earliestStep;
                     this.stepErrors = entries.flatMap(([, messages]) => Array.isArray(messages) ? messages : [messages]).filter(Boolean);
 
                     this.$nextTick(() => {
@@ -1808,17 +1811,22 @@
                         }
                     }
 
-                    // All valid — clear draft and let browser submit naturally
-                    // (do NOT call event.preventDefault() or form.submit() — native submit
-                    //  correctly includes DataTransfer-populated file inputs on all browsers)
+                    // All valid — always submit via AJAX (fetch+FormData) so the
+                    // photo uploader can attach files directly without relying on
+                    // the browser to serialize a DataTransfer-populated input.
                     this.saveToStorage();
-                    this.submitting = true;
 
                     const uploader = this.getPhotoUploader();
-                    if (uploader?.shouldUseAjaxSubmit()) {
+                    if (uploader) {
                         event.preventDefault();
+                        this.submitting = true;
                         await this.submitWithAjax(uploader);
+                        return;
                     }
+
+                    // Fallback: no photo uploader on the page — let the browser
+                    // submit the form natively (should not happen in practice).
+                    this.submitting = true;
                 },
             }
         }

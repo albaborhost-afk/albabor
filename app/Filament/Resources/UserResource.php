@@ -64,7 +64,8 @@ class UserResource extends Resource
                                 'admin' => 'Administrateur',
                             ])
                             ->required()
-                            ->default('user'),
+                            ->default('user')
+                            ->helperText('Vendeur professionnel : peut publier toutes catégories (bateaux, jet-skis, moteurs, pièces) sans abonnement.'),
                         Forms\Components\Select::make('verification_status')
                             ->label('Statut de vérification')
                             ->options([

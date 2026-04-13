@@ -373,7 +373,7 @@ if (typeof photoUploader === 'undefined') {
             },
 
             async persistFiles() {
-                if (!this.persistKey || !this.supportsManagedFiles) {
+                if (!this.persistKey) {
                     return;
                 }
 
@@ -440,7 +440,7 @@ if (typeof photoUploader === 'undefined') {
             },
 
             async restorePersistedFiles() {
-                if (!this.persistKey || !this.supportsManagedFiles || this.files.length > 0) {
+                if (!this.persistKey || this.files.length > 0) {
                     return;
                 }
 
@@ -489,7 +489,9 @@ if (typeof photoUploader === 'undefined') {
                             };
                         });
 
-                    this.syncInput();
+                    if (this.supportsManagedFiles) {
+                        this.syncInput();
+                    }
                 } catch (e) {
                     console.warn('[PhotoUploader] Restoring files failed:', e);
                 }
@@ -642,7 +644,12 @@ if (typeof photoUploader === 'undefined') {
             },
 
             shouldUseAjaxSubmit() {
-                return !this.supportsManagedFiles;
+                // Always prefer AJAX submission when the component is in use.
+                // Native form submission + DataTransfer-populated file inputs is
+                // unreliable across Safari/iOS and some Android browsers, so we
+                // send a clean FormData via fetch() instead of relying on the
+                // browser to serialize file inputs correctly.
+                return true;
             },
 
             getFilesForSubmit() {

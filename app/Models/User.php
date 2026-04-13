@@ -181,7 +181,11 @@ class User extends Authenticatable implements FilamentUser
             return true;
         }
 
-        return $this->isVendor() && $this->hasActiveSubscription();
+        if ($this->isVendor()) {
+            return true;
+        }
+
+        return false;
     }
 
     public function hasFreePublishing(): bool
