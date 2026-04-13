@@ -1547,6 +1547,99 @@
                     }
                 },
 
+                getPhotoUploader() {
+                    return this.$root.querySelector('[data-photo-uploader]')?._albaborPhotoUploader || null;
+                },
+
+                stepForField(field) {
+                    const normalized = (field || '').replace(/\.\d+$/, '');
+
+                    if (normalized.startsWith('images') || normalized === 'video_url') return 6;
+                    if (['numero_whatsapp', 'numero_mobile', 'contact_email', 'mediation_enabled'].includes(normalized)) return 5;
+                    if (['wilaya', 'pays', 'visible_a', 'price_dzd', 'currency', 'currency_label', 'type_offre', 'etat', 'remarque_echange'].includes(normalized)) return 4;
+                    if (normalized === 'category' || normalized === 'type') return 1;
+
+                    return 2;
+                },
+
+                applyServerValidationErrors(errors = {}) {
+                    const entries = Object.entries(errors || {});
+                    if (!entries.length) {
+                        this.stepErrors = ['Une erreur est survenue lors de l\'envoi de l\'annonce.'];
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        return;
+                    }
+
+                    const firstStep = this.stepForField(entries[0][0]);
+                    this.currentStep = firstStep;
+                    this.stepErrors = entries.flatMap(([, messages]) => Array.isArray(messages) ? messages : [messages]).filter(Boolean);
+
+                    this.$nextTick(() => {
+                        entries.forEach(([field]) => {
+                            const baseField = (field || '').replace(/\.\d+$/, '');
+                            if (!baseField.startsWith('images') && baseField !== 'video_url') {
+                                this.markField(baseField);
+                            }
+                        });
+                    });
+
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+
+                async submitWithAjax(uploader) {
+                    try {
+                        const form = this.$root;
+                        const formData = new FormData(form);
+
+                        formData.delete('images');
+                        formData.delete('images[]');
+
+                        uploader.getFilesForSubmit().forEach((file, index) => {
+                            const filename = file.name || `photo-${index + 1}.jpg`;
+                            formData.append('images[]', file, filename);
+                        });
+
+                        const response = await fetch(form.action, {
+                            method: (form.method || 'POST').toUpperCase(),
+                            body: formData,
+                            credentials: 'same-origin',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                        });
+
+                        const contentType = response.headers.get('content-type') || '';
+                        const payload = contentType.includes('application/json') ? await response.json() : null;
+
+                        if (response.ok) {
+                            const redirectUrl = payload?.redirect || (response.redirected ? response.url : null);
+
+                            if (redirectUrl) {
+                                window.location.href = redirectUrl;
+                                return;
+                            }
+
+                            window.location.reload();
+                            return;
+                        }
+
+                        if (response.status === 422) {
+                            this.submitting = false;
+                            this.applyServerValidationErrors(payload?.errors || {});
+                            return;
+                        }
+
+                        this.submitting = false;
+                        this.stepErrors = [payload?.message || 'Une erreur est survenue lors de l\'envoi de l\'annonce.'];
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } catch (e) {
+                        this.submitting = false;
+                        this.stepErrors = ['Le réseau a interrompu l’envoi de l’annonce. Veuillez réessayer.'];
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                },
+
                 get stepsList() {
                     return [
                         { n: 1, label: 'Categorie' },
@@ -1647,11 +1740,13 @@
                         if (!price || parseFloat(price) <= 0) { errors.push('Le prix est obligatoire.'); this.markField('price_dzd'); }
                     }
                     if (step === 6) {
+                        const uploader = this.getPhotoUploader();
+                        const managedFiles = uploader?.files?.length || 0;
                         const fileInputs = this.$root.querySelectorAll('input[type="file"][name="images[]"]');
-                        let hasFiles = false;
-                        fileInputs.forEach(input => { if (input.files && input.files.length > 0) hasFiles = true; });
-                        const previews = this.$root.querySelectorAll('.photo-preview-item, .preview-thumb, [data-photo-item]');
-                        if (!hasFiles && previews.length === 0) {
+                        let hasNativeFiles = false;
+                        fileInputs.forEach(input => { if (input.files && input.files.length > 0) hasNativeFiles = true; });
+
+                        if (!managedFiles && !hasNativeFiles) {
                             errors.push('Veuillez ajouter au moins une photo.');
                         }
                     }
@@ -1689,7 +1784,7 @@
                 },
 
                 // ── Submit with full validation ──
-                submitForm(event) {
+                async submitForm(event) {
                     // Prevent duplicate submissions
                     if (this.submitting) {
                         event.preventDefault();
@@ -1718,6 +1813,12 @@
                     //  correctly includes DataTransfer-populated file inputs on all browsers)
                     this.saveToStorage();
                     this.submitting = true;
+
+                    const uploader = this.getPhotoUploader();
+                    if (uploader?.shouldUseAjaxSubmit()) {
+                        event.preventDefault();
+                        await this.submitWithAjax(uploader);
+                    }
                 },
             }
         }

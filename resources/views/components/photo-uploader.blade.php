@@ -21,6 +21,7 @@
 @endphp
 
 <div
+    data-photo-uploader
     x-data="photoUploader({{ $maxNew }}, {{ $required ? 'true' : 'false' }}, @js($persistKey))"
     x-init="init()"
 >
@@ -298,6 +299,7 @@ if (typeof photoUploader === 'undefined') {
             },
 
             init() {
+                this.$el._albaborPhotoUploader = this;
                 this.supportsManagedFiles = this.detectManagedFileSupport() && !this.prefersNativeSelection();
 
                 // Only validate the required state on submit.
@@ -637,6 +639,14 @@ if (typeof photoUploader === 'undefined') {
                 } catch (e) {
                     return false;
                 }
+            },
+
+            shouldUseAjaxSubmit() {
+                return !this.supportsManagedFiles;
+            },
+
+            getFilesForSubmit() {
+                return this.files.map(entry => entry.file).filter(file => file instanceof Blob);
             },
 
             replaceNativeSelection(selectedFiles) {

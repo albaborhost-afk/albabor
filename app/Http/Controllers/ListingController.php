@@ -173,6 +173,15 @@ class ListingController extends Controller
         $category = $request->category;
         if (in_array($category, ['engine', 'parts'])) {
             if (!$user->canPublishEngineOrParts()) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => __('messages.subscription_required_for_category'),
+                        'errors' => [
+                            'category' => [__('messages.subscription_required_for_category')],
+                        ],
+                    ], 422);
+                }
+
                 return back()->withErrors([
                     'category' => __('messages.subscription_required_for_category')
                 ]);
@@ -252,6 +261,13 @@ class ListingController extends Controller
                 'error' => $e->getMessage(),
                 'user_id' => $user->id,
             ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Une erreur est survenue lors de la création de l\'annonce. Veuillez réessayer.',
+                ], 500);
+            }
+
             return back()->withInput()->withErrors(['general' => 'Une erreur est survenue lors de la création de l\'annonce. Veuillez réessayer.']);
         }
 
@@ -260,6 +276,16 @@ class ListingController extends Controller
 
         if ($savedCount === 0) {
             $listing->delete();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Impossible de sauvegarder les images. Veuillez réessayer.',
+                    'errors' => [
+                        'images' => ['Impossible de sauvegarder les images. Veuillez réessayer.'],
+                    ],
+                ], 422);
+            }
+
             return back()->withErrors(['images' => 'Impossible de sauvegarder les images. Veuillez réessayer.'])->withInput();
         }
 
@@ -269,6 +295,14 @@ class ListingController extends Controller
                 'status'          => 'pending_review',
                 'published_until' => now()->addYear(),
             ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'redirect' => route('listings.my'),
+                    'message' => __('Votre annonce a été créée et sera examinée par notre équipe.'),
+                ]);
+            }
+
             return redirect()->route('listings.my')
                 ->with('success', __('Votre annonce a été créée et sera examinée par notre équipe.'))
                 ->with('listing_created', true);
@@ -280,6 +314,13 @@ class ListingController extends Controller
                 'status'          => 'pending_review',
                 'published_until' => now()->addYear(),
             ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'redirect' => route('listings.my'),
+                    'message' => __('Votre annonce vendeur a été créée et sera examinée par notre équipe.'),
+                ]);
+            }
 
             return redirect()->route('listings.my')
                 ->with('success', __('Votre annonce vendeur a été créée et sera examinée par notre équipe.'))
@@ -296,9 +337,24 @@ class ListingController extends Controller
                 'status'          => 'pending_review',
                 'published_until' => now()->addYear(),
             ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'redirect' => route('listings.my'),
+                    'message' => __('messages.listing_created_free'),
+                ]);
+            }
+
             return redirect()->route('listings.my')
                 ->with('success', __('messages.listing_created_free'))
                 ->with('listing_created', true);
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'redirect' => route('listings.payment', $listing),
+                'message' => __('messages.listing_created_payment_required'),
+            ]);
         }
 
         return redirect()->route('listings.payment', $listing)
