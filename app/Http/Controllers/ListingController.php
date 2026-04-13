@@ -201,7 +201,7 @@ class ListingController extends Controller
                     $fail('Le type sélectionné n\'est pas valide.');
                 }
             }],
-            'price_dzd' => 'required|numeric|min:0',
+            'price_dzd' => 'required|numeric|min:0|max:' . $this->maxListingPriceDzd(),
             'currency' => 'required|in:DZD,EUR,OTHER',
             'currency_label' => 'nullable|string|max:10',
             'type_offre' => 'nullable|in:negociable,offert,fix',
@@ -254,12 +254,15 @@ class ListingController extends Controller
             $listingData['video_url'] = $validated['video_url'] ?? null;
         }
 
+        $listingData = $this->filterListingPayloadForSchema($listingData);
+
         try {
             $listing = Listing::create($listingData);
         } catch (\Throwable $e) {
             \Log::error('Listing creation failed', [
                 'error' => $e->getMessage(),
                 'user_id' => $user->id,
+                'listing_data_keys' => array_keys($listingData),
             ]);
 
             if ($request->expectsJson()) {
@@ -416,7 +419,7 @@ class ListingController extends Controller
                     $fail('Le type sélectionné n\'est pas valide.');
                 }
             }],
-            'price_dzd' => 'required|numeric|min:0',
+            'price_dzd' => 'required|numeric|min:0|max:' . $this->maxListingPriceDzd(),
             'currency' => 'required|in:DZD,EUR,OTHER',
             'currency_label' => 'nullable|string|max:10',
             'type_offre' => 'nullable|in:negociable,offert,fix',
@@ -473,6 +476,8 @@ class ListingController extends Controller
             $updateData['status'] = 'pending_review';
             $updateData['rejection_reason'] = null;
         }
+
+        $updateData = $this->filterListingPayloadForSchema($updateData);
 
         $listing->update($updateData);
 
@@ -637,6 +642,34 @@ class ListingController extends Controller
     protected function listingDisk(): string
     {
         return config('filesystems.listing_disk', 'public');
+    }
+
+    protected function maxListingPriceDzd(): int
+    {
+        return 4294967295;
+    }
+
+    protected function filterListingPayloadForSchema(array $payload): array
+    {
+        try {
+            $availableColumns = array_flip(\Schema::getColumnListing('listings'));
+            $filteredPayload = array_intersect_key($payload, $availableColumns);
+            $ignoredColumns = array_diff(array_keys($payload), array_keys($filteredPayload));
+
+            if (!empty($ignoredColumns)) {
+                \Log::warning('Listing payload skipped unknown columns', [
+                    'ignored_columns' => array_values($ignoredColumns),
+                ]);
+            }
+
+            return $filteredPayload;
+        } catch (\Throwable $e) {
+            \Log::warning('Failed to inspect listings schema before persisting payload', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return $payload;
+        }
     }
 
     protected function handleImageUpload(Listing $listing, array $images): int
