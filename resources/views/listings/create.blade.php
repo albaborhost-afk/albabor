@@ -33,7 +33,7 @@
             <form action="{{ route('listings.store') }}" method="POST" enctype="multipart/form-data"
                   class="create-form"
                   x-data="listingForm()" novalidate
-                  @submit.prevent="submitForm($event)"
+                  @submit="submitForm($event)"
                   @photos-processing.window="photosProcessing = true"
                   @photos-ready.window="photosProcessing = false">
                 @csrf
@@ -1629,13 +1629,18 @@
 
                 // ── Submit with full validation ──
                 submitForm(event) {
-                    if (this.submitting) return;
+                    // Prevent duplicate submissions
+                    if (this.submitting) {
+                        event.preventDefault();
+                        return;
+                    }
                     this.clearFieldErrors();
 
-                    const stepsToCheck = this.category === 'parts' ? [1, 2, 4, 6] : [1, 2, 4, 6];
+                    const stepsToCheck = [1, 2, 4, 6];
                     for (const step of stepsToCheck) {
                         const errors = this.validateStep(step);
                         if (errors.length > 0) {
+                            event.preventDefault();
                             this.currentStep = step;
                             this.$nextTick(() => {
                                 this.stepErrors = errors;
@@ -1647,10 +1652,11 @@
                         }
                     }
 
-                    // All valid — clear draft and submit
+                    // All valid — clear draft and let browser submit naturally
+                    // (do NOT call event.preventDefault() or form.submit() — native submit
+                    //  correctly includes DataTransfer-populated file inputs on all browsers)
                     this.submitting = true;
                     this.clearDraft();
-                    event.target.submit();
                 },
             }
         }
