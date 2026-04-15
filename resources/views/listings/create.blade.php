@@ -366,27 +366,22 @@
                             </div>
 
                             {{-- Jet-ski: type + nombre de places --}}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-show="category === 'jetski'">
-                                <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Type de jet-ski</label>
-                                    <select name="specs[general][type_jetski]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                        <option value="">-- Choisir --</option>
-                                        <option value="Stand-up" {{ old('specs.general.type_jetski') == 'Stand-up' ? 'selected' : '' }}>Stand-up</option>
-                                        <option value="Sit-down Runabout" {{ old('specs.general.type_jetski') == 'Sit-down Runabout' ? 'selected' : '' }}>Sit-down (Runabout)</option>
-                                        <option value="Crossover" {{ old('specs.general.type_jetski') == 'Crossover' ? 'selected' : '' }}>Crossover</option>
-                                        <option value="Touring" {{ old('specs.general.type_jetski') == 'Touring' ? 'selected' : '' }}>Touring</option>
-                                        <option value="Performance" {{ old('specs.general.type_jetski') == 'Performance' ? 'selected' : '' }}>Performance / Sport</option>
-                                    </select>
+                            <div x-show="category === 'jetski'" x-data="{ places: '{{ old('specs.general.nombre_places', '') }}' }">
+                                <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Nombre de places</label>
+                                <input type="hidden" name="specs[general][nombre_places]" :value="places">
+                                <div class="flex gap-2 flex-wrap">
+                                    <template x-for="n in [1, 2, 3, 4, 5]" :key="n">
+                                        <button type="button"
+                                                @click="places = String(n)"
+                                                :class="places === String(n) ? 'text-white shadow-md' : 'text-gray-500 bg-white'"
+                                                :style="places === String(n) ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8); border: 1.5px solid #17A2B8;' : 'border: 1.5px solid #E0E6ED;'"
+                                                class="flex-1 min-w-[56px] rounded-xl px-3 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5">
+                                            <span x-text="n"></span>
+                                            <span class="text-[10px] ml-0.5 opacity-80" x-text="n === 1 ? 'place' : 'places'"></span>
+                                        </button>
+                                    </template>
                                 </div>
-                                <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre de places</label>
-                                    <select name="specs[general][nombre_places]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                        <option value="">-- Choisir --</option>
-                                        <option value="1" {{ old('specs.general.nombre_places') == '1' ? 'selected' : '' }}>1 place</option>
-                                        <option value="2" {{ old('specs.general.nombre_places') == '2' ? 'selected' : '' }}>2 places</option>
-                                        <option value="3" {{ old('specs.general.nombre_places') == '3' ? 'selected' : '' }}>3 places</option>
-                                    </select>
-                                </div>
+                                <p class="mt-1.5 text-[11px]" style="color: #9BA8B7;">Jet-ski standard : 1 à 3 places · Jet Car : jusqu'à 5 places</p>
                             </div>
 
                             <div x-show="category === 'parts'" class="grid grid-cols-1 md:grid-cols-2 gap-4">

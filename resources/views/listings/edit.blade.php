@@ -167,6 +167,24 @@
                             </div>
                         </div>
 
+                        <div x-show="category === 'jetski'" x-data="{ places: '{{ old('specs.general.nombre_places', data_get($specs, 'general.nombre_places', '')) }}' }">
+                            <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Nombre de places</label>
+                            <input type="hidden" name="specs[general][nombre_places]" :value="places">
+                            <div class="flex gap-2 flex-wrap">
+                                <template x-for="n in [1, 2, 3, 4, 5]" :key="n">
+                                    <button type="button"
+                                            @click="places = String(n)"
+                                            :class="places === String(n) ? 'text-white shadow-md' : 'text-gray-500 bg-white'"
+                                            :style="places === String(n) ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8); border: 1.5px solid #17A2B8;' : 'border: 1.5px solid #E0E6ED;'"
+                                            class="flex-1 min-w-[56px] rounded-xl px-3 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5">
+                                        <span x-text="n"></span>
+                                        <span class="text-[10px] ml-0.5 opacity-80" x-text="n === 1 ? 'place' : 'places'"></span>
+                                    </button>
+                                </template>
+                            </div>
+                            <p class="mt-1.5 text-[11px]" style="color: #9BA8B7;">Jet-ski standard : 1 à 3 places · Jet Car : jusqu'à 5 places</p>
+                        </div>
+
                         <div x-show="category === 'parts'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Type de piece</label>
