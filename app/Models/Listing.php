@@ -93,9 +93,19 @@ class Listing extends Model
         'bateau_peche' => 'Bateaux de pêche',
     ];
 
+    // ---- Jet-ski Types ----
+    const JETSKI_TYPES = [
+        'jetski_standard' => 'Jet-ski Standard (à selle)',
+        'jetski_bras' => 'Jet-ski à bras (Stand-Up)',
+        'jet_car' => 'Jet Car (Voiture de mer)',
+        'jetski_sport' => 'Jet-ski Sport / Performance',
+        'jetski_peche' => 'Jet-ski de Pêche',
+    ];
+
     // ---- Category Types map (extensible for future categories) ----
     const CATEGORY_TYPES = [
         'boat' => self::BOAT_TYPES,
+        'jetski' => self::JETSKI_TYPES,
     ];
 
     const PROPULSION_OPTIONS = ['Hors-Bord', 'In-bord'];

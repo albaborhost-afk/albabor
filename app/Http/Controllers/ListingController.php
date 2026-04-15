@@ -194,10 +194,11 @@ class ListingController extends Controller
             'category' => 'required|in:boat,jetski,engine,parts',
             'type' => ['nullable', 'string', function ($attribute, $value, $fail) use ($request) {
                 $category = $request->input('category');
-                if ($category !== 'boat') return; // type only applies to boats
+                $allowed = Listing::CATEGORY_TYPES[$category] ?? null;
+                if ($allowed === null) return; // type only applies when the category has types
                 if (empty($value)) {
-                    $fail('Le type de bateau est requis.');
-                } elseif (!array_key_exists($value, Listing::BOAT_TYPES)) {
+                    $fail('Le type est requis pour cette catégorie.');
+                } elseif (!array_key_exists($value, $allowed)) {
                     $fail('Le type sélectionné n\'est pas valide.');
                 }
             }],
@@ -220,8 +221,8 @@ class ListingController extends Controller
             'video_url' => 'nullable|url|max:500',
         ]);
 
-        // Strip type for non-boat categories (hidden select may send stale value)
-        if (($validated['category'] ?? '') !== 'boat') {
+        // Strip type for categories that don't use types
+        if (!isset(Listing::CATEGORY_TYPES[$validated['category'] ?? ''])) {
             $validated['type'] = null;
         }
 
@@ -412,10 +413,11 @@ class ListingController extends Controller
             'category' => 'required|in:boat,jetski,engine,parts',
             'type' => ['nullable', 'string', function ($attribute, $value, $fail) use ($request) {
                 $category = $request->input('category');
-                if ($category !== 'boat') return; // type only applies to boats
+                $allowed = Listing::CATEGORY_TYPES[$category] ?? null;
+                if ($allowed === null) return;
                 if (empty($value)) {
-                    $fail('Le type de bateau est requis.');
-                } elseif (!array_key_exists($value, Listing::BOAT_TYPES)) {
+                    $fail('Le type est requis pour cette catégorie.');
+                } elseif (!array_key_exists($value, $allowed)) {
                     $fail('Le type sélectionné n\'est pas valide.');
                 }
             }],
@@ -440,8 +442,8 @@ class ListingController extends Controller
             'video_url' => 'nullable|url|max:500',
         ]);
 
-        // Strip type for non-boat categories
-        if (($validated['category'] ?? '') !== 'boat') {
+        // Strip type for categories that don't use types
+        if (!isset(Listing::CATEGORY_TYPES[$validated['category'] ?? ''])) {
             $validated['type'] = null;
         }
 

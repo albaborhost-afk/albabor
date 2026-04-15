@@ -89,7 +89,8 @@
                     <div>
                         <select name="type" x-model="boatType"
                                 class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                :required="category === 'boat'">
+                                :required="category === 'boat'"
+                                :disabled="category !== 'boat'">
                             <option value="">-- Choisir le type --</option>
                             @foreach(\App\Models\Listing::BOAT_TYPES as $slug => $label)
                                 <option value="{{ $slug }}" {{ old('type', $listing->type) == $slug ? 'selected' : '' }}>{{ $label }}</option>
@@ -98,6 +99,27 @@
                         @error('type')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
+                    </div>
+                </div>
+
+                {{-- SECTION: Type de Jet-ski (visible only when category is jetski) --}}
+                <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);" x-show="category === 'jetski'" x-transition>
+                    <h2 class="text-base font-semibold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
+                        <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-bold gradient-primary">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        </span>
+                        Type de Jet-ski *
+                    </h2>
+                    <div>
+                        <select name="type" x-model="jetskiType"
+                                class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                :required="category === 'jetski'"
+                                :disabled="category !== 'jetski'">
+                            <option value="">-- Choisir le type --</option>
+                            @foreach(\App\Models\Listing::JETSKI_TYPES as $slug => $label)
+                                <option value="{{ $slug }}" {{ old('type', $listing->type) == $slug ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 
@@ -1047,7 +1069,8 @@
         function editForm() {
             return {
                 category: '{{ old('category', $listing->category) }}',
-                boatType: '{{ old('type', $listing->type ?? '') }}',
+                boatType: '{{ in_array(old('type', $listing->type ?? ''), array_keys(\App\Models\Listing::BOAT_TYPES)) ? old('type', $listing->type ?? '') : '' }}',
+                jetskiType: '{{ in_array(old('type', $listing->type ?? ''), array_keys(\App\Models\Listing::JETSKI_TYPES)) ? old('type', $listing->type ?? '') : '' }}',
                 currency: '{{ old('currency', $listing->currency ?? 'DZD') }}',
                 hasRemorque: '{{ old('specs.extras.remorque', data_get($listing->specs, 'extras.remorque', '')) }}',
                 hasPort: '{{ old('specs.extras.place_au_port', data_get($listing->specs, 'extras.place_au_port', '')) }}',

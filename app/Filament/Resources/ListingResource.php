@@ -127,10 +127,10 @@ class ListingResource extends Resource
                                                     ->live()
                                                     ->afterStateUpdated(fn (Forms\Set $set) => $set('type', null)),
                                                 Forms\Components\Select::make('type')
-                                                    ->label('Type de bateau')
-                                                    ->options(Listing::BOAT_TYPES)
-                                                    ->visible(fn (Forms\Get $get) => $get('category') === 'boat')
-                                                    ->required(fn (Forms\Get $get) => $get('category') === 'boat')
+                                                    ->label('Type')
+                                                    ->options(fn (Forms\Get $get) => Listing::CATEGORY_TYPES[$get('category')] ?? [])
+                                                    ->visible(fn (Forms\Get $get) => isset(Listing::CATEGORY_TYPES[$get('category')]))
+                                                    ->required(fn (Forms\Get $get) => isset(Listing::CATEGORY_TYPES[$get('category')]))
                                                     ->native(false)
                                                     ->placeholder('Selectionner le type...'),
                                                 Forms\Components\Select::make('etat')
@@ -673,7 +673,13 @@ class ListingResource extends Resource
                     ->label('Type')
                     ->badge()
                     ->color('gray')
-                    ->formatStateUsing(fn (?string $state): string => Listing::BOAT_TYPES[$state] ?? ($state ?? '-'))
+                    ->formatStateUsing(function (?string $state): string {
+                        if (!$state) return '-';
+                        foreach (Listing::CATEGORY_TYPES as $map) {
+                            if (isset($map[$state])) return $map[$state];
+                        }
+                        return $state;
+                    })
                     ->placeholder('-')
                     ->toggleable(isToggledHiddenByDefault: true),
 
@@ -847,8 +853,8 @@ class ListingResource extends Resource
                     ->indicator('Categorie'),
 
                 Tables\Filters\SelectFilter::make('type')
-                    ->label('Type de bateau')
-                    ->options(Listing::BOAT_TYPES)
+                    ->label('Type')
+                    ->options(array_merge(Listing::BOAT_TYPES, Listing::JETSKI_TYPES))
                     ->indicator('Type'),
 
                 Tables\Filters\SelectFilter::make('etat')

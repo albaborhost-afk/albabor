@@ -229,7 +229,7 @@
                             ] as $value => $cat)
                                 <label class="relative cursor-pointer">
                                     <input type="radio" name="category" value="{{ $value }}"
-                                           x-model="category" @change="if(category !== 'boat') boatType = ''; if(category === 'boat') $nextTick(() => { document.getElementById('boat-type-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) })" class="peer sr-only" required>
+                                           x-model="category" @change="if(category !== 'boat') boatType = ''; if(category !== 'jetski') jetskiType = ''; if(category === 'boat') $nextTick(() => { document.getElementById('boat-type-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }); if(category === 'jetski') $nextTick(() => { document.getElementById('jetski-type-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) })" class="peer sr-only" required>
                                     <div class="category-card-{{ $value }}">
                                         <div class="checkmark absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
                                              style="background: #17A2B8; display: none; box-shadow: 0 2px 8px rgba(23,162,184,0.4);">
@@ -293,6 +293,25 @@
                         @error('type')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
+                    </div>
+
+                    {{-- Type de Jet-ski (visible only when category is jetski) --}}
+                    <div id="jetski-type-section" class="mt-4 bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);" x-show="category === 'jetski'" x-transition>
+                        <h2 class="text-base font-semibold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
+                            <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-bold" style="background: linear-gradient(135deg, #17A2B8, #48C9B0);">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </span>
+                            Type de Jet-ski *
+                        </h2>
+                        <select name="type" x-model="jetskiType"
+                                class="glass-input w-full rounded-xl px-4 py-3 text-sm"
+                                :required="category === 'jetski'"
+                                :disabled="category !== 'jetski'">
+                            <option value="">-- Choisir le type de jet-ski --</option>
+                            @foreach(\App\Models\Listing::JETSKI_TYPES as $slug => $label)
+                                <option value="{{ $slug }}" {{ old('type') == $slug ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 
@@ -1365,7 +1384,8 @@
             return {
                 currentStep: {{ $startStep ?? 1 }},
                 category: '{{ old('category', '') }}',
-                boatType: '{{ old('type', '') }}',
+                boatType: '{{ in_array(old('type'), array_keys(\App\Models\Listing::BOAT_TYPES)) ? old('type') : '' }}',
+                jetskiType: '{{ in_array(old('type'), array_keys(\App\Models\Listing::JETSKI_TYPES)) ? old('type') : '' }}',
                 currency: '{{ old('currency', 'DZD') }}',
                 hasRemorque: '{{ old('specs.extras.remorque', '') }}',
                 hasPort: '{{ old('specs.extras.place_au_port', '') }}',
@@ -1417,6 +1437,7 @@
                             _step: this.currentStep,
                             _category: this.category,
                             _boatType: this.boatType,
+                            _jetskiType: this.jetskiType,
                             _currency: this.currency,
                             _hasRemorque: this.hasRemorque,
                             _hasPort: this.hasPort,
@@ -1449,6 +1470,7 @@
                         // Restore Alpine reactive properties first (controls visibility)
                         if (state._category) this.category = state._category;
                         if (state._boatType) this.boatType = state._boatType;
+                        if (state._jetskiType) this.jetskiType = state._jetskiType;
                         if (state._currency) this.currency = state._currency;
                         if (state._hasRemorque) this.hasRemorque = state._hasRemorque;
                         if (state._hasPort) this.hasPort = state._hasPort;
@@ -1694,6 +1716,9 @@
                             errors.push('Veuillez choisir une catégorie.');
                         } else if (this.category === 'boat' && !this.boatType) {
                             errors.push('Veuillez choisir le type de bateau.');
+                            this.markField('type');
+                        } else if (this.category === 'jetski' && !this.jetskiType) {
+                            errors.push('Veuillez choisir le type de jet-ski.');
                             this.markField('type');
                         } else if ((this.category === 'engine' || this.category === 'parts') && !this.canPublishEngineOrParts) {
                             errors.push('Un abonnement actif est requis pour publier des moteurs et pièces.');
