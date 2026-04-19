@@ -299,8 +299,6 @@
     </div>
     @endif
 
-</div>
-
 {{-- ─── Blur / Pixelate Editor Modal ─────────────────────────────────── --}}
 <div
     x-show="blurOpen"
@@ -412,6 +410,9 @@
         </button>
     </div>
 </div>
+
+</div>
+
 
 {{-- ─── Alpine Component ─────────────────────────────────────────────── --}}
 <script>
