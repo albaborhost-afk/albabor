@@ -168,12 +168,12 @@ class Listing extends Model
     }
 
     /**
-     * Hide seller contact info based on the viewer's auth state and mediation settings.
+     * Hide seller contact info based on mediation settings.
      *
      * Rules:
      * - Owner or admin: see everything
-     * - Guest (unauthenticated): hide phone + email on listing AND on loaded user relation
-     * - Authenticated + mediation_enabled: hide listing phone fields
+     * - mediation_enabled ON: hide phone/WhatsApp/email (contact goes through mediation ticket)
+     * - mediation_enabled OFF: everyone (including guests) can see contact info
      */
     public function applyContactVisibility(?User $viewer): self
     {
@@ -181,16 +181,6 @@ class Listing extends Model
         $isAdmin = $viewer && method_exists($viewer, 'isAdmin') && $viewer->isAdmin();
 
         if ($isOwner || $isAdmin) {
-            return $this;
-        }
-
-        if (!$viewer) {
-            $this->makeHidden(['numero_whatsapp', 'numero_mobile', 'contact_email']);
-
-            if ($this->relationLoaded('user') && $this->user) {
-                $this->user->makeHidden(['phone', 'email']);
-            }
-
             return $this;
         }
 
