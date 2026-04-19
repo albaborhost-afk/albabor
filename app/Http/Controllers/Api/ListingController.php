@@ -132,15 +132,10 @@ class ListingController extends Controller
             });
         }
 
-        // Hide seller contact info when mediation is enabled (non-owner, non-admin)
+        // Hide seller contact info (guests always; authenticated per mediation rules)
         $requestUser = $request->user();
         $listings->getCollection()->transform(function ($listing) use ($requestUser) {
-            if ($listing->mediation_enabled) {
-                if (!$requestUser || ($requestUser->id !== $listing->user_id && !$requestUser->isAdmin())) {
-                    $listing->makeHidden(['numero_whatsapp', 'numero_mobile']);
-                }
-            }
-            return $listing;
+            return $listing->applyContactVisibility($requestUser);
         });
 
         return response()->json($listings);
@@ -159,15 +154,10 @@ class ListingController extends Controller
             ->limit(10)
             ->get();
 
-        // Hide seller contact info when mediation is enabled (non-owner, non-admin)
+        // Hide seller contact info (guests always; authenticated per mediation rules)
         $requestUser = $request->user();
         $listings->transform(function ($listing) use ($requestUser) {
-            if ($listing->mediation_enabled) {
-                if (!$requestUser || ($requestUser->id !== $listing->user_id && !$requestUser->isAdmin())) {
-                    $listing->makeHidden(['numero_whatsapp', 'numero_mobile']);
-                }
-            }
-            return $listing;
+            return $listing->applyContactVisibility($requestUser);
         });
 
         return response()->json([
@@ -210,13 +200,10 @@ class ListingController extends Controller
             $isFavorited = $user->hasFavorited($listing);
         }
 
-        // Hide seller contact info when mediation is enabled (non-owner, non-admin)
-        if ($listing->mediation_enabled) {
-            $requestUser = $request->user();
-            if (!$requestUser || ($requestUser->id !== $listing->user_id && !$requestUser->isAdmin())) {
-                $listing->makeHidden(['numero_whatsapp', 'numero_mobile']);
-            }
-        }
+        // Hide seller contact info (guests always; authenticated per mediation rules)
+        $requestUser = $request->user();
+        $listing->applyContactVisibility($requestUser);
+        $relatedListings->transform(fn ($r) => $r->applyContactVisibility($requestUser));
 
         return response()->json([
             'listing' => $listing,
@@ -607,13 +594,19 @@ class ListingController extends Controller
     /**
      * Profil vendeur : informations utilisateur + ses annonces actives.
      */
-    public function vendorProfile(User $user): JsonResponse
+    public function vendorProfile(Request $request, User $user): JsonResponse
     {
         $listings = $user->listings()
             ->with('media')
             ->active()
             ->orderBy('created_at', 'desc')
             ->paginate(20);
+
+        // Hide seller contact info (guests always; authenticated per mediation rules)
+        $requestUser = $request->user();
+        $listings->getCollection()->transform(function ($listing) use ($requestUser) {
+            return $listing->applyContactVisibility($requestUser);
+        });
 
         return response()->json([
             'user' => [

@@ -167,6 +167,44 @@ class Listing extends Model
         return $this->published_until && $this->published_until->isPast();
     }
 
+    /**
+     * Hide seller contact info based on the viewer's auth state and mediation settings.
+     *
+     * Rules:
+     * - Owner or admin: see everything
+     * - Guest (unauthenticated): hide phone + email on listing AND on loaded user relation
+     * - Authenticated + mediation_enabled: hide listing phone fields
+     */
+    public function applyContactVisibility(?User $viewer): self
+    {
+        $isOwner = $viewer && $viewer->id === $this->user_id;
+        $isAdmin = $viewer && method_exists($viewer, 'isAdmin') && $viewer->isAdmin();
+
+        if ($isOwner || $isAdmin) {
+            return $this;
+        }
+
+        if (!$viewer) {
+            $this->makeHidden(['numero_whatsapp', 'numero_mobile', 'contact_email']);
+
+            if ($this->relationLoaded('user') && $this->user) {
+                $this->user->makeHidden(['phone', 'email']);
+            }
+
+            return $this;
+        }
+
+        if ($this->mediation_enabled) {
+            $this->makeHidden(['numero_whatsapp', 'numero_mobile', 'contact_email']);
+
+            if ($this->relationLoaded('user') && $this->user) {
+                $this->user->makeHidden(['phone']);
+            }
+        }
+
+        return $this;
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active')
