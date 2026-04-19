@@ -545,47 +545,28 @@ main {
    SCROLL-REVEAL ANIMATIONS
    ============================================ */
 
-.reveal {
-    opacity: 0;
-    transform: translateY(48px);
-    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: opacity, transform;
-}
-
-.reveal.active {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.reveal-left {
-    opacity: 0;
-    transform: translateX(-48px);
-    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: opacity, transform;
-}
-
-.reveal-left.active {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.reveal-right {
-    opacity: 0;
-    transform: translateX(48px);
-    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: opacity, transform;
-}
-
-.reveal-right.active {
-    opacity: 1;
-    transform: translateX(0);
-}
-
+.reveal,
+.reveal-left,
+.reveal-right,
 .reveal-scale {
-    opacity: 0;
-    transform: scale(0.88) translateY(20px);
+    opacity: 1;
+    transform: none;
     transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
+}
+
+/* When JS has booted (html.js), start hidden so the entrance animation can play. */
+html.js .reveal      { opacity: 0; transform: translateY(48px); }
+html.js .reveal-left { opacity: 0; transform: translateX(-48px); }
+html.js .reveal-right{ opacity: 0; transform: translateX(48px); }
+html.js .reveal-scale{ opacity: 0; transform: scale(0.88) translateY(20px); }
+
+html.js .reveal.active,
+html.js .reveal-left.active,
+html.js .reveal-right.active,
+html.js .reveal-scale.active {
+    opacity: 1;
+    transform: none;
 }
 
 .reveal-scale.active {
