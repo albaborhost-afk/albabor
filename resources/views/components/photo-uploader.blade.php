@@ -176,6 +176,29 @@
                                 </svg>
                             </button>
 
+                            {{-- Blur/Pixelate button --}}
+                            <button
+                                type="button"
+                                @click.stop="openBlurEditor(index)"
+                                x-show="supportsManagedFiles"
+                                x-cloak
+                                class="absolute bottom-5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
+                                style="background:rgba(27,79,114,0.9); color:white;"
+                                title="Flouter une zone (immatriculation...)"
+                            >
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 2h4v4H2zm0 6h4v4H2zm0 6h4v4H2zm6-12h4v4H8zm0 6h4v4H8zm0 6h4v4H8zm6-12h4v4h-4zm0 6h4v4h-4zm0 6h4v4h-4z"/>
+                                </svg>
+                            </button>
+
+                            {{-- "Flou" badge when blurred --}}
+                            <div
+                                x-show="file.blurred"
+                                x-cloak
+                                class="absolute bottom-5 left-1.5 px-1.5 py-0.5 rounded-lg text-[9px] font-bold text-white"
+                                style="background:rgba(27,79,114,0.9); backdrop-filter:blur(4px);"
+                            >🔒 Flou</div>
+
                             {{-- File size --}}
                             <p class="text-[9px] text-center mt-0.5 truncate px-0.5" style="color:#9BA8B7;" x-text="formatSize(file.size)"></p>
                         </div>
@@ -278,6 +301,118 @@
 
 </div>
 
+{{-- ─── Blur / Pixelate Editor Modal ─────────────────────────────────── --}}
+<div
+    x-show="blurOpen"
+    x-cloak
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-[9999] flex flex-col select-none"
+    style="background:rgba(8,12,22,0.97); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);"
+    @keydown.escape.window="blurOpen = false"
+>
+    {{-- Header --}}
+    <div class="flex items-center justify-between px-4 py-3 flex-shrink-0" style="border-bottom:1px solid rgba(255,255,255,0.07);">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#1B4F72,#17A2B8);">
+                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 2h4v4H2zm0 6h4v4H2zm0 6h4v4H2zm6-12h4v4H8zm0 6h4v4H8zm0 6h4v4H8zm6-12h4v4h-4zm0 6h4v4h-4zm0 6h4v4h-4z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-white font-semibold text-sm leading-tight">Flouter une zone privée</p>
+                <p class="text-[11px] leading-tight" style="color:#6B8CA8;">Glissez pour masquer l'immatriculation ou toute info sensible</p>
+            </div>
+        </div>
+        <button
+            type="button"
+            @click="blurOpen = false"
+            class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all hover:scale-105"
+            style="background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.6);"
+        >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+
+    {{-- Canvas --}}
+    <div class="flex-1 flex items-center justify-center p-3 overflow-hidden">
+        <canvas
+            x-ref="blurCanvas"
+            class="rounded-2xl max-w-full max-h-full"
+            style="cursor:crosshair; touch-action:none; display:block; box-shadow:0 0 0 1px rgba(255,255,255,0.06);"
+            @mousedown="blurDown($event)"
+            @mousemove="blurMove($event)"
+            @mouseup="blurUp($event)"
+            @mouseleave="blurUp($event)"
+            @touchstart.prevent="blurDown($event)"
+            @touchmove.prevent="blurMove($event)"
+            @touchend.prevent="blurUp($event)"
+        ></canvas>
+    </div>
+
+    {{-- Footer toolbar --}}
+    <div class="flex items-center gap-2 px-4 py-3 flex-shrink-0" style="border-top:1px solid rgba(255,255,255,0.07);">
+        {{-- Undo --}}
+        <button
+            type="button"
+            @click="blurUndo()"
+            :disabled="blurHistory.length <= 1"
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all"
+            style="background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.65);"
+            :class="blurHistory.length <= 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/10'"
+        >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+            </svg>
+            Annuler
+        </button>
+
+        {{-- Reset --}}
+        <button
+            type="button"
+            @click="blurReset()"
+            :disabled="blurHistory.length <= 1"
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all"
+            style="background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.65);"
+            :class="blurHistory.length <= 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/10'"
+        >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Réinitialiser
+        </button>
+
+        <div class="flex-1"></div>
+
+        {{-- Zones counter --}}
+        <span
+            x-show="blurHistory.length > 1"
+            class="text-[11px] font-medium px-2 py-1 rounded-lg"
+            style="background:rgba(23,162,184,0.15); color:#17A2B8;"
+            x-text="(blurHistory.length - 1) + ' zone' + (blurHistory.length > 2 ? 's' : '') + ' floutée' + (blurHistory.length > 2 ? 's' : '')"
+        ></span>
+
+        {{-- Save --}}
+        <button
+            type="button"
+            @click="blurSave()"
+            class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:scale-105"
+            style="background:linear-gradient(135deg,#1B4F72,#17A2B8); box-shadow:0 4px 14px rgba(23,162,184,0.35);"
+        >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            Terminer & Enregistrer
+        </button>
+    </div>
+</div>
+
 {{-- ─── Alpine Component ─────────────────────────────────────────────── --}}
 <script>
 if (typeof photoUploader === 'undefined') {
@@ -293,6 +428,17 @@ if (typeof photoUploader === 'undefined') {
             isProcessing: false,
             processedCount: 0,
             totalToProcess: 0,
+
+            // ── Blur / Pixelate editor ──
+            blurOpen: false,
+            blurIdx: null,
+            blurCanvas: null,
+            blurCtx: null,
+            blurImg: null,
+            blurHistory: [],
+            blurDragging: false,
+            blurSx: 0, blurSy: 0,
+            blurRect: null,
 
             get slotsLeft() {
                 return Math.max(0, this.maxFiles - this.files.length);
@@ -745,7 +891,167 @@ if (typeof photoUploader === 'undefined') {
             formatSize(bytes) {
                 if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' Ko';
                 return (bytes / (1024 * 1024)).toFixed(1) + ' Mo';
-            }
+            },
+
+            // ── Blur / Pixelate editor ──────────────────────────────────────
+
+            openBlurEditor(index) {
+                this.blurIdx = index;
+                this.blurHistory = [];
+                this.blurDragging = false;
+                this.blurRect = null;
+                this.blurOpen = true;
+                this.$nextTick(() => this.blurInit());
+            },
+
+            blurInit() {
+                const canvas = this.$refs.blurCanvas;
+                if (!canvas) return;
+                this.blurCanvas = canvas;
+                this.blurCtx = canvas.getContext('2d');
+                const f = this.files[this.blurIdx];
+                if (!f) return;
+                const img = new Image();
+                const url = URL.createObjectURL(f.file);
+                img.onload = () => {
+                    canvas.width = img.naturalWidth;
+                    canvas.height = img.naturalHeight;
+                    this.blurCtx.drawImage(img, 0, 0);
+                    this.blurImg = img;
+                    this.blurHistory = [this.blurCtx.getImageData(0, 0, canvas.width, canvas.height)];
+                    URL.revokeObjectURL(url);
+                };
+                img.src = url;
+            },
+
+            blurCoords(e) {
+                const canvas = this.blurCanvas;
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const src = e.touches ? e.touches[0] : e;
+                return {
+                    x: (src.clientX - rect.left) * scaleX,
+                    y: (src.clientY - rect.top) * scaleY,
+                };
+            },
+
+            blurDown(e) {
+                e.preventDefault();
+                const {x, y} = this.blurCoords(e);
+                this.blurDragging = true;
+                this.blurSx = x; this.blurSy = y;
+                this.blurRect = {x, y, w: 0, h: 0};
+            },
+
+            blurMove(e) {
+                if (!this.blurDragging) return;
+                e.preventDefault();
+                const {x, y} = this.blurCoords(e);
+                const rx = Math.min(x, this.blurSx);
+                const ry = Math.min(y, this.blurSy);
+                const rw = Math.abs(x - this.blurSx);
+                const rh = Math.abs(y - this.blurSy);
+                this.blurRect = {x: rx, y: ry, w: rw, h: rh};
+                // Preview: restore last committed state, draw selection rect
+                const last = this.blurHistory[this.blurHistory.length - 1];
+                this.blurCtx.putImageData(last, 0, 0);
+                if (rw > 5 && rh > 5) {
+                    const lw = Math.max(2, Math.round(this.blurCanvas.width / 300));
+                    this.blurCtx.save();
+                    this.blurCtx.strokeStyle = 'rgba(255,255,255,0.95)';
+                    this.blurCtx.lineWidth = lw;
+                    this.blurCtx.setLineDash([lw * 4, lw * 2]);
+                    this.blurCtx.strokeRect(rx + lw/2, ry + lw/2, rw - lw, rh - lw);
+                    this.blurCtx.fillStyle = 'rgba(255,255,255,0.12)';
+                    this.blurCtx.fillRect(rx, ry, rw, rh);
+                    this.blurCtx.restore();
+                    this.blurCtx.setLineDash([]);
+                }
+            },
+
+            blurUp(e) {
+                if (!this.blurDragging) return;
+                this.blurDragging = false;
+                const r = this.blurRect;
+                this.blurRect = null;
+                if (r && r.w > 10 && r.h > 10) {
+                    this.blurApply(Math.round(r.x), Math.round(r.y), Math.round(r.w), Math.round(r.h));
+                } else {
+                    // Redraw clean if drag was too small
+                    const last = this.blurHistory[this.blurHistory.length - 1];
+                    this.blurCtx.putImageData(last, 0, 0);
+                }
+            },
+
+            blurApply(x, y, w, h) {
+                const ctx = this.blurCtx;
+                const canvas = this.blurCanvas;
+                // Clamp to canvas bounds
+                x = Math.max(0, x); y = Math.max(0, y);
+                w = Math.min(w, canvas.width - x);
+                h = Math.min(h, canvas.height - y);
+                if (w <= 0 || h <= 0) return;
+                // Pixelation: replace each NxN block with its average colour
+                const ps = Math.max(10, Math.floor(Math.min(canvas.width, canvas.height) / 35));
+                const imgData = ctx.getImageData(x, y, w, h);
+                const d = imgData.data;
+                for (let py = 0; py < h; py += ps) {
+                    for (let px = 0; px < w; px += ps) {
+                        let r = 0, g = 0, b = 0, n = 0;
+                        const bh = Math.min(ps, h - py);
+                        const bw = Math.min(ps, w - px);
+                        for (let dy = 0; dy < bh; dy++) {
+                            for (let dx = 0; dx < bw; dx++) {
+                                const i = ((py + dy) * w + (px + dx)) * 4;
+                                r += d[i]; g += d[i+1]; b += d[i+2]; n++;
+                            }
+                        }
+                        r = Math.round(r/n); g = Math.round(g/n); b = Math.round(b/n);
+                        for (let dy = 0; dy < bh; dy++) {
+                            for (let dx = 0; dx < bw; dx++) {
+                                const i = ((py + dy) * w + (px + dx)) * 4;
+                                d[i] = r; d[i+1] = g; d[i+2] = b; d[i+3] = 255;
+                            }
+                        }
+                    }
+                }
+                ctx.putImageData(imgData, x, y);
+                // Commit to history
+                this.blurHistory.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+            },
+
+            blurUndo() {
+                if (this.blurHistory.length <= 1) return;
+                this.blurHistory.pop();
+                this.blurCtx.putImageData(this.blurHistory[this.blurHistory.length - 1], 0, 0);
+            },
+
+            blurReset() {
+                if (this.blurHistory.length === 0) return;
+                this.blurHistory = [this.blurHistory[0]];
+                this.blurCtx.putImageData(this.blurHistory[0], 0, 0);
+            },
+
+            blurSave() {
+                const canvas = this.blurCanvas;
+                canvas.toBlob((blob) => {
+                    if (!blob) { this.blurOpen = false; return; }
+                    const orig = this.files[this.blurIdx];
+                    URL.revokeObjectURL(orig.preview);
+                    const newFile = new File([blob], orig.name, {type: 'image/jpeg', lastModified: Date.now()});
+                    this.files[this.blurIdx] = {
+                        ...orig,
+                        file: newFile,
+                        preview: URL.createObjectURL(newFile),
+                        size: newFile.size,
+                        blurred: true,
+                    };
+                    this.syncInput();
+                    this.persistFiles();
+                    this.blurOpen = false;
+                }, 'image/jpeg', 0.92);
+            },
         };
     }
 }
