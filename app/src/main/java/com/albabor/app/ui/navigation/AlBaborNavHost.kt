@@ -3,6 +3,7 @@ package com.albabor.app.ui.navigation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
@@ -26,9 +27,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.albabor.app.data.network.NetworkModule
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -74,6 +77,7 @@ data class BottomNavItem(
     val label: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
+    val badgeCount: Int = 0,
 )
 
 @Composable
@@ -92,10 +96,21 @@ fun AlBaborNavHost() {
 
     val startDestination = if (loggedIn) Screen.Home.route else Screen.Login.route
 
+    // Unread messages count for badge
+    var unreadMessages by remember { mutableIntStateOf(0) }
+    LaunchedEffect(loggedIn) {
+        if (loggedIn) {
+            runCatching { NetworkModule.apiService.getUnreadCount() }
+                .onSuccess { response ->
+                    unreadMessages = response.body()?.unreadCount ?: 0
+                }
+        }
+    }
+
     val bottomNavItems = listOf(
         BottomNavItem(Screen.Home, "Accueil", Icons.Filled.Home, Icons.Outlined.Home),
         BottomNavItem(Screen.Explore, "Explorer", Icons.Filled.Search, Icons.Outlined.Search),
-        BottomNavItem(Screen.Conversations, "Messages", Icons.AutoMirrored.Filled.Chat, Icons.Outlined.ChatBubbleOutline),
+        BottomNavItem(Screen.Conversations, "Messages", Icons.AutoMirrored.Filled.Chat, Icons.Outlined.ChatBubbleOutline, badgeCount = unreadMessages),
         BottomNavItem(Screen.CreateListing, "Publier", Icons.Filled.Add, Icons.Filled.Add),
         BottomNavItem(Screen.Favorites, "Favoris", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder),
         BottomNavItem(Screen.Profile, "Profil", Icons.Filled.Person, Icons.Outlined.Person),
@@ -377,6 +392,26 @@ private fun NavTabItem(
                     .size(22.dp)
                     .scale(iconScale)
             )
+            // Unread badge
+            if (item.badgeCount > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = 6.dp, y = (-4).dp)
+                        .defaultMinSize(minWidth = 15.dp, minHeight = 15.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFE74C3C)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (item.badgeCount > 99) "99+" else item.badgeCount.toString(),
+                        color = White,
+                        fontSize = 8.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 2.dp)
+                    )
+                }
+            }
         }
         Text(
             text = item.label,

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.NotificationsNone
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
@@ -84,6 +85,7 @@ fun HomeScreen(
     val featured by viewModel.featured.collectAsStateWithLifecycle()
     val latest by viewModel.latest.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val unreadCount by viewModel.unreadCount.collectAsStateWithLifecycle()
 
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     val refreshState = rememberPullToRefreshState()
@@ -211,7 +213,8 @@ fun HomeScreen(
 
             HomeHeader(
                 onSearchClick = { navController.navigate(Screen.Explore.route) },
-                onNotificationsClick = { }
+                onNotificationsClick = { navController.navigate(Screen.Conversations.route) },
+                unreadCount = unreadCount
             )
         }
     }
@@ -220,7 +223,8 @@ fun HomeScreen(
 @Composable
 private fun HomeHeader(
     onSearchClick: () -> Unit,
-    onNotificationsClick: () -> Unit
+    onNotificationsClick: () -> Unit,
+    unreadCount: Int = 0,
 ) {
     val hour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
     val greeting = when (hour) {
@@ -291,16 +295,40 @@ private fun HomeHeader(
                 modifier = Modifier
                     .size(42.dp)
                     .clip(CircleShape)
-                    .background(White.copy(alpha = 0.18f))
+                    .background(
+                        if (unreadCount > 0) White.copy(alpha = 0.28f)
+                        else White.copy(alpha = 0.18f)
+                    )
                     .clickable(onClick = onNotificationsClick),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Notifications,
+                    imageVector = if (unreadCount > 0) Icons.Filled.Notifications
+                                  else Icons.Filled.NotificationsNone,
                     contentDescription = "Notifications",
                     tint = White,
                     modifier = Modifier.size(18.dp)
                 )
+                // Red badge dot with count
+                if (unreadCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = 2.dp, y = (-2).dp)
+                            .defaultMinSize(minWidth = 16.dp, minHeight = 16.dp)
+                            .clip(CircleShape)
+                            .background(Coral500),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (unreadCount > 99) "99+" else unreadCount.toString(),
+                            color = White,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 2.dp)
+                        )
+                    }
+                }
             }
         }
 

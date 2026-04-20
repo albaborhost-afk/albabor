@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.albabor.app.data.model.Listing
 import com.albabor.app.data.model.ListingFilters
+import com.albabor.app.data.network.NetworkModule
 import com.albabor.app.data.repository.ListingRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +26,9 @@ class HomeViewModel : ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    private val _unreadCount = MutableStateFlow(0)
+    val unreadCount: StateFlow<Int> = _unreadCount.asStateFlow()
+
     init { loadData() }
 
     fun loadData() {
@@ -38,6 +42,18 @@ class HomeViewModel : ViewModel() {
                 .onSuccess { _latest.value = it.data }
                 .onFailure { if (_error.value == null) _error.value = it.message }
             _isLoading.value = false
+        }
+        loadUnreadCount()
+    }
+
+    fun loadUnreadCount() {
+        viewModelScope.launch {
+            runCatching { NetworkModule.apiService.getUnreadCount() }
+                .onSuccess { response ->
+                    if (response.isSuccessful) {
+                        _unreadCount.value = response.body()?.unreadCount ?: 0
+                    }
+                }
         }
     }
 

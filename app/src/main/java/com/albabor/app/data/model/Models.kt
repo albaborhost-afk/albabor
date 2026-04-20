@@ -404,6 +404,10 @@ data class ToggleFavoriteResponse(
     val count: Int = 0,
 )
 
+data class UnreadCountResponse(
+    @SerializedName("unread_count") val unreadCount: Int = 0,
+)
+
 // ─── Listing filter params ────────────────────────────────────────────────────
 
 data class ListingFilters(

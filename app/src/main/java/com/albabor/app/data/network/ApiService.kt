@@ -158,6 +158,9 @@ interface ApiService {
 
     // ─── Conversations ────────────────────────────────────────────────────────
 
+    @GET("conversations/unread-count")
+    suspend fun getUnreadCount(): Response<UnreadCountResponse>
+
     @GET("conversations")
     suspend fun getConversations(): Response<PaginatedResponse<Conversation>>
 
