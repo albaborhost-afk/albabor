@@ -601,7 +601,10 @@ private fun HomeRecentListingCard(
                     .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp))
             ) {
                 SubcomposeAsyncImage(
-                    model = listing.primaryImage,
+                    model = coil.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
+                        .data(listing.primaryImage)
+                        .size(coil.size.Size.ORIGINAL)
+                        .build(),
                     contentDescription = listing.title,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,

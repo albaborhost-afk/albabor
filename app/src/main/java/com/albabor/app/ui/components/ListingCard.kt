@@ -62,7 +62,10 @@ fun ListingCard(
                     .height(GridCardImageHeight)
             ) {
                 SubcomposeAsyncImage(
-                    model              = listing.primaryImage,
+                    model              = coil.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
+                        .data(listing.primaryImage)
+                        .size(coil.size.Size.ORIGINAL)
+                        .build(),
                     contentDescription = listing.title,
                     contentScale       = ContentScale.Crop,
                     modifier           = Modifier.fillMaxSize().clip(

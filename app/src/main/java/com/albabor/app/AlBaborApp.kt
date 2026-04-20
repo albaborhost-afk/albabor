@@ -44,16 +44,17 @@ class AlBaborApp : Application(), ImageLoaderFactory {
             .okHttpClient(okHttpClient)
             .memoryCache {
                 MemoryCache.Builder(this)
-                    .maxSizePercent(0.25)
+                    .maxSizePercent(0.30)   // 30% of available RAM for image memory cache
                     .build()
             }
             .diskCache {
                 DiskCache.Builder()
                     .directory(cacheDir.resolve("image_cache"))
-                    .maxSizePercent(0.02)
+                    .maxSizePercent(0.05)   // 5% of cache dir (~50-100 MB) for disk cache
                     .build()
             }
             .crossfade(true)
+            .allowHardware(true)           // GPU-backed bitmaps for sharper rendering
             .build()
     }
 }

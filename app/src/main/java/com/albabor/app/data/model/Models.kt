@@ -190,10 +190,15 @@ data class ListingImage(
         get() = url.ifNotBlank()?.ensureAbsoluteUrl()
             ?: mediaRouteBase
 
+    // Full-resolution URL for cards — thumbnail is only 300px and blurs on large views
     val cardUrl: String?
-        get() = thumbnailUrl.ifNotBlank()?.ensureAbsoluteUrl()
-            ?: mediaRouteBase?.let { "$it/thumb" }
+        get() = url.ifNotBlank()?.ensureAbsoluteUrl()
             ?: detailUrl
+            ?: thumbnailUrl.ifNotBlank()?.ensureAbsoluteUrl()
+
+    val thumbUrl: String?
+        get() = thumbnailUrl.ifNotBlank()?.ensureAbsoluteUrl()
+            ?: cardUrl
 }
 
 data class ListingUser(
