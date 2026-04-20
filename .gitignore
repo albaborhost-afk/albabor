@@ -11,3 +11,11 @@ local.properties
 
 # macOS
 .DS_Store
+
+# Keystore — NEVER commit
+*.jks
+*.keystore
+keystore/*.jks
+keystore/*.keystore
+keystore.properties
+signing.properties

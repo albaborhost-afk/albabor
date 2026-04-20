@@ -40,7 +40,23 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+
+    signingConfigs {
+        create("release") {
+            // Set these in local.properties or environment variables — never commit keystore
+            storeFile = file(System.getenv("KEYSTORE_PATH") ?: "keystore/albabor-release.jks")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
+            keyAlias = System.getenv("KEY_ALIAS") ?: "albabor"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+        }
+    }
+}
+
+// Override release build type to attach signing config
+android.buildTypes.getByName("release") {
+    signingConfig = android.signingConfigs.getByName("release")
 }
 
 dependencies {
