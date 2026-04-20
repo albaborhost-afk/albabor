@@ -1,5 +1,9 @@
 package com.albabor.app.ui.screens.explore
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -212,6 +216,8 @@ private fun ExploreFilterPanel(
     onOpenFilters: () -> Unit,
     focusReq: FocusRequester
 ) {
+    var filtersExpanded by remember { mutableStateOf(false) }
+
     Surface(
         Modifier.fillMaxWidth(),
         color           = Color.White,
@@ -221,7 +227,7 @@ private fun ExploreFilterPanel(
             Modifier.fillMaxWidth()
                 .statusBarsPadding()
                 .padding(horizontal = 12.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row(
                 Modifier.fillMaxWidth(),
@@ -293,134 +299,149 @@ private fun ExploreFilterPanel(
                 }
             }
 
-            Column(
-                Modifier.fillMaxWidth()
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(Color.White, OceanBlue50.copy(alpha = 0.9f))
-                        )
-                    )
-                    .padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            // ── Compact filter bar (always visible) ─────────────────────
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                // Filtres toggle chip
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(999.dp))
+                        .clickable { filtersExpanded = !filtersExpanded },
+                    shape = RoundedCornerShape(999.dp),
+                    color = if (filtersExpanded) OceanBlue700 else OceanBlue50,
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        if (filtersExpanded) OceanBlue700 else OceanBlue100
+                    )
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text(
-                            "Recherche et filtres",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = OceanBlue900,
-                            fontWeight = FontWeight.Bold
+                    Row(
+                        Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Tune,
+                            null,
+                            tint = if (filtersExpanded) Color.White else OceanBlue700,
+                            modifier = Modifier.size(15.dp)
                         )
                         Text(
-                            "Affinez rapidement les annonces",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Gray500
+                            if (activeCount > 0) "Filtres ($activeCount)" else "Filtres",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = if (filtersExpanded) Color.White else OceanBlue700,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Icon(
+                            if (filtersExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                            null,
+                            tint = if (filtersExpanded) Color.White else OceanBlue700,
+                            modifier = Modifier.size(15.dp)
                         )
                     }
+                }
 
-                    if (activeCount > 0) {
-                        Surface(
-                            color = OceanBlue700,
-                            shape = RoundedCornerShape(999.dp)
-                        ) {
-                            Text(
-                                "$activeCount actif${if (activeCount > 1) "s" else ""}",
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                                color = Color.White,
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
+                // Active filter chips (quick reset per filter)
+                if (activeCount > 0) {
+                    LazyRow(
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        filters.category?.let { cat ->
+                            item {
+                                ActiveChip(categoryLabel(cat)) { onReset() }
+                            }
+                        }
+                        filters.wilaya?.let { w ->
+                            item { ActiveChip(w) { onReset() } }
+                        }
+                        if (filters.minPrice != null || filters.maxPrice != null) {
+                            item { ActiveChip(priceLabel(filters) ?: "Prix") { onReset() } }
                         }
                     }
+                } else {
+                    Spacer(Modifier.weight(1f))
                 }
 
-                QuickFilterRow(
-                    FilterButtonUi(
-                        label = "Catégorie",
-                        value = filters.category?.let(::categoryLabel),
-                        active = filters.category != null
-                    ),
-                    FilterButtonUi(
-                        label = "Prix",
-                        value = priceLabel(filters),
-                        active = filters.minPrice != null || filters.maxPrice != null
-                    )
-                ) { button ->
-                    FilterGridButton(
-                        modifier = Modifier.weight(1f),
-                        ui = button,
-                        onClick = onOpenFilters
-                    )
-                }
-
-                QuickFilterRow(
-                    FilterButtonUi(
-                        label = "Pays",
-                        value = filters.wilaya,
-                        active = filters.wilaya != null
-                    ),
-                    FilterButtonUi(
-                        label = "État",
-                        value = filters.condition?.let(::conditionLabel),
-                        active = filters.condition != null
-                    )
-                ) { button ->
-                    FilterGridButton(
-                        modifier = Modifier.weight(1f),
-                        ui = button,
-                        onClick = onOpenFilters
-                    )
-                }
-
-                QuickFilterRow(
-                    FilterButtonUi(
-                        label = "Type d'offre",
-                        value = filters.offerType?.let(::offerTypeLabel),
-                        active = filters.offerType != null
-                    ),
-                    FilterButtonUi(
-                        label = "Trier",
-                        value = filters.sortBy?.takeIf { it != "recent" }?.let(::sortLabel),
-                        active = filters.sortBy != null && filters.sortBy != "recent"
-                    )
-                ) { button ->
-                    FilterGridButton(
-                        modifier = Modifier.weight(1f),
-                        ui = button,
-                        onClick = onOpenFilters
-                    )
-                }
-
-                QuickFilterRow(
-                    FilterButtonUi(
-                        label = if (activeCount > 0) "Filtres avancés ($activeCount)" else "Filtres avancés",
-                        active = activeCount > 0,
-                        accent = Teal500,
-                        outlined = true
-                    ),
-                    FilterButtonUi(
-                        label = "Réinitialiser",
-                        active = query.isNotBlank() || activeCount > 0,
-                        accent = Error500,
-                        outlined = true
-                    )
-                ) { button ->
-                    val action = when (button.label) {
-                        "Réinitialiser" -> onReset
-                        else -> onOpenFilters
+                // Reset button (visible when filters active)
+                if (activeCount > 0 || query.isNotBlank()) {
+                    Box(
+                        Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(Error500.copy(alpha = 0.1f))
+                            .clickable(onClick = onReset),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Filled.Close, "Réinitialiser", tint = Error500, modifier = Modifier.size(15.dp))
                     }
-                    FilterGridButton(
-                        modifier = Modifier.weight(1f),
-                        ui = button,
-                        onClick = action
-                    )
                 }
             }
+
+            // ── Expandable filter grid ────────────────────────────────────
+            AnimatedVisibility(
+                visible = filtersExpanded,
+                enter = expandVertically(animationSpec = tween(220)),
+                exit  = shrinkVertically(animationSpec = tween(180))
+            ) {
+                Column(
+                    Modifier.fillMaxWidth()
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Brush.verticalGradient(listOf(Color.White, OceanBlue50.copy(alpha = 0.9f))))
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    QuickFilterRow(
+                        FilterButtonUi("Catégorie", filters.category?.let(::categoryLabel), filters.category != null),
+                        FilterButtonUi("Prix", priceLabel(filters), filters.minPrice != null || filters.maxPrice != null)
+                    ) { button -> FilterGridButton(Modifier.weight(1f), button, onOpenFilters) }
+
+                    QuickFilterRow(
+                        FilterButtonUi("Pays", filters.wilaya, filters.wilaya != null),
+                        FilterButtonUi("État", filters.condition?.let(::conditionLabel), filters.condition != null)
+                    ) { button -> FilterGridButton(Modifier.weight(1f), button, onOpenFilters) }
+
+                    QuickFilterRow(
+                        FilterButtonUi("Type d'offre", filters.offerType?.let(::offerTypeLabel), filters.offerType != null),
+                        FilterButtonUi("Trier", filters.sortBy?.takeIf { it != "recent" }?.let(::sortLabel), filters.sortBy != null && filters.sortBy != "recent")
+                    ) { button -> FilterGridButton(Modifier.weight(1f), button, onOpenFilters) }
+
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        FilterGridButton(
+                            Modifier.weight(1f),
+                            FilterButtonUi(if (activeCount > 0) "Filtres avancés ($activeCount)" else "Filtres avancés", active = activeCount > 0, accent = Teal500, outlined = true),
+                            onClick = onOpenFilters
+                        )
+                        FilterGridButton(
+                            Modifier.weight(1f),
+                            FilterButtonUi("Réinitialiser", active = query.isNotBlank() || activeCount > 0, accent = Error500, outlined = true),
+                            onClick = { onReset(); filtersExpanded = false }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ActiveChip(label: String, onRemove: () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(999.dp),
+        color = OceanBlue700.copy(alpha = 0.1f)
+    ) {
+        Row(
+            Modifier.padding(start = 10.dp, end = 6.dp, top = 5.dp, bottom = 5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(label, style = MaterialTheme.typography.labelSmall, color = OceanBlue700, fontWeight = FontWeight.Medium)
+            Icon(Icons.Filled.Close, null, tint = OceanBlue700, modifier = Modifier.size(11.dp).clickable(onClick = onRemove))
         }
     }
 }
