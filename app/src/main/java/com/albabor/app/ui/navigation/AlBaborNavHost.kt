@@ -138,6 +138,11 @@ fun AlBaborNavHost() {
                             } else {
                                 navController.navigate(Screen.Login.route)
                             }
+                        } else if (item.screen == Screen.Home) {
+                            // Home is always the root — pop back to it directly
+                            if (!navController.popBackStack(Screen.Home.route, inclusive = false)) {
+                                navController.navigate(Screen.Home.route)
+                            }
                         } else {
                             val destination = when (item.screen) {
                                 Screen.Explore -> Screen.Explore.route()
