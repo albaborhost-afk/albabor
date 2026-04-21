@@ -298,21 +298,16 @@ private fun ListingItemRow(
                         expanded = menuExpanded,
                         onDismissRequest = { menuExpanded = false }
                     ) {
+                        // TODO v1.1: re-enable "Modifier" once CreateListingScreen supports edit-mode pre-fill.
+                        // For v1.0 we hide Edit to avoid the confusing "opens blank form and creates a duplicate" bug.
                         when (listing.status) {
                             "active" -> {
-                                MenuAction("Modifier",             OceanBlue700) { menuExpanded = false; onEdit() }
                                 MenuAction("Marquer comme vendu",  Success500)   { menuExpanded = false; onSold() }
                                 MenuAction("Mettre en pause",      Gold500)      { menuExpanded = false; onPause() }
                                 MenuAction("Supprimer",            Error500)     { menuExpanded = false; onDelete() }
                             }
                             "paused" -> {
                                 MenuAction("Reactiver", Success500)   { menuExpanded = false; onReactivate() }
-                                MenuAction("Modifier",  OceanBlue700) { menuExpanded = false; onEdit() }
-                                MenuAction("Supprimer", Error500)     { menuExpanded = false; onDelete() }
-                            }
-                            "draft" -> {
-                                MenuAction("Publier",   OceanBlue700) { menuExpanded = false; onEdit() }
-                                MenuAction("Modifier",  Gray700)      { menuExpanded = false; onEdit() }
                                 MenuAction("Supprimer", Error500)     { menuExpanded = false; onDelete() }
                             }
                             else -> {

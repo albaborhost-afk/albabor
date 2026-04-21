@@ -54,3 +54,17 @@
 # ── General safety ─────────────────────────────────────────────────────────
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
+
+# ── Kotlin Serialization ──────────────────────────────────────────────────
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.SerializationKt
+-keep,includedescriptorclasses class com.albabor.app.**$$serializer { *; }
+-keepclassmembers class com.albabor.app.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.albabor.app.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+# Preserve @Serializable classes
+-if @kotlinx.serialization.Serializable class **
+-keep,allowobfuscation,allowshrinking class <1>

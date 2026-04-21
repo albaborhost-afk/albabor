@@ -32,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.albabor.app.data.network.NetworkModule
+import com.albabor.app.data.network.SessionBus
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -104,6 +105,15 @@ fun AlBaborNavHost() {
                 .onSuccess { response ->
                     unreadMessages = response.body()?.unreadCount ?: 0
                 }
+        }
+    }
+
+    // Listen for 401 session expiry — kick the user back to the Login screen
+    LaunchedEffect(Unit) {
+        SessionBus.unauthorized.collect {
+            navController.navigate(Screen.Login.route) {
+                popUpTo(navController.graph.id) { inclusive = true }
+            }
         }
     }
 
@@ -230,16 +240,8 @@ fun AlBaborNavHost() {
             }
 
             // ── Edit listing ──────────────────────────────────────────────────────
-            composable(
-                route = Screen.EditListing.route,
-                arguments = listOf(navArgument("listingId") { type = NavType.IntType }),
-            ) { backStackEntry ->
-                val listingId = backStackEntry.arguments?.getInt("listingId") ?: return@composable
-                CreateListingScreen(
-                    onBack = { navController.popBackStack() },
-                    onSuccess = { navController.popBackStack() }
-                )
-            }
+            // TODO v1.1: wire up once CreateListingScreen supports edit-mode pre-fill.
+            // Route kept in Screen.kt for link continuity but intentionally NOT registered here in v1.0.
 
             // ── My Listings ───────────────────────────────────────────────────────
             composable(Screen.MyListings.route) {

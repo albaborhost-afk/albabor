@@ -8,8 +8,15 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -56,6 +63,38 @@ class AuthInterceptor(private val context: Context) : Interceptor {
     }
 }
 
+/**
+ * Global session state. Emits on [unauthorized] whenever the server returns 401 for
+ * an authenticated call so the UI can drop the user back to the Login screen.
+ */
+object SessionBus {
+    private val _unauthorized = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val unauthorized: SharedFlow<Unit> = _unauthorized.asSharedFlow()
+    internal fun emitUnauthorized() { _unauthorized.tryEmit(Unit) }
+}
+
+class UnauthorizedInterceptor(private val context: Context) : Interceptor {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+        val response = chain.proceed(chain.request())
+        if (response.code == 401) {
+            // Don't trigger global logout on the login/register endpoints themselves —
+            // those legitimately return 401 on bad credentials.
+            val path = chain.request().url.encodedPath
+            val isAuthAttempt = path.contains("/auth/login") ||
+                path.contains("/auth/register") ||
+                path.contains("/auth/google") ||
+                path.contains("/auth/forgot-password")
+            if (!isAuthAttempt) {
+                scope.launch { TokenStore.clear(context) }
+                SessionBus.emitUnauthorized()
+            }
+        }
+        return response
+    }
+}
+
 object NetworkModule {
     const val BASE_URL = "https://albabor.com/api/v1/"
     private lateinit var appContext: Context
@@ -82,6 +121,7 @@ object NetworkModule {
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(appContext))
+            .addInterceptor(UnauthorizedInterceptor(appContext))
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)

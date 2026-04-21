@@ -316,10 +316,9 @@ class CreateListingViewModel : ViewModel() {
                     }
                 }
 
-                // Build image parts
+                // Build image parts — collect temp files so we can clean up afterwards
+                val tempFiles = mutableListOf<File>()
                 val imageParts = selectedImages.mapIndexed { index, uri ->
-                    val inputStream = context.contentResolver.openInputStream(uri)
-                        ?: throw Exception("Impossible de lire l'image $index")
                     val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
                     val extension = when (mimeType) {
                         "image/png"  -> "png"
@@ -327,28 +326,37 @@ class CreateListingViewModel : ViewModel() {
                         else         -> "jpg"
                     }
                     val tempFile = File.createTempFile("img_$index", ".$extension", context.cacheDir)
-                    FileOutputStream(tempFile).use { out -> inputStream.copyTo(out) }
-                    inputStream.close()
+                    tempFiles += tempFile
+                    (context.contentResolver.openInputStream(uri)
+                        ?: throw Exception("Impossible de lire l'image $index"))
+                        .use { stream ->
+                            FileOutputStream(tempFile).use { out -> stream.copyTo(out) }
+                        }
 
                     val requestBody = tempFile.asRequestBody(mimeType.toMediaTypeOrNull())
                     MultipartBody.Part.createFormData("images[]", tempFile.name, requestBody)
                 }
 
-                val response = api.createListing(parts + imageParts)
+                try {
+                    val response = api.createListing(parts + imageParts)
 
-                if (response.isSuccessful) {
-                    val listing = response.body()?.listing
-                        ?: throw Exception("Réponse invalide du serveur")
-                    _submitState.value = SubmitState.Success(listing)
-                } else {
-                    val rawError = response.errorBody()?.string() ?: ""
-                    val msg = try {
-                        val json = org.json.JSONObject(rawError)
-                        json.optString("message", "").ifBlank { "Erreur ${response.code()}" }
-                    } catch (_: Exception) {
-                        "Erreur ${response.code()}"
+                    if (response.isSuccessful) {
+                        val listing = response.body()?.listing
+                            ?: throw Exception("Réponse invalide du serveur")
+                        _submitState.value = SubmitState.Success(listing)
+                    } else {
+                        val rawError = response.errorBody()?.string() ?: ""
+                        val msg = try {
+                            val json = org.json.JSONObject(rawError)
+                            json.optString("message", "").ifBlank { "Erreur ${response.code()}" }
+                        } catch (_: Exception) {
+                            "Erreur ${response.code()}"
+                        }
+                        _submitState.value = SubmitState.Error(msg)
                     }
-                    _submitState.value = SubmitState.Error(msg)
+                } finally {
+                    // Always clean up temp cache files, success or failure
+                    tempFiles.forEach { runCatching { it.delete() } }
                 }
             } catch (e: Exception) {
                 _submitState.value = SubmitState.Error(

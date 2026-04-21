@@ -8,6 +8,7 @@ plugins {
 android {
     namespace = "com.albabor.app"
     compileSdk = 35
+    ndkVersion = "26.1.10909125"
 
     defaultConfig {
         applicationId = "com.albabor.app"
@@ -15,11 +16,23 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
+
+        // Play Store requires 64-bit support; strip 32-bit ABIs to reduce AAB size
+        ndk {
+            abiFilters.clear()
+            abiFilters.addAll(setOf("arm64-v8a", "x86_64"))
+        }
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = false
+            isDebuggable = true
+        }
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Legacy Auto-Backup rules (Android 6–11) — exclude auth token DataStore. -->
+<full-backup-content>
+    <exclude domain="file" path="datastore/albabor_prefs.preferences_pb" />
+    <exclude domain="sharedpref" path="albabor_prefs" />
+</full-backup-content>

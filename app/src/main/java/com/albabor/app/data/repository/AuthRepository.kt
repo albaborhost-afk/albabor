@@ -12,7 +12,7 @@ class AuthRepository(private val context: Context) {
     suspend fun login(email: String, password: String): Result<AuthResponse> = runCatching {
         val response = api.login(LoginRequest(email, password))
         if (response.isSuccessful) {
-            val body = response.body()!!
+            val body = response.body() ?: throw Exception("Réponse serveur vide")
             TokenStore.save(context, body.token)
             body
         } else {
@@ -23,7 +23,7 @@ class AuthRepository(private val context: Context) {
     suspend fun register(name: String, email: String, phone: String, password: String): Result<AuthResponse> = runCatching {
         val response = api.register(RegisterRequest(name, email, phone, password, password))
         if (response.isSuccessful) {
-            val body = response.body()!!
+            val body = response.body() ?: throw Exception("Réponse serveur vide")
             TokenStore.save(context, body.token)
             body
         } else {
@@ -34,7 +34,7 @@ class AuthRepository(private val context: Context) {
     suspend fun googleLogin(idToken: String): Result<AuthResponse> = runCatching {
         val response = api.loginWithGoogle(com.albabor.app.data.model.GoogleLoginRequest(idToken))
         if (response.isSuccessful) {
-            val body = response.body()!!
+            val body = response.body() ?: throw Exception("Réponse serveur vide")
             TokenStore.save(context, body.token)
             body
         } else {

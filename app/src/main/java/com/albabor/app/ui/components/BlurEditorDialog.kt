@@ -80,6 +80,8 @@ fun BlurEditorDialog(
             val loaded = loadAndDownscale(context, uri, MAX_EDITOR_DIM)
             if (loaded != null) {
                 val editable = loaded.copy(Bitmap.Config.ARGB_8888, true)
+                // `loaded` and `editable` may or may not share backing — recycle source defensively
+                if (loaded !== editable && !loaded.isRecycled) loaded.recycle()
                 val snapshot = editable.copy(Bitmap.Config.ARGB_8888, false)
                 withContext(Dispatchers.Main) {
                     currentBitmap = editable
@@ -87,6 +89,15 @@ fun BlurEditorDialog(
                     history.add(snapshot)
                 }
             }
+        }
+    }
+
+    // Free bitmap memory when dialog closes — prevents OOM on repeated opens
+    DisposableEffect(Unit) {
+        onDispose {
+            currentBitmap?.let { if (!it.isRecycled) it.recycle() }
+            history.forEach { if (!it.isRecycled) it.recycle() }
+            history.clear()
         }
     }
 
