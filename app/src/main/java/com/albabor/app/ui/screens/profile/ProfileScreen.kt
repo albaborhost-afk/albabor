@@ -262,16 +262,6 @@ fun ProfileScreen(navController: NavController) {
                     )
                 }
 
-                // Identity verification — unverified
-                if (user?.isVerifiedAccount == false) {
-                    MenuDivider()
-                    MenuItem(
-                        icon = Icons.Outlined.VerifiedUser,
-                        label = "Verification d'identite",
-                        iconTint = Teal500,
-                        onClick = { navController.navigate(Screen.Verification.route) }
-                    )
-                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
