@@ -1336,6 +1336,19 @@ private fun Step5Photos(vm: CreateListingViewModel) {
         vm.addImages(uris)
     }
 
+    var blurEditorUri by remember { mutableStateOf<Uri?>(null) }
+
+    blurEditorUri?.let { uriToEdit ->
+        com.albabor.app.ui.components.BlurEditorDialog(
+            uri = uriToEdit,
+            onSave = { newUri ->
+                vm.replaceImage(uriToEdit, newUri)
+                blurEditorUri = null
+            },
+            onDismiss = { blurEditorUri = null },
+        )
+    }
+
     Column(
         modifier            = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -1420,6 +1433,7 @@ private fun Step5Photos(vm: CreateListingViewModel) {
                                 uri        = uri,
                                 isPrimary  = index == 0,
                                 onRemove   = { vm.removeImage(uri) },
+                                onEdit     = { blurEditorUri = uri },
                                 modifier   = Modifier.weight(1f)
                             )
                         }
@@ -1461,6 +1475,7 @@ private fun PhotoSlot(
     uri: Uri,
     isPrimary: Boolean,
     onRemove: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -1508,6 +1523,24 @@ private fun PhotoSlot(
                 contentDescription = "Supprimer",
                 tint               = Color.White,
                 modifier           = Modifier.size(14.dp)
+            )
+        }
+
+        // Blur / privacy edit button — bottom-right
+        IconButton(
+            onClick  = onEdit,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(4.dp)
+                .size(26.dp)
+                .clip(CircleShape)
+                .background(OceanBlue700.copy(alpha = 0.92f))
+        ) {
+            Icon(
+                imageVector        = Icons.Default.GridView,
+                contentDescription = "Flouter une zone",
+                tint               = Color.White,
+                modifier           = Modifier.size(13.dp)
             )
         }
     }

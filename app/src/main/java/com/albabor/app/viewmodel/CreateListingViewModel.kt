@@ -180,6 +180,10 @@ class CreateListingViewModel : ViewModel() {
         selectedImages = selectedImages.filter { it != uri }
     }
 
+    fun replaceImage(oldUri: Uri, newUri: Uri) {
+        selectedImages = selectedImages.map { if (it == oldUri) newUri else it }
+    }
+
     fun resetSubmitState() {
         _submitState.value = SubmitState.Idle
     }
