@@ -632,14 +632,28 @@ private fun loadAndDownscale(context: Context, uri: Uri, maxDim: Int): Bitmap? {
     }
 }
 
-/** Write the bitmap to a new cache file and return a file:// URI. */
+/**
+ * Write the bitmap to a cache file and return a FileProvider content:// URI.
+ * Using FileProvider instead of Uri.fromFile() avoids FileUriExposedException on
+ * API 24+ and makes the URI reliably readable through ContentResolver when the
+ * listing is submitted later.
+ */
 private fun saveBitmapToCache(context: Context, bitmap: Bitmap): Uri? {
     return try {
-        val file = File(context.cacheDir, "blurred_${System.currentTimeMillis()}.jpg")
+        val dir = File(context.cacheDir, "blur").apply { mkdirs() }
+        val file = File(dir, "blurred_${System.currentTimeMillis()}.jpg")
         FileOutputStream(file).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 92, out)
+            val ok = bitmap.compress(Bitmap.CompressFormat.JPEG, 92, out)
+            if (!ok) return null
+            out.flush()
+            runCatching { out.fd.sync() }
         }
-        Uri.fromFile(file)
+        if (!file.exists() || file.length() == 0L) return null
+        androidx.core.content.FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file,
+        )
     } catch (t: Throwable) {
         null
     }
