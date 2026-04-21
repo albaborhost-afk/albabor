@@ -1,5 +1,7 @@
 package com.albabor.app.ui.screens.profile
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -266,7 +268,34 @@ fun ProfileScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // ── Section 3: Logout ─────────────────────────────────────────────
+            // ── Section 3: Legal (links to website) ──────────────────────────
+            MenuSection(title = "Informations") {
+                MenuItem(
+                    icon = Icons.Outlined.PrivacyTip,
+                    label = "Politique de confidentialite",
+                    iconTint = OceanBlue700,
+                    onClick = {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://albabor.com/politique-confidentialite"))
+                        )
+                    }
+                )
+                MenuDivider()
+                MenuItem(
+                    icon = Icons.Outlined.Description,
+                    label = "Conditions d'utilisation",
+                    iconTint = Gray500,
+                    onClick = {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://albabor.com/conditions-utilisation"))
+                        )
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // ── Section 4: Logout ─────────────────────────────────────────────
             MenuSection {
                 MenuItem(
                     icon = Icons.AutoMirrored.Outlined.Logout,
