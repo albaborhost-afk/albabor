@@ -41,8 +41,14 @@ Business:
 - Vendor subscription monthly: ONLY engines/parts publishing requires active subscription
 
 Payments:
-- Manual proof upload for BaridiMob / CCP / Bank transfer
+- Manual proof upload for BaridiMob / CCP / Bank transfer / PayPal / RedotPay
 - Admin approves manually in Filament
+- **Stripe** (card payments): instant confirmation via Stripe Checkout Sessions
+  - PaymentController uses **Guzzle HTTP client** (NOT Stripe SDK) for API calls — SDK cURL fails on Laravel Cloud
+  - stripe/stripe-php v16.6.0 installed (v20 incompatible with Laravel Cloud)
+  - ENV: `STRIPE_KEY`, `STRIPE_SECRET`, `STRIPE_WEBHOOK_SECRET`
+  - Webhook: `POST /stripe/webhook` (CSRF exempt) — event: `checkout.session.completed`
+  - `payments.method` CHECK constraint includes: baridimob, ccp, bank_transfer, paypal, redotpay, card, stripe
 
 Mediation:
 - Seller-controlled toggle per listing
@@ -55,6 +61,13 @@ Stats:
 Verification:
 - User uploads ID doc
 - Admin approves to enable Verified badge
+
+## Deployment (Laravel Cloud)
+- ENV values with long strings MUST be quoted: `KEY="long_value_here"`
+- Migrations run automatically during deployment
+- After changing ENV vars: `php artisan optimize:clear`
+- **Outgoing HTTP**: Use Guzzle, NOT cURL directly or Stripe SDK — Laravel Cloud's networking causes cURL-based SDKs to get 400 from nginx
+- Blade `@json()` must NOT be used with complex PHP expressions (commas break it) — pre-compute in controller
 
 ## Security & quality
 - Rate-limit listing creation and mediation requests.

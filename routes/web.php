@@ -54,6 +54,10 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/google/callback', [SocialAuthController::class, 'callback'])->name('auth.google.callback');
 });
 
+// Public static pages (legal)
+Route::view('politique-confidentialite', 'pages.privacy')->name('pages.privacy');
+Route::view('conditions-utilisation', 'pages.terms')->name('pages.terms');
+
 // Public listing routes
 Route::get('annonces', [ListingController::class, 'index'])->name('listings.index');
 Route::get('media/listings/{media}/{variant?}', [ListingMediaController::class, 'show'])->name('listing-media.show');
