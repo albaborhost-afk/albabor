@@ -54,6 +54,8 @@ class BannerResource extends Resource
                         Forms\Components\TextInput::make('link_url')
                             ->label('Lien (URL)')
                             ->url()
+                            ->nullable()
+                            ->helperText('Optionnel. Ex: https://example.com')
                             ->maxLength(2048),
                         Forms\Components\TextInput::make('company_name')
                             ->label('Nom de l\'entreprise')
@@ -72,9 +74,17 @@ class BannerResource extends Resource
                             ->label('Actif')
                             ->default(true),
                         Forms\Components\DateTimePicker::make('starts_at')
-                            ->label('Début de diffusion'),
+                            ->label('Début de diffusion')
+                            ->timezone('Africa/Algiers')
+                            ->native(false)
+                            ->nullable()
+                            ->helperText('Optionnel. Laisser vide pour activer immédiatement.'),
                         Forms\Components\DateTimePicker::make('ends_at')
-                            ->label('Fin de diffusion'),
+                            ->label('Fin de diffusion')
+                            ->timezone('Africa/Algiers')
+                            ->native(false)
+                            ->nullable()
+                            ->helperText('Optionnel. Laisser vide pour ne jamais expirer.'),
                     ])
                     ->columns(2),
             ]);
@@ -113,12 +123,14 @@ class BannerResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('starts_at')
                     ->label('Début')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i', 'Africa/Algiers')
+                    ->placeholder('—')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('ends_at')
                     ->label('Fin')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i', 'Africa/Algiers')
+                    ->placeholder('—')
                     ->sortable()
                     ->toggleable(),
             ])
@@ -128,6 +140,15 @@ class BannerResource extends Resource
                     ->label('Actif'),
             ])
             ->actions([
+                Tables\Actions\Action::make('clearSchedule')
+                    ->label('Toujours actif')
+                    ->icon('heroicon-o-clock')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalHeading('Rendre toujours actif ?')
+                    ->modalDescription('Efface les dates de début et de fin pour que la bannière soit affichée en permanence.')
+                    ->visible(fn (Banner $record): bool => $record->starts_at !== null || $record->ends_at !== null)
+                    ->action(fn (Banner $record) => $record->update(['starts_at' => null, 'ends_at' => null])),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
