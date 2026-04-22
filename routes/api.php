@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\ConversationController;
@@ -34,6 +35,10 @@ Route::prefix('v1')->group(function () {
 
     // Subscription plans (public)
     Route::get('/plans', [SubscriptionController::class, 'plans']);
+
+    // Banners (public)
+    Route::get('/banners', [BannerController::class, 'index']);
+    Route::post('/banners/{banner}/click', [BannerController::class, 'trackClick']);
 
     // ── Authenticated ─────────────────────────────────────────
 

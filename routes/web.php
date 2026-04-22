@@ -35,7 +35,9 @@ Route::get('/', function () {
         ->take(25)
         ->get();
 
-    return view('welcome', compact('featuredListings', 'latestListings'));
+    $banners = \App\Models\Banner::active()->take(10)->get();
+
+    return view('welcome', compact('featuredListings', 'latestListings', 'banners'));
 })->name('home');
 
 // Guest routes
@@ -155,6 +157,9 @@ Route::middleware('auth')->group(function () {
 
 // Stripe Webhook (exempt from CSRF)
 Route::post('stripe/webhook', [PaymentController::class, 'stripeWebhook'])->name('payments.stripe.webhook');
+
+// Banner click tracking
+Route::get('/banner/{banner}/click', [\App\Http\Controllers\BannerController::class, 'trackClick'])->name('banners.click');
 
 // Public listing detail (must be after /annonces/creer to avoid wildcard conflict)
 Route::get('annonces/{listing}', [ListingController::class, 'show'])->name('listings.show');

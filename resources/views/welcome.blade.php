@@ -93,6 +93,165 @@
         </div>
     </div>
 
+    <!-- Banner Slider / Publicités -->
+    @if(isset($banners) && $banners->isNotEmpty())
+    <div class="py-6 sm:py-8" style="background: #F0F4F8;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div
+                x-data="bannerSlider({{ $banners->count() }})"
+                x-init="init()"
+                @mouseenter="pause()"
+                @mouseleave="resume()"
+                class="relative overflow-hidden rounded-2xl shadow-lg h-64 md:h-80 lg:h-96 bg-gray-900"
+            >
+                {{-- Slides --}}
+                @foreach($banners as $index => $banner)
+                    <div
+                        x-show="active === {{ $index }}"
+                        x-transition:enter="transition ease-out duration-700"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition ease-in duration-500"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0"
+                        class="absolute inset-0"
+                    >
+                        <img
+                            src="{{ $banner->image_url }}"
+                            alt="{{ $banner->title }}"
+                            class="w-full h-full object-cover"
+                            loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                        >
+
+                        {{-- Gradient overlay for text readability --}}
+                        <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0) 100%);"></div>
+
+                        {{-- Publicité badge --}}
+                        @if($banner->company_name)
+                            <div class="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold backdrop-blur-md" style="background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.25);">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                                    {{ __('Publicite') }} &bull; {{ $banner->company_name }}
+                                </span>
+                            </div>
+                        @endif
+
+                        {{-- Content overlay --}}
+                        <div class="absolute inset-x-0 bottom-0 p-5 sm:p-8 lg:p-10">
+                            <div class="max-w-2xl">
+                                @if($banner->title)
+                                    <h3 class="text-xl sm:text-2xl lg:text-3xl font-black text-white leading-tight mb-2" style="text-shadow: 0 2px 16px rgba(0,0,0,0.4);">
+                                        {{ $banner->title }}
+                                    </h3>
+                                @endif
+                                @if($banner->subtitle)
+                                    <p class="text-xs sm:text-sm lg:text-base mb-3 sm:mb-4 leading-relaxed" style="color: rgba(255,255,255,0.88); text-shadow: 0 1px 8px rgba(0,0,0,0.3);">
+                                        {{ $banner->subtitle }}
+                                    </p>
+                                @endif
+                                @if($banner->link_url)
+                                    <a
+                                        href="{{ route('banners.click', $banner) }}"
+                                        target="_blank"
+                                        rel="noopener"
+                                        class="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white rounded-xl transition-all hover:scale-105"
+                                        style="background: linear-gradient(135deg, #2471A3, #17A2B8); box-shadow: 0 4px 16px rgba(36,113,163,0.4);"
+                                    >
+                                        {{ __("Voir l'offre") }}
+                                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+
+                {{-- Touch swipe zones (mobile) --}}
+                @if($banners->count() > 1)
+                    <button
+                        type="button"
+                        @click="prev()"
+                        aria-label="{{ __('Precedent') }}"
+                        class="md:hidden absolute left-0 top-0 bottom-0 w-1/3 z-10 opacity-0"
+                    ></button>
+                    <button
+                        type="button"
+                        @click="next()"
+                        aria-label="{{ __('Suivant') }}"
+                        class="md:hidden absolute right-0 top-0 bottom-0 w-1/3 z-10 opacity-0"
+                    ></button>
+
+                    {{-- Desktop arrows --}}
+                    <button
+                        type="button"
+                        @click="prev()"
+                        aria-label="{{ __('Precedent') }}"
+                        class="hidden md:flex absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 items-center justify-center rounded-full backdrop-blur-md transition-all hover:scale-110 z-20"
+                        style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);"
+                    >
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <button
+                        type="button"
+                        @click="next()"
+                        aria-label="{{ __('Suivant') }}"
+                        class="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 items-center justify-center rounded-full backdrop-blur-md transition-all hover:scale-110 z-20"
+                        style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);"
+                    >
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+
+                    {{-- Dots --}}
+                    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
+                        <template x-for="i in total" :key="i">
+                            <button
+                                type="button"
+                                @click="goTo(i-1)"
+                                :aria-label="'Aller a la diapositive ' + i"
+                                class="rounded-full transition-all duration-300"
+                                :class="active === (i-1) ? 'w-6 h-2' : 'w-2 h-2'"
+                                :style="active === (i-1) ? 'background: white' : 'background: rgba(255,255,255,0.5)'"
+                            ></button>
+                        </template>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <script>
+            function bannerSlider(total) {
+                return {
+                    active: 0,
+                    total: total,
+                    timer: null,
+                    paused: false,
+                    init() {
+                        if (this.total <= 1) return;
+                        this.start();
+                    },
+                    start() {
+                        clearInterval(this.timer);
+                        this.timer = setInterval(() => {
+                            if (!this.paused) this.next();
+                        }, 5000);
+                    },
+                    next() {
+                        this.active = (this.active + 1) % this.total;
+                    },
+                    prev() {
+                        this.active = (this.active - 1 + this.total) % this.total;
+                    },
+                    goTo(i) {
+                        this.active = i;
+                    },
+                    pause() { this.paused = true; },
+                    resume() { this.paused = false; },
+                };
+            }
+        </script>
+    </div>
+    @endif
+
     <!-- Categories -->
     <div class="py-8 sm:py-10" style="background: #F0F4F8;">
         <div class="max-w-7xl mx-auto">
