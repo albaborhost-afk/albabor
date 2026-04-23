@@ -90,7 +90,7 @@
                     <!-- Language Switcher -->
                     <div class="relative" x-data="{ langOpen: false }" @click.away="langOpen = false">
                         <button @click="langOpen = !langOpen" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors hover:bg-gray-100" style="color: #6B7B8D;">
-                            <span>{{ app()->getLocale() === 'fr' ? '🇫🇷' : (app()->getLocale() === 'en' ? '🇬🇧' : '🇪🇸') }}</span>
+                            <img src="{{ asset('images/flags/' . app()->getLocale() . '.png') }}" alt="" class="w-5 h-5 object-contain rounded-sm">
                             <span class="uppercase text-xs font-bold">{{ app()->getLocale() }}</span>
                             <svg class="w-3 h-3 transition-transform duration-200" :class="{ 'rotate-180': langOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
@@ -103,10 +103,11 @@
                              x-transition:leave-end="opacity-0 scale-95"
                              class="absolute right-0 mt-2 w-28 rounded-xl py-1.5 z-50 origin-top-right"
                              style="background: rgba(255,255,255,0.98); border: 1px solid rgba(224,230,237,0.8); box-shadow: 0 8px 24px rgba(27,79,114,0.1);">
-                            @foreach(['fr' => '🇫🇷 Français', 'en' => '🇬🇧 English', 'es' => '🇪🇸 Español'] as $locale => $label)
+                            @foreach(['fr' => 'Français', 'en' => 'English', 'es' => 'Español'] as $locale => $label)
                                 <a href="{{ route('lang.switch', ['locale' => $locale]) }}"
                                    class="flex items-center gap-2 px-3 py-2 text-xs font-medium transition-colors hover:bg-gray-50 {{ app()->getLocale() === $locale ? 'font-bold' : '' }}"
                                    style="color: {{ app()->getLocale() === $locale ? '#1B4F72' : '#6B7B8D' }};">
+                                    <img src="{{ asset('images/flags/' . $locale . '.png') }}" alt="" class="w-5 h-5 object-contain rounded-sm">
                                     {{ $label }}
                                 </a>
                             @endforeach
@@ -247,10 +248,11 @@
 
                 <!-- Mobile Language Switcher -->
                 <div class="flex gap-2 mb-3 pb-3" style="border-bottom: 1px solid rgba(224,230,237,0.6);">
-                    @foreach(['fr' => '🇫🇷 FR', 'en' => '🇬🇧 EN', 'es' => '🇪🇸 ES'] as $locale => $label)
+                    @foreach(['fr' => 'FR', 'en' => 'EN', 'es' => 'ES'] as $locale => $label)
                         <a href="{{ route('lang.switch', ['locale' => $locale]) }}"
-                           class="flex-1 text-center py-2.5 rounded-xl text-xs font-bold transition-colors"
+                           class="flex-1 flex items-center justify-center gap-1.5 text-center py-2.5 rounded-xl text-xs font-bold transition-colors"
                            style="{{ app()->getLocale() === $locale ? 'background: rgba(27,79,114,0.1); color: #1B4F72;' : 'background: rgba(0,0,0,0.03); color: #9BA8B7;' }}">
+                            <img src="{{ asset('images/flags/' . $locale . '.png') }}" alt="" class="w-4 h-4 object-contain rounded-sm">
                             {{ $label }}
                         </a>
                     @endforeach
