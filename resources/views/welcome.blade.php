@@ -95,14 +95,14 @@
 
     <!-- Banner Slider / Publicités -->
     @if(isset($banners) && $banners->isNotEmpty())
-    <div class="py-6 sm:py-8" style="background: #F0F4F8;">
+    <div class="py-3 sm:py-6 lg:py-8" style="background: #F0F4F8;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div
                 x-data="bannerSlider({{ $banners->count() }})"
                 x-init="init()"
                 @mouseenter="pause()"
                 @mouseleave="resume()"
-                class="relative overflow-hidden rounded-2xl shadow-lg h-64 md:h-80 lg:h-96 bg-gray-900"
+                class="relative overflow-hidden rounded-2xl shadow-lg h-40 sm:h-56 md:h-72 lg:h-96 bg-gray-900"
             >
                 {{-- Slides --}}
                 @foreach($banners as $index => $banner)
@@ -137,15 +137,15 @@
                         @endif
 
                         {{-- Content overlay --}}
-                        <div class="absolute inset-x-0 bottom-0 p-5 sm:p-8 lg:p-10">
+                        <div class="absolute inset-x-0 bottom-0 p-3 sm:p-5 lg:p-10">
                             <div class="max-w-2xl">
                                 @if($banner->title)
-                                    <h3 class="text-xl sm:text-2xl lg:text-3xl font-black text-white leading-tight mb-2" style="text-shadow: 0 2px 16px rgba(0,0,0,0.4);">
+                                    <h3 class="text-base sm:text-xl lg:text-3xl font-black text-white leading-tight mb-1 sm:mb-2" style="text-shadow: 0 2px 16px rgba(0,0,0,0.4);">
                                         {{ $banner->title }}
                                     </h3>
                                 @endif
                                 @if($banner->subtitle)
-                                    <p class="text-xs sm:text-sm lg:text-base mb-3 sm:mb-4 leading-relaxed" style="color: rgba(255,255,255,0.88); text-shadow: 0 1px 8px rgba(0,0,0,0.3);">
+                                    <p class="text-[11px] sm:text-sm lg:text-base mb-2 sm:mb-4 leading-snug sm:leading-relaxed" style="color: rgba(255,255,255,0.88); text-shadow: 0 1px 8px rgba(0,0,0,0.3);">
                                         {{ $banner->subtitle }}
                                     </p>
                                 @endif
@@ -154,7 +154,7 @@
                                         href="{{ route('banners.click', $banner) }}"
                                         target="_blank"
                                         rel="noopener"
-                                        class="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white rounded-xl transition-all hover:scale-105"
+                                        class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-1.5 sm:py-2.5 text-[11px] sm:text-sm font-semibold text-white rounded-lg sm:rounded-xl transition-all hover:scale-105"
                                         style="background: linear-gradient(135deg, #2471A3, #17A2B8); box-shadow: 0 4px 16px rgba(36,113,163,0.4);"
                                     >
                                         {{ __("Voir l'offre") }}
