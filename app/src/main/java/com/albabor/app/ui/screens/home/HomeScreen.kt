@@ -30,6 +30,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +45,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -54,6 +58,7 @@ import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import com.albabor.app.R
 import com.albabor.app.data.model.Listing
+import com.albabor.app.ui.components.BannerSlider
 import com.albabor.app.ui.components.FeaturedListingCard
 import com.albabor.app.ui.components.LoadingFeaturedRow
 import com.albabor.app.ui.components.LoadingGrid
@@ -84,8 +89,10 @@ fun HomeScreen(
 ) {
     val featured by viewModel.featured.collectAsStateWithLifecycle()
     val latest by viewModel.latest.collectAsStateWithLifecycle()
+    val banners by viewModel.banners.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val unreadCount by viewModel.unreadCount.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     val refreshState = rememberPullToRefreshState()
@@ -124,6 +131,28 @@ fun HomeScreen(
                 contentPadding = PaddingValues(top = 190.dp, bottom = 132.dp),
                 verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
+                if (banners.isNotEmpty()) {
+                    item {
+                        BannerSlider(
+                            banners = banners,
+                            onBannerClick = { banner ->
+                                viewModel.trackBannerClick(banner.id)
+                                banner.linkUrl?.let { url ->
+                                    try {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        }
+                                        context.startActivity(intent)
+                                    } catch (_: ActivityNotFoundException) {
+                                    } catch (_: Exception) {
+                                    }
+                                }
+                            },
+                            modifier = Modifier.padding(bottom = 18.dp)
+                        )
+                    }
+                }
+
                 item {
                     CategoriesSection(
                         selectedCategory = selectedCategory,

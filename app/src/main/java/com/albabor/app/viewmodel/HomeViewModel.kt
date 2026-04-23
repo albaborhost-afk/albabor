@@ -1,10 +1,13 @@
 package com.albabor.app.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.albabor.app.data.model.Banner
 import com.albabor.app.data.model.Listing
 import com.albabor.app.data.model.ListingFilters
 import com.albabor.app.data.network.NetworkModule
+import com.albabor.app.data.repository.BannerRepository
 import com.albabor.app.data.repository.ListingRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,12 +16,16 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
     private val repo = ListingRepository()
+    private val bannerRepo = BannerRepository()
 
     private val _featured = MutableStateFlow<List<Listing>>(emptyList())
     val featured: StateFlow<List<Listing>> = _featured.asStateFlow()
 
     private val _latest = MutableStateFlow<List<Listing>>(emptyList())
     val latest: StateFlow<List<Listing>> = _latest.asStateFlow()
+
+    private val _banners = MutableStateFlow<List<Banner>>(emptyList())
+    val banners: StateFlow<List<Banner>> = _banners.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -43,7 +50,23 @@ class HomeViewModel : ViewModel() {
                 .onFailure { if (_error.value == null) _error.value = it.message }
             _isLoading.value = false
         }
+        loadBanners()
         loadUnreadCount()
+    }
+
+    fun loadBanners() {
+        viewModelScope.launch {
+            bannerRepo.getBanners()
+                .onSuccess { _banners.value = it }
+                .onFailure { Log.w("HomeViewModel", "Banner load failed: ${it.message}") }
+        }
+    }
+
+    fun trackBannerClick(id: Int) {
+        viewModelScope.launch {
+            bannerRepo.trackClick(id)
+                .onFailure { Log.w("HomeViewModel", "Banner click track failed: ${it.message}") }
+        }
     }
 
     fun loadUnreadCount() {

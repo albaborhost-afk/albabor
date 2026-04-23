@@ -181,4 +181,12 @@ interface ApiService {
         @Path("id") id: Int,
         @Body body: Map<String, String>
     ): Response<ConversationMessage>
+
+    // ─── Banners ──────────────────────────────────────────────────────────────
+
+    @GET("banners")
+    suspend fun getBanners(): Response<BannersResponse>
+
+    @POST("banners/{id}/click")
+    suspend fun trackBannerClick(@Path("id") id: Int): Response<Map<String, Any>>
 }
