@@ -25,7 +25,7 @@ class BannerController extends Controller
                 'link_url' => $banner->link_url,
                 'company_name' => $banner->company_name,
             ])->values(),
-        ]);
+        ])->header('Cache-Control', 'public, max-age=300');
     }
 
     public function trackClick(Banner $banner): JsonResponse
