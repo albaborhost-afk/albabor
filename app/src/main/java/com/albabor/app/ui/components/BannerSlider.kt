@@ -50,10 +50,12 @@ fun BannerSlider(
     val pagerState = rememberPagerState(pageCount = { banners.size })
 
     if (banners.size > 1) {
-        LaunchedEffect(pagerState.currentPage) {
-            delay(5_000)
-            val next = (pagerState.currentPage + 1) % banners.size
-            pagerState.animateScrollToPage(next)
+        LaunchedEffect(banners.size) {
+            while (true) {
+                delay(5_000)
+                val next = (pagerState.currentPage + 1) % banners.size
+                pagerState.animateScrollToPage(next)
+            }
         }
     }
 
@@ -63,15 +65,14 @@ fun BannerSlider(
     ) {
         HorizontalPager(
             state = pagerState,
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp),
-            pageSpacing = 12.dp,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp)
         ) { page ->
             BannerCard(
                 banner = banners[page],
-                onClick = { onBannerClick(banners[page]) }
+                onClick = { onBannerClick(banners[page]) },
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
 
@@ -106,11 +107,12 @@ fun BannerSlider(
 private fun BannerCard(
     banner: Banner,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(20.dp)
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(180.dp)
             .shadow(10.dp, shape, spotColor = OceanBlue900.copy(alpha = 0.25f))
