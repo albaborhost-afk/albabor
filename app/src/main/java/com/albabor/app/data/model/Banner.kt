@@ -9,6 +9,7 @@ data class Banner(
     @SerializedName("image_url") val imageUrl: String,
     @SerializedName("link_url") val linkUrl: String?,
     @SerializedName("company_name") val companyName: String?,
+    @SerializedName("sponsor_label") val sponsorLabel: String? = null,
 )
 
 data class BannersResponse(

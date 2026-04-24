@@ -6,12 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -25,17 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.albabor.app.data.model.Banner
 import com.albabor.app.ui.theme.OceanBlue900
-import com.albabor.app.ui.theme.Teal500
 import com.albabor.app.ui.theme.White
 import kotlinx.coroutines.delay
 
@@ -121,93 +116,27 @@ private fun BannerCard(
     ) {
         AsyncImage(
             model = banner.imageUrl,
-            contentDescription = banner.title,
+            contentDescription = banner.title.ifBlank { banner.companyName ?: "Bannière sponsorisée" },
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
 
-        Box(
+        Surface(
             modifier = Modifier
-                .matchParentSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.15f),
-                            Color.Black.copy(alpha = 0.75f)
-                        )
-                    )
-                )
-        )
-
-        if (!banner.companyName.isNullOrBlank()) {
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(12.dp),
-                shape = RoundedCornerShape(999.dp),
-                color = White.copy(alpha = 0.22f),
-                tonalElevation = 0.dp,
-                shadowElevation = 0.dp
-            ) {
-                Text(
-                    text = "Publicité • ${banner.companyName}",
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                    color = White,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .align(Alignment.TopEnd)
+                .padding(12.dp),
+            shape = RoundedCornerShape(999.dp),
+            color = Color.Black.copy(alpha = 0.52f),
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp
         ) {
             Text(
-                text = banner.title,
+                text = banner.sponsorLabel?.takeIf { it.isNotBlank() } ?: "Sponsorisé",
+                modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp),
                 color = White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold
             )
-
-            banner.subtitle?.takeIf { it.isNotBlank() }?.let { sub ->
-                Text(
-                    text = sub,
-                    color = White.copy(alpha = 0.80f),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            if (!banner.linkUrl.isNullOrBlank()) {
-                Spacer(modifier = Modifier.size(6.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                Brush.linearGradient(listOf(OceanBlue900, Teal500))
-                            )
-                            .clickable(onClick = onClick)
-                            .padding(horizontal = 14.dp, vertical = 8.dp)
-                    ) {
-                        Text(
-                            text = "Voir l'offre",
-                            color = White,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
         }
     }
 }
