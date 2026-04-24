@@ -24,6 +24,7 @@ class BannerController extends Controller
                 'image_url' => $banner->image_url,
                 'link_url' => $banner->link_url,
                 'company_name' => $banner->company_name,
+                'sponsor_label' => __('Sponsorisé'),
             ])->values(),
         ])->header('Cache-Control', 'public, max-age=300');
     }

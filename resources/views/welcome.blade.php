@@ -123,45 +123,22 @@
                             loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
                         >
 
-                        {{-- Gradient overlay for text readability --}}
-                        <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0) 100%);"></div>
-
-                        {{-- Publicité badge --}}
-                        @if($banner->company_name)
-                            <div class="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold backdrop-blur-md" style="background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.25);">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-                                    {{ __('Publicite') }} &bull; {{ $banner->company_name }}
-                                </span>
-                            </div>
+                        @if($banner->link_url)
+                            <a
+                                href="{{ route('banners.click', $banner) }}"
+                                target="_blank"
+                                rel="noopener"
+                                aria-label="{{ $banner->title ?: __('Banniere sponsorisee') }}"
+                                class="absolute inset-0 z-10"
+                            ></a>
                         @endif
 
-                        {{-- Content overlay --}}
-                        <div class="absolute inset-x-0 bottom-0 p-3 sm:p-5 lg:p-10">
-                            <div class="max-w-2xl">
-                                @if($banner->title)
-                                    <h3 class="text-base sm:text-xl lg:text-3xl font-black text-white leading-tight mb-1 sm:mb-2" style="text-shadow: 0 2px 16px rgba(0,0,0,0.4);">
-                                        {{ $banner->title }}
-                                    </h3>
-                                @endif
-                                @if($banner->subtitle)
-                                    <p class="text-[11px] sm:text-sm lg:text-base mb-2 sm:mb-4 leading-snug sm:leading-relaxed" style="color: rgba(255,255,255,0.88); text-shadow: 0 1px 8px rgba(0,0,0,0.3);">
-                                        {{ $banner->subtitle }}
-                                    </p>
-                                @endif
-                                @if($banner->link_url)
-                                    <a
-                                        href="{{ route('banners.click', $banner) }}"
-                                        target="_blank"
-                                        rel="noopener"
-                                        class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-1.5 sm:py-2.5 text-[11px] sm:text-sm font-semibold text-white rounded-lg sm:rounded-xl transition-all hover:scale-105"
-                                        style="background: linear-gradient(135deg, #2471A3, #17A2B8); box-shadow: 0 4px 16px rgba(36,113,163,0.4);"
-                                    >
-                                        {{ __("Voir l'offre") }}
-                                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                                    </a>
-                                @endif
-                            </div>
+                        {{-- Sponsor badge --}}
+                        <div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold backdrop-blur-md" style="background: rgba(0,0,0,0.52); color: white; border: 1px solid rgba(255,255,255,0.25);">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                                {{ __('Sponsorisé') }}
+                            </span>
                         </div>
                     </div>
                 @endforeach
