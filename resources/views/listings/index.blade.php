@@ -561,7 +561,7 @@
 
                     <!-- Listings Grid -->
                     @if($listings->count() > 0)
-                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             @foreach($listings as $listing)
                                 <div class="animate-fade-in-up opacity-0" style="animation-delay: {{ $loop->index * 0.05 }}s">
                                     <x-listing-card :listing="$listing" />

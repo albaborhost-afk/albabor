@@ -368,7 +368,7 @@
             </div>
 
             <!-- Listing cards with sponsored badge overlay -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @foreach($featuredListings as $listing)
                     <div class="relative">
                         <!-- Sponsored badge -->
@@ -406,7 +406,7 @@
                 </a>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 reveal-stagger">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 reveal-stagger">
                 @foreach($latestListings as $listing)
                     <x-listing-card :listing="$listing" />
                 @endforeach

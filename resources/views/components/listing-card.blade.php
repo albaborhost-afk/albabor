@@ -13,35 +13,28 @@
         'engine' => 'badge-engine',
         'parts' => 'badge-parts',
     ];
-    $categoryAccentColors = [
-        'boat' => '#1B4F72',
-        'jetski' => '#17A2B8',
-        'engine' => '#F39C12',
-        'parts' => '#9B59B6',
-    ];
     $label = $categoryLabels[$listing->category] ?? __('Autre');
     $badgeClass = $categoryBadgeClasses[$listing->category] ?? 'bg-gray-500/80';
-    $accentColor = $categoryAccentColors[$listing->category] ?? '#1B4F72';
     $firstMedia = $listing->media->first();
     $isFavorited = auth()->check() && auth()->user()->hasFavorited($listing);
     $isFeatured = $listing->isFeatured();
     $annee = $listing->getSpec('general', 'annee_construction');
     $puissance = $listing->getSpec('motorisation', 'puissance_totale');
+    $location = collect([$listing->wilaya, $listing->pays])->filter()->implode(', ');
 @endphp
 
-<div class="listing-card card-shine group bg-white rounded-2xl overflow-hidden relative cursor-pointer {{ $isFeatured ? 'listing-card--featured' : '' }}"
-     style="{{ $isFeatured ? 'box-shadow: 0 0 0 1.5px rgba(255,184,0,0.35), 0 2px 12px rgba(0,0,0,0.06);' : '' }}"
+<div class="listing-card group bg-white rounded-2xl overflow-hidden relative cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300 {{ $isFeatured ? 'listing-card--featured' : '' }}"
+     style="{{ $isFeatured ? 'box-shadow: 0 0 0 1.5px rgba(255,184,0,0.35), 0 2px 12px rgba(0,0,0,0.08);' : '' }}"
      role="link"
      tabindex="0"
      onclick="if (!event.target.closest('form')) window.location.href='{{ route('listings.show', $listing) }}';"
      onkeydown="if ((event.key === 'Enter' || event.key === ' ') && !event.target.closest('form')) { event.preventDefault(); window.location.href='{{ route('listings.show', $listing) }}'; }">
 
-    {{-- Category accent bar at the top --}}
-    <div class="h-[3px] w-full" style="background: linear-gradient(90deg, {{ $accentColor }}, {{ $accentColor }}99);"></div>
-
     <a href="{{ route('listings.show', $listing) }}" class="block">
+
         {{-- Image Section --}}
-        <div class="relative aspect-square overflow-hidden" style="background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);">
+        <div class="relative overflow-hidden" style="aspect-ratio: 4/3; background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);">
+
             @if($firstMedia)
                 <img src="{{ $firstMedia->url }}"
                      alt="{{ $listing->title }}"
@@ -78,113 +71,89 @@
                 </div>
             @endif
 
-            {{-- Bottom gradient overlay for text readability --}}
-            @if($firstMedia)
-                <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/30 via-black/10 to-transparent pointer-events-none"></div>
-            @endif
+            {{-- Price overlay — bottom-left, dark gradient scrim --}}
+            <div class="absolute inset-x-0 bottom-0 pointer-events-none" style="background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.28) 55%, transparent 100%); height: 55%;">
+            </div>
+            <div class="absolute bottom-0 left-0 px-3 pb-2.5 z-10">
+                <span class="text-base font-extrabold text-white leading-tight block" style="text-shadow: 0 1px 4px rgba(0,0,0,0.4); letter-spacing: -0.01em;">
+                    {{ $listing->formatted_price }}
+                </span>
+                @if($listing->formatted_converted_price)
+                    <span class="text-[11px] font-medium block mt-0.5" style="color: rgba(255,255,255,0.72);">
+                        {{ $listing->formatted_converted_price }}
+                    </span>
+                @endif
+            </div>
 
-            {{-- Category Badge (glass-morphism) --}}
-            <span class="absolute top-3 left-3 px-2.5 py-1 text-[11px] font-semibold text-white rounded-full shadow-md backdrop-blur-md {{ $badgeClass }}" style="border: 1px solid rgba(255,255,255,0.15);">
+            {{-- Category Badge (glass-morphism) — top-left --}}
+            <span class="absolute top-3 left-3 z-10 px-2.5 py-1 text-[11px] font-semibold text-white rounded-full shadow-md backdrop-blur-md {{ $badgeClass }}" style="border: 1px solid rgba(255,255,255,0.15);">
                 {{ $label }}
             </span>
 
             {{-- Featured Badge --}}
             @if($isFeatured)
-                <span class="absolute top-3 right-10 px-2.5 py-1 text-[11px] font-semibold rounded-full shadow-md featured-badge-glow" style="background: linear-gradient(135deg, #FFB800, #FF8C00); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                <span class="absolute top-3 z-10 px-2.5 py-1 text-[11px] font-semibold rounded-full shadow-md featured-badge-glow" style="right: 2.75rem; background: linear-gradient(135deg, #FFB800, #FF8C00); color: white; border: 1px solid rgba(255,255,255,0.2);">
                     <svg class="w-3 h-3 inline -mt-0.5 mr-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     {{ __('Vedette') }}
                 </span>
             @endif
 
-            {{-- Image count badge --}}
-            @if($listing->media->count() > 1)
-                <span class="absolute bottom-3 right-3 px-2 py-0.5 text-[10px] font-semibold rounded-full backdrop-blur-md" style="background: rgba(0,0,0,0.45); color: white; border: 1px solid rgba(255,255,255,0.1);">
-                    <svg class="w-3 h-3 inline -mt-0.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    {{ $listing->media->count() }}
-                </span>
-            @endif
-
-            {{-- Condition badge --}}
-            @if($listing->etat)
-                <span class="absolute bottom-3 left-3 px-2 py-0.5 text-[10px] font-bold rounded-full backdrop-blur-md"
-                      style="background: rgba(255,255,255,0.92); color: {{ $listing->etat === 'jamais_utilise' ? '#27AE60' : ($listing->etat === 'comme_neuf' ? '#17A2B8' : ($listing->etat === 'bon_etat' ? '#2471A3' : '#6B7B8D')) }}; border: 1px solid rgba(0,0,0,0.04);">
-                    {{ $listing->etat_short_label }}
-                </span>
-            @endif
         </div>
 
-        {{-- Divider between image and content --}}
-        <div class="h-px w-full" style="background: linear-gradient(90deg, transparent, #E0E6ED, transparent);"></div>
+        {{-- Info Section --}}
+        <div class="bg-white px-3 pt-2.5 pb-3">
 
-        {{-- Content --}}
-        <div class="px-2 pt-1.5 pb-1.5 sm:px-2.5 sm:pt-2 sm:pb-2">
             {{-- Title --}}
-            <h3 class="font-bold line-clamp-1 leading-snug text-[11px] sm:text-[12px] group-hover:text-[#1B4F72] transition-colors duration-300 mb-0.5 sm:mb-1" style="color: #1B2A4A;">
+            <h3 class="text-sm font-bold line-clamp-1 leading-snug mb-1.5 group-hover:text-[#2471A3] transition-colors duration-200" style="color: #1B2A4A;">
                 {{ $listing->title }}
             </h3>
 
-            {{-- Info chips: Année · Ville · Puissance --}}
-            @if($annee || $listing->wilaya || $listing->pays || $puissance)
-            <div class="flex flex-wrap gap-0.5 mb-0.5 sm:mb-1">
-                @if($annee)
-                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-semibold" style="background: rgba(27,79,114,0.07); color: #1B4F72;">
-                        <svg class="w-2 h-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        {{ $annee }}
-                    </span>
-                @endif
-                @if($listing->pays || $listing->wilaya)
-                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-semibold" style="background: rgba(23,162,184,0.07); color: #17A2B8;">
-                        <svg class="w-2 h-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                        {{ $listing->pays }}{{ $listing->wilaya ? ($listing->pays ? ', ' : '') . $listing->wilaya : '' }}
-                    </span>
-                @endif
-                @if($puissance)
-                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-semibold" style="background: rgba(243,156,18,0.09); color: #B7770D;">
-                        <svg class="w-2 h-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                        {{ $puissance }} CV
-                    </span>
-                @endif
-            </div>
+            {{-- Location --}}
+            @if($location)
+                <div class="flex items-center gap-1 mb-2">
+                    <svg class="w-3 h-3 flex-shrink-0" style="color: #6B7B8D;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="text-xs leading-none truncate" style="color: #6B7B8D;">{{ $location }}</span>
+                </div>
             @endif
 
-            {{-- Price & Offer Type --}}
-            <div class="flex items-end justify-between pt-1 sm:pt-1.5" style="border-top: 1px solid #F0F4F8;">
-                <div>
-                    <span class="text-[12px] sm:text-[13px] font-extrabold block leading-tight" style="color: #E67E22; letter-spacing: -0.02em;">
-                        {{ $listing->formatted_price }}
-                    </span>
-                    @if($listing->formatted_converted_price)
-                        <span class="text-[9px] block mt-0.5 font-medium" style="color: #9BA8B7;">
-                            {{ $listing->formatted_converted_price }}
+            {{-- Chips: Année + CV --}}
+            @if($annee || $puissance)
+                <div class="flex flex-wrap gap-2">
+                    @if($annee)
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full" style="background: #F0F4F8; color: #1B2A4A;">
+                            {{ $annee }}
+                        </span>
+                    @endif
+                    @if($puissance)
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full" style="background: #F0F4F8; color: #1B2A4A;">
+                            {{ $puissance }} CV
                         </span>
                     @endif
                 </div>
-            </div>
+            @endif
+
         </div>
     </a>
 
-    {{-- Favorite Button --}}
+    {{-- Favorite Button — top-right of image --}}
     @auth
-        <div class="absolute top-4 right-3 z-10" style="top: calc(3px + 0.75rem);">
+        <div class="absolute top-3 right-3 z-20">
             <form action="{{ route('favorites.toggle', $listing) }}" method="POST">
                 @csrf
                 <button type="submit"
-                        class="favorite-heart-btn w-9 h-9 rounded-full flex items-center justify-center shadow-md backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-90"
+                        class="favorite-heart-btn w-8 h-8 rounded-full flex items-center justify-center shadow-md backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-90"
                         style="{{ $isFavorited
                             ? 'background: #FF6B6B; color: white; box-shadow: 0 4px 12px rgba(255,107,107,0.4);'
-                            : 'background: rgba(255,255,255,0.92); color: #9BA8B7; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.3);' }}">
-                    <svg class="w-4 h-4 transition-transform duration-300" fill="{{ $isFavorited ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{ $isFavorited ? '0' : '2' }}">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            : 'background: rgba(255,255,255,0.92); color: #9BA8B7; box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.3);' }}">
+                    <svg class="w-4 h-4" fill="{{ $isFavorited ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{ $isFavorited ? '0' : '2' }}">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                     </svg>
                 </button>
             </form>
         </div>
     @endauth
+
 </div>
