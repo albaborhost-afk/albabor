@@ -535,7 +535,7 @@
                                         <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                                         <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">Annexe</p>
                                     </div>
-                                    <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('extras', 'annexe') === 'oui' ? __('Oui, incluse') : __('Non') }}</p>
+                                    <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ __('Oui, incluse') }}</p>
                                 </div>
                             @endif
                             @if($listing->getSpec('extras', 'remorque'))
@@ -544,10 +544,10 @@
                                         <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4"/></svg>
                                         <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">Remorque</p>
                                     </div>
-                                    <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('extras', 'remorque') === 'oui' ? __('Oui') : __('Non') }}{{ $listing->getSpec('extras', 'marque_remorque') ? ' — ' . $listing->getSpec('extras', 'marque_remorque') : '' }}</p>
+                                    <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ __('Oui') }}{{ $listing->getSpec('extras', 'marque_remorque') ? ' — ' . $listing->getSpec('extras', 'marque_remorque') : '' }}</p>
                                 </div>
                             @endif
-                            @if($listing->getSpec('extras', 'place_au_port') === 'oui')
+                            @if($listing->getSpec('extras', 'place_au_port'))
                                 <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
                                     <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                         <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
