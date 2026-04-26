@@ -184,8 +184,8 @@
                                 style="background:rgba(27,79,114,0.92); color:white; box-shadow:0 2px 8px rgba(0,0,0,0.35);"
                                 title="Flouter une zone privée"
                             >
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M2 2h4v4H2zm0 6h4v4H2zm0 6h4v4H2zm6-12h4v4H8zm0 6h4v4H8zm0 6h4v4H8zm6-12h4v4h-4zm0 6h4v4h-4zm0 6h4v4h-4z"/>
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6.536-6.536a2.5 2.5 0 013.536 3.536L12 15H9v-3l.232-.232z"/>
                                 </svg>
                             </button>
 
@@ -315,8 +315,8 @@
     <div class="flex items-center justify-between px-4 py-3 flex-shrink-0" style="border-bottom:1px solid rgba(255,255,255,0.07);">
         <div class="flex items-center gap-2.5 min-w-0">
             <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#1B4F72,#17A2B8);">
-                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 2h4v4H2zm0 6h4v4H2zm0 6h4v4H2zm6-12h4v4H8zm0 6h4v4H8zm0 6h4v4H8zm6-12h4v4h-4zm0 6h4v4h-4zm0 6h4v4h-4z"/>
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6.536-6.536a2.5 2.5 0 013.536 3.536L12 15H9v-3l.232-.232z"/>
                 </svg>
             </div>
             <div class="min-w-0">
