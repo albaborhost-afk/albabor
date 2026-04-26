@@ -102,7 +102,7 @@
                 x-init="init()"
                 @mouseenter="pause()"
                 @mouseleave="resume()"
-                class="relative overflow-hidden rounded-2xl shadow-lg h-40 sm:h-56 md:h-72 lg:h-96 bg-gray-900"
+                class="relative overflow-hidden rounded-2xl shadow-lg h-32 sm:h-40 md:h-48 lg:h-56 bg-gray-900"
             >
                 {{-- Slides --}}
                 @foreach($banners as $index => $banner)
