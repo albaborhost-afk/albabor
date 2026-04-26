@@ -406,7 +406,7 @@
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 reveal-stagger">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @foreach($latestListings as $listing)
                     <x-listing-card :listing="$listing" />
                 @endforeach
