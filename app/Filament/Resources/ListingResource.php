@@ -63,7 +63,10 @@ class ListingResource extends Resource
                                                             ->label('Prix')
                                                             ->numeric()
                                                             ->required()
-                                                            ->placeholder('0'),
+                                                            ->placeholder('0')
+                                                            ->helperText(fn (Forms\Get $get) => $get('currency') === 'DZD'
+                                                                ? '🇩🇿 Astuce : 1 milliard de centimes = 10 000 000 DA — 100 millions = 1 000 000 DA'
+                                                                : null),
                                                         Forms\Components\Select::make('currency')
                                                             ->label('Devise')
                                                             ->options([
@@ -689,7 +692,13 @@ class ListingResource extends Resource
                         $symbol = $record->currency === 'EUR' ? '€' : 'DA';
                         return number_format($state, 0, ',', ' ') . ' ' . $symbol;
                     })
-                    ->description(fn ($record) => $record->formatted_converted_price)
+                    ->description(function ($record) {
+                        $parts = array_filter([
+                            $record->centimes_display ? '🇩🇿 ' . $record->centimes_display : null,
+                            $record->formatted_converted_price,
+                        ]);
+                        return $parts ? implode(' • ', $parts) : null;
+                    })
                     ->sortable()
                     ->color('success')
                     ->weight(FontWeight::Bold),

@@ -166,6 +166,12 @@
                                     <!-- Price -->
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-bold" style="color: #1B4F72;">{{ $listing->formatted_price }}</div>
+                                        @if($listing->centimes_display)
+                                            <div class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold" style="background: linear-gradient(135deg,#FFF8E7,#FFE9B8); color: #92591C; border: 1px solid rgba(241,196,15,0.4);">
+                                                <span style="font-size:9px;">🇩🇿</span>
+                                                <span>{{ $listing->centimes_display }}</span>
+                                            </div>
+                                        @endif
                                         @if($listing->formatted_converted_price)
                                             <div class="text-xs mt-0.5" style="color: #9BA8B7;">{{ $listing->formatted_converted_price }}</div>
                                         @endif

@@ -280,6 +280,37 @@ class Listing extends Model
         return '≈ ' . number_format($converted, 2, ',', ' ') . ' €';
     }
 
+    /**
+     * Affichage du prix en centimes algériens (convention populaire en Algérie).
+     * 1 DA = 100 centimes -> 1 milliard centimes = 10 000 000 DA.
+     * Retourne null si non pertinent (devise EUR/Autre, ou prix < 1 000 000 DA).
+     */
+    public function getCentimesDisplayAttribute(): ?string
+    {
+        if ($this->currency !== 'DZD' || $this->price_dzd <= 0) {
+            return null;
+        }
+
+        $centimes = (int) $this->price_dzd * 100;
+
+        if ($centimes >= 1_000_000_000) {
+            $val = $centimes / 1_000_000_000;
+            $rounded = round($val, 1);
+            $formatted = $rounded == floor($rounded)
+                ? number_format($rounded, 0, ',', ' ')
+                : number_format($rounded, 1, ',', ' ');
+            $unit = $rounded >= 2 ? 'milliards' : 'milliard';
+            return $formatted . ' ' . $unit . ' de centimes';
+        }
+
+        if ($centimes >= 100_000_000) {
+            $val = round($centimes / 1_000_000);
+            return number_format($val, 0, ',', ' ') . ' millions de centimes';
+        }
+
+        return null;
+    }
+
     public function getCategoryLabelAttribute(): string
     {
         return match($this->category) {

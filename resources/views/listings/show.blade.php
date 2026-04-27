@@ -224,8 +224,14 @@
                                     <span class="annonce-price text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight">{{ $listing->formatted_price }}</span>
                                 </div>
 
-                                {{-- Converted Price + Type Offre --}}
+                                {{-- Converted Price + Centimes algériens + Type Offre --}}
                                 <div class="flex items-center gap-2 flex-wrap">
+                                    @if($listing->centimes_display)
+                                        <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg" style="color: #92591C; background: linear-gradient(135deg, #FFF8E7, #FFE9B8); border: 1px solid rgba(241,196,15,0.45);">
+                                            <span class="text-sm leading-none">🇩🇿</span>
+                                            <span>{{ $listing->centimes_display }}</span>
+                                        </span>
+                                    @endif
                                     <span class="text-xs font-medium px-2.5 py-0.5 rounded-lg" style="color: #9BA8B7; background: rgba(155,168,183,0.08);">{{ $listing->formatted_converted_price }}</span>
 
                                 </div>

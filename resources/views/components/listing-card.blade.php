@@ -74,12 +74,18 @@
             {{-- Price overlay — bottom-left, dark gradient scrim --}}
             <div class="absolute inset-x-0 bottom-0 pointer-events-none" style="background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.28) 55%, transparent 100%); height: 55%;">
             </div>
-            <div class="absolute bottom-0 left-0 px-3 pb-2.5 z-10">
+            <div class="absolute bottom-0 left-0 px-3 pb-2.5 z-10 max-w-[90%]">
                 <span class="text-base font-extrabold text-white leading-tight block" style="text-shadow: 0 1px 4px rgba(0,0,0,0.4); letter-spacing: -0.01em;">
                     {{ $listing->formatted_price }}
                 </span>
+                @if($listing->centimes_display)
+                    <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold leading-tight" style="background: rgba(241,196,15,0.92); color: #5A4214; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
+                        <span style="font-size:9px;">🇩🇿</span>
+                        <span>{{ $listing->centimes_display }}</span>
+                    </span>
+                @endif
                 @if($listing->formatted_converted_price)
-                    <span class="text-[11px] font-medium block mt-0.5" style="color: rgba(255,255,255,0.72);">
+                    <span class="text-[11px] font-medium block mt-0.5" style="color: rgba(255,255,255,0.78);">
                         {{ $listing->formatted_converted_price }}
                     </span>
                 @endif
