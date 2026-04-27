@@ -926,17 +926,13 @@
                                 </div>
                             </div>
 
-                            {{-- ② PRIX + Saisie rapide en centimes (convention algérienne) --}}
+                            {{-- ② PRIX + 2 boutons : × Milliard / × Million (convention algérienne) --}}
                             <div x-data="{
                                 rawPrice: '{{ old('price_dzd', '') }}',
-                                cValue: '',
-                                cUnit: 'milliards',
-                                showCentimesHelper: false,
                                 get actualPrice() { return parseFloat(this.rawPrice) || 0; },
                                 get formattedTotal() {
                                     const v = this.actualPrice;
-                                    if (v <= 0) return '';
-                                    return v.toLocaleString('fr-FR');
+                                    return v > 0 ? v.toLocaleString('fr-FR') : '';
                                 },
                                 _fmtNum(v) {
                                     const r = Math.round(v * 10) / 10;
@@ -957,21 +953,11 @@
                                     }
                                     return '';
                                 },
-                                get cValuePreview() {
-                                    const v = parseFloat(this.cValue);
-                                    if (!v || v <= 0) return '';
-                                    const mult = this.cUnit === 'milliards' ? 1e9 : 1e6;
-                                    return Math.round((v * mult) / 100).toLocaleString('fr-FR') + ' DA';
-                                },
-                                applyCentimes() {
-                                    const v = parseFloat(this.cValue);
+                                applyUnit(unit) {
+                                    const v = parseFloat(this.rawPrice);
                                     if (!v || v <= 0) return;
-                                    const mult = this.cUnit === 'milliards' ? 1e9 : 1e6;
-                                    this.rawPrice = String(Math.round((v * mult) / 100));
-                                    this.cValue = '';
-                                },
-                                quickFillCentimes(centimes) {
-                                    this.rawPrice = String(Math.round(centimes / 100));
+                                    const factor = unit === 'milliard' ? 1e7 : 1e4;
+                                    this.rawPrice = String(Math.round(v * factor));
                                 }
                             }">
                                 <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
@@ -989,6 +975,26 @@
                                     </div>
                                 </div>
 
+                                {{-- 2 boutons rapides : × Milliard / × Million (DZD only) --}}
+                                <div x-show="currency === 'DZD'" x-transition class="mt-2.5">
+                                    <p class="text-[11px] mb-1.5 flex items-center gap-1" style="color:#6B7B8D;">
+                                        <span>💡</span>
+                                        <span>Tapez la valeur en centimes puis cliquez :</span>
+                                    </p>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button type="button" @click="applyUnit('milliard')"
+                                                class="px-3 py-3 rounded-xl text-sm font-bold transition-all hover:shadow-md active:scale-95"
+                                                style="background: linear-gradient(135deg, #FFF8E7, #FFE9B8); color: #92591C; border: 1.5px solid #F1C40F;">
+                                            × Milliard
+                                        </button>
+                                        <button type="button" @click="applyUnit('million')"
+                                                class="px-3 py-3 rounded-xl text-sm font-bold transition-all hover:shadow-md active:scale-95"
+                                                style="background: linear-gradient(135deg, #FFF8E7, #FFE9B8); color: #92591C; border: 1.5px solid #F1C40F;">
+                                            × Million
+                                        </button>
+                                    </div>
+                                </div>
+
                                 {{-- Live preview: DA + centimes algériens --}}
                                 <div x-show="actualPrice > 0" x-transition class="mt-2 space-y-1.5">
                                     <div class="flex items-center gap-1.5 text-xs rounded-lg px-3 py-2" style="background: rgba(27,79,114,0.06); color: #1B4F72;">
@@ -998,70 +1004,6 @@
                                     <div x-show="currency === 'DZD' && centimesDisplay" x-transition class="flex items-center gap-1.5 text-xs rounded-lg px-3 py-2" style="background: linear-gradient(135deg, #FFF8E7, #FFE9B8); color: #92591C; border: 1px solid rgba(241,196,15,0.4);">
                                         <span class="text-sm leading-none">🇩🇿</span>
                                         <span class="font-semibold">≈ <span x-text="centimesDisplay"></span></span>
-                                    </div>
-                                </div>
-
-                                {{-- ✨ Saisie rapide en centimes — DZD only --}}
-                                <div x-show="currency === 'DZD'" x-transition class="mt-3">
-                                    <button type="button" @click="showCentimesHelper = !showCentimesHelper"
-                                            class="w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all"
-                                            :style="showCentimesHelper ? 'background:linear-gradient(135deg,#FFF8E7,#FFE9B8); color:#92591C; border:1px solid #F1C40F;' : 'background:#F0F4F8; color:#6B7B8D; border:1px solid #E0E6ED;'">
-                                        <span class="flex items-center gap-2">
-                                            <span class="text-sm">💡</span>
-                                            <span>Saisir en <strong>millions / milliards de centimes</strong> ?</span>
-                                        </span>
-                                        <svg class="w-4 h-4 transition-transform" :class="showCentimesHelper ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                                    </button>
-
-                                    <div x-show="showCentimesHelper" x-transition x-cloak class="mt-2 p-4 rounded-xl space-y-3" style="background: linear-gradient(135deg, #FFFBF0 0%, #FFF8E7 100%); border:1px solid #F1C40F;">
-                                        <p class="text-[11px] leading-relaxed" style="color: #92591C;">
-                                            En Algérie, les prix sont souvent exprimés en <strong>centimes</strong>. Saisissez la valeur ici, nous convertissons automatiquement en Dinars (1 milliard de centimes = 10 000 000 DA).
-                                        </p>
-
-                                        {{-- Manual converter --}}
-                                        <div class="flex gap-2 items-stretch">
-                                            <input type="number" x-model="cValue" min="0" step="any" placeholder="Ex: 4,5"
-                                                   @keydown.enter.prevent="applyCentimes()"
-                                                   class="flex-1 rounded-lg px-3 py-2.5 text-sm font-bold border-0 min-w-0"
-                                                   style="background: white; color: #1B2A4A; box-shadow: 0 1px 2px rgba(0,0,0,0.06);">
-                                            <select x-model="cUnit"
-                                                    class="rounded-lg px-3 py-2.5 text-sm font-bold border-0 cursor-pointer"
-                                                    style="background: white; color: #1B4F72; box-shadow: 0 1px 2px rgba(0,0,0,0.06);">
-                                                <option value="milliards">Milliards</option>
-                                                <option value="millions">Millions</option>
-                                            </select>
-                                            <button type="button" @click="applyCentimes()"
-                                                    class="px-4 py-2.5 rounded-lg text-sm font-bold text-white transition-all hover:shadow-md active:scale-95 whitespace-nowrap"
-                                                    style="background: linear-gradient(135deg, #1B4F72, #2471A3);">
-                                                Appliquer
-                                            </button>
-                                        </div>
-
-                                        {{-- Live preview of pending conversion --}}
-                                        <div x-show="cValuePreview" x-transition class="text-xs px-3 py-2 rounded-lg flex items-center gap-2" style="background: rgba(27,79,114,0.08); color: #1B4F72;">
-                                            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                                            <span><span x-text="cValue + ' ' + cUnit + ' de centimes'"></span> = <strong x-text="cValuePreview"></strong></span>
-                                        </div>
-
-                                        {{-- Quick chips --}}
-                                        <div>
-                                            <p class="text-[10px] uppercase font-bold tracking-wide mb-1.5" style="color:#92591C;">Raccourcis populaires</p>
-                                            <div class="flex flex-wrap gap-1.5">
-                                                <template x-for="chip in [
-                                                    { label: '100 M', centimes: 1e8 },
-                                                    { label: '500 M', centimes: 5e8 },
-                                                    { label: '1 Mrd', centimes: 1e9 },
-                                                    { label: '3 Mrd', centimes: 3e9 },
-                                                    { label: '5 Mrd', centimes: 5e9 },
-                                                    { label: '10 Mrd', centimes: 1e10 }
-                                                ]" :key="chip.label">
-                                                    <button type="button" @click="quickFillCentimes(chip.centimes)"
-                                                            class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all hover:shadow-sm active:scale-95"
-                                                            style="background:white; color:#1B4F72; border:1px solid #F1C40F;"
-                                                            x-text="chip.label"></button>
-                                                </template>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
