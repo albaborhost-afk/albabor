@@ -926,84 +926,89 @@
                                 </div>
                             </div>
 
-                            {{-- ② PRIX + 2 boutons : × Milliard / × Million (convention algérienne) --}}
+                            {{-- ② PRIX : entree libre + 2 boutons (Milliard / Million) qui choisissent l'unite d'affichage --}}
                             <div x-data="{
-                                rawPrice: '{{ old('price_dzd', '') }}',
-                                get actualPrice() { return parseFloat(this.rawPrice) || 0; },
-                                get formattedTotal() {
-                                    const v = this.actualPrice;
-                                    return v > 0 ? v.toLocaleString('fr-FR') : '';
+                                rawValue: '{{ old('price_input', old('price_dzd', '')) }}',
+                                unit: '{{ old('price_display_unit', '') }}',
+                                get actualValue() { return parseFloat(this.rawValue) || 0; },
+                                get factor() {
+                                    if (this.unit === 'milliard') return 1e7;
+                                    if (this.unit === 'million')  return 1e4;
+                                    return 1;
+                                },
+                                get dzdValue() {
+                                    return Math.round(this.actualValue * this.factor);
                                 },
                                 _fmtNum(v) {
-                                    const r = Math.round(v * 10) / 10;
-                                    return r === Math.floor(r)
-                                        ? r.toLocaleString('fr-FR')
-                                        : r.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+                                    const r = Math.round(v * 100) / 100;
+                                    if (r === Math.floor(r)) return r.toLocaleString('fr-FR');
+                                    return r.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
                                 },
-                                get centimesDisplay() {
-                                    const dzd = this.actualPrice;
-                                    if (dzd <= 0) return '';
-                                    const c = dzd * 100;
-                                    if (c >= 1e9) {
-                                        const v = Math.round((c / 1e9) * 10) / 10;
-                                        return this._fmtNum(v) + ' ' + (v >= 2 ? 'milliards' : 'milliard') + ' de centimes';
-                                    }
-                                    if (c >= 1e8) {
-                                        return Math.round(c / 1e6).toLocaleString('fr-FR') + ' millions de centimes';
-                                    }
-                                    return '';
+                                get unitSuffix() {
+                                    if (this.currency === 'EUR') return '€';
+                                    if (this.currency === 'OTHER') return ($el.closest('form')?.querySelector('[name=currency_label]')?.value || '?');
+                                    if (this.unit === 'milliard') return this.actualValue >= 2 ? 'Milliards' : 'Milliard';
+                                    if (this.unit === 'million')  return this.actualValue >= 2 ? 'Millions'  : 'Million';
+                                    return 'DA';
                                 },
-                                applyUnit(unit) {
-                                    const v = parseFloat(this.rawPrice);
-                                    if (!v || v <= 0) return;
-                                    const factor = unit === 'milliard' ? 1e7 : 1e4;
-                                    this.rawPrice = String(Math.round(v * factor));
+                                get displayPreview() {
+                                    if (this.actualValue <= 0) return '';
+                                    return this._fmtNum(this.actualValue) + ' ' + this.unitSuffix;
+                                },
+                                toggleUnit(u) {
+                                    if (this.currency !== 'DZD') return;
+                                    this.unit = (this.unit === u) ? '' : u;
                                 }
                             }">
                                 <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
                                     Prix <span style="color: #E74C3C;">*</span>
                                 </label>
 
+                                {{-- Visible: l'utilisateur tape ce qui sera affiche (4,5 ou 1400000) --}}
                                 <div class="relative">
-                                    <input type="number" name="price_dzd" x-model="rawPrice"
-                                           required min="0" step="any" placeholder="Ex: 1400000"
-                                           class="glass-input w-full rounded-xl px-4 py-3.5 pr-16 text-xl font-bold"
+                                    <input type="number" x-model="rawValue"
+                                           required min="0" step="any"
+                                           :placeholder="unit === 'milliard' ? 'Ex: 4,5' : (unit === 'million' ? 'Ex: 900' : 'Ex: 1400000')"
+                                           class="glass-input w-full rounded-xl px-4 py-3.5 pr-24 text-xl font-bold"
                                            style="color: #1B2A4A;">
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                                        <span class="text-sm font-bold px-2 py-1 rounded-lg" style="background:#EBF2FA; color:#1B4F72;"
-                                              x-text="currency === 'EUR' ? '€' : (currency === 'OTHER' ? ($el.closest('form').querySelector('[name=currency_label]')?.value || '?') : 'DA')">DA</span>
+                                        <span class="text-sm font-bold px-2 py-1 rounded-lg whitespace-nowrap"
+                                              :style="unit ? 'background: linear-gradient(135deg, #FFF8E7, #FFE9B8); color: #92591C; border: 1px solid rgba(241,196,15,0.5);' : 'background:#EBF2FA; color:#1B4F72;'"
+                                              x-text="unitSuffix">DA</span>
                                     </div>
                                 </div>
 
-                                {{-- 2 boutons rapides : × Milliard / × Million (DZD only) --}}
-                                <div x-show="currency === 'DZD'" x-transition class="mt-2.5">
-                                    <p class="text-[11px] mb-1.5 flex items-center gap-1" style="color:#6B7B8D;">
-                                        <span>💡</span>
-                                        <span>Tapez la valeur en centimes puis cliquez :</span>
-                                    </p>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <button type="button" @click="applyUnit('milliard')"
-                                                class="px-3 py-3 rounded-xl text-sm font-bold transition-all hover:shadow-md active:scale-95"
-                                                style="background: linear-gradient(135deg, #FFF8E7, #FFE9B8); color: #92591C; border: 1.5px solid #F1C40F;">
-                                            × Milliard
-                                        </button>
-                                        <button type="button" @click="applyUnit('million')"
-                                                class="px-3 py-3 rounded-xl text-sm font-bold transition-all hover:shadow-md active:scale-95"
-                                                style="background: linear-gradient(135deg, #FFF8E7, #FFE9B8); color: #92591C; border: 1.5px solid #F1C40F;">
-                                            × Million
-                                        </button>
-                                    </div>
+                                {{-- Hidden submitted fields (price_dzd reste en DA pour le tri/filtre) --}}
+                                <input type="hidden" name="price_dzd" :value="dzdValue">
+                                <input type="hidden" name="price_display_unit" :value="unit">
+
+                                {{-- 2 boutons : Milliard / Million (DZD uniquement) --}}
+                                <div x-show="currency === 'DZD'" x-transition class="mt-2.5 grid grid-cols-2 gap-2">
+                                    <button type="button" @click="toggleUnit('milliard')"
+                                            class="px-3 py-3 rounded-xl text-sm font-bold transition-all hover:shadow-md active:scale-95"
+                                            :style="unit === 'milliard'
+                                                ? 'background: linear-gradient(135deg, #F1C40F, #F39C12); color: white; border: 1.5px solid #F39C12; box-shadow: 0 2px 8px rgba(241,196,15,0.4);'
+                                                : 'background: linear-gradient(135deg, #FFF8E7, #FFE9B8); color: #92591C; border: 1.5px solid #F1C40F;'">
+                                        Milliard
+                                    </button>
+                                    <button type="button" @click="toggleUnit('million')"
+                                            class="px-3 py-3 rounded-xl text-sm font-bold transition-all hover:shadow-md active:scale-95"
+                                            :style="unit === 'million'
+                                                ? 'background: linear-gradient(135deg, #F1C40F, #F39C12); color: white; border: 1.5px solid #F39C12; box-shadow: 0 2px 8px rgba(241,196,15,0.4);'
+                                                : 'background: linear-gradient(135deg, #FFF8E7, #FFE9B8); color: #92591C; border: 1.5px solid #F1C40F;'">
+                                        Million
+                                    </button>
                                 </div>
 
-                                {{-- Live preview: DA + centimes algériens --}}
-                                <div x-show="actualPrice > 0" x-transition class="mt-2 space-y-1.5">
+                                {{-- Apercu : ce qui sera affiche sur l'annonce --}}
+                                <div x-show="actualValue > 0" x-transition class="mt-2 space-y-1.5">
                                     <div class="flex items-center gap-1.5 text-xs rounded-lg px-3 py-2" style="background: rgba(27,79,114,0.06); color: #1B4F72;">
-                                        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                                        <span class="font-semibold" x-text="formattedTotal + ' ' + (currency === 'EUR' ? '€' : (currency === 'OTHER' ? '' : 'DA'))"></span>
+                                        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        <span>Affiche sur l'annonce :</span>
+                                        <span class="font-bold" x-text="displayPreview"></span>
                                     </div>
-                                    <div x-show="currency === 'DZD' && centimesDisplay" x-transition class="flex items-center gap-1.5 text-xs rounded-lg px-3 py-2" style="background: linear-gradient(135deg, #FFF8E7, #FFE9B8); color: #92591C; border: 1px solid rgba(241,196,15,0.4);">
-                                        <span class="text-sm leading-none">🇩🇿</span>
-                                        <span class="font-semibold">≈ <span x-text="centimesDisplay"></span></span>
+                                    <div x-show="currency === 'DZD' && unit" x-transition class="text-[11px] px-3 py-1.5 rounded-lg" style="background: rgba(155,168,183,0.08); color: #6B7B8D;">
+                                        <span x-text="'(equivalent : ' + dzdValue.toLocaleString('fr-FR') + ' DA)'"></span>
                                     </div>
                                 </div>
                             </div>

@@ -19,6 +19,7 @@ class Listing extends Model
         'price_dzd',
         'currency',
         'currency_label',
+        'price_display_unit',
         'type_offre',
         'etat',
         'remarque_echange',
@@ -247,8 +248,30 @@ class Listing extends Model
 
     public function getFormattedPriceAttribute(): string
     {
+        // Affichage en convention algerienne (centimes) si demande explicitement
+        if ($this->currency === 'DZD' && $this->price_display_unit && $this->price_dzd > 0) {
+            if ($this->price_display_unit === 'milliard') {
+                $val = $this->price_dzd / 10_000_000; // 1 Mrd centimes = 10 000 000 DA
+                return $this->formatCentimesValue($val) . ' ' . ($val >= 2 ? 'Milliards' : 'Milliard');
+            }
+            if ($this->price_display_unit === 'million') {
+                $val = $this->price_dzd / 10_000; // 1 Mio centimes = 10 000 DA
+                return $this->formatCentimesValue($val) . ' ' . ($val >= 2 ? 'Millions' : 'Million');
+            }
+        }
+
         $symbol = $this->currency_symbol;
         return number_format($this->price_dzd, 0, ',', ' ') . ' ' . $symbol;
+    }
+
+    private function formatCentimesValue(float $val): string
+    {
+        $rounded = round($val, 2);
+        if ($rounded == floor($rounded)) {
+            return number_format($rounded, 0, ',', ' ');
+        }
+        $str = number_format($rounded, 2, ',', ' ');
+        return rtrim(rtrim($str, '0'), ',');
     }
 
     public function getCurrencySymbolAttribute(): string
@@ -288,6 +311,11 @@ class Listing extends Model
     public function getCentimesDisplayAttribute(): ?string
     {
         if ($this->currency !== 'DZD' || $this->price_dzd <= 0) {
+            return null;
+        }
+
+        // Si formatted_price affiche deja en Milliards/Millions, on n'ajoute pas un doublon
+        if ($this->price_display_unit) {
             return null;
         }
 

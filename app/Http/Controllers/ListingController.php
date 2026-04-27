@@ -205,6 +205,7 @@ class ListingController extends Controller
             'price_dzd' => 'required|numeric|min:0|max:' . $this->maxListingPriceDzd(),
             'currency' => 'required|in:DZD,EUR,OTHER',
             'currency_label' => 'nullable|string|max:10',
+            'price_display_unit' => 'nullable|in:milliard,million',
             'type_offre' => 'nullable|in:negociable,offert,fix',
             'etat' => 'required|in:jamais_utilise,comme_neuf,bon_etat,etat_moyen,a_reviser',
             'remarque_echange' => 'nullable|in:accepte,refuse',
@@ -221,6 +222,11 @@ class ListingController extends Controller
             'video_url' => 'nullable|url|max:500',
         ]);
 
+        // L'unite d'affichage n'a de sens que pour les listings DZD
+        if (($validated['currency'] ?? null) !== 'DZD') {
+            $validated['price_display_unit'] = null;
+        }
+
         // Strip type for categories that don't use types
         if (!isset(Listing::CATEGORY_TYPES[$validated['category'] ?? ''])) {
             $validated['type'] = null;
@@ -236,6 +242,7 @@ class ListingController extends Controller
             'price_dzd' => $validated['price_dzd'],
             'currency' => $validated['currency'],
             'currency_label' => $validated['currency'] === 'OTHER' ? ($validated['currency_label'] ?? null) : null,
+            'price_display_unit' => $validated['price_display_unit'] ?? null,
             'type_offre' => $validated['type_offre'] ?? null,
             'etat' => $validated['etat'],
             'remarque_echange' => $validated['remarque_echange'] ?? null,
@@ -424,6 +431,7 @@ class ListingController extends Controller
             'price_dzd' => 'required|numeric|min:0|max:' . $this->maxListingPriceDzd(),
             'currency' => 'required|in:DZD,EUR,OTHER',
             'currency_label' => 'nullable|string|max:10',
+            'price_display_unit' => 'nullable|in:milliard,million',
             'type_offre' => 'nullable|in:negociable,offert,fix',
             'etat' => 'required|in:jamais_utilise,comme_neuf,bon_etat,etat_moyen,a_reviser',
             'remarque_echange' => 'nullable|in:accepte,refuse',
@@ -442,6 +450,10 @@ class ListingController extends Controller
             'video_url' => 'nullable|url|max:500',
         ]);
 
+        if (($validated['currency'] ?? null) !== 'DZD') {
+            $validated['price_display_unit'] = null;
+        }
+
         // Strip type for categories that don't use types
         if (!isset(Listing::CATEGORY_TYPES[$validated['category'] ?? ''])) {
             $validated['type'] = null;
@@ -455,6 +467,7 @@ class ListingController extends Controller
             'price_dzd' => $validated['price_dzd'],
             'currency' => $validated['currency'],
             'currency_label' => $validated['currency'] === 'OTHER' ? ($validated['currency_label'] ?? null) : null,
+            'price_display_unit' => $validated['price_display_unit'] ?? null,
             'type_offre' => $validated['type_offre'] ?? null,
             'etat' => $validated['etat'],
             'remarque_echange' => $validated['remarque_echange'] ?? null,
