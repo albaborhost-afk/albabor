@@ -1002,6 +1002,21 @@
             if (e.key === 'ArrowRight') navigateLightbox(e, 1);
         });
 
+        // Touch swipe in lightbox
+        (function() {
+            const lb = document.getElementById('lightbox');
+            let lbTouchStartX = 0;
+            lb.addEventListener('touchstart', function(e) {
+                lbTouchStartX = e.touches[0].clientX;
+            }, { passive: true });
+            lb.addEventListener('touchend', function(e) {
+                const diff = lbTouchStartX - e.changedTouches[0].clientX;
+                if (Math.abs(diff) > 40) {
+                    navigateLightbox(e, diff > 0 ? 1 : -1);
+                }
+            }, { passive: true });
+        })();
+
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(function() {
                 const btn = document.getElementById('copyBtnText');
