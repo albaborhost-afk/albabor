@@ -30,6 +30,7 @@ class Listing extends Model
         'rejection_reason',
         'published_until',
         'featured_until',
+        'last_renewed_at',
         'mediation_enabled',
         'numero_whatsapp',
         'numero_mobile',
@@ -46,6 +47,7 @@ class Listing extends Model
             'mediation_enabled' => 'boolean',
             'published_until' => 'datetime',
             'featured_until' => 'datetime',
+            'last_renewed_at' => 'datetime',
             'specs' => 'array',
             'views_count' => 'integer',
             'favorites_count' => 'integer',
@@ -166,6 +168,27 @@ class Listing extends Model
     public function isExpired(): bool
     {
         return $this->published_until && $this->published_until->isPast();
+    }
+
+    public function canRenew(): bool
+    {
+        if ($this->status !== 'active') {
+            return false;
+        }
+        if ($this->last_renewed_at === null) {
+            return true;
+        }
+        return $this->last_renewed_at->lt(now()->subDays(7));
+    }
+
+    public function daysUntilRenewal(): int
+    {
+        if ($this->last_renewed_at === null || $this->canRenew()) {
+            return 0;
+        }
+        $nextRenewal = $this->last_renewed_at->copy()->addDays(7);
+        $hours = now()->diffInHours($nextRenewal, false);
+        return max(1, (int) ceil($hours / 24));
     }
 
     /**

@@ -64,6 +64,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/listings/{listing}/sold', [ListingController::class, 'markAsSold']);
         Route::post('/listings/{listing}/pause', [ListingController::class, 'pause']);
         Route::post('/listings/{listing}/reactivate', [ListingController::class, 'reactivate']);
+        Route::post('/listings/{listing}/renew', [ListingController::class, 'renew'])->middleware('throttle:5,1');
 
         // Favorites
         Route::get('/favorites', [FavoriteController::class, 'index']);

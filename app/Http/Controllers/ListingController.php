@@ -639,6 +639,27 @@ class ListingController extends Controller
             ->with('success', __('messages.listing_reactivated'));
     }
 
+    public function renew(Listing $listing)
+    {
+        $this->authorize('update', $listing);
+
+        if ($listing->status !== 'active') {
+            return redirect()->route('listings.my')
+                ->with('error', 'Seules les annonces actives peuvent être remontées.');
+        }
+
+        if (!$listing->canRenew()) {
+            $days = $listing->daysUntilRenewal();
+            return redirect()->route('listings.my')
+                ->with('error', "Renouvellement disponible dans {$days} jour(s).");
+        }
+
+        $listing->update(['last_renewed_at' => now()]);
+
+        return redirect()->route('listings.my')
+            ->with('success', 'Votre annonce a été remontée en haut de la liste.');
+    }
+
     public function feature(Listing $listing)
     {
         $this->authorize('update', $listing);

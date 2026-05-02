@@ -121,6 +121,7 @@ Route::middleware('auth')->group(function () {
     Route::post('annonces/{listing}/vendu', [ListingController::class, 'markAsSold'])->name('listings.sold');
     Route::post('annonces/{listing}/pause', [ListingController::class, 'pause'])->name('listings.pause');
     Route::post('annonces/{listing}/reactiver', [ListingController::class, 'reactivate'])->name('listings.reactivate');
+    Route::post('annonces/{listing}/renouveler', [ListingController::class, 'renew'])->name('listings.renew');
     Route::get('annonces/{listing}/mettre-en-avant', [ListingController::class, 'feature'])->name('listings.feature');
 
     // Favorites

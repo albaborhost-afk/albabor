@@ -115,7 +115,7 @@ class ListingController extends Controller
                 $query->orderBy('views_count', 'desc');
                 break;
             default:
-                $query->orderBy('created_at', 'desc');
+                $query->orderByRaw('COALESCE(last_renewed_at, created_at) DESC');
         }
 
         // Annonces mises en avant en premier
@@ -220,7 +220,7 @@ class ListingController extends Controller
         $listings = $request->user()
             ->listings()
             ->with('media')
-            ->orderBy('created_at', 'desc')
+            ->orderByRaw('COALESCE(last_renewed_at, created_at) DESC')
             ->paginate(20);
 
         return response()->json($listings);
@@ -600,6 +600,40 @@ class ListingController extends Controller
         return response()->json([
             'message' => 'Annonce réactivée avec succès.',
             'listing' => $listing,
+        ]);
+    }
+
+    /**
+     * Remonter une annonce en haut de la liste (renouvellement).
+     * Limite : 1 fois par 7 jours par annonce.
+     */
+    public function renew(Request $request, Listing $listing): JsonResponse
+    {
+        $this->authorize('update', $listing);
+
+        if ($listing->status !== 'active') {
+            return response()->json([
+                'message' => 'Seules les annonces actives peuvent être remontées.',
+            ], 422);
+        }
+
+        if (!$listing->canRenew()) {
+            $nextRenewal = $listing->last_renewed_at->copy()->addDays(7);
+            $daysLeft = max(1, (int) ceil(now()->diffInHours($nextRenewal, false) / 24));
+            return response()->json([
+                'message' => "Renouvellement disponible dans {$daysLeft} jour(s).",
+                'next_renewal_at' => $nextRenewal->toISOString(),
+                'can_renew_in_days' => $daysLeft,
+            ], 429);
+        }
+
+        $listing->update(['last_renewed_at' => now()]);
+
+        $nextRenewal = now()->addDays(7);
+
+        return response()->json([
+            'message' => 'Annonce remontée avec succès.',
+            'next_renewal_at' => $nextRenewal->toISOString(),
         ]);
     }
 
