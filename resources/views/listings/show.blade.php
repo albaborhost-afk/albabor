@@ -67,7 +67,7 @@
                     @endphp
 
                     {{-- Gallery: edge-to-edge --}}
-                    <div class="rounded-2xl sm:rounded-3xl overflow-hidden" style="box-shadow: 0 8px 30px rgba(27, 79, 114, 0.12);"
+                    <div class="-mx-3 sm:mx-0 rounded-none sm:rounded-3xl overflow-hidden" style="box-shadow: 0 8px 30px rgba(27, 79, 114, 0.12);"
                          x-data="{
                             currentIndex: 0,
                             imageCount: {{ $imageCount }},
@@ -107,7 +107,7 @@
 
                         @if($hasImages)
                             {{-- Main image --}}
-                            <div class="relative overflow-hidden cursor-grab active:cursor-grabbing aspect-video sm:aspect-[4/3] select-none"
+                            <div class="relative overflow-hidden cursor-grab active:cursor-grabbing aspect-[4/3] sm:aspect-[4/3] select-none"
                                  @touchstart="onTouchStart($event)" @touchmove="onTouchMove($event)" @touchend="onTouchEnd()"
                                  @mousedown="onMouseDown($event)" @mousemove="onMouseMove($event)" @mouseup="onMouseUp()" @mouseleave="onMouseUp()"
                                  @click="if(!dragging && Math.abs(dragStartX - dragCurrentX) < 10) openLightbox(currentIndex)">
