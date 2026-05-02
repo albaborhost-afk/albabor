@@ -121,6 +121,22 @@ class MyListingsViewModel : ViewModel() {
         }
     }
 
+    // ── Renew (bump to top) ───────────────────────────────────────────────────
+
+    fun renewListing(id: Int) {
+        viewModelScope.launch {
+            _actionState.value = ActionState.Loading
+            repo.renewListing(id)
+                .onSuccess { result ->
+                    _actionState.value = ActionState.Success(result.message.ifEmpty { "Annonce remontee" })
+                    loadListings()
+                }
+                .onFailure {
+                    _actionState.value = ActionState.Error(it.message ?: "Echec du renouvellement")
+                }
+        }
+    }
+
     // ── Reset action state ────────────────────────────────────────────────────
 
     fun clearActionState() {

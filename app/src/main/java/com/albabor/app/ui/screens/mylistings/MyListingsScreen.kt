@@ -195,6 +195,7 @@ fun MyListingsScreen(navController: NavController) {
                                     onSold     = { vm.markAsSold(listing.id) },
                                     onPause    = { vm.pauseListing(listing.id) },
                                     onReactivate = { vm.reactivateListing(listing.id) },
+                                    onRenew    = { vm.renewListing(listing.id) },
                                     onClick    = { navController.navigate(Screen.ListingDetail.route(listing.id)) }
                                 )
                             }
@@ -265,7 +266,8 @@ private fun ListingItemRow(
     onDelete: () -> Unit,
     onSold: () -> Unit,
     onPause: () -> Unit,
-    onReactivate: () -> Unit
+    onReactivate: () -> Unit,
+    onRenew: () -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -302,6 +304,13 @@ private fun ListingItemRow(
                         // For v1.0 we hide Edit to avoid the confusing "opens blank form and creates a duplicate" bug.
                         when (listing.status) {
                             "active" -> {
+                                MenuAction(
+                                    if (listing.canRenew) "Remonter l'annonce" else "Renouveler dans ${listing.daysUntilRenewal}j",
+                                    if (listing.canRenew) Teal500 else Gray400
+                                ) {
+                                    if (listing.canRenew) { menuExpanded = false; onRenew() }
+                                    else menuExpanded = false
+                                }
                                 MenuAction("Marquer comme vendu",  Success500)   { menuExpanded = false; onSold() }
                                 MenuAction("Mettre en pause",      Gold500)      { menuExpanded = false; onPause() }
                                 MenuAction("Supprimer",            Error500)     { menuExpanded = false; onDelete() }

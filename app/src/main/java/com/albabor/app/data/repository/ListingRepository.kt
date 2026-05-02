@@ -56,4 +56,10 @@ class ListingRepository {
         if (response.isSuccessful) response.body()?.listing ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
+
+    suspend fun renewListing(id: Int): Result<RenewListingResponse> = runCatching {
+        val response = api.renewListing(id)
+        if (response.isSuccessful) response.body() ?: throw Exception("Empty response body")
+        else throw Exception(response.errorMessage())
+    }
 }

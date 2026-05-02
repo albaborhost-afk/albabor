@@ -14,6 +14,17 @@ private fun String.ensureAbsoluteUrl(): String =
 private fun formatWholeAmount(value: Double): String =
     "%,.0f".format(value).replace(",", " ")
 
+/** Formats a centimes-unit value (milliards/millions) with French comma, trimming trailing zeros. */
+private fun formatCentimes(v: Double): String =
+    if (v == v.toLong().toDouble()) v.toLong().toString()
+    else "%.2f".format(v).trimEnd('0').replace(".", ",")
+
+/** Formats a EUR converted price: whole number + 2 decimal places, French style. */
+private fun formatEurConversion(value: Double): String {
+    val s = "%.2f".format(value).split(".")
+    return "${formatWholeAmount(s[0].toDouble())},${s[1]}"
+}
+
 /** Boat types: API slug → French label. Only boats have types for now. */
 val BOAT_TYPES: Map<String, String> = linkedMapOf(
     "yacht"           to "Yacht",
@@ -56,6 +67,7 @@ data class Listing(
     val description: String?,
     @SerializedName("price_dzd") val priceDzd: Double,
     val currency: String = "DZD",        // "DZD" or "EUR"
+    @SerializedName("price_display_unit") val priceDisplayUnit: String? = null, // "milliard" | "million" | null
     @SerializedName("converted_price") val convertedPrice: Double? = null,
     val category: String,                 // "boat" | "jetski" | "engine" | "parts"
     val type: String? = null,             // boat type slug (only for category "boat")
@@ -78,18 +90,35 @@ data class Listing(
     @SerializedName("numero_mobile") val numeroMobile: String? = null,
     @SerializedName("contact_email") val contactEmail: String? = null,
     @SerializedName("remarque_echange") val remarqueEchange: String? = null,
+    @SerializedName("last_renewed_at") val lastRenewedAt: String? = null,
 ) {
     val formattedPrice: String
-        get() = when (currency) {
-            "EUR" -> "${formatWholeAmount(priceDzd)} €"
-            else  -> "${formatWholeAmount(priceDzd)} DA"
+        get() {
+            // Algerian centimes convention: price_display_unit tells which unit the vendor used
+            if (currency == "DZD" && !priceDisplayUnit.isNullOrBlank() && priceDzd > 0) {
+                return when (priceDisplayUnit) {
+                    "milliard" -> {
+                        val v = priceDzd / 10_000_000.0
+                        "${formatCentimes(v)} ${if (v >= 2) "Milliards" else "Milliard"}"
+                    }
+                    "million" -> {
+                        val v = priceDzd / 10_000.0
+                        "${formatCentimes(v)} ${if (v >= 2) "Millions" else "Million"}"
+                    }
+                    else -> "${formatWholeAmount(priceDzd)} DA"
+                }
+            }
+            return when (currency) {
+                "EUR" -> "${formatWholeAmount(priceDzd)} €"
+                else  -> "${formatWholeAmount(priceDzd)} DA"
+            }
         }
 
     val formattedConvertedPrice: String?
         get() = convertedPrice?.let {
             when (currency) {
-                "EUR" -> "${formatWholeAmount(it)} DA"
-                else  -> "≈ ${formatWholeAmount(it)} €"
+                "EUR" -> "≈ ${formatWholeAmount(it)} DA"
+                else  -> "≈ ${formatEurConversion(it)} €"
             }
         }
 
@@ -171,6 +200,30 @@ data class Listing(
     val year: String?    get() = getSpec("general", "annee_construction")
     val power: String?   get() = getSpec("motorisation", "puissance_totale")
     val length: String?  get() = getSpec("dimensions", "longueur")
+
+    val canRenew: Boolean get() {
+        if (status != "active") return false
+        val renewed = lastRenewedAt ?: return true
+        return try {
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US)
+            sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+            val date = try { sdf.parse(renewed.take(19)) } catch (e: Exception) { null } ?: return true
+            val sevenDaysAgo = System.currentTimeMillis() - (7L * 24 * 60 * 60 * 1000)
+            date.time < sevenDaysAgo
+        } catch (e: Exception) { true }
+    }
+
+    val daysUntilRenewal: Int get() {
+        val renewed = lastRenewedAt ?: return 0
+        return try {
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US)
+            sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+            val date = try { sdf.parse(renewed.take(19)) } catch (e: Exception) { null } ?: return 0
+            val nextRenewal = date.time + (7L * 24 * 60 * 60 * 1000)
+            val diff = nextRenewal - System.currentTimeMillis()
+            if (diff <= 0) 0 else ((diff / (1000 * 60 * 60 * 24)) + 1).toInt()
+        } catch (e: Exception) { 0 }
+    }
 }
 
 data class ListingImage(
@@ -264,6 +317,12 @@ data class ListingDetailResponse(
 data class ListingActionResponse(
     val message: String? = null,
     val listing: Listing? = null,
+)
+
+data class RenewListingResponse(
+    val message: String = "",
+    @SerializedName("next_renewal_at") val nextRenewalAt: String? = null,
+    @SerializedName("can_renew_in_days") val canRenewInDays: Int? = null,
 )
 
 data class CreateListingResponse(

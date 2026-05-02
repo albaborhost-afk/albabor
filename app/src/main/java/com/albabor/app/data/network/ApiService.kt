@@ -85,6 +85,9 @@ interface ApiService {
     @POST("listings/{id}/reactivate")
     suspend fun reactivateListing(@Path("id") id: Int): Response<ListingActionResponse>
 
+    @POST("listings/{id}/renew")
+    suspend fun renewListing(@Path("id") id: Int): Response<RenewListingResponse>
+
     // ─── Favorites ────────────────────────────────────────────────────────────
 
     @GET("favorites")
