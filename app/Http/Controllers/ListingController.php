@@ -98,7 +98,7 @@ class ListingController extends Controller
         }
 
         // Featured listings always first (primary sort)
-        $query->orderByRaw("CASE WHEN featured_until IS NOT NULL AND featured_until > datetime('now') THEN 1 ELSE 0 END DESC");
+        $query->orderByRaw("CASE WHEN featured_until IS NOT NULL AND featured_until > ? THEN 1 ELSE 0 END DESC", [now()]);
 
         // Secondary sort
         $sort = $request->get('sort', 'recent');
@@ -588,7 +588,7 @@ class ListingController extends Controller
     {
         $listings = Auth::user()->listings()
             ->with('media')
-            ->orderByRaw("CASE WHEN featured_until IS NOT NULL AND featured_until > datetime('now') THEN 1 ELSE 0 END DESC")
+            ->orderByRaw("CASE WHEN featured_until IS NOT NULL AND featured_until > ? THEN 1 ELSE 0 END DESC", [now()])
             ->orderByRaw('COALESCE(last_renewed_at, created_at) DESC')
             ->paginate(20);
 

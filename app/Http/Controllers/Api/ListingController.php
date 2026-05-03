@@ -103,7 +103,7 @@ class ListingController extends Controller
         }
 
         // Annonces mises en avant en premier (tri primaire)
-        $query->orderByRaw("CASE WHEN featured_until IS NOT NULL AND featured_until > datetime('now') THEN 1 ELSE 0 END DESC");
+        $query->orderByRaw("CASE WHEN featured_until IS NOT NULL AND featured_until > ? THEN 1 ELSE 0 END DESC", [now()]);
 
         // Tri secondaire
         $sort = $request->get('sort', 'recent');
