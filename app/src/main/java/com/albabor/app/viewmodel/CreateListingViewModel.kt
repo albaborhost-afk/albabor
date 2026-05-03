@@ -209,12 +209,13 @@ class CreateListingViewModel : ViewModel() {
 
     val totalReservoirCapacity: String
         get() {
-            val values = listOf(fuelTankCapacity, freshWaterTankCapacity, storageCapacity)
-                .mapNotNull { it.toDoubleOrNull() }
-
-            if (values.isEmpty()) return ""
-
-            return formatCalculatedValue(values.sum())
+            val n = (reservoirCount.toIntOrNull() ?: 1).coerceAtLeast(1)
+            val fuelPer = fuelTankCapacity.toDoubleOrNull() ?: 0.0
+            val fresh = freshWaterTankCapacity.toDoubleOrNull() ?: 0.0
+            val storage = storageCapacity.toDoubleOrNull() ?: 0.0
+            val sum = n * fuelPer + fresh + storage
+            if (sum == 0.0) return ""
+            return formatCalculatedValue(sum)
         }
 
     // ── Submit ────────────────────────────────────────────────────────────────
