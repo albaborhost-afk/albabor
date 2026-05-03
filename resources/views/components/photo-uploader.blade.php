@@ -28,8 +28,11 @@
 
     {{-- ─── Existing images (edit mode) ─────────────────────────────── --}}
     @if($hasExisting)
-    <div class="mb-5">
-        <div class="flex items-center justify-between mb-3">
+    <div class="mb-5" x-data="{ coverImageId: {{ $existingMedia->first()?->id ?? 'null' }} }">
+        {{-- Hidden input: submits the chosen cover image ID --}}
+        <input type="hidden" name="cover_image_id" :value="coverImageId">
+
+        <div class="flex items-center justify-between mb-2">
             <p class="text-xs font-semibold uppercase tracking-wider" style="color:#6B7B8D;">
                 Photos actuelles
             </p>
@@ -38,26 +41,58 @@
             </span>
         </div>
 
+        {{-- Hint --}}
+        <p class="text-[11px] mb-3 flex items-center gap-1.5" style="color:#9BA8B7;">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:#17A2B8;">
+                <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+            </svg>
+            Cliquez sur une photo pour la définir comme photo principale
+        </p>
+
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
             @foreach($existingMedia as $media)
             <div x-data="{ marked: false }" class="relative group">
                 {{-- Hidden delete input (only submitted when marked) --}}
                 <input type="hidden" name="delete_images[]" value="{{ $media->id }}" :disabled="!marked">
 
-                {{-- Image tile --}}
-                <div class="aspect-square rounded-xl overflow-hidden relative transition-all duration-200"
-                     :class="marked ? 'ring-2 ring-red-400 ring-offset-1 opacity-40' : 'ring-1 ring-[#E0E6ED]'">
+                {{-- Image tile — click sets as principale --}}
+                <div class="aspect-square rounded-xl overflow-hidden relative transition-all duration-200 cursor-pointer"
+                     :class="marked
+                         ? 'ring-2 ring-red-400 ring-offset-1 opacity-40'
+                         : ($parent.coverImageId === {{ $media->id }}
+                             ? 'ring-2 ring-[#17A2B8] ring-offset-2 shadow-[0_0_0_1px_#17A2B8]'
+                             : 'ring-1 ring-[#E0E6ED]')"
+                     @click="if (!marked) $parent.coverImageId = {{ $media->id }}">
+
                     <img src="{{ $media->thumbnail_url ?? $media->url }}" alt=""
                          class="w-full h-full object-cover" loading="lazy">
 
-                    @if($loop->first)
-                    <span x-show="!marked" class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-lg text-[9px] font-bold text-white backdrop-blur-sm"
-                          style="background:rgba(23,162,184,0.85);">Principale</span>
-                    @endif
+                    {{-- Principale badge (dynamic) --}}
+                    <div x-show="$parent.coverImageId === {{ $media->id }} && !marked"
+                         class="absolute top-1.5 left-1.5 flex items-center gap-1 px-1.5 py-0.5 rounded-lg text-[9px] font-bold text-white backdrop-blur-sm"
+                         style="background:rgba(23,162,184,0.92);">
+                        <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                        Principale
+                    </div>
+
+                    {{-- Hover overlay: "Définir comme principale" for non-cover images --}}
+                    <div x-show="$parent.coverImageId !== {{ $media->id }} && !marked"
+                         x-transition:enter="transition-opacity duration-150"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                         style="background:rgba(0,0,0,0.42);">
+                        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" style="color:white;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                        <span class="text-[9px] font-bold" style="color:white;">Définir principale</span>
+                    </div>
                 </div>
 
                 {{-- Delete / Undo button --}}
-                <button type="button" @click="marked = !marked"
+                <button type="button" @click.stop="marked = !marked"
                         class="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 z-10"
                         :style="marked ? 'background:#27AE60; color:white;' : 'background:#E74C3C; color:white;'">
                     <svg x-show="!marked" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

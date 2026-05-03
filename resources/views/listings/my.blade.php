@@ -96,6 +96,27 @@
                         </div>
                     </div>
                 </div>
+            @elseif(session('renewed'))
+                {{-- ★ Renouvellement réussi ★ --}}
+                <div class="mb-6 rounded-2xl overflow-hidden" style="background: linear-gradient(135deg, #0E7490, #17A2B8); box-shadow: 0 8px 24px rgba(23,162,184,0.25);">
+                    <div class="px-5 py-4 flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: rgba(255,255,255,0.2);">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-white text-sm leading-snug">Annonce remontée en tête de liste !</p>
+                            <p class="text-white/80 text-xs mt-0.5 truncate">« {{ session('renewed') }} »</p>
+                            <p class="text-white/60 text-[11px] mt-1.5 flex items-center gap-1">
+                                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Prochain renouvellement disponible dans 7 jours
+                            </p>
+                        </div>
+                    </div>
+                </div>
             @elseif(session('success'))
                 <div class="mb-6 p-4 rounded-xl flex items-center gap-3" style="background: rgba(39, 174, 96, 0.08); border: 1px solid rgba(39, 174, 96, 0.2);">
                     <svg class="w-5 h-5 flex-shrink-0" style="color: #27AE60;" fill="currentColor" viewBox="0 0 20 20">

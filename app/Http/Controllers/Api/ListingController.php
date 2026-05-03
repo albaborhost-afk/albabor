@@ -102,7 +102,10 @@ class ListingController extends Controller
             $query->whereRaw("json_extract(specs, '$.amenagements.nombre_couchettes') >= ?", [(int) $request->berths_min]);
         }
 
-        // Tri
+        // Annonces mises en avant en premier (tri primaire)
+        $query->orderByRaw("CASE WHEN featured_until IS NOT NULL AND featured_until > datetime('now') THEN 1 ELSE 0 END DESC");
+
+        // Tri secondaire
         $sort = $request->get('sort', 'recent');
         switch ($sort) {
             case 'price_asc':
@@ -117,9 +120,6 @@ class ListingController extends Controller
             default:
                 $query->orderByRaw('COALESCE(last_renewed_at, created_at) DESC');
         }
-
-        // Annonces mises en avant en premier
-        $query->orderByDesc('featured_until');
 
         $listings = $query->paginate(20);
 

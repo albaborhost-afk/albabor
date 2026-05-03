@@ -97,7 +97,10 @@ class ListingController extends Controller
             $query->whereRaw("json_extract(specs, '$.amenagements.nombre_couchettes') >= ?", [(int) $request->berths_min]);
         }
 
-        // Sorting
+        // Featured listings always first (primary sort)
+        $query->orderByRaw("CASE WHEN featured_until IS NOT NULL AND featured_until > datetime('now') THEN 1 ELSE 0 END DESC");
+
+        // Secondary sort
         $sort = $request->get('sort', 'recent');
         switch ($sort) {
             case 'price_asc':
@@ -110,11 +113,8 @@ class ListingController extends Controller
                 $query->orderBy('views_count', 'desc');
                 break;
             default:
-                $query->orderBy('created_at', 'desc');
+                $query->orderByRaw('COALESCE(last_renewed_at, created_at) DESC');
         }
-
-        // Featured listings first
-        $query->orderByDesc('featured_until');
 
         $listings = $query->paginate(20)->withQueryString();
 
@@ -447,6 +447,7 @@ class ListingController extends Controller
             'new_images.*' => 'image|mimes:jpeg,png,jpg,webp,heic,heif|max:' . Listing::MAX_IMAGE_SIZE_KB,
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'integer|exists:listing_media,id',
+            'cover_image_id' => 'nullable|integer|exists:listing_media,id',
             'video_url' => 'nullable|url|max:500',
         ]);
 
@@ -539,6 +540,21 @@ class ListingController extends Controller
             \Log::info('Listing update – no new_images received', ['listing_id' => $listing->id]);
         }
 
+        // Reorder media: move chosen cover image to position 0
+        if (!empty($validated['cover_image_id'])) {
+            $coverMedia = $listing->media()->find($validated['cover_image_id']);
+            if ($coverMedia) {
+                $others = $listing->media()
+                    ->where('id', '!=', $coverMedia->id)
+                    ->orderBy('order')
+                    ->get();
+                $coverMedia->update(['order' => 0]);
+                foreach ($others as $idx => $m) {
+                    $m->update(['order' => $idx + 1]);
+                }
+            }
+        }
+
         return redirect()->route('listings.my')
             ->with('success', __('messages.listing_updated'));
     }
@@ -572,7 +588,8 @@ class ListingController extends Controller
     {
         $listings = Auth::user()->listings()
             ->with('media')
-            ->orderBy('created_at', 'desc')
+            ->orderByRaw("CASE WHEN featured_until IS NOT NULL AND featured_until > datetime('now') THEN 1 ELSE 0 END DESC")
+            ->orderByRaw('COALESCE(last_renewed_at, created_at) DESC')
             ->paginate(20);
 
         return view('listings.my', compact('listings'));
@@ -657,7 +674,7 @@ class ListingController extends Controller
         $listing->update(['last_renewed_at' => now()]);
 
         return redirect()->route('listings.my')
-            ->with('success', 'Votre annonce a été remontée en haut de la liste.');
+            ->with('renewed', $listing->title);
     }
 
     public function feature(Listing $listing)
