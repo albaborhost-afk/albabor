@@ -602,55 +602,64 @@
                                  carb:  {{ old('specs.reservoirs.reservoir_carburant', 0) }},
                                  eau:   {{ old('specs.reservoirs.reservoir_eau_douce', 0) }},
                                  stk:   {{ old('specs.reservoirs.stockage', 0) }},
-                                 get totalCarb() { return (Number(this.nbRes)||1) * (Number(this.carb)||0); },
-                                 get total() { return this.totalCarb + (Number(this.eau)||0) + (Number(this.stk)||0); }
-                             }">
+                                 totalCarbLitres: 0,
+                                 totalLitres: 0,
+                             }"
+                             x-effect="
+                                 const n = Math.max(1, parseInt(nbRes, 10) || 1);
+                                 const c = parseFloat(carb) || 0;
+                                 const e = parseFloat(eau) || 0;
+                                 const s = parseFloat(stk) || 0;
+                                 totalCarbLitres = n * c;
+                                 totalLitres = totalCarbLitres + e + s;
+                             ">
                             <h2 class="text-base font-semibold mb-4 flex items-center gap-3" style="color: #1B2A4A;">
                                 <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #1ABC9C, #48C9B0);">
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
                                 </div>
                                 <div>
                                     <span class="block">Reservoirs</span>
-                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">Capacites</span>
+                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">Capacites — calcul automatique</span>
                                 </div>
                             </h2>
 
                             <!-- Nombre de réservoirs -->
                             <div class="mb-4" x-show="category === 'boat'">
-                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre de reservoirs</label>
-                                <input type="number" name="specs[reservoirs][nombre_reservoirs]" x-model="nbRes"
+                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre de reservoirs <span class="normal-case font-normal text-[10px]" style="color: #9BA8B7;">(carburant)</span></label>
+                                <input type="number" name="specs[reservoirs][nombre_reservoirs]" x-model.number="nbRes"
                                        class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="1" min="1" max="10">
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Carburant / reservoir (L)</label>
-                                    <input type="number" name="specs[reservoirs][reservoir_carburant]" x-model="carb"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="200">
+                                    <input type="number" name="specs[reservoirs][reservoir_carburant]" x-model.number="carb"
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="200" min="0">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Eau douce (L)</label>
-                                    <input type="number" name="specs[reservoirs][reservoir_eau_douce]" x-model="eau"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="100">
+                                    <input type="number" name="specs[reservoirs][reservoir_eau_douce]" x-model.number="eau"
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="100" min="0">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Stockage (L)</label>
-                                    <input type="number" name="specs[reservoirs][stockage]" x-model="stk"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="50">
+                                    <input type="number" name="specs[reservoirs][stockage]" x-model.number="stk"
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="50" min="0">
                                 </div>
                             </div>
 
                             <!-- Capacité totale auto -->
                             <div class="mt-4 px-4 py-3 rounded-xl" style="background: rgba(26,188,156,0.08); border: 1px solid rgba(26,188,156,0.2);">
-                                <div class="flex items-center gap-3">
+                                <div class="flex flex-wrap items-center gap-2">
                                     <svg class="w-4 h-4 flex-shrink-0" style="color: #1ABC9C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 7v10a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2z"/></svg>
-                                    <span class="text-xs font-semibold" style="color: #6B7B8D;">Capacite totale :</span>
-                                    <span class="text-sm font-bold" style="color: #1ABC9C;" x-text="total + ' L'"></span>
+                                    <span class="text-xs font-semibold" style="color: #6B7B8D;">Capacite totale</span>
+                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md" style="background: rgba(26,188,156,0.15); color: #16A085;">Auto</span>
+                                    <span class="text-sm font-bold" style="color: #1ABC9C;" x-text="totalLitres + ' L'"></span>
                                 </div>
-                                <div x-show="nbRes > 1 && carb > 0" x-transition class="mt-1.5 pl-7 text-[10px]" style="color: #9BA8B7;">
-                                    <span x-text="nbRes + ' reservoirs × ' + carb + ' L = ' + totalCarb + ' L carburant'"></span>
-                                    <span x-show="eau > 0" x-text="' + ' + eau + ' L eau'"></span>
-                                    <span x-show="stk > 0" x-text="' + ' + stk + ' L stockage'"></span>
+                                <div x-show="totalLitres > 0" x-transition class="mt-1.5 pl-7 text-[10px] leading-relaxed" style="color: #9BA8B7;">
+                                    <span x-text="Math.max(1, parseInt(nbRes, 10) || 1) + ' rés. × ' + (parseFloat(carb) || 0) + ' L carburant = ' + totalCarbLitres + ' L'"></span>
+                                    <span x-show="(parseFloat(eau) || 0) > 0" x-text="' + ' + (parseFloat(eau) || 0) + ' L eau douce'"></span>
+                                    <span x-show="(parseFloat(stk) || 0) > 0" x-text="' + ' + (parseFloat(stk) || 0) + ' L stockage'"></span>
                                 </div>
                             </div>
                         </div>
