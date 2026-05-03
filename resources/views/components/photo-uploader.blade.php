@@ -176,6 +176,18 @@
                     </span>
                 </div>
 
+                {{-- Astuce ordre des photos --}}
+                <p
+                    x-show="supportsManagedFiles && files.length > 1"
+                    class="text-[11px] mb-2 flex items-start gap-1.5 rounded-lg px-2.5 py-2"
+                    style="background:rgba(23,162,184,0.08); color:#1B4F72; border:1px solid rgba(23,162,184,0.18);"
+                >
+                    <svg class="w-3.5 h-3.5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24" style="color:#17A2B8;">
+                        <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                    </svg>
+                    <span><strong>Photo principale :</strong> touchez ou cliquez une autre vignette pour la mettre en première position (badge « Principale »).</span>
+                </p>
+
                 {{-- Previews --}}
                 <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 mb-3">
                     <template x-for="(file, index) in files" :key="file.id">
@@ -184,9 +196,24 @@
                             @click.stop
                         >
                             <div
-                                class="aspect-square rounded-xl overflow-hidden ring-1 ring-[#E0E6ED] transition-all duration-200 group-hover:ring-[#17A2B8]/60"
+                                class="aspect-square rounded-xl overflow-hidden transition-all duration-200 relative"
+                                :class="index === 0
+                                    ? 'ring-2 ring-[#17A2B8] ring-offset-1 shadow-[0_0_0_1px_rgba(23,162,184,0.35)]'
+                                    : 'ring-1 ring-[#E0E6ED] group-hover:ring-[#17A2B8]/70 cursor-pointer'"
+                                @click="moveToFront(index)"
+                                :title="index === 0 ? 'Photo principale de l\'annonce' : 'Définir comme photo principale'"
                             >
-                                <img :src="file.preview" class="w-full h-full object-cover" alt="">
+                                <img :src="file.preview" class="w-full h-full object-cover pointer-events-none" alt="">
+
+                                {{-- Tap / click hint on non-cover thumbnails --}}
+                                <div
+                                    x-show="index > 0"
+                                    class="absolute inset-0 flex flex-col items-center justify-end pb-2 px-1 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+                                >
+                                    <span class="text-[8px] font-bold text-white text-center leading-tight drop-shadow-sm">
+                                        Principal
+                                    </span>
+                                </div>
                             </div>
 
                             {{-- "Principale" on first --}}
@@ -258,8 +285,8 @@
 
                 {{-- Drag hint --}}
                 <p class="text-[10px] text-center" style="color:#C5D0DB;">
-                    <span x-show="supportsManagedFiles">La première photo sera la photo principale</span>
-                    <span x-show="!supportsManagedFiles" x-cloak>La première photo sera principale. Pour modifier la sélection, choisissez à nouveau toutes les photos.</span>
+                    <span x-show="supportsManagedFiles">La vignette en première position est la photo principale — réorganisez en touchant une autre image.</span>
+                    <span x-show="!supportsManagedFiles" x-cloak>La première photo de votre sélection sera la principale. Pour en changer, sélectionnez à nouveau les fichiers dans l’ordre souhaité.</span>
                 </p>
             </div>
 
@@ -784,6 +811,20 @@ if (typeof photoUploader === 'undefined') {
                 }
                 URL.revokeObjectURL(this.files[index].preview);
                 this.files.splice(index, 1);
+                this.syncInput();
+                this.persistFiles();
+            },
+
+            /** Met la vignette choisie en tête de liste (= photo principale à l'enregistrement). */
+            moveToFront(index) {
+                if (!this.supportsManagedFiles) {
+                    return;
+                }
+                if (index <= 0 || index >= this.files.length) {
+                    return;
+                }
+                const [item] = this.files.splice(index, 1);
+                this.files.unshift(item);
                 this.syncInput();
                 this.persistFiles();
             },

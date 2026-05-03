@@ -877,7 +877,10 @@
                      x-transition:leave-start="opacity-100"
                      x-transition:leave-end="opacity-0">
 
-                    <div class="px-5 py-5 space-y-5">
+                    <div class="px-5 py-5 space-y-5"
+                         @change="if ($event.target.matches && $event.target.matches('input[name=type_offre]')) {
+                             $dispatch('albabor-offert', { offert: $event.target.value === 'offert' });
+                         }">
 
                             {{-- ① DEVISE --}}
                             <div>
@@ -937,8 +940,9 @@
 
                             {{-- ② PRIX : entree libre + 2 boutons (Milliard / Million) qui choisissent l'unite d'affichage --}}
                             <div x-data="{
-                                rawValue: '{{ old('price_input', old('price_dzd', '')) }}',
-                                unit: '{{ old('price_display_unit', '') }}',
+                                rawValue: '{{ (old('type_offre') ?? '') === 'offert' ? '0' : old('price_input', old('price_dzd', '')) }}',
+                                unit: '{{ (old('type_offre') ?? '') === 'offert' ? '' : old('price_display_unit', '') }}',
+                                offertSelected: {{ (old('type_offre') ?? '') === 'offert' ? 'true' : 'false' }},
                                 get actualValue() { return parseFloat(this.rawValue) || 0; },
                                 get factor() {
                                     if (this.unit === 'milliard') return 1e7;
@@ -968,17 +972,25 @@
                                     if (this.currency !== 'DZD') return;
                                     this.unit = (this.unit === u) ? '' : u;
                                 }
-                            }">
+                            }"
+                                 @albabor-offert.window="
+                                     offertSelected = $event.detail.offert;
+                                     if (offertSelected) { rawValue = '0'; unit = ''; }
+                                 ">
                                 <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
                                     Prix <span style="color: #E74C3C;">*</span>
+                                    <span x-show="offertSelected" x-cloak class="ml-1 text-[10px] font-semibold normal-case" style="color:#27AE60;">(gratuit si « Offert »)</span>
                                 </label>
 
                                 {{-- Visible: l'utilisateur tape ce qui sera affiche (4,5 ou 1400000) --}}
                                 <div class="relative">
                                     <input type="number" x-model="rawValue"
-                                           required min="0" step="any"
-                                           :placeholder="unit === 'milliard' ? 'Ex: 4,5' : (unit === 'million' ? 'Ex: 900' : 'Ex: 1400000')"
+                                           min="0" step="any"
+                                           :required="!offertSelected"
+                                           :disabled="offertSelected"
+                                           :placeholder="offertSelected ? '0' : (unit === 'milliard' ? 'Ex: 4,5' : (unit === 'million' ? 'Ex: 900' : 'Ex: 1400000'))"
                                            class="glass-input w-full rounded-xl px-4 py-3.5 pr-24 text-xl font-bold"
+                                           :class="offertSelected ? 'opacity-60 cursor-not-allowed' : ''"
                                            style="color: #1B2A4A;">
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
                                         <span class="text-sm font-bold px-2 py-1 rounded-lg whitespace-nowrap"
@@ -992,7 +1004,7 @@
                                 <input type="hidden" name="price_display_unit" :value="unit">
 
                                 {{-- 2 boutons : Milliard / Million (DZD uniquement) --}}
-                                <div x-show="currency === 'DZD'" x-transition class="mt-2.5 grid grid-cols-2 gap-2">
+                                <div x-show="currency === 'DZD' && !offertSelected" x-transition class="mt-2.5 grid grid-cols-2 gap-2">
                                     <button type="button" @click="toggleUnit('milliard')"
                                             class="px-3 py-3 rounded-xl text-sm font-bold transition-all hover:shadow-md active:scale-95"
                                             :style="unit === 'milliard'
@@ -1027,8 +1039,12 @@
                                 <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
                                     Type d'offre
                                 </label>
-                                <div class="grid grid-cols-2 gap-2">
-                                    @foreach(['negociable' => ['label'=>'Négociable','desc'=>'Prix ouvert','icon'=>'🤝'], 'fix' => ['label'=>'Prix fixe','desc'=>'Non négociable','icon'=>'🔒']] as $val => $item)
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    @foreach([
+                                        'negociable' => ['label'=>'Négociable','desc'=>'Prix ouvert','icon'=>'🤝'],
+                                        'fix'        => ['label'=>'Prix fixe','desc'=>'Non négociable','icon'=>'🔒'],
+                                        'offert'     => ['label'=>'Offert','desc'=>'Gratuit / don','icon'=>'🎁'],
+                                    ] as $val => $item)
                                         <label class="cursor-pointer">
                                             <input type="radio" name="type_offre" value="{{ $val }}"
                                                    {{ old('type_offre', 'negociable') == $val ? 'checked' : '' }}
@@ -1788,8 +1804,19 @@
                         if (!val('description')) { errors.push('La description est obligatoire.'); this.markField('description'); }
                     }
                     if (step === 4) {
+                        const offer = this.$root.querySelector('input[name=\"type_offre\"]:checked')?.value || '';
                         const price = val('price_dzd');
-                        if (!price || parseFloat(price) <= 0) { errors.push('Le prix est obligatoire.'); this.markField('price_dzd'); }
+                        if (offer === 'offert') {
+                            if (parseFloat(price || '0') < 0) {
+                                errors.push('Prix invalide pour une annonce offerte.');
+                                this.markField('price_dzd');
+                            }
+                        } else {
+                            if (!price || parseFloat(price) <= 0) {
+                                errors.push('Le prix est obligatoire.');
+                                this.markField('price_dzd');
+                            }
+                        }
                     }
                     if (step === 6) {
                         const uploader = this.getPhotoUploader();
@@ -1853,7 +1880,11 @@
                             this.$nextTick(() => {
                                 this.stepErrors = errors;
                                 if (step === 2) { if (!this.$root.querySelector('[name="title"]')?.value?.trim()) this.markField('title'); if (!this.$root.querySelector('[name="description"]')?.value?.trim()) this.markField('description'); }
-                                if (step === 4) { const p = this.$root.querySelector('[name="price_dzd"]')?.value?.trim(); if (!p || parseFloat(p) <= 0) this.markField('price_dzd'); }
+                                if (step === 4) {
+                                    const offer = this.$root.querySelector('input[name="type_offre"]:checked')?.value || '';
+                                    const p = this.$root.querySelector('[name="price_dzd"]')?.value?.trim();
+                                    if (offer !== 'offert' && (!p || parseFloat(p) <= 0)) this.markField('price_dzd');
+                                }
                             });
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                             return;
