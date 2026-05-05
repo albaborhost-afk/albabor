@@ -389,7 +389,16 @@
     <!-- Latest Listings -->
     @if(isset($latestListings) && $latestListings->count() > 0)
     <div class="py-8 sm:py-10" style="background-color: #F0F4F8;">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+            x-data="{
+                grid: localStorage.getItem('albabor_list_view') === 'grid',
+                toggle() {
+                    this.grid = !this.grid;
+                    localStorage.setItem('albabor_list_view', this.grid ? 'grid' : 'list');
+                }
+            }"
+        >
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3 reveal-right">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(27, 79, 114, 0.08);">
@@ -400,13 +409,44 @@
                         <p class="text-xs" style="color: #9BA8B7;">{{ __('Fraichement publiees') }}</p>
                     </div>
                 </div>
-                <a href="{{ route('listings.index') }}" class="btn-see-all hidden sm:inline-flex">
-                    {{ __('Voir tout') }}
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </a>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                    {{-- Grid / List toggle button --}}
+                    <button
+                        @click="toggle()"
+                        :title="grid ? 'Vue liste' : 'Vue grille'"
+                        class="relative flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-xs font-semibold transition-all duration-300 focus:outline-none"
+                        :style="grid
+                            ? 'background: #17A2B8; color: #fff; box-shadow: 0 4px 14px rgba(23,162,184,0.35);'
+                            : 'background: rgba(27,79,114,0.08); color: #1B4F72;'"
+                    >
+                        {{-- List → Grid icon (shown in list mode, click to go grid) --}}
+                        <svg x-show="!grid" x-cloak class="w-4 h-4 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>
+                        </svg>
+                        {{-- Grid → List icon (shown in grid mode, click to go list) --}}
+                        <svg x-show="grid" x-cloak class="w-4 h-4 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                        <span x-text="grid ? '1 / ligne' : '2 / ligne'" class="hidden xs:inline leading-none"></span>
+                    </button>
+
+                    <a href="{{ route('listings.index') }}" class="btn-see-all hidden sm:inline-flex">
+                        {{ __('Voir tout') }}
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {{-- Listing grid — toggles between 1 and 2 columns on mobile --}}
+            <div
+                class="grid gap-4 transition-all duration-300"
+                :class="grid
+                    ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-4'
+                    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'"
+            >
                 @foreach($latestListings as $listing)
                     <x-listing-card :listing="$listing" />
                 @endforeach
