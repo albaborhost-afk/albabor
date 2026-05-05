@@ -121,6 +121,16 @@
                                 {{-- Bottom gradient overlay --}}
                                 <div class="absolute inset-x-0 bottom-0 h-24 pointer-events-none" style="background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);"></div>
 
+                                {{-- Sponsored Badge --}}
+                                @if($listing->isFeatured())
+                                    <div class="absolute top-3 left-3 z-10">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold backdrop-blur-md" style="background: rgba(0,0,0,0.52); color: white; border: 1px solid rgba(255,255,255,0.25);">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                                            {{ __('Sponsorisé') }}
+                                        </span>
+                                    </div>
+                                @endif
+
                                 {{-- Favorite Button — top-right overlay --}}
                                 @auth
                                     @if(auth()->id() !== $listing->user_id)
