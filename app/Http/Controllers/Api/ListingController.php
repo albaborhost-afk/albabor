@@ -191,6 +191,7 @@ class ListingController extends Controller
             ->active()
             ->where('id', '!=', $listing->id)
             ->where('category', $listing->category)
+            ->orderByRaw('COALESCE(last_renewed_at, created_at) DESC')
             ->limit(4)
             ->get();
 
@@ -645,7 +646,7 @@ class ListingController extends Controller
         $listings = $user->listings()
             ->with('media')
             ->active()
-            ->orderBy('created_at', 'desc')
+            ->orderByRaw('COALESCE(last_renewed_at, created_at) DESC')
             ->paginate(20);
 
         // Hide seller contact info (guests always; authenticated per mediation rules)

@@ -26,12 +26,12 @@ Route::get('/lang/{locale}', function (string $locale) {
 Route::get('/', function () {
     $featuredListings = Listing::where('status', 'active')
         ->where('featured_until', '>', now())
-        ->latest()
+        ->orderByRaw('COALESCE(last_renewed_at, created_at) DESC')
         ->take(4)
         ->get();
 
     $latestListings = Listing::where('status', 'active')
-        ->latest()
+        ->orderByRaw('COALESCE(last_renewed_at, created_at) DESC')
         ->take(25)
         ->get();
 

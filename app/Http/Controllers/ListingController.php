@@ -145,6 +145,7 @@ class ListingController extends Controller
             ->active()
             ->where('id', '!=', $listing->id)
             ->where('category', $listing->category)
+            ->orderByRaw('COALESCE(last_renewed_at, created_at) DESC')
             ->limit(4)
             ->get();
 

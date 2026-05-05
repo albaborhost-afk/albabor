@@ -97,26 +97,120 @@
                     </div>
                 </div>
             @elseif(session('renewed'))
-                {{-- ★ Renouvellement réussi ★ --}}
-                <div class="mb-6 rounded-2xl overflow-hidden" style="background: linear-gradient(135deg, #0E7490, #17A2B8); box-shadow: 0 8px 24px rgba(23,162,184,0.25);">
-                    <div class="px-5 py-4 flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: rgba(255,255,255,0.2);">
+                {{-- Renouvellement reussi - toast celebratif --}}
+                <div
+                    x-data="{ show: false }"
+                    x-init="$nextTick(() => { show = true }); setTimeout(() => { show = false }, 5000)"
+                    x-show="show"
+                    x-transition:enter="renew-toast-enter"
+                    x-transition:leave="transition ease-in duration-500"
+                    x-transition:leave-start="opacity-100 transform translate-y-0 scale-100"
+                    x-transition:leave-end="opacity-0 transform -translate-y-2 scale-95"
+                    class="mb-6 rounded-2xl overflow-hidden relative"
+                    style="background: linear-gradient(135deg, #1B4F72 0%, #17A2B8 65%, #27AE60 100%); box-shadow: 0 12px 35px rgba(23,162,184,0.35), 0 4px 12px rgba(39,174,96,0.18);">
+
+                    {{-- Decorative sparkle particles --}}
+                    <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+                        <span class="renew-sparkle" style="top: 18%; left: 12%; animation-delay: 0s;"></span>
+                        <span class="renew-sparkle" style="top: 62%; left: 28%; animation-delay: 0.4s;"></span>
+                        <span class="renew-sparkle" style="top: 30%; left: 48%; animation-delay: 0.8s;"></span>
+                        <span class="renew-sparkle" style="top: 70%; left: 68%; animation-delay: 0.2s;"></span>
+                        <span class="renew-sparkle" style="top: 22%; left: 86%; animation-delay: 0.6s;"></span>
+                        <span class="renew-sparkle" style="top: 58%; left: 92%; animation-delay: 1s;"></span>
+                    </div>
+
+                    <div class="relative px-5 py-4 flex items-start gap-4">
+                        {{-- Animated rocket / arrow icon --}}
+                        <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 renew-icon-bounce" style="background: rgba(255,255,255,0.22); box-shadow: 0 4px 12px rgba(0,0,0,0.12);">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
                             </svg>
                         </div>
+
                         <div class="flex-1 min-w-0">
-                            <p class="font-bold text-white text-sm leading-snug">Annonce remontée en tête de liste !</p>
-                            <p class="text-white/80 text-xs mt-0.5 truncate">« {{ session('renewed') }} »</p>
-                            <p class="text-white/60 text-[11px] mt-1.5 flex items-center gap-1">
-                                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                Prochain renouvellement disponible dans 7 jours
+                            <p class="font-extrabold text-white text-sm leading-snug flex items-center gap-1.5">
+                                <span class="renew-spark-emoji" aria-hidden="true">&#x2728;</span>
+                                {{ __('Annonce remontee en premiere position !') }}
                             </p>
+                            <p class="text-white/85 text-xs mt-1 truncate font-medium">&laquo;&nbsp;{{ session('renewed') }}&nbsp;&raquo;</p>
+
+                            <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                                <p class="text-white/65 text-[11px] flex items-center gap-1">
+                                    <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    {{ __('Prochain renouvellement dans 7 jours') }}
+                                </p>
+                                <a href="{{ route('home') }}" target="_blank" rel="noopener"
+                                   class="inline-flex items-center gap-1 text-[11px] font-bold text-white px-2.5 py-1 rounded-full transition-all hover:-translate-y-0.5"
+                                   style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(4px);">
+                                    {{ __("Voir sur la page d'accueil") }}
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
+
+                        {{-- Close button --}}
+                        <button type="button" @click="show = false"
+                                class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:bg-white/15"
+                                aria-label="{{ __('Fermer') }}"
+                                style="color: rgba(255,255,255,0.7);">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
+
+                <style>
+                    /* Celebratory entrance: slide down + scale + gentle bounce */
+                    @keyframes renewToastIn {
+                        0%   { opacity: 0; transform: translateY(-24px) scale(0.94); }
+                        55%  { opacity: 1; transform: translateY(4px)   scale(1.015); }
+                        80%  {              transform: translateY(-1px) scale(0.998); }
+                        100% { opacity: 1; transform: translateY(0)     scale(1); }
+                    }
+                    .renew-toast-enter {
+                        animation: renewToastIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+                    }
+
+                    /* Soft pulse on the rocket icon */
+                    @keyframes renewIconBounce {
+                        0%, 100% { transform: translateY(0); }
+                        50%      { transform: translateY(-3px); }
+                    }
+                    .renew-icon-bounce {
+                        animation: renewIconBounce 1.6s ease-in-out 0.7s 2;
+                    }
+
+                    /* Sparkle particle drifts */
+                    @keyframes renewSparkle {
+                        0%   { opacity: 0; transform: scale(0.4) translateY(4px); }
+                        40%  { opacity: 1; transform: scale(1)   translateY(0); }
+                        100% { opacity: 0; transform: scale(0.6) translateY(-8px); }
+                    }
+                    .renew-sparkle {
+                        position: absolute;
+                        width: 4px; height: 4px;
+                        border-radius: 50%;
+                        background: #FFFFFF;
+                        box-shadow: 0 0 6px rgba(255,255,255,0.85), 0 0 12px rgba(255,255,255,0.5);
+                        animation: renewSparkle 2.2s ease-out infinite;
+                    }
+
+                    /* Wiggle the sparkle emoji */
+                    @keyframes renewSparkEmoji {
+                        0%, 100% { transform: rotate(0) scale(1); }
+                        25%      { transform: rotate(-12deg) scale(1.15); }
+                        75%      { transform: rotate(12deg)  scale(1.1); }
+                    }
+                    .renew-spark-emoji {
+                        display: inline-block;
+                        animation: renewSparkEmoji 1.6s ease-in-out 0.7s 2;
+                    }
+                </style>
             @elseif(session('success'))
                 <div class="mb-6 p-4 rounded-xl flex items-center gap-3" style="background: rgba(39, 174, 96, 0.08); border: 1px solid rgba(39, 174, 96, 0.2);">
                     <svg class="w-5 h-5 flex-shrink-0" style="color: #27AE60;" fill="currentColor" viewBox="0 0 20 20">
@@ -295,11 +389,29 @@
                                                 </a>
 
                                                 @if($listing->canRenew())
-                                                    <form action="{{ route('listings.renew', $listing) }}" method="POST" class="inline">
+                                                    <form action="{{ route('listings.renew', $listing) }}" method="POST" class="inline"
+                                                          x-data="{ loading: false }"
+                                                          @submit="loading = true">
                                                         @csrf
-                                                        <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(23,162,184,0.1); color: #17A2B8;">
-                                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-                                                            {{ __('Renouveler') }}
+                                                        <button type="submit"
+                                                                :disabled="loading"
+                                                                class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-90"
+                                                                style="background: rgba(23,162,184,0.1); color: #17A2B8;">
+                                                            <template x-if="!loading">
+                                                                <span class="inline-flex items-center">
+                                                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                                                                    {{ __('Renouveler') }}
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="loading">
+                                                                <span class="inline-flex items-center">
+                                                                    <svg class="animate-spin w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24">
+                                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                                                                        <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z"></path>
+                                                                    </svg>
+                                                                    {{ __('Remontee...') }}
+                                                                </span>
+                                                            </template>
                                                         </button>
                                                     </form>
                                                 @else
@@ -481,12 +593,28 @@
                                     {{-- Renouveler --}}
                                     @if($listing->status === 'active')
                                         @if($listing->canRenew())
-                                            <form action="{{ route('listings.renew', $listing) }}" method="POST" class="inline">@csrf
+                                            <form action="{{ route('listings.renew', $listing) }}" method="POST" class="inline"
+                                                  x-data="{ loading: false }"
+                                                  @submit="loading = true">@csrf
                                                 <button type="submit"
-                                                        class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
+                                                        :disabled="loading"
+                                                        class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95 hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-90"
                                                         style="background: rgba(23,162,184,0.1); color: #17A2B8; border: 1.5px solid rgba(23,162,184,0.25);">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-                                                    {{ __('Renouveler') }}
+                                                    <template x-if="!loading">
+                                                        <span class="inline-flex items-center gap-1.5">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                                                            {{ __('Renouveler') }}
+                                                        </span>
+                                                    </template>
+                                                    <template x-if="loading">
+                                                        <span class="inline-flex items-center gap-1.5">
+                                                            <svg class="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                                                                <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z"></path>
+                                                            </svg>
+                                                            {{ __('Remontee...') }}
+                                                        </span>
+                                                    </template>
                                                 </button>
                                             </form>
                                         @else

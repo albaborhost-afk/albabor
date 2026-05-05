@@ -21,10 +21,22 @@
     $annee = $listing->getSpec('general', 'annee_construction');
     $puissance = $listing->getSpec('motorisation', 'puissance_totale');
     $location = collect([$listing->wilaya, $listing->pays])->filter()->implode(', ');
+    $isFreshlyRenewed = $listing->last_renewed_at && $listing->last_renewed_at->gt(now()->subHours(24));
+
+    // Build outer card style — featured ring + freshly renewed glow can coexist
+    $cardStyles = [];
+    if ($isFreshlyRenewed && $isFeatured) {
+        $cardStyles[] = 'box-shadow: 0 0 0 2px rgba(39,174,96,0.22), 0 0 0 4px rgba(255,184,0,0.30), 0 8px 24px rgba(39,174,96,0.14);';
+    } elseif ($isFreshlyRenewed) {
+        $cardStyles[] = 'box-shadow: 0 0 0 2px rgba(39,174,96,0.18), 0 8px 24px rgba(39,174,96,0.12);';
+    } elseif ($isFeatured) {
+        $cardStyles[] = 'box-shadow: 0 0 0 1.5px rgba(255,184,0,0.35), 0 2px 12px rgba(0,0,0,0.08);';
+    }
+    $cardInlineStyle = implode(' ', $cardStyles);
 @endphp
 
-<div class="listing-card group bg-white rounded-2xl overflow-hidden relative cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300 {{ $isFeatured ? 'listing-card--featured' : '' }}"
-     style="{{ $isFeatured ? 'box-shadow: 0 0 0 1.5px rgba(255,184,0,0.35), 0 2px 12px rgba(0,0,0,0.08);' : '' }}"
+<div class="listing-card group bg-white rounded-2xl overflow-hidden relative cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300 {{ $isFeatured ? 'listing-card--featured' : '' }} {{ $isFreshlyRenewed ? 'listing-card--fresh' : '' }}"
+     style="{{ $cardInlineStyle }}"
      role="link"
      tabindex="0"
      onclick="if (!event.target.closest('form')) window.location.href='{{ route('listings.show', $listing) }}';"
@@ -96,6 +108,16 @@
                 {{ $label }}
             </span>
 
+            {{-- Freshly renewed badge — stacked below the category badge --}}
+            @if($isFreshlyRenewed)
+                <span class="listing-card__fresh-badge absolute left-3 z-10 inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold text-white rounded-full shadow-md"
+                      style="top: 38px; background: linear-gradient(135deg, #27AE60 0%, #16A085 100%); border: 1px solid rgba(255,255,255,0.2); letter-spacing: 0.02em;">
+                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                    </svg>
+                    {{ __('Remontee') }}
+                </span>
+            @endif
 
         </div>
 
