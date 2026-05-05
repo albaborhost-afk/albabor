@@ -513,9 +513,10 @@ class ListingResource extends Resource
                                             ->label('URL Vidéo YouTube')
                                             ->type('url')
                                             ->placeholder('https://www.youtube.com/watch?v=...')
-                                            ->helperText('Ajoutez un lien YouTube pour présenter votre annonce en vidéo')
+                                            ->helperText('Formats acceptés : youtube.com/watch?v=… · youtu.be/… · /shorts/… · /live/…')
                                             ->nullable()
                                             ->maxLength(500)
+                                            ->extraAttributes(['autocomplete' => 'off'])
                                             ->columnSpanFull(),
                                     ]),
                             ]),

@@ -207,8 +207,28 @@
                     @if($listing->video_url)
                         @php
                             $videoId = null;
-                            if (preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $listing->video_url, $m)) {
-                                $videoId = $m[1];
+                            $parsed  = parse_url($listing->video_url);
+                            $host    = $parsed['host'] ?? '';
+
+                            if (str_contains($host, 'youtu.be')) {
+                                // https://youtu.be/VIDEO_ID  or  https://youtu.be/VIDEO_ID?si=...
+                                $candidate = trim($parsed['path'] ?? '', '/');
+                                if (preg_match('/^[a-zA-Z0-9_-]{11}$/', $candidate)) {
+                                    $videoId = $candidate;
+                                }
+                            } elseif (str_contains($host, 'youtube.com')) {
+                                $path = $parsed['path'] ?? '';
+                                // /shorts/ID  |  /embed/ID  |  /live/ID
+                                if (preg_match('#/(shorts|embed|live)/([a-zA-Z0-9_-]{11})#', $path, $m)) {
+                                    $videoId = $m[2];
+                                } else {
+                                    // /watch?v=ID  —  v can be anywhere in the query string
+                                    parse_str($parsed['query'] ?? '', $q);
+                                    $v = $q['v'] ?? null;
+                                    if ($v && preg_match('/^[a-zA-Z0-9_-]{11}$/', $v)) {
+                                        $videoId = $v;
+                                    }
+                                }
                             }
                         @endphp
                         @if($videoId)
@@ -220,7 +240,7 @@
                                     </h3>
                                     <div class="rounded-2xl overflow-hidden" style="aspect-ratio: 16/9;">
                                         <iframe
-                                            src="https://www.youtube.com/embed/{{ $videoId }}"
+                                            src="https://www.youtube.com/embed/{{ $videoId }}?rel=0&modestbranding=1"
                                             class="w-full h-full"
                                             frameborder="0"
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
