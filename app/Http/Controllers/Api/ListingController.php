@@ -447,6 +447,8 @@ class ListingController extends Controller
             'new_images.*' => 'image|mimes:jpeg,png,jpg,webp,heic,heif|max:' . Listing::MAX_IMAGE_SIZE_KB,
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'integer|exists:listing_media,id',
+            'cover_image_id' => 'nullable|integer|exists:listing_media,id',
+            'cover_new_index' => 'nullable|integer|min:0',
             'video_url' => 'nullable|url|max:500',
         ]);
 
@@ -508,6 +510,46 @@ class ListingController extends Controller
 
             $newImages = array_slice($request->file('new_images'), 0, $maxNew);
             $this->handleImageUpload($listing, $newImages);
+        }
+
+        // Reorder media: move chosen cover image to position 0.
+        // cover_image_id (existing photo) takes precedence over cover_new_index (freshly uploaded).
+        if (!empty($validated['cover_image_id'])) {
+            $coverMedia = $listing->media()->find($validated['cover_image_id']);
+            if ($coverMedia) {
+                $others = $listing->media()
+                    ->where('id', '!=', $coverMedia->id)
+                    ->orderBy('order')
+                    ->get();
+                $coverMedia->update(['order' => 0]);
+                foreach ($others as $idx => $m) {
+                    $m->update(['order' => $idx + 1]);
+                }
+            }
+        } elseif (isset($validated['cover_new_index']) && $request->hasFile('new_images')) {
+            $newCount = count($request->file('new_images'));
+            $coverIdx = (int) $validated['cover_new_index'];
+
+            if ($coverIdx >= 0 && $coverIdx < $newCount) {
+                $freshMedia = $listing->media()
+                    ->orderByDesc('id')
+                    ->take($newCount)
+                    ->get()
+                    ->reverse()
+                    ->values();
+
+                $coverMedia = $freshMedia->get($coverIdx);
+                if ($coverMedia) {
+                    $others = $listing->media()
+                        ->where('id', '!=', $coverMedia->id)
+                        ->orderBy('order')
+                        ->get();
+                    $coverMedia->update(['order' => 0]);
+                    foreach ($others as $idx => $m) {
+                        $m->update(['order' => $idx + 1]);
+                    }
+                }
+            }
         }
 
         $listing->load(['user', 'media']);

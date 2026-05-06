@@ -26,12 +26,13 @@
     x-init="init()"
 >
 
+    {{-- Unified Principale (cover) hidden inputs — root-level state --}}
+    <input type="hidden" name="cover_image_id" :value="coverImageIdValue" :disabled="!coverImageIdValue">
+    <input type="hidden" name="cover_new_index" :value="coverNewIndexValue" :disabled="coverNewIndexValue === ''">
+
     {{-- ─── Existing images (edit mode) ─────────────────────────────── --}}
     @if($hasExisting)
-    <div class="mb-5" x-data="{ coverImageId: {{ $existingMedia->first()?->id ?? 'null' }} }">
-        {{-- Hidden input: submits the chosen cover image ID --}}
-        <input type="hidden" name="cover_image_id" :value="coverImageId">
-
+    <div class="mb-5">
         <div class="flex items-center justify-between mb-2">
             <p class="text-xs font-semibold uppercase tracking-wider" style="color:#6B7B8D;">
                 Photos actuelles
@@ -51,25 +52,35 @@
 
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
             @foreach($existingMedia as $media)
-            <div x-data="{ marked: false }" class="relative group">
-                {{-- Hidden delete input (only submitted when marked) --}}
-                <input type="hidden" name="delete_images[]" value="{{ $media->id }}" :disabled="!marked">
+            <div
+                x-data="{ removed: false }"
+                x-show="!removed"
+                x-transition:leave="transition ease-in duration-300"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-90"
+                data-existing-id="{{ $media->id }}"
+                class="relative group"
+            >
+                {{-- Hidden delete input (only submitted once removed) --}}
+                <input type="hidden" name="delete_images[]" value="{{ $media->id }}" x-bind:disabled="!removed">
 
                 {{-- Image tile — click sets as principale --}}
                 <div class="aspect-square rounded-xl overflow-hidden relative transition-all duration-200 cursor-pointer"
-                     :class="marked
-                         ? 'ring-2 ring-red-400 ring-offset-1 opacity-40'
-                         : ($parent.coverImageId === {{ $media->id }}
-                             ? 'ring-2 ring-[#17A2B8] ring-offset-2 shadow-[0_0_0_1px_#17A2B8]'
-                             : 'ring-1 ring-[#E0E6ED]')"
-                     @click="if (!marked) $parent.coverImageId = {{ $media->id }}">
+                     :class="cover === 'existing:{{ $media->id }}'
+                         ? 'ring-2 ring-[#17A2B8] ring-offset-2 shadow-[0_0_0_1px_#17A2B8]'
+                         : 'ring-1 ring-[#E0E6ED]'"
+                     @click="setCoverExisting({{ $media->id }})">
 
                     <img src="{{ $media->thumbnail_url ?? $media->url }}" alt=""
                          class="w-full h-full object-cover" loading="lazy">
 
                     {{-- Principale badge (dynamic) --}}
-                    <div x-show="$parent.coverImageId === {{ $media->id }} && !marked"
+                    <div x-show="cover === 'existing:{{ $media->id }}'"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 scale-75"
+                         x-transition:enter-end="opacity-100 scale-100"
                          class="absolute top-1.5 left-1.5 flex items-center gap-1 px-1.5 py-0.5 rounded-lg text-[9px] font-bold text-white backdrop-blur-sm"
+                         :class="coverPulse ? 'animate-pulse' : ''"
                          style="background:rgba(23,162,184,0.92);">
                         <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
@@ -78,7 +89,7 @@
                     </div>
 
                     {{-- Hover overlay: "Définir comme principale" for non-cover images --}}
-                    <div x-show="$parent.coverImageId !== {{ $media->id }} && !marked"
+                    <div x-show="cover !== 'existing:{{ $media->id }}'"
                          x-transition:enter="transition-opacity duration-150"
                          x-transition:enter-start="opacity-0"
                          x-transition:enter-end="opacity-100"
@@ -91,19 +102,16 @@
                     </div>
                 </div>
 
-                {{-- Delete / Undo button --}}
-                <button type="button" @click.stop="marked = !marked"
-                        class="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 z-10"
-                        :style="marked ? 'background:#27AE60; color:white;' : 'background:#E74C3C; color:white;'">
-                    <svg x-show="!marked" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {{-- Delete button: instant removal --}}
+                <button type="button"
+                        @click.stop="removed = true; $nextTick(() => handleExistingRemoval({{ $media->id }}))"
+                        class="absolute -top-2 -right-2 w-8 h-8 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 z-10"
+                        style="background:#E74C3C; color:white;"
+                        title="Supprimer cette photo">
+                    <svg class="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
-                    <svg x-show="marked" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
-                    </svg>
                 </button>
-
-                <p x-show="marked" class="text-[9px] text-center mt-1 font-semibold" style="color:#E74C3C;">A supprimer</p>
             </div>
             @endforeach
         </div>
@@ -197,43 +205,47 @@
                         >
                             <div
                                 class="aspect-square rounded-xl overflow-hidden transition-all duration-200 relative"
-                                :class="index === 0
+                                :class="(index === 0 && cover === 'new:0')
                                     ? 'ring-2 ring-[#17A2B8] ring-offset-1 shadow-[0_0_0_1px_rgba(23,162,184,0.35)]'
                                     : 'ring-1 ring-[#E0E6ED] group-hover:ring-[#17A2B8]/70 cursor-pointer'"
-                                @click="moveToFront(index)"
-                                :title="index === 0 ? 'Photo principale de l\'annonce' : 'Définir comme photo principale'"
+                                @click="moveToFront(index); setCoverNew(0)"
+                                :title="(index === 0 && cover === 'new:0') ? 'Photo principale de l\'annonce' : 'Définir comme photo principale'"
                             >
                                 <img :src="file.preview" class="w-full h-full object-cover pointer-events-none" alt="">
 
                                 {{-- Tap / click hint on non-cover thumbnails --}}
                                 <div
-                                    x-show="index > 0"
+                                    x-show="!(index === 0 && cover === 'new:0')"
                                     class="absolute inset-0 flex flex-col items-center justify-end pb-2 px-1 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
                                 >
                                     <span class="text-[8px] font-bold text-white text-center leading-tight drop-shadow-sm">
-                                        Principal
+                                        Principale
                                     </span>
                                 </div>
                             </div>
 
-                            {{-- "Principale" on first --}}
+                            {{-- "Principale" badge — only on first new file when cover === 'new:0' --}}
                             <div
-                                x-show="index === 0"
+                                x-show="index === 0 && cover === 'new:0'"
+                                x-transition:enter="transition ease-out duration-300"
+                                x-transition:enter-start="opacity-0 scale-75"
+                                x-transition:enter-end="opacity-100 scale-100"
                                 class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-lg text-[9px] font-bold text-white"
+                                :class="coverPulse ? 'animate-pulse' : ''"
                                 style="background:rgba(23,162,184,0.9); backdrop-filter: blur(4px);"
                             >Principale</div>
 
                             {{-- Remove button --}}
                             <button
                                 type="button"
-                                @click.stop="removeFile(index)"
+                                @click.stop="removeFile(index); handleNewRemoval(index)"
                                 x-show="supportsManagedFiles"
                                 x-cloak
-                                class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
-                                style="background:rgba(231,76,60,0.9); color:white;"
+                                class="absolute top-1.5 right-1.5 w-7 h-7 sm:w-5 sm:h-5 rounded-full flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200 hover:scale-110"
+                                style="background:rgba(231,76,60,0.95); color:white;"
                                 title="Supprimer"
                             >
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
                             </button>
@@ -485,6 +497,12 @@ if (typeof photoUploader === 'undefined') {
             processedCount: 0,
             totalToProcess: 0,
 
+            // ── Unified Principale (cover) state ──
+            // null | "existing:<id>" | "new:<index>"
+            cover: null,
+            coverPulse: false,
+            _coverPulseTimer: null,
+
             // ── Blur / Pixelate editor ──
             blurOpen: false,
             blurIdx: null,
@@ -500,9 +518,91 @@ if (typeof photoUploader === 'undefined') {
                 return Math.max(0, this.maxFiles - this.files.length);
             },
 
+            // ── Cover (Principale) helpers ──────────────────────────────
+            get coverImageIdValue() {
+                return (this.cover && this.cover.startsWith('existing:'))
+                    ? this.cover.split(':')[1]
+                    : '';
+            },
+
+            get coverNewIndexValue() {
+                return (this.cover && this.cover.startsWith('new:'))
+                    ? this.cover.split(':')[1]
+                    : '';
+            },
+
+            pulseCover() {
+                if (this._coverPulseTimer) {
+                    clearTimeout(this._coverPulseTimer);
+                }
+                this.coverPulse = true;
+                this._coverPulseTimer = setTimeout(() => {
+                    this.coverPulse = false;
+                    this._coverPulseTimer = null;
+                }, 600);
+            },
+
+            setCoverExisting(id) {
+                this.cover = `existing:${id}`;
+                this.pulseCover();
+            },
+
+            setCoverNew(index) {
+                this.cover = `new:${index}`;
+                this.pulseCover();
+            },
+
+            initCover(firstExistingId) {
+                if (firstExistingId !== null && firstExistingId !== undefined && firstExistingId !== '') {
+                    this.cover = `existing:${firstExistingId}`;
+                } else if (this.files.length > 0) {
+                    this.cover = 'new:0';
+                } else {
+                    this.cover = null;
+                }
+            },
+
+            handleExistingRemoval(removedId) {
+                if (this.cover === `existing:${removedId}`) {
+                    const remainingIds = Array.from(this.$el.querySelectorAll('[data-existing-id]'))
+                        .map(el => el.dataset.existingId)
+                        .filter(id => id !== String(removedId));
+                    if (remainingIds.length > 0) {
+                        this.cover = `existing:${remainingIds[0]}`;
+                    } else if (this.files.length > 0) {
+                        this.cover = 'new:0';
+                    } else {
+                        this.cover = null;
+                    }
+                }
+            },
+
+            handleNewRemoval(removedIndex) {
+                // Called AFTER removeFile() has already spliced out the index.
+                if (this.cover === `new:${removedIndex}`) {
+                    if (this.files.length > 0) {
+                        this.cover = 'new:0';
+                    } else {
+                        // Fall back to the first remaining existing photo if any
+                        const remainingIds = Array.from(this.$el.querySelectorAll('[data-existing-id]'))
+                            .map(el => el.dataset.existingId);
+                        this.cover = remainingIds.length > 0 ? `existing:${remainingIds[0]}` : null;
+                    }
+                } else if (this.cover && this.cover.startsWith('new:')) {
+                    const idx = parseInt(this.cover.split(':')[1], 10);
+                    if (idx > removedIndex) {
+                        this.cover = `new:${idx - 1}`;
+                    }
+                }
+            },
+
             init() {
                 this.$el._albaborPhotoUploader = this;
                 this.supportsManagedFiles = this.detectManagedFileSupport() && !this.prefersNativeSelection();
+
+                // Initialize cover state from the first existing photo (edit mode).
+                // In create mode, falls back to null until files arrive.
+                this.initCover({{ $existingMedia->first()?->id ?? "''" }});
 
                 // Only validate the required state on submit.
                 // Rewriting input.files during submit is brittle on mobile browsers.
@@ -527,6 +627,11 @@ if (typeof photoUploader === 'undefined') {
 
                 this.$nextTick(async () => {
                     await this.restorePersistedFiles();
+                    // After restoring persisted files, if no cover is set yet but we have files,
+                    // default the cover to the first new photo.
+                    if (this.cover === null && this.files.length > 0) {
+                        this.cover = 'new:0';
+                    }
                 });
 
                 // Clean up previews on page unload
@@ -795,6 +900,11 @@ if (typeof photoUploader === 'undefined') {
                     this.processedCount++;
                 }
                 this.isProcessing = false;
+                // If no cover is set yet (e.g. create flow with no existing photos),
+                // pick the first new photo as the cover.
+                if (this.cover === null && this.files.length > 0) {
+                    this.cover = 'new:0';
+                }
                 this.$dispatch('photos-ready');
                 this.syncInput();
                 await this.persistFiles();
@@ -914,6 +1024,11 @@ if (typeof photoUploader === 'undefined') {
                     size: file.size,
                     name: file.name,
                 }));
+                // If no cover is set yet (e.g. native picker, no existing photos),
+                // pick the first new photo as the cover.
+                if (this.cover === null && this.files.length > 0) {
+                    this.cover = 'new:0';
+                }
                 this.persistFiles();
             },
 
@@ -922,6 +1037,12 @@ if (typeof photoUploader === 'undefined') {
                 this.files = [];
                 if (this.$refs.fileInput) {
                     this.$refs.fileInput.value = '';
+                }
+                // If the current cover pointed to a new file, drop it back to first existing or null.
+                if (this.cover && this.cover.startsWith('new:')) {
+                    const remainingIds = Array.from(this.$el.querySelectorAll('[data-existing-id]'))
+                        .map(el => el.dataset.existingId);
+                    this.cover = remainingIds.length > 0 ? `existing:${remainingIds[0]}` : null;
                 }
                 this.clearPersistedFiles();
             },

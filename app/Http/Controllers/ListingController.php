@@ -449,6 +449,7 @@ class ListingController extends Controller
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'integer|exists:listing_media,id',
             'cover_image_id' => 'nullable|integer|exists:listing_media,id',
+            'cover_new_index' => 'nullable|integer|min:0',
             'video_url' => 'nullable|url|max:500',
         ]);
 
@@ -552,6 +553,35 @@ class ListingController extends Controller
                 $coverMedia->update(['order' => 0]);
                 foreach ($others as $idx => $m) {
                     $m->update(['order' => $idx + 1]);
+                }
+            }
+        } elseif (isset($validated['cover_new_index']) && $request->hasFile('new_images')) {
+            // The user picked one of the freshly uploaded photos as cover.
+            // Mutually exclusive with cover_image_id (handled above).
+            $newCount  = count($request->file('new_images'));
+            $coverIdx  = (int) $validated['cover_new_index'];
+
+            if ($coverIdx >= 0 && $coverIdx < $newCount) {
+                // handleImageUpload appended the new media in order, so the most
+                // recent $newCount records (sorted by id desc, then reversed)
+                // mirror the upload order.
+                $freshMedia = $listing->media()
+                    ->orderByDesc('id')
+                    ->take($newCount)
+                    ->get()
+                    ->reverse()
+                    ->values();
+
+                $coverMedia = $freshMedia->get($coverIdx);
+                if ($coverMedia) {
+                    $others = $listing->media()
+                        ->where('id', '!=', $coverMedia->id)
+                        ->orderBy('order')
+                        ->get();
+                    $coverMedia->update(['order' => 0]);
+                    foreach ($others as $idx => $m) {
+                        $m->update(['order' => $idx + 1]);
+                    }
                 }
             }
         }
