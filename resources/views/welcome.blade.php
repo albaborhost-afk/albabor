@@ -337,47 +337,37 @@
         </div>
     </div>
 
-    <!-- Annonces Sponsorisées — Carrousel horizontal -->
+    <!-- Annonces en vedette — Carrousel horizontal -->
     @if(isset($featuredListings) && $featuredListings->count() > 0)
-    <div class="py-8 sm:py-10" style="background: linear-gradient(180deg, #fffdf5 0%, #fff8e1 100%); border-top: 1px solid #fde68a;">
+    <div class="py-8 sm:py-10" style="background: #F0F4F8;">
         <div
             class="max-w-7xl mx-auto"
             x-data="sponsoredCarousel({{ $featuredListings->count() }})"
             x-init="init()"
         >
-            <!-- Header badge + titre + contrôles -->
+            <!-- Header iOS-style -->
             <div class="flex items-center justify-between mb-5 px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center gap-3">
-                    <div class="relative flex-shrink-0">
-                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg,#F59E0B,#F97316); box-shadow: 0 4px 16px rgba(245,158,11,0.4);">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        </div>
-                        <div class="absolute inset-0 rounded-2xl animate-ping opacity-20" style="background:#F59E0B;"></div>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-0.5">
-                            <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color:#1B2A4A;">{{ __('Annonces sponsorisees') }}</h2>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide" style="background:#FEF3C7;color:#B45309;">Premium</span>
-                        </div>
-                        <p class="text-xs font-semibold uppercase tracking-wide" style="color:#F59E0B;">{{ __('Sponsorise') }}</p>
-                    </div>
+                <div class="flex items-center gap-2.5">
+                    <svg class="w-5 h-5 flex-shrink-0" style="color:#F59E0B;" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color:#1B2A4A;">{{ __('Annonces en vedette') }}</h2>
                 </div>
 
-                <!-- Voir plus + flèches -->
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('listings.index') }}" class="text-xs font-bold flex items-center gap-1 transition-all hover:gap-2" style="color:#D97706;">
-                        {{ __('Voir plus') }}
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    <a href="{{ route('listings.index') }}" class="text-sm font-semibold flex items-center gap-1 transition-all hover:gap-2" style="color:#2471A3;">
+                        {{ __('Voir tout') }}
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                     </a>
                     <div class="flex gap-1 ml-1">
                         <button @click="prev()"
                             class="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
-                            style="background:rgba(245,158,11,0.15);color:#D97706;">
+                            style="background:rgba(36,113,163,0.1);color:#2471A3;">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                         </button>
                         <button @click="next()"
                             class="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
-                            style="background:rgba(245,158,11,0.15);color:#D97706;">
+                            style="background:rgba(36,113,163,0.1);color:#2471A3;">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                         </button>
                     </div>
@@ -411,8 +401,8 @@
                         @click="goTo(i-1)"
                         class="rounded-full transition-all duration-300"
                         :style="active === (i-1)
-                            ? 'width:24px;height:8px;background:linear-gradient(135deg,#F59E0B,#F97316);box-shadow:0 2px 8px rgba(245,158,11,.5);'
-                            : 'width:8px;height:8px;background:#FBBF24;opacity:.35;'"
+                            ? 'width:24px;height:8px;background:#2471A3;box-shadow:0 2px 8px rgba(36,113,163,.35);'
+                            : 'width:8px;height:8px;background:#C5D0DB;'"
                     ></button>
                 </template>
             </div>
@@ -487,14 +477,11 @@
             }"
         >
             <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-3 reveal-right">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(27, 79, 114, 0.08);">
-                        <svg class="w-5 h-5" style="color: #1B4F72;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <div>
-                        <h2 class="text-lg sm:text-xl font-bold" style="color: #1B2A4A;">{{ __('Dernieres annonces') }}</h2>
-                        <p class="text-xs" style="color: #9BA8B7;">{{ __('Fraichement publiees') }}</p>
-                    </div>
+                <div class="flex items-center gap-2.5 reveal-right">
+                    <svg class="w-5 h-5 flex-shrink-0" style="color:#17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color: #1B2A4A;">{{ __('Annonces recentes') }}</h2>
                 </div>
 
                 <div class="flex items-center gap-2 sm:gap-3">
@@ -520,9 +507,9 @@
                         <span x-text="grid ? '1 / ligne' : '2 / ligne'" class="hidden xs:inline leading-none"></span>
                     </button>
 
-                    <a href="{{ route('listings.index') }}" class="btn-see-all hidden sm:inline-flex">
+                    <a href="{{ route('listings.index') }}" class="hidden sm:flex items-center gap-1 text-sm font-semibold transition-all hover:gap-2" style="color:#2471A3;">
                         {{ __('Voir tout') }}
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                     </a>
                 </div>
             </div>
