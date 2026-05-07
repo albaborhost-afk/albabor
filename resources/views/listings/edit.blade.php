@@ -169,13 +169,25 @@
 
                     {{-- En-tête page unique --}}
                     <div class="px-5 pt-5 pb-4 flex items-center gap-3" style="background: linear-gradient(135deg, rgba(27,79,114,0.04), rgba(23,162,184,0.06)); border-bottom: 1px solid #EDF0F4;">
-                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #1B4F72, #17A2B8);">
-                            <svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        {{-- Pencil icon with blur/glass style --}}
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 shadow-md"
+                             style="background: rgba(255,255,255,0.92); color: #2471A3; border: 1.5px solid rgba(36,113,163,0.25); box-shadow: 0 2px 10px rgba(36,113,163,0.15);">
+                            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         </div>
-                        <div>
+                        <div class="flex-1">
                             <h2 class="text-base font-black" style="color: #1B2A4A;">Modifier l'annonce</h2>
                             <p class="text-xs" style="color: #9BA8B7;">Toutes les sections sont modifiables directement</p>
                         </div>
+                        {{-- Voir l'annonce --}}
+                        <a href="{{ route('listings.show', $listing) }}"
+                           class="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 hover:scale-105 shadow-sm"
+                           style="background: rgba(255,255,255,0.92); color: #6B7B8D; border: 1.5px solid #E0E6ED; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            Voir
+                        </a>
                     </div>
 
                     {{-- Validation errors --}}
