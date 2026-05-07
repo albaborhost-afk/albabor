@@ -112,6 +112,17 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
+
+                {{-- Blur button for existing photo --}}
+                <button type="button"
+                        @click.stop="$dispatch('open-blur-existing', { id: {{ $media->id }}, url: '{{ $media->url }}' })"
+                        class="absolute bottom-1.5 right-1 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 active:scale-95 opacity-100 sm:opacity-0 group-hover:opacity-100"
+                        style="background:rgba(27,79,114,0.92); color:white; box-shadow:0 2px 8px rgba(0,0,0,0.35);"
+                        title="Flouter une zone privée">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6.536-6.536a2.5 2.5 0 013.536 3.536L12 15H9v-3l.232-.232z"/>
+                    </svg>
+                </button>
             </div>
             @endforeach
         </div>
@@ -506,6 +517,8 @@ if (typeof photoUploader === 'undefined') {
             // ── Blur / Pixelate editor ──
             blurOpen: false,
             blurIdx: null,
+            blurExistingId: null,
+            blurExistingObjectUrl: null,
             blurCanvas: null,
             blurCtx: null,
             blurImg: null,
@@ -634,9 +647,15 @@ if (typeof photoUploader === 'undefined') {
                     }
                 });
 
+                // Listen for blur requests from existing photos
+                this.$el.addEventListener('open-blur-existing', (e) => {
+                    this.openBlurEditorExisting(e.detail.id, e.detail.url);
+                });
+
                 // Clean up previews on page unload
                 window.addEventListener('beforeunload', () => {
                     this.files.forEach(f => URL.revokeObjectURL(f.preview));
+                    if (this.blurExistingObjectUrl) URL.revokeObjectURL(this.blurExistingObjectUrl);
                 });
             },
 
@@ -1088,10 +1107,30 @@ if (typeof photoUploader === 'undefined') {
 
             openBlurEditor(index) {
                 this.blurIdx = index;
+                this.blurExistingId = null;
                 this.blurHistory = [];
                 this.blurDragging = false;
                 this.blurOpen = true;
                 this.$nextTick(() => this.blurInit());
+            },
+
+            async openBlurEditorExisting(mediaId, imageUrl) {
+                this.blurIdx = null;
+                this.blurExistingId = mediaId;
+                this.blurHistory = [];
+                this.blurDragging = false;
+                // Fetch image as blob to bypass CORS canvas restrictions
+                try {
+                    const resp = await fetch(imageUrl, { credentials: 'same-origin' });
+                    if (!resp.ok) throw new Error('fetch failed');
+                    const blob = await resp.blob();
+                    if (this.blurExistingObjectUrl) URL.revokeObjectURL(this.blurExistingObjectUrl);
+                    this.blurExistingObjectUrl = URL.createObjectURL(blob);
+                } catch (e) {
+                    this.blurExistingObjectUrl = imageUrl;
+                }
+                this.blurOpen = true;
+                this.$nextTick(() => this.blurInitFromUrl(this.blurExistingObjectUrl));
             },
 
             blurInit() {
@@ -1110,6 +1149,26 @@ if (typeof photoUploader === 'undefined') {
                     this.blurImg = img;
                     this.blurHistory = [this.blurCtx.getImageData(0, 0, canvas.width, canvas.height)];
                     URL.revokeObjectURL(url);
+                };
+                img.src = url;
+            },
+
+            blurInitFromUrl(url) {
+                const canvas = this.$refs.blurCanvas;
+                if (!canvas) return;
+                this.blurCanvas = canvas;
+                this.blurCtx = canvas.getContext('2d');
+                const img = new Image();
+                img.onload = () => {
+                    canvas.width = img.naturalWidth;
+                    canvas.height = img.naturalHeight;
+                    this.blurCtx.drawImage(img, 0, 0);
+                    this.blurImg = img;
+                    this.blurHistory = [this.blurCtx.getImageData(0, 0, canvas.width, canvas.height)];
+                };
+                img.onerror = () => {
+                    this.blurOpen = false;
+                    alert('Impossible de charger cette photo pour l\'édition. Veuillez réessayer.');
                 };
                 img.src = url;
             },
@@ -1223,18 +1282,60 @@ if (typeof photoUploader === 'undefined') {
                 const canvas = this.blurCanvas;
                 canvas.toBlob((blob) => {
                     if (!blob) { this.blurOpen = false; return; }
-                    const orig = this.files[this.blurIdx];
-                    URL.revokeObjectURL(orig.preview);
-                    const newFile = new File([blob], orig.name, {type: 'image/jpeg', lastModified: Date.now()});
-                    this.files[this.blurIdx] = {
-                        ...orig,
-                        file: newFile,
-                        preview: URL.createObjectURL(newFile),
-                        size: newFile.size,
-                        blurred: true,
-                    };
-                    this.syncInput();
-                    this.persistFiles();
+
+                    if (this.blurExistingId !== null) {
+                        // ── Existing photo: mark for deletion, add blurred version as new file ──
+                        const mediaId = this.blurExistingId;
+                        const wasCover = this.cover === `existing:${mediaId}`;
+                        const newFile = new File([blob], `blurred_${mediaId}.jpg`, {type: 'image/jpeg', lastModified: Date.now()});
+                        const id = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random());
+                        const preview = URL.createObjectURL(newFile);
+                        const fileObj = { id, file: newFile, preview, size: newFile.size, name: newFile.name, blurred: true };
+
+                        if (wasCover) {
+                            this.files.unshift(fileObj);
+                            this.cover = 'new:0';
+                        } else {
+                            this.files.push(fileObj);
+                        }
+
+                        // Trigger tile removal: enables delete_images[] input and hides the tile
+                        const tile = this.$el.querySelector(`[data-existing-id="${mediaId}"]`);
+                        if (tile) {
+                            const deleteBtn = tile.querySelector('button[title="Supprimer cette photo"]');
+                            if (deleteBtn) {
+                                deleteBtn.click();
+                            } else {
+                                const d = tile._x_dataStack && tile._x_dataStack[0];
+                                if (d) d.removed = true;
+                                const inp = tile.querySelector('input[name="delete_images[]"]');
+                                if (inp) inp.disabled = false;
+                            }
+                        }
+
+                        this.syncInput();
+                        this.persistFiles();
+
+                        if (this.blurExistingObjectUrl && this.blurExistingObjectUrl.startsWith('blob:')) {
+                            URL.revokeObjectURL(this.blurExistingObjectUrl);
+                            this.blurExistingObjectUrl = null;
+                        }
+                    } else {
+                        // ── New photo: replace in-place ──
+                        const orig = this.files[this.blurIdx];
+                        URL.revokeObjectURL(orig.preview);
+                        const newFile = new File([blob], orig.name, {type: 'image/jpeg', lastModified: Date.now()});
+                        this.files[this.blurIdx] = {
+                            ...orig,
+                            file: newFile,
+                            preview: URL.createObjectURL(newFile),
+                            size: newFile.size,
+                            blurred: true,
+                        };
+                        this.syncInput();
+                        this.persistFiles();
+                    }
+
                     this.blurOpen = false;
                 }, 'image/jpeg', 0.92);
             },
