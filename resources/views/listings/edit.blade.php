@@ -1441,15 +1441,15 @@
     <script>
         function editForm() {
             return {
-                category: ‘{{ old(‘category’, $listing->category) }}’,
-                originalCategory: ‘{{ $listing->category }}’,
-                boatType: ‘{{ in_array(old(‘type’, $listing->type ?? ‘’), array_keys(\App\Models\Listing::BOAT_TYPES)) ? old(‘type’, $listing->type ?? ‘’) : ‘’ }}’,
-                jetskiType: ‘{{ in_array(old(‘type’, $listing->type ?? ‘’), array_keys(\App\Models\Listing::JETSKI_TYPES)) ? old(‘type’, $listing->type ?? ‘’) : ‘’ }}’,
-                currency: ‘{{ old(‘currency’, $listing->currency ?? ‘DZD’) }}’,
-                hasRemorque: ‘{{ old(‘specs.extras.remorque’, data_get($listing->specs, ‘extras.remorque’, ‘’)) }}’,
-                hasPort: ‘{{ old(‘specs.extras.place_au_port’, data_get($listing->specs, ‘extras.place_au_port’, ‘’)) }}’,
-                mediationEnabled: {{ old(‘mediation_enabled’, $listing->mediation_enabled) ? ‘true’ : ‘false’ }},
-                canPublishEngineOrParts: {{ ($canPublishEngineOrParts ?? false) ? ‘true’ : ‘false’ }},
+                category: '{{ old('category', $listing->category) }}',
+                originalCategory: '{{ $listing->category }}',
+                boatType: '{{ in_array(old('type', $listing->type ?? ''), array_keys(\App\Models\Listing::BOAT_TYPES)) ? old('type', $listing->type ?? '') : '' }}',
+                jetskiType: '{{ in_array(old('type', $listing->type ?? ''), array_keys(\App\Models\Listing::JETSKI_TYPES)) ? old('type', $listing->type ?? '') : '' }}',
+                currency: '{{ old('currency', $listing->currency ?? 'DZD') }}',
+                hasRemorque: '{{ old('specs.extras.remorque', data_get($listing->specs, 'extras.remorque', '')) }}',
+                hasPort: '{{ old('specs.extras.place_au_port', data_get($listing->specs, 'extras.place_au_port', '')) }}',
+                mediationEnabled: {{ old('mediation_enabled', $listing->mediation_enabled) ? 'true' : 'false' }},
+                canPublishEngineOrParts: {{ ($canPublishEngineOrParts ?? false) ? 'true' : 'false' }},
                 existingMediaCount: {{ $listing->media->count() }},
                 stepErrors: [],
                 submitting: false,
@@ -1458,64 +1458,64 @@
                 init() {},
 
                 getPhotoUploader() {
-                    return this.$root.querySelector(‘[data-photo-uploader]’)?._albaborPhotoUploader || null;
+                    return this.$root.querySelector('[data-photo-uploader]')?._albaborPhotoUploader || null;
                 },
 
                 clearFieldErrors() {
-                    this.$root.querySelectorAll(‘.step-field-error’).forEach(el => {
-                        el.style.borderColor = ‘’;
-                        el.style.boxShadow = ‘’;
+                    this.$root.querySelectorAll('.step-field-error').forEach(el => {
+                        el.style.borderColor = '';
+                        el.style.boxShadow = '';
                     });
                 },
 
                 markField(name) {
-                    const el = this.$root.querySelector(‘[name="’ + name + ‘"]’);
+                    const el = this.$root.querySelector('[name="' + name + '"]');
                     if (el) {
-                        el.classList.add(‘step-field-error’);
-                        el.style.borderColor = ‘#E74C3C’;
-                        el.style.boxShadow = ‘0 0 0 3px rgba(231,76,60,0.1)’;
-                        el.scrollIntoView({ behavior: ‘smooth’, block: ‘center’ });
+                        el.classList.add('step-field-error');
+                        el.style.borderColor = '#E74C3C';
+                        el.style.boxShadow = '0 0 0 3px rgba(231,76,60,0.1)';
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 },
 
                 applyServerValidationErrors(errors = {}) {
                     const entries = Object.entries(errors || {});
                     if (!entries.length) {
-                        this.stepErrors = ["Une erreur est survenue lors de l’envoi de l’annonce."];
-                        window.scrollTo({ top: 0, behavior: ‘smooth’ });
+                        this.stepErrors = ["Une erreur est survenue lors de l'envoi de l'annonce."];
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                         return;
                     }
                     this.stepErrors = entries.flatMap(([, messages]) => Array.isArray(messages) ? messages : [messages]).filter(Boolean);
                     this.$nextTick(() => {
                         entries.forEach(([field]) => {
-                            const baseField = (field || ‘’).replace(/\.\d+$/, ‘’);
-                            if (!baseField.startsWith(‘new_images’) && !baseField.startsWith(‘delete_images’) && baseField !== ‘cover_image_id’ && baseField !== ‘video_url’) {
+                            const baseField = (field || '').replace(/\.\d+$/, '');
+                            if (!baseField.startsWith('new_images') && !baseField.startsWith('delete_images') && baseField !== 'cover_image_id' && baseField !== 'video_url') {
                                 this.markField(baseField);
                             }
                         });
                     });
-                    window.scrollTo({ top: 0, behavior: ‘smooth’ });
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
 
                 async submitWithAjax(uploader) {
                     try {
                         const form = this.$root;
                         const formData = new FormData(form);
-                        formData.delete(‘new_images’);
-                        formData.delete(‘new_images[]’);
+                        formData.delete('new_images');
+                        formData.delete('new_images[]');
                         uploader.getFilesForSubmit().forEach((file, index) => {
-                            formData.append(‘new_images[]’, file, file.name || `photo-${index + 1}.jpg`);
+                            formData.append('new_images[]', file, file.name || `photo-${index + 1}.jpg`);
                         });
                         const response = await fetch(form.action, {
-                            method: ‘POST’,
+                            method: 'POST',
                             body: formData,
-                            credentials: ‘same-origin’,
-                            headers: { ‘Accept’: ‘application/json’, ‘X-Requested-With’: ‘XMLHttpRequest’ },
+                            credentials: 'same-origin',
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                         });
-                        const contentType = response.headers.get(‘content-type’) || ‘’;
-                        const payload = contentType.includes(‘application/json’) ? await response.json() : null;
+                        const contentType = response.headers.get('content-type') || '';
+                        const payload = contentType.includes('application/json') ? await response.json() : null;
                         if (response.ok) {
-                            window.location.href = payload?.redirect || ‘{{ route("listings.my") }}’;
+                            window.location.href = payload?.redirect || '{{ route("listings.my") }}';
                             return;
                         }
                         if (response.status === 422) {
@@ -1525,11 +1525,11 @@
                         }
                         this.submitting = false;
                         this.stepErrors = [payload?.message || "Une erreur est survenue."];
-                        window.scrollTo({ top: 0, behavior: ‘smooth’ });
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     } catch (e) {
                         this.submitting = false;
-                        this.stepErrors = ["Le réseau a interrompu l’envoi. Veuillez réessayer."];
-                        window.scrollTo({ top: 0, behavior: ‘smooth’ });
+                        this.stepErrors = ["Le réseau a interrompu l'envoi. Veuillez réessayer."];
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 },
 
@@ -1538,39 +1538,38 @@
                     this.clearFieldErrors();
                     this.stepErrors = [];
 
-                    const val = (name) => (this.$root.querySelector(‘[name="’ + name + ‘"]’)?.value || ‘’).trim();
+                    const val = (name) => (this.$root.querySelector('[name="' + name + '"]')?.value || '').trim();
                     let errors = [];
 
-                    if (!this.category) errors.push(‘Veuillez choisir une catégorie.’);
-                    if (!val(‘title’)) { errors.push("Le titre est obligatoire."); this.markField(‘title’); }
-                    if (!val(‘description’)) { errors.push("La description est obligatoire."); this.markField(‘description’); }
+                    if (!this.category) errors.push('Veuillez choisir une catégorie.');
+                    if (!val('title')) { errors.push("Le titre est obligatoire."); this.markField('title'); }
+                    if (!val('description')) { errors.push("La description est obligatoire."); this.markField('description'); }
 
-                    const offer = this.$root.querySelector(‘input[name="type_offre"]:checked’)?.value || ‘’;
-                    const price = val(‘price_dzd’);
-                    if (offer !== ‘offert’ && (!price || parseFloat(price) <= 0)) {
+                    const offer = this.$root.querySelector('input[name="type_offre"]:checked')?.value || '';
+                    const price = val('price_dzd');
+                    if (offer !== 'offert' && (!price || parseFloat(price) <= 0)) {
                         errors.push("Le prix est obligatoire.");
-                        this.markField(‘price_dzd’);
+                        this.markField('price_dzd');
                     }
 
                     // Photos: compter uniquement les inputs delete NON-disabled (= vraiment supprimés)
                     const uploader = this.getPhotoUploader();
                     const newFiles = uploader?.getFilesForSubmit?.()?.length || 0;
                     const deletedCount = Array.from(
-                        this.$root.querySelectorAll(‘input[name="delete_images[]"]’)
+                        this.$root.querySelectorAll('input[name="delete_images[]"]')
                     ).filter(el => !el.disabled).length;
                     const remaining = Math.max(0, this.existingMediaCount - deletedCount);
                     if (newFiles === 0 && remaining <= 0) {
-                        errors.push(‘Veuillez conserver ou ajouter au moins une photo.’);
+                        errors.push('Veuillez conserver ou ajouter au moins une photo.');
                     }
 
                     if (errors.length > 0) {
                         event.preventDefault();
                         this.stepErrors = errors;
-                        window.scrollTo({ top: 0, behavior: ‘smooth’ });
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                         return;
                     }
 
-                    const uploader = this.getPhotoUploader();
                     if (uploader) {
                         event.preventDefault();
                         this.submitting = true;
