@@ -337,53 +337,140 @@
         </div>
     </div>
 
-    <!-- Annonces Sponsorisées -->
+    <!-- Annonces Sponsorisées — Carrousel horizontal -->
     @if(isset($featuredListings) && $featuredListings->count() > 0)
     <div class="py-8 sm:py-10" style="background: linear-gradient(180deg, #fffdf5 0%, #fff8e1 100%); border-top: 1px solid #fde68a;">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-            <!-- Header badge + title -->
-            <div class="flex items-center justify-between mb-6">
+        <div
+            class="max-w-7xl mx-auto"
+            x-data="sponsoredCarousel({{ $featuredListings->count() }})"
+            x-init="init()"
+        >
+            <!-- Header badge + titre + contrôles -->
+            <div class="flex items-center justify-between mb-5 px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-3">
-                    <!-- Animated star badge -->
                     <div class="relative flex-shrink-0">
                         <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg,#F59E0B,#F97316); box-shadow: 0 4px 16px rgba(245,158,11,0.4);">
                             <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                         </div>
-                        <!-- Pulse ring -->
-                        <div class="absolute inset-0 rounded-2xl animate-ping opacity-25" style="background: #F59E0B;"></div>
+                        <div class="absolute inset-0 rounded-2xl animate-ping opacity-20" style="background:#F59E0B;"></div>
                     </div>
                     <div>
                         <div class="flex items-center gap-2 mb-0.5">
-                            <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color: #1B2A4A;">{{ __('Annonces sponsorisees') }}</h2>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide" style="background: #FEF3C7; color: #B45309;">Premium</span>
+                            <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color:#1B2A4A;">{{ __('Annonces sponsorisees') }}</h2>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide" style="background:#FEF3C7;color:#B45309;">Premium</span>
                         </div>
-                        <p class="text-xs" style="color: #9BA8B7;">{{ __('Selectionnees et mises en avant par notre equipe') }}</p>
+                        <p class="text-xs" style="color:#9BA8B7;">{{ __('Selectionnees et mises en avant par notre equipe') }}</p>
                     </div>
                 </div>
-                <a href="{{ route('listings.index') }}" class="hidden sm:flex text-xs font-semibold items-center gap-1" style="color: #D97706;">
-                    {{ __('Voir tout') }}
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </a>
+
+                <!-- Voir plus + flèches -->
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('listings.index') }}" class="text-xs font-bold flex items-center gap-1 transition-all hover:gap-2" style="color:#D97706;">
+                        {{ __('Voir plus') }}
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    <div class="flex gap-1 ml-1">
+                        <button @click="prev()"
+                            class="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
+                            style="background:rgba(245,158,11,0.15);color:#D97706;">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button @click="next()"
+                            class="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
+                            style="background:rgba(245,158,11,0.15);color:#D97706;">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Listing cards with sponsored badge overlay -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Piste de défilement -->
+            <div
+                x-ref="track"
+                @scroll.passive="onScroll()"
+                class="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 px-4 sm:px-6 lg:px-8"
+                style="scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;"
+            >
                 @foreach($featuredListings as $listing)
-                    <div class="relative">
-                        <!-- Sponsored badge -->
-                        <div class="absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold shadow-md"
-                             style="background: linear-gradient(135deg,#F59E0B,#F97316); color: white; letter-spacing: 0.03em;">
-                            <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            {{ __('Sponsorise') }}
-                        </div>
-                        <x-listing-card :listing="$listing" />
+                <div class="sponsored-slide flex-shrink-0 snap-start relative" style="transition:transform .25s,box-shadow .25s;">
+                    <!-- Badge Sponsorisé -->
+                    <div class="absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold shadow-lg"
+                         style="background:linear-gradient(135deg,#F59E0B,#F97316);color:white;letter-spacing:.03em;">
+                        <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        {{ __('Sponsorise') }}
                     </div>
+                    <x-listing-card :listing="$listing" />
+                </div>
                 @endforeach
             </div>
 
+            <!-- Points de navigation -->
+            <div class="flex justify-center items-center gap-1.5 mt-2">
+                <template x-for="i in total" :key="i">
+                    <button
+                        @click="goTo(i-1)"
+                        class="rounded-full transition-all duration-300"
+                        :style="active === (i-1)
+                            ? 'width:24px;height:8px;background:linear-gradient(135deg,#F59E0B,#F97316);box-shadow:0 2px 8px rgba(245,158,11,.5);'
+                            : 'width:8px;height:8px;background:#FBBF24;opacity:.35;'"
+                    ></button>
+                </template>
+            </div>
         </div>
     </div>
+
+    <style>
+        .sponsored-slide { width: calc(80vw - 1.5rem); max-width: 290px; }
+        @media (min-width: 640px)  { .sponsored-slide { width: calc(45vw - 2rem); max-width: 280px; } }
+        @media (min-width: 1024px) { .sponsored-slide { width: 270px; } }
+        .sponsored-slide:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(245,158,11,.18); border-radius: 16px; }
+    </style>
+
+    <script>
+        function sponsoredCarousel(total) {
+            return {
+                total: total,
+                active: 0,
+                timer: null,
+                init() {
+                    const el = this.$refs.track;
+                    if (!el || total <= 1) return;
+                    el.addEventListener('touchstart', () => clearInterval(this.timer), { passive: true });
+                    el.addEventListener('touchend',   () => this.startAuto(),          { passive: true });
+                    this.startAuto();
+                },
+                startAuto() {
+                    clearInterval(this.timer);
+                    this.timer = setInterval(() => this.next(), 4500);
+                },
+                next() { this.goTo((this.active + 1) % this.total); },
+                prev() { this.goTo((this.active - 1 + this.total) % this.total); },
+                goTo(i) {
+                    this.active = i;
+                    const el = this.$refs.track;
+                    if (!el) return;
+                    const cards = Array.from(el.children);
+                    if (!cards[i]) return;
+                    const containerRect = el.getBoundingClientRect();
+                    const cardRect = cards[i].getBoundingClientRect();
+                    el.scrollTo({ left: el.scrollLeft + cardRect.left - containerRect.left, behavior: 'smooth' });
+                },
+                onScroll() {
+                    const el = this.$refs.track;
+                    if (!el) return;
+                    const containerRect = el.getBoundingClientRect();
+                    const center = containerRect.left + containerRect.width / 2;
+                    let closest = 0, minDist = Infinity;
+                    Array.from(el.children).forEach((card, i) => {
+                        const rect = card.getBoundingClientRect();
+                        const dist = Math.abs(rect.left + rect.width / 2 - center);
+                        if (dist < minDist) { minDist = dist; closest = i; }
+                    });
+                    this.active = closest;
+                }
+            };
+        }
+    </script>
     @endif
 
     <!-- Latest Listings -->
