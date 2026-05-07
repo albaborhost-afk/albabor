@@ -131,9 +131,20 @@
                                     </div>
                                 @endif
 
-                                {{-- Favorite Button — top-right overlay --}}
+                                {{-- Top-right overlay: Edit button for owner, Favorite for others --}}
                                 @auth
-                                    @if(auth()->id() !== $listing->user_id)
+                                    @if(auth()->id() === $listing->user_id)
+                                    {{-- Bouton Modifier (crayon) pour le propriétaire --}}
+                                    <div class="absolute top-3 right-3 z-20">
+                                        <a href="{{ route('listings.edit', $listing) }}"
+                                           class="w-10 h-10 rounded-full flex items-center justify-center shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-90"
+                                           style="background: rgba(255,255,255,0.92); color: #2471A3; box-shadow: 0 2px 10px rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.3);">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                    @else
                                     @php $isFavorited = auth()->user()->hasFavorited($listing); @endphp
                                     <div class="absolute top-3 right-3 z-20" @click.stop>
                                         <form action="{{ route('favorites.toggle', $listing) }}" method="POST">
