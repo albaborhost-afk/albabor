@@ -1552,6 +1552,17 @@
                         this.markField(‘price_dzd’);
                     }
 
+                    // Photos: compter uniquement les inputs delete NON-disabled (= vraiment supprimés)
+                    const uploader = this.getPhotoUploader();
+                    const newFiles = uploader?.getFilesForSubmit?.()?.length || 0;
+                    const deletedCount = Array.from(
+                        this.$root.querySelectorAll(‘input[name="delete_images[]"]’)
+                    ).filter(el => !el.disabled).length;
+                    const remaining = Math.max(0, this.existingMediaCount - deletedCount);
+                    if (newFiles === 0 && remaining <= 0) {
+                        errors.push(‘Veuillez conserver ou ajouter au moins une photo.’);
+                    }
+
                     if (errors.length > 0) {
                         event.preventDefault();
                         this.stepErrors = errors;
