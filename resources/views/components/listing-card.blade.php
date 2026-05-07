@@ -140,21 +140,35 @@
         </div>
     </a>
 
-    {{-- Favorite Button — top-right of image --}}
+    {{-- Bouton en haut à droite : Modifier (propriétaire) ou Favori (autre utilisateur) --}}
     @auth
         <div class="absolute top-3 right-3 z-20">
-            <form action="{{ route('favorites.toggle', $listing) }}" method="POST">
-                @csrf
-                <button type="submit"
-                        class="favorite-heart-btn w-8 h-8 rounded-full flex items-center justify-center shadow-md backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-90"
-                        style="{{ $isFavorited
-                            ? 'background: #FF6B6B; color: white; box-shadow: 0 4px 12px rgba(255,107,107,0.4);'
-                            : 'background: rgba(255,255,255,0.92); color: #9BA8B7; box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.3);' }}">
-                    <svg class="w-4 h-4" fill="{{ $isFavorited ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{ $isFavorited ? '0' : '2' }}">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            @if(auth()->id() === $listing->user_id)
+                {{-- Bouton Modifier (crayon) pour le propriétaire --}}
+                <a href="{{ route('listings.edit', $listing) }}"
+                   onclick="event.stopPropagation();"
+                   class="w-8 h-8 rounded-full flex items-center justify-center shadow-md backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-90"
+                   style="background: rgba(255,255,255,0.92); color: #2471A3; box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.3);">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
-                </button>
-            </form>
+                </a>
+            @else
+                {{-- Bouton Favori (cœur) pour les autres --}}
+                <form action="{{ route('favorites.toggle', $listing) }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                            onclick="event.stopPropagation();"
+                            class="favorite-heart-btn w-8 h-8 rounded-full flex items-center justify-center shadow-md backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-90"
+                            style="{{ $isFavorited
+                                ? 'background: #FF6B6B; color: white; box-shadow: 0 4px 12px rgba(255,107,107,0.4);'
+                                : 'background: rgba(255,255,255,0.92); color: #9BA8B7; box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.3);' }}">
+                        <svg class="w-4 h-4" fill="{{ $isFavorited ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{ $isFavorited ? '0' : '2' }}">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </button>
+                </form>
+            @endif
         </div>
     @endauth
 
