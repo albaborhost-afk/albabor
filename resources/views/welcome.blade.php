@@ -102,6 +102,8 @@
                 x-init="init()"
                 @mouseenter="pause()"
                 @mouseleave="resume()"
+                @touchstart.passive="swipeStart($event)"
+                @touchend.passive="swipeEnd($event)"
                 class="relative overflow-hidden rounded-2xl shadow-lg h-44 sm:h-64 md:h-80 lg:h-[520px] bg-gray-900"
             >
                 {{-- Slides --}}
@@ -143,21 +145,7 @@
                     </div>
                 @endforeach
 
-                {{-- Touch swipe zones (mobile) --}}
                 @if($banners->count() > 1)
-                    <button
-                        type="button"
-                        @click="prev()"
-                        aria-label="{{ __('Precedent') }}"
-                        class="md:hidden absolute left-0 top-0 bottom-0 w-1/3 z-10 opacity-0"
-                    ></button>
-                    <button
-                        type="button"
-                        @click="next()"
-                        aria-label="{{ __('Suivant') }}"
-                        class="md:hidden absolute right-0 top-0 bottom-0 w-1/3 z-10 opacity-0"
-                    ></button>
-
                     {{-- Desktop arrows --}}
                     <button
                         type="button"
@@ -202,6 +190,7 @@
                     total: total,
                     timer: null,
                     paused: false,
+                    _tx: 0, _ty: 0,
                     init() {
                         if (this.total <= 1) return;
                         this.start();
@@ -212,17 +201,24 @@
                             if (!this.paused) this.next();
                         }, 5000);
                     },
-                    next() {
-                        this.active = (this.active + 1) % this.total;
-                    },
-                    prev() {
-                        this.active = (this.active - 1 + this.total) % this.total;
-                    },
-                    goTo(i) {
-                        this.active = i;
-                    },
+                    next() { this.active = (this.active + 1) % this.total; },
+                    prev() { this.active = (this.active - 1 + this.total) % this.total; },
+                    goTo(i) { this.active = i; },
                     pause() { this.paused = true; },
                     resume() { this.paused = false; },
+                    swipeStart(e) {
+                        this._tx = e.touches[0].clientX;
+                        this._ty = e.touches[0].clientY;
+                        clearInterval(this.timer);
+                    },
+                    swipeEnd(e) {
+                        const dx = e.changedTouches[0].clientX - this._tx;
+                        const dy = e.changedTouches[0].clientY - this._ty;
+                        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+                            dx < 0 ? this.next() : this.prev();
+                        }
+                        if (!this.paused) this.start();
+                    },
                 };
             }
         </script>
