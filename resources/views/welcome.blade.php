@@ -359,7 +359,7 @@
                             <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color:#1B2A4A;">{{ __('Annonces sponsorisees') }}</h2>
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide" style="background:#FEF3C7;color:#B45309;">Premium</span>
                         </div>
-                        <p class="text-xs" style="color:#9BA8B7;">{{ __('Selectionnees et mises en avant par notre equipe') }}</p>
+                        <p class="text-xs font-semibold uppercase tracking-wide" style="color:#F59E0B;">{{ __('Sponsorise') }}</p>
                     </div>
                 </div>
 
