@@ -167,44 +167,14 @@
                 {{-- ===== UNIFIED PROGRESS + CONTENT WRAPPER ===== --}}
                 <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 4px 20px rgba(0,0,0,0.07);">
 
-                    {{-- Progress bar strip --}}
-                    <div class="px-5 pt-4 pb-3" style="background: linear-gradient(135deg, rgba(27,79,114,0.04), rgba(23,162,184,0.06));">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-1.5">
-                                <template x-for="(step, idx) in stepsList" :key="step.n">
-                                    <div class="flex items-center">
-                                        <div class="flex items-center justify-center rounded-full text-[11px] font-bold transition-all duration-300"
-                                             :class="isStepCompleted(step.n)
-                                                ? 'w-7 h-7 text-white'
-                                                : isStepActive(step.n)
-                                                    ? 'w-8 h-8 text-white shadow-md'
-                                                    : 'w-7 h-7 text-gray-400'"
-                                             :style="(isStepCompleted(step.n) || isStepActive(step.n))
-                                                ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8);'
-                                                : 'background: #EDF0F4;'">
-                                            <template x-if="isStepCompleted(step.n)">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                            </template>
-                                            <template x-if="!isStepCompleted(step.n)">
-                                                <span x-text="idx + 1"></span>
-                                            </template>
-                                        </div>
-                                        <div x-show="idx < stepsList.length - 1"
-                                             class="h-0.5 transition-all duration-500"
-                                             :class="isStepCompleted(step.n) ? 'w-3 sm:w-5' : 'w-3 sm:w-5'"
-                                             :style="isStepCompleted(step.n) ? 'background:#17A2B8;' : 'background:#E0E6ED;'">
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full" style="background: linear-gradient(135deg, #1B4F72, #17A2B8); color: white;">
-                                <span x-text="visualStep"></span>/<span x-text="totalVisualSteps"></span>
-                            </span>
+                    {{-- En-tête page unique --}}
+                    <div class="px-5 pt-5 pb-4 flex items-center gap-3" style="background: linear-gradient(135deg, rgba(27,79,114,0.04), rgba(23,162,184,0.06)); border-bottom: 1px solid #EDF0F4;">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #1B4F72, #17A2B8);">
+                            <svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-bold" style="color: #1B2A4A;" x-text="currentStepLabel"></span>
+                        <div>
+                            <h2 class="text-base font-black" style="color: #1B2A4A;">Modifier l'annonce</h2>
+                            <p class="text-xs" style="color: #9BA8B7;">Toutes les sections sont modifiables directement</p>
                         </div>
                     </div>
 
@@ -229,13 +199,11 @@
                 {{-- ===================================================== --}}
                 {{-- STEP 1 : Catégorie                                     --}}
                 {{-- ===================================================== --}}
-                <div x-show="currentStep === 1"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-3"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0">
+                <div class="edit-section">
+                    <div class="flex items-center gap-2 px-5 py-3" style="background: #17A2B810; border-top: 1px solid #17A2B820; border-bottom: 1px solid #17A2B815;">
+                        <div class="w-1 h-5 rounded-full flex-shrink-0" style="background: #17A2B8;"></div>
+                        <span class="text-xs font-bold uppercase tracking-wide" style="color: #17A2B8;">Catégorie</span>
+                    </div>
 
                     <div class="px-5 py-5">
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -327,13 +295,11 @@
                 {{-- ===================================================== --}}
                 {{-- STEP 2 : Informations générales                        --}}
                 {{-- ===================================================== --}}
-                <div x-show="currentStep === 2"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-3"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0">
+                <div class="edit-section">
+                    <div class="flex items-center gap-2 px-5 py-3" style="background: #2471A310; border-top: 1px solid #2471A320; border-bottom: 1px solid #2471A315;">
+                        <div class="w-1 h-5 rounded-full flex-shrink-0" style="background: #2471A3;"></div>
+                        <span class="text-xs font-bold uppercase tracking-wide" style="color: #2471A3;">Informations générales</span>
+                    </div>
 
                     <div class="px-5 py-5">
                         <div class="space-y-4">
@@ -435,13 +401,11 @@
                 {{-- ===================================================== --}}
                 {{-- STEP 3 : Spécifications (boat / jetski / engine)       --}}
                 {{-- ===================================================== --}}
-                <div x-show="currentStep === 3"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-3"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0">
+                <div class="edit-section">
+                    <div class="flex items-center gap-2 px-5 py-3" style="background: #8E44AD10; border-top: 1px solid #8E44AD20; border-bottom: 1px solid #8E44AD15;">
+                        <div class="w-1 h-5 rounded-full flex-shrink-0" style="background: #8E44AD;"></div>
+                        <span class="text-xs font-bold uppercase tracking-wide" style="color: #8E44AD;">Spécifications techniques</span>
+                    </div>
 
                     <div class="space-y-5">
 
@@ -895,13 +859,11 @@
                 {{-- ===================================================== --}}
                 {{-- STEP 4 : Prix & État                                   --}}
                 {{-- ===================================================== --}}
-                <div x-show="currentStep === 4"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-3"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0">
+                <div class="edit-section">
+                    <div class="flex items-center gap-2 px-5 py-3" style="background: #E67E2210; border-top: 1px solid #E67E2220; border-bottom: 1px solid #E67E2215;">
+                        <div class="w-1 h-5 rounded-full flex-shrink-0" style="background: #E67E22;"></div>
+                        <span class="text-xs font-bold uppercase tracking-wide" style="color: #E67E22;">Prix, État & Localisation</span>
+                    </div>
 
                     @php
                         $existingUnit = $listing->price_display_unit;
@@ -1160,13 +1122,11 @@
                 {{-- ===================================================== --}}
                 {{-- STEP 5 : Contact + Services                            --}}
                 {{-- ===================================================== --}}
-                <div x-show="currentStep === 5"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-3"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0">
+                <div class="edit-section">
+                    <div class="flex items-center gap-2 px-5 py-3" style="background: #27AE6010; border-top: 1px solid #27AE6020; border-bottom: 1px solid #27AE6015;">
+                        <div class="w-1 h-5 rounded-full flex-shrink-0" style="background: #27AE60;"></div>
+                        <span class="text-xs font-bold uppercase tracking-wide" style="color: #27AE60;">Contact & Services</span>
+                    </div>
 
                     <div class="px-5 py-5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1408,13 +1368,11 @@
                 {{-- ===================================================== --}}
                 {{-- STEP 6 : Photos                                        --}}
                 {{-- ===================================================== --}}
-                <div x-show="currentStep === 6"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-3"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0">
+                <div class="edit-section">
+                    <div class="flex items-center gap-2 px-5 py-3" style="background: #E74C3C10; border-top: 1px solid #E74C3C20; border-bottom: 1px solid #E74C3C15;">
+                        <div class="w-1 h-5 rounded-full flex-shrink-0" style="background: #E74C3C;"></div>
+                        <span class="text-xs font-bold uppercase tracking-wide" style="color: #E74C3C;">Photos & Médias</span>
+                    </div>
 
                     <div class="px-5 py-5">
                         <x-photo-uploader
@@ -1453,48 +1411,24 @@
                        style="color: #9BA8B7; border: 1.5px solid #E0E6ED;">
                         Annuler
                     </a>
-
-                    <div class="flex gap-2">
-                        {{-- Bouton Précédent --}}
-                        <button type="button"
-                                x-show="currentStep > 1"
-                                @click="prevStep()"
-                                class="px-5 py-2.5 rounded-xl text-xs font-semibold transition-all hover:-translate-y-0.5"
-                                style="border: 2px solid #17A2B8; color: #17A2B8; background: white;">
-                            ← Precedent
-                        </button>
-
-                        {{-- Bouton Suivant --}}
-                        <button type="button"
-                                x-show="currentStep < 6"
-                                @click="nextStep()"
-                                :disabled="currentStep === 1 && !category"
-                                :class="currentStep === 1 && !category
-                                    ? 'opacity-40 cursor-not-allowed'
-                                    : 'hover:-translate-y-0.5 hover:shadow-lg'"
-                                class="px-6 py-2.5 rounded-xl text-white text-xs font-semibold transition-all"
-                                style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27,79,114,0.3);">
-                            Suivant →
-                        </button>
-
-                        {{-- Bouton Soumettre (dernier step) --}}
-                        <button type="submit"
-                                x-show="currentStep === 6"
-                                :disabled="submitting || photosProcessing"
-                                :class="(submitting || photosProcessing) ? 'opacity-50 cursor-wait' : ''"
-                                class="px-6 py-2.5 rounded-xl text-white text-xs font-semibold btn-gradient-animated"
-                                style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">
-                            <span x-show="!submitting && !photosProcessing">Enregistrer les modifications</span>
-                            <span x-show="photosProcessing && !submitting" class="flex items-center gap-2">
-                                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                                Optimisation...
-                            </span>
-                            <span x-show="submitting" class="flex items-center gap-2">
-                                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                                Envoi en cours...
-                            </span>
-                        </button>
-                    </div>
+                    <button type="submit"
+                            :disabled="submitting || photosProcessing"
+                            :class="(submitting || photosProcessing) ? 'opacity-50 cursor-wait' : 'hover:-translate-y-0.5 hover:shadow-lg'"
+                            class="px-7 py-3 rounded-xl text-white text-sm font-bold transition-all"
+                            style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27,79,114,0.3);">
+                        <span x-show="!submitting && !photosProcessing" class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Enregistrer les modifications
+                        </span>
+                        <span x-show="photosProcessing && !submitting" class="flex items-center gap-2">
+                            <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                            Optimisation...
+                        </span>
+                        <span x-show="submitting" class="flex items-center gap-2">
+                            <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                            Envoi en cours...
+                        </span>
+                    </button>
                 </div>
 
                 </div> {{-- End step content area --}}
@@ -1507,294 +1441,124 @@
     <script>
         function editForm() {
             return {
-                currentStep: {{ $startStep ?? 1 }},
-                category: '{{ old('category', $listing->category) }}',
-                originalCategory: '{{ $listing->category }}',
-                boatType: '{{ in_array(old('type', $listing->type ?? ''), array_keys(\App\Models\Listing::BOAT_TYPES)) ? old('type', $listing->type ?? '') : '' }}',
-                jetskiType: '{{ in_array(old('type', $listing->type ?? ''), array_keys(\App\Models\Listing::JETSKI_TYPES)) ? old('type', $listing->type ?? '') : '' }}',
-                currency: '{{ old('currency', $listing->currency ?? 'DZD') }}',
-                hasRemorque: '{{ old('specs.extras.remorque', data_get($listing->specs, 'extras.remorque', '')) }}',
-                hasPort: '{{ old('specs.extras.place_au_port', data_get($listing->specs, 'extras.place_au_port', '')) }}',
-                mediationEnabled: {{ old('mediation_enabled', $listing->mediation_enabled) ? 'true' : 'false' }},
-                canPublishEngineOrParts: {{ ($canPublishEngineOrParts ?? false) ? 'true' : 'false' }},
+                category: ‘{{ old(‘category’, $listing->category) }}’,
+                originalCategory: ‘{{ $listing->category }}’,
+                boatType: ‘{{ in_array(old(‘type’, $listing->type ?? ‘’), array_keys(\App\Models\Listing::BOAT_TYPES)) ? old(‘type’, $listing->type ?? ‘’) : ‘’ }}’,
+                jetskiType: ‘{{ in_array(old(‘type’, $listing->type ?? ‘’), array_keys(\App\Models\Listing::JETSKI_TYPES)) ? old(‘type’, $listing->type ?? ‘’) : ‘’ }}’,
+                currency: ‘{{ old(‘currency’, $listing->currency ?? ‘DZD’) }}’,
+                hasRemorque: ‘{{ old(‘specs.extras.remorque’, data_get($listing->specs, ‘extras.remorque’, ‘’)) }}’,
+                hasPort: ‘{{ old(‘specs.extras.place_au_port’, data_get($listing->specs, ‘extras.place_au_port’, ‘’)) }}’,
+                mediationEnabled: {{ old(‘mediation_enabled’, $listing->mediation_enabled) ? ‘true’ : ‘false’ }},
+                canPublishEngineOrParts: {{ ($canPublishEngineOrParts ?? false) ? ‘true’ : ‘false’ }},
                 existingMediaCount: {{ $listing->media->count() }},
                 stepErrors: [],
                 submitting: false,
                 photosProcessing: false,
 
-                init() {
-                    // No draft restore on edit — listing data already pre-filled.
-                },
+                init() {},
 
                 getPhotoUploader() {
-                    return this.$root.querySelector('[data-photo-uploader]')?._albaborPhotoUploader || null;
+                    return this.$root.querySelector(‘[data-photo-uploader]’)?._albaborPhotoUploader || null;
                 },
 
-                stepForField(field) {
-                    const normalized = (field || '').replace(/\.\d+$/, '');
+                clearFieldErrors() {
+                    this.$root.querySelectorAll(‘.step-field-error’).forEach(el => {
+                        el.style.borderColor = ‘’;
+                        el.style.boxShadow = ‘’;
+                    });
+                },
 
-                    if (normalized.startsWith('new_images') || normalized.startsWith('delete_images') || normalized === 'cover_image_id' || normalized === 'video_url') return 6;
-                    if (['numero_whatsapp', 'numero_mobile', 'contact_email', 'mediation_enabled'].includes(normalized)) return 5;
-                    if (['wilaya', 'pays', 'visible_a', 'price_dzd', 'currency', 'currency_label', 'type_offre', 'etat', 'remarque_echange'].includes(normalized)) return 4;
-                    if (normalized === 'category' || normalized === 'type') return 1;
-
-                    return 2;
+                markField(name) {
+                    const el = this.$root.querySelector(‘[name="’ + name + ‘"]’);
+                    if (el) {
+                        el.classList.add(‘step-field-error’);
+                        el.style.borderColor = ‘#E74C3C’;
+                        el.style.boxShadow = ‘0 0 0 3px rgba(231,76,60,0.1)’;
+                        el.scrollIntoView({ behavior: ‘smooth’, block: ‘center’ });
+                    }
                 },
 
                 applyServerValidationErrors(errors = {}) {
                     const entries = Object.entries(errors || {});
                     if (!entries.length) {
-                        this.stepErrors = ['Une erreur est survenue lors de l\'envoi de l\'annonce.'];
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        this.stepErrors = ["Une erreur est survenue lors de l’envoi de l’annonce."];
+                        window.scrollTo({ top: 0, behavior: ‘smooth’ });
                         return;
                     }
-
-                    const stepsWithErrors = entries.map(([field]) => this.stepForField(field));
-                    const earliestStep = Math.min(...stepsWithErrors);
-                    this.currentStep = earliestStep;
                     this.stepErrors = entries.flatMap(([, messages]) => Array.isArray(messages) ? messages : [messages]).filter(Boolean);
-
                     this.$nextTick(() => {
                         entries.forEach(([field]) => {
-                            const baseField = (field || '').replace(/\.\d+$/, '');
-                            if (!baseField.startsWith('new_images') && !baseField.startsWith('delete_images') && baseField !== 'cover_image_id' && baseField !== 'video_url') {
+                            const baseField = (field || ‘’).replace(/\.\d+$/, ‘’);
+                            if (!baseField.startsWith(‘new_images’) && !baseField.startsWith(‘delete_images’) && baseField !== ‘cover_image_id’ && baseField !== ‘video_url’) {
                                 this.markField(baseField);
                             }
                         });
                     });
-
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    window.scrollTo({ top: 0, behavior: ‘smooth’ });
                 },
 
                 async submitWithAjax(uploader) {
                     try {
                         const form = this.$root;
                         const formData = new FormData(form);
-
-                        formData.delete('new_images');
-                        formData.delete('new_images[]');
-
+                        formData.delete(‘new_images’);
+                        formData.delete(‘new_images[]’);
                         uploader.getFilesForSubmit().forEach((file, index) => {
-                            const filename = file.name || `photo-${index + 1}.jpg`;
-                            formData.append('new_images[]', file, filename);
+                            formData.append(‘new_images[]’, file, file.name || `photo-${index + 1}.jpg`);
                         });
-
                         const response = await fetch(form.action, {
-                            method: 'POST',
+                            method: ‘POST’,
                             body: formData,
-                            credentials: 'same-origin',
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest',
-                            },
+                            credentials: ‘same-origin’,
+                            headers: { ‘Accept’: ‘application/json’, ‘X-Requested-With’: ‘XMLHttpRequest’ },
                         });
-
-                        const contentType = response.headers.get('content-type') || '';
-                        const payload = contentType.includes('application/json') ? await response.json() : null;
-
+                        const contentType = response.headers.get(‘content-type’) || ‘’;
+                        const payload = contentType.includes(‘application/json’) ? await response.json() : null;
                         if (response.ok) {
-                            const redirectUrl = payload?.redirect || (response.redirected ? response.url : null);
-
-                            if (redirectUrl) {
-                                window.location.href = redirectUrl;
-                                return;
-                            }
-
-                            window.location.href = '{{ route("listings.my") }}';
+                            window.location.href = payload?.redirect || ‘{{ route("listings.my") }}’;
                             return;
                         }
-
                         if (response.status === 422) {
                             this.submitting = false;
                             this.applyServerValidationErrors(payload?.errors || {});
                             return;
                         }
-
                         this.submitting = false;
-                        this.stepErrors = [payload?.message || 'Une erreur est survenue lors de l\'envoi de l\'annonce.'];
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        this.stepErrors = [payload?.message || "Une erreur est survenue."];
+                        window.scrollTo({ top: 0, behavior: ‘smooth’ });
                     } catch (e) {
                         this.submitting = false;
-                        this.stepErrors = ['Le réseau a interrompu l’envoi de l’annonce. Veuillez réessayer.'];
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        this.stepErrors = ["Le réseau a interrompu l’envoi. Veuillez réessayer."];
+                        window.scrollTo({ top: 0, behavior: ‘smooth’ });
                     }
                 },
 
-                get stepsList() {
-                    return [
-                        { n: 1, label: 'Categorie' },
-                        { n: 2, label: 'Infos' },
-                        { n: 3, label: 'Specs' },
-                        { n: 4, label: 'Prix' },
-                        { n: 5, label: 'Contact' },
-                        { n: 6, label: 'Photos' },
-                    ];
-                },
-
-                isStepCompleted(n) {
-                    if (n === 3 && this.category === 'parts' && this.currentStep >= 4) return true;
-                    return this.currentStep > n;
-                },
-                isStepActive(n) {
-                    if (n === 3 && this.category === 'parts') return false;
-                    return this.currentStep === n;
-                },
-
-                get visualStep() {
-                    let skipped = 0;
-                    if (this.category === 'parts' && this.currentStep >= 4) skipped++;
-                    return this.currentStep - skipped;
-                },
-                get totalVisualSteps() {
-                    if (this.category === 'parts') return 5;
-                    return 6;
-                },
-                get currentStepLabel() {
-                    const labels = {
-                        1: 'Categorie',
-                        2: 'Informations generales',
-                        3: 'Specifications',
-                        4: 'Prix, Etat & Localisation',
-                        5: 'Contact & Services',
-                        6: 'Photos',
-                    };
-                    return labels[this.currentStep] || '';
-                },
-
-                // ── Validation helpers ──
-                clearFieldErrors() {
-                    this.$root.querySelectorAll('.step-field-error').forEach(el => {
-                        el.style.borderColor = '';
-                        el.style.boxShadow = '';
-                    });
-                },
-
-                markField(name) {
-                    const el = this.$root.querySelector('[name="' + name + '"]');
-                    if (el) {
-                        el.classList.add('step-field-error');
-                        el.style.borderColor = '#E74C3C';
-                        el.style.boxShadow = '0 0 0 3px rgba(231,76,60,0.1)';
-                    }
-                },
-
-                validateStep(step) {
-                    let errors = [];
-                    const val = (name) => {
-                        const el = this.$root.querySelector('[name="' + name + '"]');
-                        return el ? (el.value || '').trim() : '';
-                    };
-
-                    if (step === 1) {
-                        if (!this.category) {
-                            errors.push('Veuillez choisir une catégorie.');
-                        } else if (this.category === 'boat' && !this.boatType) {
-                            errors.push('Veuillez choisir le type de bateau.');
-                            this.markField('type');
-                        } else if (this.category === 'jetski' && !this.jetskiType) {
-                            errors.push('Veuillez choisir le type de jet-ski.');
-                            this.markField('type');
-                        } else if ((this.category === 'engine' || this.category === 'parts')
-                                   && this.originalCategory !== 'engine' && this.originalCategory !== 'parts'
-                                   && !this.canPublishEngineOrParts) {
-                            errors.push('Un abonnement actif est requis pour publier des moteurs et pièces.');
-                        }
-                    }
-                    if (step === 2) {
-                        if (!val('title')) { errors.push('Le titre de l\'annonce est obligatoire.'); this.markField('title'); }
-                        if (!val('description')) { errors.push('La description est obligatoire.'); this.markField('description'); }
-                    }
-                    if (step === 4) {
-                        const offer = this.$root.querySelector('input[name=\"type_offre\"]:checked')?.value || '';
-                        const price = val('price_dzd');
-                        if (offer === 'offert') {
-                            if (parseFloat(price || '0') < 0) {
-                                errors.push('Prix invalide pour une annonce offerte.');
-                                this.markField('price_dzd');
-                            }
-                        } else {
-                            if (!price || parseFloat(price) <= 0) {
-                                errors.push('Le prix est obligatoire.');
-                                this.markField('price_dzd');
-                            }
-                        }
-                    }
-                    if (step === 6) {
-                        // For edit: existing photos may suffice. Pass if managed files OR existing media count > 0.
-                        const uploader = this.getPhotoUploader();
-                        const managedFiles = uploader?.files?.length || 0;
-                        const fileInputs = this.$root.querySelectorAll('input[type="file"][name="new_images[]"]');
-                        let hasNativeFiles = false;
-                        fileInputs.forEach(input => { if (input.files && input.files.length > 0) hasNativeFiles = true; });
-
-                        // Estimate remaining media: existing minus those marked for deletion.
-                        const deleteCount = this.$root.querySelectorAll('input[name="delete_images[]"]').length;
-                        const remainingExisting = Math.max(0, this.existingMediaCount - deleteCount);
-
-                        if (!managedFiles && !hasNativeFiles && remainingExisting <= 0) {
-                            errors.push('Veuillez conserver ou ajouter au moins une photo.');
-                        }
-                    }
-                    return errors;
-                },
-
-                // ── Navigation ──
-                nextStep() {
-                    this.clearFieldErrors();
-                    this.stepErrors = this.validateStep(this.currentStep);
-                    if (this.stepErrors.length > 0) {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        return;
-                    }
-
-                    let next = this.currentStep + 1;
-                    if (next === 3 && this.category === 'parts') next = 4;
-                    if (next <= 6) {
-                        this.currentStep = next;
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                },
-
-                prevStep() {
-                    this.stepErrors = [];
-                    this.clearFieldErrors();
-                    let prev = this.currentStep - 1;
-                    if (prev === 3 && this.category === 'parts') prev = 2;
-                    if (prev >= 1) {
-                        this.currentStep = prev;
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                },
-
-                // ── Submit with full validation ──
                 async submitForm(event) {
-                    if (this.submitting) {
+                    if (this.submitting) { event.preventDefault(); return; }
+                    this.clearFieldErrors();
+                    this.stepErrors = [];
+
+                    const val = (name) => (this.$root.querySelector(‘[name="’ + name + ‘"]’)?.value || ‘’).trim();
+                    let errors = [];
+
+                    if (!this.category) errors.push(‘Veuillez choisir une catégorie.’);
+                    if (!val(‘title’)) { errors.push("Le titre est obligatoire."); this.markField(‘title’); }
+                    if (!val(‘description’)) { errors.push("La description est obligatoire."); this.markField(‘description’); }
+
+                    const offer = this.$root.querySelector(‘input[name="type_offre"]:checked’)?.value || ‘’;
+                    const price = val(‘price_dzd’);
+                    if (offer !== ‘offert’ && (!price || parseFloat(price) <= 0)) {
+                        errors.push("Le prix est obligatoire.");
+                        this.markField(‘price_dzd’);
+                    }
+
+                    if (errors.length > 0) {
                         event.preventDefault();
+                        this.stepErrors = errors;
+                        window.scrollTo({ top: 0, behavior: ‘smooth’ });
                         return;
                     }
-                    this.clearFieldErrors();
 
-                    const stepsToCheck = [1, 2, 4, 6];
-                    for (const step of stepsToCheck) {
-                        const errors = this.validateStep(step);
-                        if (errors.length > 0) {
-                            event.preventDefault();
-                            this.currentStep = step;
-                            this.$nextTick(() => {
-                                this.stepErrors = errors;
-                                if (step === 2) { if (!this.$root.querySelector('[name="title"]')?.value?.trim()) this.markField('title'); if (!this.$root.querySelector('[name="description"]')?.value?.trim()) this.markField('description'); }
-                                if (step === 4) {
-                                    const offer = this.$root.querySelector('input[name="type_offre"]:checked')?.value || '';
-                                    const p = this.$root.querySelector('[name="price_dzd"]')?.value?.trim();
-                                    if (offer !== 'offert' && (!p || parseFloat(p) <= 0)) this.markField('price_dzd');
-                                }
-                            });
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                            return;
-                        }
-                    }
-
-                    // All valid — always submit via AJAX so the photo uploader can attach files.
                     const uploader = this.getPhotoUploader();
                     if (uploader) {
                         event.preventDefault();
@@ -1802,8 +1566,6 @@
                         await this.submitWithAjax(uploader);
                         return;
                     }
-
-                    // Fallback: no photo uploader on the page — let the browser submit natively.
                     this.submitting = true;
                 },
             }
