@@ -615,7 +615,7 @@ if (typeof photoUploader === 'undefined') {
 
                 // Initialize cover state from the first existing photo (edit mode).
                 // In create mode, falls back to null until files arrive.
-                this.initCover({{ $existingMedia->first()?->id ?? "''" }});
+                this.initCover(@json($existingMedia->first()?->id));
 
                 // Only validate the required state on submit.
                 // Rewriting input.files during submit is brittle on mobile browsers.
