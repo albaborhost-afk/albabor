@@ -640,6 +640,7 @@ if (typeof photoUploader === 'undefined') {
             maxFiles: 20,
             isRequired: false,
             persistKey: null,
+            userInteracted: false,
             supportsManagedFiles: false,
             isProcessing: false,
             processedCount: 0,
@@ -912,7 +913,7 @@ if (typeof photoUploader === 'undefined') {
             },
 
             async restorePersistedFiles() {
-                if (!this.persistKey || this.files.length > 0) {
+                if (!this.persistKey || this.files.length > 0 || this.userInteracted) {
                     return;
                 }
 
@@ -927,6 +928,12 @@ if (typeof photoUploader === 'undefined') {
                         return;
                     }
 
+                    // Re-check after async open: user may have started selecting files
+                    if (this.files.length > 0 || this.userInteracted) {
+                        db.close();
+                        return;
+                    }
+
                     const payload = await new Promise((resolve, reject) => {
                         const tx = db.transaction('drafts', 'readonly');
                         const request = tx.objectStore('drafts').get(key);
@@ -936,12 +943,19 @@ if (typeof photoUploader === 'undefined') {
 
                     db.close();
 
+                    // CRITICAL: re-check after IndexedDB read. The user may have picked
+                    // files DURING the await — without this guard we would
+                    // revokePreviews() on their freshly-created blob URLs and then
+                    // overwrite this.files with stale persisted data.
+                    if (this.files.length > 0 || this.userInteracted) {
+                        return;
+                    }
+
                     if (!Array.isArray(payload) || payload.length === 0) {
                         return;
                     }
 
-                    this.revokePreviews();
-                    this.files = payload
+                    const restored = payload
                         .filter(item => item?.file instanceof Blob)
                         .slice(0, this.maxFiles)
                         .map(item => {
@@ -961,15 +975,27 @@ if (typeof photoUploader === 'undefined') {
                             };
                         });
 
+                    // Final guard right before mutation
+                    if (this.files.length > 0 || this.userInteracted) {
+                        // discard the previews we just created — user has already added their own
+                        restored.forEach(f => URL.revokeObjectURL(f.preview));
+                        return;
+                    }
+
+                    this.revokePreviews();
+                    this.files = restored;
+
                     if (this.supportsManagedFiles) {
                         this.syncInput();
                     }
+                    this.syncDropzoneClass();
                 } catch (e) {
                     console.warn('[PhotoUploader] Restoring files failed:', e);
                 }
             },
 
             handleSelect(e) {
+                this.userInteracted = true;
                 const selectedFiles = Array.from(e.target.files);
                 console.log('[PhotoUploader] handleSelect:', selectedFiles.length, 'files',
                     selectedFiles.map(f => `${f.name} (${(f.size/1024/1024).toFixed(1)}MB, ${f.type || 'no-type'})`));
@@ -994,6 +1020,7 @@ if (typeof photoUploader === 'undefined') {
             },
 
             handleDrop(e) {
+                this.userInteracted = true;
                 this.isDragging = false;
                 const dropped = Array.from(e.dataTransfer.files)
                     .filter(f => f.type.startsWith('image/'));
