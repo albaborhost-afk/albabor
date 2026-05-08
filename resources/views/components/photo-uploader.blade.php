@@ -22,7 +22,10 @@
 
 <div
     data-photo-uploader
-    x-data="photoUploader({{ $maxNew }}, {{ $required ? 'true' : 'false' }}, @js($persistKey))"
+    data-max-files="{{ $maxNew }}"
+    data-required="{{ $required ? '1' : '0' }}"
+    data-persist-key="{{ $persistKey ?? '' }}"
+    x-data="photoUploader()"
     x-init="init()"
 >
 
@@ -140,37 +143,60 @@
     {{-- ─── Upload zone ──────────────────────────────────────────────── --}}
     @if(!$hasExisting || $maxNew > 0)
     <div>
+        @if(!$hasExisting)
+        <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#6B7B8D;">
+            Photos de l'annonce
+            <span class="ml-1 font-normal normal-case" style="color:#9BA8B7;">(jusqu'à {{ $max }} photos)</span>
+        </p>
+        @endif
+
         {{-- Drop zone --}}
         <div
             class="relative border-2 border-dashed rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden"
             :class="{
-                'border-[#17A2B8] bg-[#17A2B8]/5 scale-[1.01]': isDragging,
-                'border-[#E0E6ED] hover:border-[#17A2B8]/50 hover:bg-[#17A2B8]/3': !isDragging
+                'border-[#17A2B8] scale-[1.01]': isDragging,
+                'border-[#CFD8E3] hover:border-[#17A2B8]': !isDragging
             }"
+            :style="(isDragging
+                ? 'background:rgba(23,162,184,0.06);'
+                : (files.length > 0 ? 'background:#FFFFFF;' : 'background:linear-gradient(180deg,#F8FBFD 0%,#F0F6FA 100%);'))
+                + (files.length > 0 ? 'padding:1rem;' : 'padding:2.75rem 1.5rem;')"
             @dragenter.prevent="isDragging = true"
             @dragleave.prevent="isDragging = false"
             @dragover.prevent
             @drop.prevent="handleDrop($event)"
             @click="$refs.fileInput.click()"
-            :style="files.length > 0 ? 'padding: 1rem;' : 'padding: 2.5rem 1.5rem;'"
         >
             {{-- Empty state --}}
             <div x-show="files.length === 0" class="text-center">
-                <div class="w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center transition-all duration-300"
-                     :style="isDragging ? 'background:rgba(23,162,184,0.15);' : 'background:#F0F4F8;'">
-                    <svg class="w-7 h-7 transition-colors duration-300" :style="isDragging ? 'color:#17A2B8;' : 'color:#9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                <div class="w-20 h-20 mx-auto mb-4 rounded-3xl flex items-center justify-center transition-all duration-300"
+                     :style="isDragging
+                        ? 'background:linear-gradient(135deg,#1B4F72,#17A2B8); box-shadow:0 10px 30px rgba(23,162,184,0.35);'
+                        : 'background:linear-gradient(135deg,#1B4F72,#17A2B8); box-shadow:0 8px 22px rgba(23,162,184,0.28);'">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5V18a2 2 0 002 2h14a2 2 0 002-2v-1.5M16.5 9.5L12 5m0 0L7.5 9.5M12 5v12"/>
                     </svg>
                 </div>
-                <p class="text-sm font-medium" :style="isDragging ? 'color:#17A2B8;' : 'color:#1B2A4A;'">
-                    <span x-show="!isDragging">Cliquez ou glissez vos photos ici</span>
-                    <span x-show="isDragging">Lâchez pour ajouter</span>
+                <p class="text-base font-semibold mb-1" :style="isDragging ? 'color:#17A2B8;' : 'color:#1B2A4A;'">
+                    <span x-show="!isDragging">Ajouter vos photos</span>
+                    <span x-show="isDragging" x-cloak>Lâchez pour ajouter</span>
                 </p>
-                <p class="text-[11px] mt-1" style="color:#9BA8B7;">JPEG, PNG, WebP, HEIC · Max 15 Mo · {{ $hasExisting ? $maxNew : $max }} photos max</p>
+                <p class="text-xs" style="color:#6B7B8D;">
+                    <span x-show="!isDragging">Cliquez pour parcourir <span class="hidden sm:inline">ou glissez vos fichiers ici</span></span>
+                </p>
+                <div class="inline-flex items-center gap-1.5 mt-4 px-3 py-1.5 rounded-full" style="background:rgba(23,162,184,0.08); border:1px solid rgba(23,162,184,0.18);">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24" style="color:#17A2B8;">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/>
+                    </svg>
+                    <span class="text-[11px] font-medium" style="color:#1B4F72;">JPEG · PNG · WebP · HEIC — max 15 Mo</span>
+                </div>
+                <p class="text-[11px] mt-2" style="color:#9BA8B7;">
+                    Jusqu'à {{ $hasExisting ? $maxNew : $max }} photo{{ ($hasExisting ? $maxNew : $max) > 1 ? 's' : '' }}
+                </p>
                 <p
                     x-show="!supportsManagedFiles"
                     x-cloak
-                    class="text-[11px] mt-1.5"
+                    class="text-[11px] mt-2 max-w-xs mx-auto"
                     style="color:#F39C12;"
                 >
                     Sur certains navigateurs mobiles, ajoutez toutes vos photos en une seule sélection.
@@ -495,14 +521,14 @@
 {{-- ─── Alpine Component ─────────────────────────────────────────────── --}}
 <script>
 if (typeof photoUploader === 'undefined') {
-    function photoUploader(maxFiles, isRequired = false, persistKey = null) {
+    function photoUploader() {
         return {
             files: [],
             isDragging: false,
             errors: [],
-            maxFiles: maxFiles,
-            isRequired: isRequired,
-            persistKey: persistKey,
+            maxFiles: 20,
+            isRequired: false,
+            persistKey: null,
             supportsManagedFiles: false,
             isProcessing: false,
             processedCount: 0,
@@ -611,6 +637,14 @@ if (typeof photoUploader === 'undefined') {
 
             init() {
                 this.$el._albaborPhotoUploader = this;
+
+                // Read config from data-attributes — avoids fragile Blade-into-x-data quoting
+                const ds = this.$el.dataset;
+                const parsedMax = parseInt(ds.maxFiles, 10);
+                this.maxFiles = Number.isFinite(parsedMax) && parsedMax > 0 ? parsedMax : 20;
+                this.isRequired = ds.required === '1';
+                this.persistKey = ds.persistKey && ds.persistKey.length > 0 ? ds.persistKey : null;
+
                 this.supportsManagedFiles = this.detectManagedFileSupport() && !this.prefersNativeSelection();
 
                 // Initialize cover state from the first existing photo (edit mode).
