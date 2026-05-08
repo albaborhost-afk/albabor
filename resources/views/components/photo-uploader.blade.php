@@ -20,112 +20,9 @@
     $hasExisting   = $existingCount > 0;
 @endphp
 
-{{-- ── Static styles — render correctly even before/without Alpine ── --}}
-<style>
-    .albabor-dropzone {
-        background: linear-gradient(180deg, #F8FBFD 0%, #F0F6FA 100%);
-        padding: 2.5rem 1.5rem;
-        border-color: #CFD8E3;
-        min-height: 280px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .albabor-dropzone:hover { border-color: #17A2B8; background: linear-gradient(180deg, #F2F9FC 0%, #E6F2F8 100%); }
-    .albabor-dropzone.is-dragging {
-        border-color: #17A2B8;
-        background: rgba(23,162,184,0.06);
-        transform: scale(1.005);
-    }
-    .albabor-dropzone.has-files {
-        background: #FFFFFF;
-        padding: 1rem;
-        min-height: 0;
-        display: block;
-    }
-    .albabor-dropzone.has-files .albabor-dropzone-empty { display: none; }
-    .albabor-dropzone-empty {
-        text-align: center;
-        max-width: 28rem;
-        margin: 0 auto;
-        display: block;
-    }
-    .albabor-dropzone-filled { display: none; }
-    .albabor-dropzone.has-files .albabor-dropzone-filled { display: block; }
-    .albabor-dropzone .albabor-title-dragging { display: none; }
-    .albabor-dropzone.is-dragging .albabor-title-default { display: none; }
-    .albabor-dropzone.is-dragging .albabor-title-dragging { display: block; }
-    .albabor-dropzone-icon {
-        width: 88px;
-        height: 88px;
-        margin: 0 auto 1rem;
-        border-radius: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #1B4F72 0%, #17A2B8 100%);
-        color: #FFFFFF;
-        box-shadow: 0 12px 28px rgba(23,162,184,0.32), inset 0 1px 0 rgba(255,255,255,0.18);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .albabor-dropzone:hover .albabor-dropzone-icon,
-    .albabor-dropzone.is-dragging .albabor-dropzone-icon {
-        transform: translateY(-3px);
-        box-shadow: 0 16px 36px rgba(23,162,184,0.42), inset 0 1px 0 rgba(255,255,255,0.22);
-    }
-    .albabor-dropzone-title {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #1B2A4A;
-        margin: 0 0 0.25rem;
-        letter-spacing: -0.01em;
-    }
-    .albabor-dropzone-sub {
-        font-size: 0.8rem;
-        color: #6B7B8D;
-        margin: 0 0 1rem;
-    }
-    .albabor-dropzone-info {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        justify-content: center;
-        margin-bottom: 0.75rem;
-    }
-    .albabor-info-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px 10px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 600;
-        background: rgba(23,162,184,0.08);
-        color: #1B4F72;
-        border: 1px solid rgba(23,162,184,0.18);
-    }
-    .albabor-info-pill svg { color: #17A2B8; }
-    .albabor-dropzone-hint {
-        font-size: 11px;
-        color: #9BA8B7;
-        margin: 0.5rem 0 0;
-        line-height: 1.45;
-    }
-    .albabor-dropzone-warning {
-        font-size: 11px;
-        color: #F39C12;
-        margin: 0.5rem auto 0;
-        max-width: 22rem;
-    }
-</style>
-
 <div
     data-photo-uploader
-    data-max-files="{{ $maxNew }}"
-    data-required="{{ $required ? '1' : '0' }}"
-    data-persist-key="{{ $persistKey ?? '' }}"
-    x-data="photoUploader()"
+    x-data="photoUploader({{ $maxNew }}, {{ $required ? 'true' : 'false' }}, @js($persistKey))"
     x-init="init()"
 >
 
@@ -243,79 +140,45 @@
     {{-- ─── Upload zone ──────────────────────────────────────────────── --}}
     @if(!$hasExisting || $maxNew > 0)
     <div>
-        @if(!$hasExisting)
-        <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#6B7B8D;">
-            Photos de l'annonce
-            <span class="ml-1 font-normal normal-case" style="color:#9BA8B7;">(jusqu'à {{ $max }} photos)</span>
-        </p>
-        @endif
-
         {{-- Drop zone --}}
         <div
-            class="albabor-dropzone relative border-2 border-dashed rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden"
+            class="relative border-2 border-dashed rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden"
             :class="{
-                'is-dragging': isDragging,
-                'has-files': files.length > 0
+                'border-[#17A2B8] bg-[#17A2B8]/5 scale-[1.01]': isDragging,
+                'border-[#E0E6ED] hover:border-[#17A2B8]/50 hover:bg-[#17A2B8]/3': !isDragging
             }"
             @dragenter.prevent="isDragging = true"
             @dragleave.prevent="isDragging = false"
             @dragover.prevent
             @drop.prevent="handleDrop($event)"
             @click="$refs.fileInput.click()"
+            :style="files.length > 0 ? 'padding: 1rem;' : 'padding: 2.5rem 1.5rem;'"
         >
-            {{-- Empty state — STATIC visibility; hidden via CSS only when .has-files toggled --}}
-            <div class="albabor-dropzone-empty">
-                <div class="albabor-dropzone-icon">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" width="44" height="44">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5V18a2 2 0 002 2h14a2 2 0 002-2v-1.5M16.5 9.5L12 5m0 0L7.5 9.5M12 5v12"/>
+            {{-- Empty state --}}
+            <div x-show="files.length === 0" class="text-center">
+                <div class="w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center transition-all duration-300"
+                     :style="isDragging ? 'background:rgba(23,162,184,0.15);' : 'background:#F0F4F8;'">
+                    <svg class="w-7 h-7 transition-colors duration-300" :style="isDragging ? 'color:#17A2B8;' : 'color:#9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                 </div>
-
-                <h3 class="albabor-dropzone-title albabor-title-default">Ajouter vos photos</h3>
-                <h3 class="albabor-dropzone-title albabor-title-dragging">Lâchez pour ajouter</h3>
-
-                <p class="albabor-dropzone-sub">
-                    Cliquez ici pour parcourir
-                    <span class="hidden sm:inline">ou glissez-déposez vos fichiers</span>
+                <p class="text-sm font-medium" :style="isDragging ? 'color:#17A2B8;' : 'color:#1B2A4A;'">
+                    <span x-show="!isDragging">Cliquez ou glissez vos photos ici</span>
+                    <span x-show="isDragging">Lâchez pour ajouter</span>
                 </p>
-
-                <div class="albabor-dropzone-info">
-                    <span class="albabor-info-pill">
-                        <svg fill="currentColor" viewBox="0 0 24 24" width="14" height="14">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/>
-                        </svg>
-                        JPEG · PNG · WebP · HEIC
-                    </span>
-                    <span class="albabor-info-pill">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                        </svg>
-                        Max 15 Mo / photo
-                    </span>
-                    <span class="albabor-info-pill">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        {{ $hasExisting ? $maxNew : $max }} photos max
-                    </span>
-                </div>
-
-                <p class="albabor-dropzone-hint">
-                    La première photo sera votre photo principale.
-                    Vous pourrez la changer plus tard.
-                </p>
-
+                <p class="text-[11px] mt-1" style="color:#9BA8B7;">JPEG, PNG, WebP, HEIC · Max 15 Mo · {{ $hasExisting ? $maxNew : $max }} photos max</p>
                 <p
                     x-show="!supportsManagedFiles"
                     x-cloak
-                    class="albabor-dropzone-warning"
+                    class="text-[11px] mt-1.5"
+                    style="color:#F39C12;"
                 >
-                    Sur mobile, sélectionnez toutes vos photos en une seule fois.
+                    Sur certains navigateurs mobiles, ajoutez toutes vos photos en une seule sélection.
                 </p>
             </div>
 
             {{-- Filled state — preview grid + add more button --}}
-            <div class="albabor-dropzone-filled">
+            <div x-show="files.length > 0">
                 {{-- Counter bar --}}
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-semibold" style="color:#1B2A4A;">
@@ -632,15 +495,14 @@
 {{-- ─── Alpine Component ─────────────────────────────────────────────── --}}
 <script>
 if (typeof photoUploader === 'undefined') {
-    function photoUploader() {
+    function photoUploader(maxFiles, isRequired = false, persistKey = null) {
         return {
             files: [],
             isDragging: false,
             errors: [],
-            maxFiles: 20,
-            isRequired: false,
-            persistKey: null,
-            userInteracted: false,
+            maxFiles: maxFiles,
+            isRequired: isRequired,
+            persistKey: persistKey,
             supportsManagedFiles: false,
             isProcessing: false,
             processedCount: 0,
@@ -749,14 +611,6 @@ if (typeof photoUploader === 'undefined') {
 
             init() {
                 this.$el._albaborPhotoUploader = this;
-
-                // Read config from data-attributes — avoids fragile Blade-into-x-data quoting
-                const ds = this.$el.dataset;
-                const parsedMax = parseInt(ds.maxFiles, 10);
-                this.maxFiles = Number.isFinite(parsedMax) && parsedMax > 0 ? parsedMax : 20;
-                this.isRequired = ds.required === '1';
-                this.persistKey = ds.persistKey && ds.persistKey.length > 0 ? ds.persistKey : null;
-
                 this.supportsManagedFiles = this.detectManagedFileSupport() && !this.prefersNativeSelection();
 
                 // Initialize cover state from the first existing photo (edit mode).
@@ -791,7 +645,6 @@ if (typeof photoUploader === 'undefined') {
                     if (this.cover === null && this.files.length > 0) {
                         this.cover = 'new:0';
                     }
-                    this.syncDropzoneClass();
                 });
 
                 // Listen for blur requests from existing photos
@@ -913,7 +766,7 @@ if (typeof photoUploader === 'undefined') {
             },
 
             async restorePersistedFiles() {
-                if (!this.persistKey || this.files.length > 0 || this.userInteracted) {
+                if (!this.persistKey || this.files.length > 0) {
                     return;
                 }
 
@@ -928,12 +781,6 @@ if (typeof photoUploader === 'undefined') {
                         return;
                     }
 
-                    // Re-check after async open: user may have started selecting files
-                    if (this.files.length > 0 || this.userInteracted) {
-                        db.close();
-                        return;
-                    }
-
                     const payload = await new Promise((resolve, reject) => {
                         const tx = db.transaction('drafts', 'readonly');
                         const request = tx.objectStore('drafts').get(key);
@@ -943,19 +790,12 @@ if (typeof photoUploader === 'undefined') {
 
                     db.close();
 
-                    // CRITICAL: re-check after IndexedDB read. The user may have picked
-                    // files DURING the await — without this guard we would
-                    // revokePreviews() on their freshly-created blob URLs and then
-                    // overwrite this.files with stale persisted data.
-                    if (this.files.length > 0 || this.userInteracted) {
-                        return;
-                    }
-
                     if (!Array.isArray(payload) || payload.length === 0) {
                         return;
                     }
 
-                    const restored = payload
+                    this.revokePreviews();
+                    this.files = payload
                         .filter(item => item?.file instanceof Blob)
                         .slice(0, this.maxFiles)
                         .map(item => {
@@ -975,30 +815,16 @@ if (typeof photoUploader === 'undefined') {
                             };
                         });
 
-                    // Final guard right before mutation
-                    if (this.files.length > 0 || this.userInteracted) {
-                        // discard the previews we just created — user has already added their own
-                        restored.forEach(f => URL.revokeObjectURL(f.preview));
-                        return;
-                    }
-
-                    this.revokePreviews();
-                    this.files = restored;
-
                     if (this.supportsManagedFiles) {
                         this.syncInput();
                     }
-                    this.syncDropzoneClass();
                 } catch (e) {
                     console.warn('[PhotoUploader] Restoring files failed:', e);
                 }
             },
 
             handleSelect(e) {
-                this.userInteracted = true;
                 const selectedFiles = Array.from(e.target.files);
-                console.log('[PhotoUploader] handleSelect:', selectedFiles.length, 'files',
-                    selectedFiles.map(f => `${f.name} (${(f.size/1024/1024).toFixed(1)}MB, ${f.type || 'no-type'})`));
 
                 if (this.supportsManagedFiles) {
                     this.addFiles(selectedFiles);
@@ -1010,17 +836,7 @@ if (typeof photoUploader === 'undefined') {
                 this.replaceNativeSelection(selectedFiles);
             },
 
-            // Force the .has-files class on the dropzone — guards against any
-            // edge case where Alpine's :class binding fails to fire reactively.
-            syncDropzoneClass() {
-                const dz = this.$el.querySelector('.albabor-dropzone');
-                if (!dz) return;
-                if (this.files.length > 0) dz.classList.add('has-files');
-                else dz.classList.remove('has-files');
-            },
-
             handleDrop(e) {
-                this.userInteracted = true;
                 this.isDragging = false;
                 const dropped = Array.from(e.dataTransfer.files)
                     .filter(f => f.type.startsWith('image/'));
@@ -1067,10 +883,9 @@ if (typeof photoUploader === 'undefined') {
             },
 
             async addFiles(newFiles) {
-                console.log('[PhotoUploader] addFiles start — maxFiles:', this.maxFiles, 'current:', this.files.length, 'incoming:', newFiles.length);
                 this.errors = [];
-                const available = Math.max(0, this.maxFiles - this.files.length);
-                const toProcess = [];
+                const available = this.maxFiles - this.files.length;
+                let toProcess = [];
 
                 for (const file of newFiles) {
                     if (toProcess.length >= available) {
@@ -1078,27 +893,18 @@ if (typeof photoUploader === 'undefined') {
                         break;
                     }
                     if (file.size > 15 * 1024 * 1024) {
-                        this.errors.push(`"${file.name}" dépasse 15 Mo (${(file.size/1024/1024).toFixed(1)} Mo).`);
+                        this.errors.push(`"${file.name}" dépasse la limite de 15 Mo.`);
                         continue;
                     }
                     const allowed = ['image/jpeg','image/jpg','image/png','image/webp','image/heic','image/heif',''];
-                    const looksLikeImage = (file.type && file.type.startsWith('image/')) || /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name || '');
-                    if (!allowed.includes(file.type) && !looksLikeImage) {
-                        this.errors.push(`"${file.name}" : format non supporté (${file.type || 'inconnu'}).`);
+                    if (!allowed.includes(file.type)) {
+                        this.errors.push(`"${file.name}" : format non supporté.`);
                         continue;
                     }
                     toProcess.push(file);
                 }
 
-                console.log('[PhotoUploader] After filter:', toProcess.length, 'to process,', this.errors.length, 'errors');
-
-                if (toProcess.length === 0) {
-                    console.warn('[PhotoUploader] All files rejected. Errors:', this.errors);
-                    if (this.errors.length > 0) {
-                        alert('Photos non ajoutées :\n\n' + this.errors.join('\n'));
-                    }
-                    return;
-                }
+                if (toProcess.length === 0) return;
 
                 this.isProcessing = true;
                 this.processedCount = 0;
@@ -1106,32 +912,21 @@ if (typeof photoUploader === 'undefined') {
                 this.$dispatch('photos-processing');
 
                 for (const file of toProcess) {
-                    try {
-                        const optimized = await this.compressImage(file);
-                        const id = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random());
-                        const preview = URL.createObjectURL(optimized);
-                        this.files.push({ id, file: optimized, preview, size: optimized.size, name: file.name });
-                        this.processedCount++;
-                        console.log('[PhotoUploader] Added file', this.processedCount, '/', this.totalToProcess, file.name);
-                    } catch (err) {
-                        console.error('[PhotoUploader] Failed to process file', file.name, err);
-                        this.errors.push(`"${file.name}" : erreur de traitement.`);
-                    }
+                    const optimized = await this.compressImage(file);
+                    const id = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random());
+                    const preview = URL.createObjectURL(optimized);
+                    this.files.push({ id, file: optimized, preview, size: optimized.size, name: file.name });
+                    this.processedCount++;
                 }
                 this.isProcessing = false;
-
+                // If no cover is set yet (e.g. create flow with no existing photos),
+                // pick the first new photo as the cover.
                 if (this.cover === null && this.files.length > 0) {
                     this.cover = 'new:0';
                 }
-
-                // Force-sync the .has-files class on the dropzone in case Alpine's
-                // :class binding hasn't flushed yet
-                this.syncDropzoneClass();
-
                 this.$dispatch('photos-ready');
                 this.syncInput();
                 await this.persistFiles();
-                console.log('[PhotoUploader] addFiles done. files.length =', this.files.length);
             },
 
             get progressPercent() {
@@ -1145,7 +940,6 @@ if (typeof photoUploader === 'undefined') {
                 }
                 URL.revokeObjectURL(this.files[index].preview);
                 this.files.splice(index, 1);
-                this.syncDropzoneClass();
                 this.syncInput();
                 this.persistFiles();
             },
@@ -1254,7 +1048,6 @@ if (typeof photoUploader === 'undefined') {
                 if (this.cover === null && this.files.length > 0) {
                     this.cover = 'new:0';
                 }
-                this.syncDropzoneClass();
                 this.persistFiles();
             },
 
@@ -1270,7 +1063,6 @@ if (typeof photoUploader === 'undefined') {
                         .map(el => el.dataset.existingId);
                     this.cover = remainingIds.length > 0 ? `existing:${remainingIds[0]}` : null;
                 }
-                this.syncDropzoneClass();
                 this.clearPersistedFiles();
             },
 
