@@ -22,7 +22,7 @@
 
 <div
     data-photo-uploader
-    x-data='photoUploader({{ $maxNew }}, {{ $required ? "true" : "false" }}, @js($persistKey))'
+    x-data="photoUploader({{ $maxNew }}, {{ $required ? 'true' : 'false' }}, @js($persistKey))"
     x-init="init()"
 >
 
