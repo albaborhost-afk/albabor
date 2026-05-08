@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Listing;
 use App\Models\ListingMedia;
 use App\Rules\AlgerianPhoneNumber;
+use App\Rules\InternationalPhoneNumber;
 use App\Services\ListingImageWatermark;
 use App\Models\ListingView;
 use App\Models\User;
@@ -270,8 +271,8 @@ class ListingController extends Controller
             'wilaya' => 'nullable|string|max:100',
             'visible_a' => 'nullable|string|max:255',
             'pays' => 'nullable|string|max:100',
-            'numero_whatsapp' => ['nullable', 'string', AlgerianPhoneNumber::nullable()],
-            'numero_mobile' => ['nullable', 'string', AlgerianPhoneNumber::nullable()],
+            'numero_whatsapp' => ['nullable', 'string', InternationalPhoneNumber::nullable()],
+            'numero_mobile' => ['nullable', 'string', InternationalPhoneNumber::nullable()],
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
@@ -305,8 +306,8 @@ class ListingController extends Controller
             'wilaya' => $validated['wilaya'] ?? null,
             'visible_a' => $validated['visible_a'] ?? null,
             'pays' => $validated['pays'] ?? null,
-            'numero_whatsapp' => AlgerianPhoneNumber::normalize($validated['numero_whatsapp'] ?? null),
-            'numero_mobile' => AlgerianPhoneNumber::normalize($validated['numero_mobile'] ?? null),
+            'numero_whatsapp' => InternationalPhoneNumber::normalize($validated['numero_whatsapp'] ?? null),
+            'numero_mobile' => InternationalPhoneNumber::normalize($validated['numero_mobile'] ?? null),
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
@@ -438,8 +439,8 @@ class ListingController extends Controller
             'wilaya' => 'nullable|string|max:100',
             'visible_a' => 'nullable|string|max:255',
             'pays' => 'nullable|string|max:100',
-            'numero_whatsapp' => ['nullable', 'string', AlgerianPhoneNumber::nullable()],
-            'numero_mobile' => ['nullable', 'string', AlgerianPhoneNumber::nullable()],
+            'numero_whatsapp' => ['nullable', 'string', InternationalPhoneNumber::nullable()],
+            'numero_mobile' => ['nullable', 'string', InternationalPhoneNumber::nullable()],
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
@@ -475,8 +476,8 @@ class ListingController extends Controller
             'wilaya' => $validated['wilaya'] ?? null,
             'visible_a' => $validated['visible_a'] ?? null,
             'pays' => $validated['pays'] ?? null,
-            'numero_whatsapp' => AlgerianPhoneNumber::normalize($validated['numero_whatsapp'] ?? null),
-            'numero_mobile' => AlgerianPhoneNumber::normalize($validated['numero_mobile'] ?? null),
+            'numero_whatsapp' => InternationalPhoneNumber::normalize($validated['numero_whatsapp'] ?? null),
+            'numero_mobile' => InternationalPhoneNumber::normalize($validated['numero_mobile'] ?? null),
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,

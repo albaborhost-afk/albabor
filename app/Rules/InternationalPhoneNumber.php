@@ -109,4 +109,29 @@ class InternationalPhoneNumber implements ValidationRule
     {
         return new self(required: false);
     }
+
+    /**
+     * Normalise a phone for storage.
+     *
+     * - Algerian numbers collapse to the historic local format 0XXXXXXXXX
+     *   (matches what AlgerianPhoneNumber::normalize produced before).
+     * - All other international numbers are kept in +CC… form so the
+     *   country code is preserved in storage.
+     * - Empty input → null.
+     */
+    public static function normalize(?string $phone): ?string
+    {
+        if ($phone === null || trim($phone) === '') {
+            return null;
+        }
+
+        $cleaned = self::strip($phone);
+
+        // +213XXXXXXXXX → 0XXXXXXXXX (legacy Algerian storage shape)
+        if (str_starts_with($cleaned, '+213')) {
+            return '0'.substr($cleaned, 4);
+        }
+
+        return $cleaned;
+    }
 }
