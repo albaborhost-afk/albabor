@@ -20,6 +20,99 @@
     $hasExisting   = $existingCount > 0;
 @endphp
 
+{{-- ── Static styles — render correctly even before/without Alpine ── --}}
+<style>
+    .albabor-dropzone {
+        background: linear-gradient(180deg, #F8FBFD 0%, #F0F6FA 100%);
+        padding: 2.5rem 1.5rem;
+        border-color: #CFD8E3;
+        min-height: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .albabor-dropzone:hover { border-color: #17A2B8; background: linear-gradient(180deg, #F2F9FC 0%, #E6F2F8 100%); }
+    .albabor-dropzone.is-dragging {
+        border-color: #17A2B8;
+        background: rgba(23,162,184,0.06);
+        transform: scale(1.005);
+    }
+    .albabor-dropzone.has-files {
+        background: #FFFFFF;
+        padding: 1rem;
+        min-height: 0;
+        display: block;
+    }
+    .albabor-dropzone-empty {
+        text-align: center;
+        max-width: 28rem;
+        margin: 0 auto;
+    }
+    .albabor-dropzone-icon {
+        width: 88px;
+        height: 88px;
+        margin: 0 auto 1rem;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1B4F72 0%, #17A2B8 100%);
+        color: #FFFFFF;
+        box-shadow: 0 12px 28px rgba(23,162,184,0.32), inset 0 1px 0 rgba(255,255,255,0.18);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .albabor-dropzone:hover .albabor-dropzone-icon,
+    .albabor-dropzone.is-dragging .albabor-dropzone-icon {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 36px rgba(23,162,184,0.42), inset 0 1px 0 rgba(255,255,255,0.22);
+    }
+    .albabor-dropzone-title {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1B2A4A;
+        margin: 0 0 0.25rem;
+        letter-spacing: -0.01em;
+    }
+    .albabor-dropzone-sub {
+        font-size: 0.8rem;
+        color: #6B7B8D;
+        margin: 0 0 1rem;
+    }
+    .albabor-dropzone-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        margin-bottom: 0.75rem;
+    }
+    .albabor-info-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(23,162,184,0.08);
+        color: #1B4F72;
+        border: 1px solid rgba(23,162,184,0.18);
+    }
+    .albabor-info-pill svg { color: #17A2B8; }
+    .albabor-dropzone-hint {
+        font-size: 11px;
+        color: #9BA8B7;
+        margin: 0.5rem 0 0;
+        line-height: 1.45;
+    }
+    .albabor-dropzone-warning {
+        font-size: 11px;
+        color: #F39C12;
+        margin: 0.5rem auto 0;
+        max-width: 22rem;
+    }
+</style>
+
 <div
     data-photo-uploader
     data-max-files="{{ $maxNew }}"
@@ -152,54 +245,67 @@
 
         {{-- Drop zone --}}
         <div
-            class="relative border-2 border-dashed rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden"
+            class="albabor-dropzone relative border-2 border-dashed rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden"
             :class="{
-                'border-[#17A2B8] scale-[1.01]': isDragging,
-                'border-[#CFD8E3] hover:border-[#17A2B8]': !isDragging
+                'is-dragging': isDragging,
+                'has-files': files.length > 0
             }"
-            :style="(isDragging
-                ? 'background:rgba(23,162,184,0.06);'
-                : (files.length > 0 ? 'background:#FFFFFF;' : 'background:linear-gradient(180deg,#F8FBFD 0%,#F0F6FA 100%);'))
-                + (files.length > 0 ? 'padding:1rem;' : 'padding:2.75rem 1.5rem;')"
             @dragenter.prevent="isDragging = true"
             @dragleave.prevent="isDragging = false"
             @dragover.prevent
             @drop.prevent="handleDrop($event)"
             @click="$refs.fileInput.click()"
         >
-            {{-- Empty state --}}
-            <div x-show="files.length === 0" class="text-center">
-                <div class="w-20 h-20 mx-auto mb-4 rounded-3xl flex items-center justify-center transition-all duration-300"
-                     :style="isDragging
-                        ? 'background:linear-gradient(135deg,#1B4F72,#17A2B8); box-shadow:0 10px 30px rgba(23,162,184,0.35);'
-                        : 'background:linear-gradient(135deg,#1B4F72,#17A2B8); box-shadow:0 8px 22px rgba(23,162,184,0.28);'">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6">
+            {{-- Empty state — STATIC styles, visible regardless of Alpine state --}}
+            <div class="albabor-dropzone-empty" x-show="files.length === 0">
+                <div class="albabor-dropzone-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" width="44" height="44">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5V18a2 2 0 002 2h14a2 2 0 002-2v-1.5M16.5 9.5L12 5m0 0L7.5 9.5M12 5v12"/>
                     </svg>
                 </div>
-                <p class="text-base font-semibold mb-1" :style="isDragging ? 'color:#17A2B8;' : 'color:#1B2A4A;'">
+
+                <h3 class="albabor-dropzone-title">
                     <span x-show="!isDragging">Ajouter vos photos</span>
                     <span x-show="isDragging" x-cloak>Lâchez pour ajouter</span>
+                </h3>
+
+                <p class="albabor-dropzone-sub">
+                    Cliquez ici pour parcourir
+                    <span class="hidden sm:inline">ou glissez-déposez vos fichiers</span>
                 </p>
-                <p class="text-xs" style="color:#6B7B8D;">
-                    <span x-show="!isDragging">Cliquez pour parcourir <span class="hidden sm:inline">ou glissez vos fichiers ici</span></span>
-                </p>
-                <div class="inline-flex items-center gap-1.5 mt-4 px-3 py-1.5 rounded-full" style="background:rgba(23,162,184,0.08); border:1px solid rgba(23,162,184,0.18);">
-                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24" style="color:#17A2B8;">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/>
-                    </svg>
-                    <span class="text-[11px] font-medium" style="color:#1B4F72;">JPEG · PNG · WebP · HEIC — max 15 Mo</span>
+
+                <div class="albabor-dropzone-info">
+                    <span class="albabor-info-pill">
+                        <svg fill="currentColor" viewBox="0 0 24 24" width="14" height="14">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/>
+                        </svg>
+                        JPEG · PNG · WebP · HEIC
+                    </span>
+                    <span class="albabor-info-pill">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                        </svg>
+                        Max 15 Mo / photo
+                    </span>
+                    <span class="albabor-info-pill">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        {{ $hasExisting ? $maxNew : $max }} photos max
+                    </span>
                 </div>
-                <p class="text-[11px] mt-2" style="color:#9BA8B7;">
-                    Jusqu'à {{ $hasExisting ? $maxNew : $max }} photo{{ ($hasExisting ? $maxNew : $max) > 1 ? 's' : '' }}
+
+                <p class="albabor-dropzone-hint">
+                    La première photo sera votre photo principale.
+                    Vous pourrez la changer plus tard.
                 </p>
+
                 <p
                     x-show="!supportsManagedFiles"
                     x-cloak
-                    class="text-[11px] mt-2 max-w-xs mx-auto"
-                    style="color:#F39C12;"
+                    class="albabor-dropzone-warning"
                 >
-                    Sur certains navigateurs mobiles, ajoutez toutes vos photos en une seule sélection.
+                    Sur mobile, sélectionnez toutes vos photos en une seule fois.
                 </p>
             </div>
 
