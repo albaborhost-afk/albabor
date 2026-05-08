@@ -633,7 +633,7 @@
                                                    style="border: 1px solid #E0E6ED; outline: none; color: #1B2A4A;"
                                                    x-init="$watch('open', v => v && $nextTick(() => $refs.searchInput.focus()))">
                                         </div>
-                                        <div class="max-h-52 overflow-y-auto" style="scrollbar-width: thin;">
+                                        <div class="overflow-y-auto" style="max-height: min(70vh, 480px); scrollbar-width: thin;">
                                             <template x-for="country in filteredCountries" :key="country.code">
                                                 <button type="button" @click="selectCountry(country)"
                                                         class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm transition-colors duration-150 hover:bg-gray-50"

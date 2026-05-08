@@ -1200,7 +1200,7 @@
                                             <div class="p-2" style="border-bottom: 1px solid #E0E6ED;">
                                                 <input type="text" x-model="search" @keydown.escape="open = false" placeholder="Rechercher..." class="w-full px-3 py-2 text-xs rounded-lg" style="border: 1px solid #E0E6ED; outline: none; color: #1B2A4A;">
                                             </div>
-                                            <div class="max-h-48 overflow-y-auto" style="scrollbar-width: thin;">
+                                            <div class="overflow-y-auto" style="max-height: min(70vh, 480px); scrollbar-width: thin;">
                                                 <template x-for="country in filteredCountries" :key="'ws-'+country.code">
                                                     <button type="button" @click="selectCountry(country)" class="w-full flex items-center gap-2 px-3 py-2 text-xs transition-colors hover:bg-gray-50" :class="selected.code === country.code && 'bg-cyan-50'">
                                                         <span x-text="country.flag" class="text-base leading-none"></span>
@@ -1271,7 +1271,7 @@
                                             <div class="p-2" style="border-bottom: 1px solid #E0E6ED;">
                                                 <input type="text" x-model="search" @keydown.escape="open = false" placeholder="Rechercher..." class="w-full px-3 py-2 text-xs rounded-lg" style="border: 1px solid #E0E6ED; outline: none; color: #1B2A4A;">
                                             </div>
-                                            <div class="max-h-48 overflow-y-auto" style="scrollbar-width: thin;">
+                                            <div class="overflow-y-auto" style="max-height: min(70vh, 480px); scrollbar-width: thin;">
                                                 <template x-for="country in filteredCountries" :key="'mb-'+country.code">
                                                     <button type="button" @click="selectCountry(country)" class="w-full flex items-center gap-2 px-3 py-2 text-xs transition-colors hover:bg-gray-50" :class="selected.code === country.code && 'bg-cyan-50'">
                                                         <span x-text="country.flag" class="text-base leading-none"></span>

@@ -125,7 +125,7 @@
                     >
                 </div>
 
-                <div class="max-h-52 overflow-y-auto" style="scrollbar-width: thin;">
+                <div class="overflow-y-auto" style="max-height: min(70vh, 480px); scrollbar-width: thin;">
                     <template x-for="country in filteredCountries" :key="country.code">
                         <button
                             type="button"
