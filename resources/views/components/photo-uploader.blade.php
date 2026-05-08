@@ -43,11 +43,16 @@
         min-height: 0;
         display: block;
     }
+    .albabor-dropzone.has-files .albabor-dropzone-empty { display: none; }
     .albabor-dropzone-empty {
         text-align: center;
         max-width: 28rem;
         margin: 0 auto;
+        display: block;
     }
+    .albabor-dropzone .albabor-title-dragging { display: none; }
+    .albabor-dropzone.is-dragging .albabor-title-default { display: none; }
+    .albabor-dropzone.is-dragging .albabor-title-dragging { display: block; }
     .albabor-dropzone-icon {
         width: 88px;
         height: 88px;
@@ -256,18 +261,16 @@
             @drop.prevent="handleDrop($event)"
             @click="$refs.fileInput.click()"
         >
-            {{-- Empty state — STATIC styles, visible regardless of Alpine state --}}
-            <div class="albabor-dropzone-empty" x-show="files.length === 0">
+            {{-- Empty state — STATIC visibility; hidden via CSS only when .has-files toggled --}}
+            <div class="albabor-dropzone-empty">
                 <div class="albabor-dropzone-icon">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" width="44" height="44">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5V18a2 2 0 002 2h14a2 2 0 002-2v-1.5M16.5 9.5L12 5m0 0L7.5 9.5M12 5v12"/>
                     </svg>
                 </div>
 
-                <h3 class="albabor-dropzone-title">
-                    <span x-show="!isDragging">Ajouter vos photos</span>
-                    <span x-show="isDragging" x-cloak>Lâchez pour ajouter</span>
-                </h3>
+                <h3 class="albabor-dropzone-title albabor-title-default">Ajouter vos photos</h3>
+                <h3 class="albabor-dropzone-title albabor-title-dragging">Lâchez pour ajouter</h3>
 
                 <p class="albabor-dropzone-sub">
                     Cliquez ici pour parcourir
