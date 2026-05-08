@@ -50,6 +50,8 @@
         margin: 0 auto;
         display: block;
     }
+    .albabor-dropzone-filled { display: none; }
+    .albabor-dropzone.has-files .albabor-dropzone-filled { display: block; }
     .albabor-dropzone .albabor-title-dragging { display: none; }
     .albabor-dropzone.is-dragging .albabor-title-default { display: none; }
     .albabor-dropzone.is-dragging .albabor-title-dragging { display: block; }
@@ -313,7 +315,7 @@
             </div>
 
             {{-- Filled state — preview grid + add more button --}}
-            <div x-show="files.length > 0">
+            <div class="albabor-dropzone-filled">
                 {{-- Counter bar --}}
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-semibold" style="color:#1B2A4A;">
@@ -788,6 +790,7 @@ if (typeof photoUploader === 'undefined') {
                     if (this.cover === null && this.files.length > 0) {
                         this.cover = 'new:0';
                     }
+                    this.syncDropzoneClass();
                 });
 
                 // Listen for blur requests from existing photos
@@ -968,6 +971,8 @@ if (typeof photoUploader === 'undefined') {
 
             handleSelect(e) {
                 const selectedFiles = Array.from(e.target.files);
+                console.log('[PhotoUploader] handleSelect:', selectedFiles.length, 'files',
+                    selectedFiles.map(f => `${f.name} (${(f.size/1024/1024).toFixed(1)}MB, ${f.type || 'no-type'})`));
 
                 if (this.supportsManagedFiles) {
                     this.addFiles(selectedFiles);
@@ -977,6 +982,15 @@ if (typeof photoUploader === 'undefined') {
                 }
 
                 this.replaceNativeSelection(selectedFiles);
+            },
+
+            // Force the .has-files class on the dropzone — guards against any
+            // edge case where Alpine's :class binding fails to fire reactively.
+            syncDropzoneClass() {
+                const dz = this.$el.querySelector('.albabor-dropzone');
+                if (!dz) return;
+                if (this.files.length > 0) dz.classList.add('has-files');
+                else dz.classList.remove('has-files');
             },
 
             handleDrop(e) {
@@ -1026,9 +1040,10 @@ if (typeof photoUploader === 'undefined') {
             },
 
             async addFiles(newFiles) {
+                console.log('[PhotoUploader] addFiles start — maxFiles:', this.maxFiles, 'current:', this.files.length, 'incoming:', newFiles.length);
                 this.errors = [];
-                const available = this.maxFiles - this.files.length;
-                let toProcess = [];
+                const available = Math.max(0, this.maxFiles - this.files.length);
+                const toProcess = [];
 
                 for (const file of newFiles) {
                     if (toProcess.length >= available) {
@@ -1036,18 +1051,27 @@ if (typeof photoUploader === 'undefined') {
                         break;
                     }
                     if (file.size > 15 * 1024 * 1024) {
-                        this.errors.push(`"${file.name}" dépasse la limite de 15 Mo.`);
+                        this.errors.push(`"${file.name}" dépasse 15 Mo (${(file.size/1024/1024).toFixed(1)} Mo).`);
                         continue;
                     }
                     const allowed = ['image/jpeg','image/jpg','image/png','image/webp','image/heic','image/heif',''];
-                    if (!allowed.includes(file.type)) {
-                        this.errors.push(`"${file.name}" : format non supporté.`);
+                    const looksLikeImage = (file.type && file.type.startsWith('image/')) || /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name || '');
+                    if (!allowed.includes(file.type) && !looksLikeImage) {
+                        this.errors.push(`"${file.name}" : format non supporté (${file.type || 'inconnu'}).`);
                         continue;
                     }
                     toProcess.push(file);
                 }
 
-                if (toProcess.length === 0) return;
+                console.log('[PhotoUploader] After filter:', toProcess.length, 'to process,', this.errors.length, 'errors');
+
+                if (toProcess.length === 0) {
+                    console.warn('[PhotoUploader] All files rejected. Errors:', this.errors);
+                    if (this.errors.length > 0) {
+                        alert('Photos non ajoutées :\n\n' + this.errors.join('\n'));
+                    }
+                    return;
+                }
 
                 this.isProcessing = true;
                 this.processedCount = 0;
@@ -1055,21 +1079,32 @@ if (typeof photoUploader === 'undefined') {
                 this.$dispatch('photos-processing');
 
                 for (const file of toProcess) {
-                    const optimized = await this.compressImage(file);
-                    const id = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random());
-                    const preview = URL.createObjectURL(optimized);
-                    this.files.push({ id, file: optimized, preview, size: optimized.size, name: file.name });
-                    this.processedCount++;
+                    try {
+                        const optimized = await this.compressImage(file);
+                        const id = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random());
+                        const preview = URL.createObjectURL(optimized);
+                        this.files.push({ id, file: optimized, preview, size: optimized.size, name: file.name });
+                        this.processedCount++;
+                        console.log('[PhotoUploader] Added file', this.processedCount, '/', this.totalToProcess, file.name);
+                    } catch (err) {
+                        console.error('[PhotoUploader] Failed to process file', file.name, err);
+                        this.errors.push(`"${file.name}" : erreur de traitement.`);
+                    }
                 }
                 this.isProcessing = false;
-                // If no cover is set yet (e.g. create flow with no existing photos),
-                // pick the first new photo as the cover.
+
                 if (this.cover === null && this.files.length > 0) {
                     this.cover = 'new:0';
                 }
+
+                // Force-sync the .has-files class on the dropzone in case Alpine's
+                // :class binding hasn't flushed yet
+                this.syncDropzoneClass();
+
                 this.$dispatch('photos-ready');
                 this.syncInput();
                 await this.persistFiles();
+                console.log('[PhotoUploader] addFiles done. files.length =', this.files.length);
             },
 
             get progressPercent() {
@@ -1083,6 +1118,7 @@ if (typeof photoUploader === 'undefined') {
                 }
                 URL.revokeObjectURL(this.files[index].preview);
                 this.files.splice(index, 1);
+                this.syncDropzoneClass();
                 this.syncInput();
                 this.persistFiles();
             },
@@ -1191,6 +1227,7 @@ if (typeof photoUploader === 'undefined') {
                 if (this.cover === null && this.files.length > 0) {
                     this.cover = 'new:0';
                 }
+                this.syncDropzoneClass();
                 this.persistFiles();
             },
 
@@ -1206,6 +1243,7 @@ if (typeof photoUploader === 'undefined') {
                         .map(el => el.dataset.existingId);
                     this.cover = remainingIds.length > 0 ? `existing:${remainingIds[0]}` : null;
                 }
+                this.syncDropzoneClass();
                 this.clearPersistedFiles();
             },
 
