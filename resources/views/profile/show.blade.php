@@ -491,7 +491,18 @@
                                                 </svg>
                                                 Telephone
                                             </dt>
-                                            <dd class="text-lg font-bold" style="color: #1B2A4A;">{{ $user->phone ?? 'Non renseigne' }}</dd>
+                                            <dd class="text-lg font-bold" style="color: #1B2A4A;">
+                                                @if(filled($user->phone))
+                                                    @php($pcInfo = \App\Support\PhoneCountry::info($user->phone_country_code))
+                                                    @if($pcInfo)
+                                                        <span class="mr-1">{{ $pcInfo['flag'] }}</span><span class="text-sm font-semibold mr-1" style="color: #6B7B8D;">{{ $user->phone_country_code }}</span>{{ $user->phone }}
+                                                    @else
+                                                        {{ $user->phone }}
+                                                    @endif
+                                                @else
+                                                    Non renseigne
+                                                @endif
+                                            </dd>
                                         </div>
 
                                         <div class="rounded-xl p-5" style="background: #F0F4F8;">

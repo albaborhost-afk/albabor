@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\VerificationRequest;
 use App\Rules\AlgerianPhoneNumber;
+use App\Rules\InternationalPhoneNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -40,12 +41,14 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => ['nullable', AlgerianPhoneNumber::nullable()],
+            'phone' => ['nullable', InternationalPhoneNumber::nullable()],
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,webp,heic,heif|max:5120',
         ]);
 
         $validated['name'] = trim($validated['name']);
-        $validated['phone'] = AlgerianPhoneNumber::normalize($validated['phone'] ?? null);
+        [$countryCode, $phoneNational] = InternationalPhoneNumber::split($validated['phone'] ?? null);
+        $validated['phone'] = $phoneNational !== '' ? $phoneNational : null;
+        $validated['phone_country_code'] = $countryCode;
 
         if ($request->hasFile('profile_picture')) {
             $disk = config('filesystems.listing_disk', 'public');
@@ -68,11 +71,11 @@ class ProfileController extends Controller
         unset($validated['profile_picture']); // handled above
         if (isset($filename)) {
             $user->update(array_merge(
-                array_intersect_key($validated, array_flip(['name', 'phone'])),
+                array_intersect_key($validated, array_flip(['name', 'phone', 'phone_country_code'])),
                 ['profile_picture' => $filename, 'profile_picture_data' => null]
             ));
         } else {
-            $user->update(array_intersect_key($validated, array_flip(['name', 'phone'])));
+            $user->update(array_intersect_key($validated, array_flip(['name', 'phone', 'phone_country_code'])));
         }
 
         return redirect()->route('profile.show')

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
+use App\Support\PhoneCountry;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -41,11 +42,18 @@ class UserResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
+                        Forms\Components\Select::make('phone_country_code')
+                            ->label('Pays')
+                            ->options(PhoneCountry::options())
+                            ->searchable()
+                            ->default('+213')
+                            ->placeholder('Sélectionner un pays'),
                         Forms\Components\TextInput::make('phone')
-                            ->label('Téléphone')
+                            ->label('Téléphone (numéro local)')
                             ->tel()
                             ->required()
-                            ->maxLength(20),
+                            ->maxLength(20)
+                            ->helperText('Numéro local sans l\'indicatif. Ex: 0676085441 pour DZ, 612345678 pour FR.'),
                         Forms\Components\TextInput::make('password')
                             ->label('Mot de passe')
                             ->password()
@@ -102,9 +110,22 @@ class UserResource extends Resource
                     ->label('E-mail')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('phone_country_code')
+                    ->label('Pays')
+                    ->formatStateUsing(fn (?string $state): string => PhoneCountry::label($state) ?: '—')
+                    ->tooltip(fn (User $record): ?string => PhoneCountry::info($record->phone_country_code)['name'] ?? null)
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Téléphone')
-                    ->searchable(),
+                    ->formatStateUsing(function (?string $state, User $record): string {
+                        if (! $state) return '—';
+                        $code = $record->phone_country_code;
+                        return $code ? trim($code.' '.$state) : $state;
+                    })
+                    ->searchable()
+                    ->copyable()
+                    ->copyableState(fn (User $record): string => trim(($record->phone_country_code ?? '').($record->phone ?? ''))),
                 Tables\Columns\BadgeColumn::make('account_type')
                     ->label('Type')
                     ->colors([
@@ -151,6 +172,10 @@ class UserResource extends Resource
                         'vendor' => 'Vendeur',
                         'admin' => 'Admin',
                     ]),
+                Tables\Filters\SelectFilter::make('phone_country_code')
+                    ->label('Pays (indicatif)')
+                    ->options(PhoneCountry::options())
+                    ->searchable(),
                 Tables\Filters\TernaryFilter::make('verified_badge')
                     ->label('Badge vérifié'),
                 Tables\Filters\TernaryFilter::make('is_blocked')

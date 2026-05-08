@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Rules\AlgerianPhoneNumber;
+use App\Rules\InternationalPhoneNumber;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -61,14 +62,17 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'phone' => ['required', 'string', new AlgerianPhoneNumber],
+            'phone' => ['required', 'string', new InternationalPhoneNumber],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        [$countryCode, $phoneNational] = InternationalPhoneNumber::split($validated['phone']);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'phone' => AlgerianPhoneNumber::normalize($validated['phone']),
+            'phone' => $phoneNational,
+            'phone_country_code' => $countryCode,
             'password' => Hash::make($validated['password']),
             'account_type' => 'user',
         ]);
