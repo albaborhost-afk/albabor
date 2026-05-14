@@ -98,6 +98,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasOne(VerificationRequest::class)->latest();
     }
 
+    public function vendorProfile(): HasOne
+    {
+        return $this->hasOne(VendorProfile::class);
+    }
+
     public function buyerTickets(): HasMany
     {
         return $this->hasMany(MediationTicket::class, 'buyer_id');
@@ -199,9 +204,24 @@ class User extends Authenticatable implements FilamentUser
         return $this->favorites()->where('listing_id', $listing->id)->exists();
     }
 
+    public function hasVendorProfile(): bool
+    {
+        return $this->vendorProfile()->exists();
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->isAdmin() && !$this->isBlocked();
+        if ($this->isBlocked()) {
+            return false;
+        }
+
+        // Panel vendeur : réservé aux vendeurs professionnels (pièces / moteurs).
+        if ($panel->getId() === 'vendeur') {
+            return $this->isVendor();
+        }
+
+        // Panel admin (par défaut).
+        return $this->isAdmin();
     }
 
     public function getProfilePictureUrlAttribute(): ?string

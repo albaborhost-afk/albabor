@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" role="img" aria-label="Albabor Pro">
+  <defs>
+    <linearGradient id="abMark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17A2B8"/>
+      <stop offset="1" stop-color="#F39C12"/>
+    </linearGradient>
+  </defs>
+  <!-- Mark -->
+  <rect x="2" y="6" width="36" height="36" rx="9" fill="url(#abMark)"/>
+  <g transform="translate(8, 13)">
+    <!-- Boat hull -->
+    <path d="M 2 14 L 24 14 L 21 19 L 5 19 Z" fill="#FFFFFF"/>
+    <!-- Boat deck / sail -->
+    <path d="M 6 13 L 13 3 L 13 13 Z" fill="#FFFFFF"/>
+    <path d="M 15 13 L 15 5 L 22 13 Z" fill="#FFFFFF" opacity="0.85"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="48" y="26" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" fill="#17A2B8">Albabor</text>
+  <text x="48" y="41" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" letter-spacing="2.5" fill="#F39C12">PRO &middot; ESPACE VENDEUR</text>
+</svg>

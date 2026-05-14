@@ -11,6 +11,8 @@ use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\MediationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VendorOnboardingController;
+use App\Http\Controllers\BoutiqueController;
 use App\Models\Listing;
 use Illuminate\Support\Facades\Route;
 
@@ -154,6 +156,19 @@ Route::middleware('auth')->group(function () {
     Route::get('mediation/{ticket}', [MediationController::class, 'show'])->name('mediation.show');
     Route::post('mediation/{ticket}/message', [MediationController::class, 'addMessage'])->name('mediation.message');
     Route::post('mediation/{ticket}/annuler', [MediationController::class, 'cancel'])->name('mediation.cancel');
+});
+
+// ── Espace Vendeur (boutiques de pièces / moteurs) ─────────────
+// Landing publique + vitrines boutiques
+Route::get('espace-vendeur', [VendorOnboardingController::class, 'landing'])->name('vendor.landing');
+Route::get('boutiques', [BoutiqueController::class, 'index'])->name('boutiques.index');
+Route::get('boutique/{vendorProfile}', [BoutiqueController::class, 'show'])->name('boutiques.show');
+
+// Onboarding vendeur (authentification requise)
+Route::middleware('auth')->group(function () {
+    Route::get('espace-vendeur/demarrer', [VendorOnboardingController::class, 'create'])->name('vendor.onboarding.create');
+    Route::post('espace-vendeur/demarrer', [VendorOnboardingController::class, 'store'])
+        ->middleware('throttle:5,1')->name('vendor.onboarding.store');
 });
 
 // Stripe Webhook (exempt from CSRF)
