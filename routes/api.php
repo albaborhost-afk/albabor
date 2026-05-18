@@ -77,6 +77,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/payments/subscription', [PaymentController::class, 'storeSubscriptionPayment'])->middleware('throttle:5,1');
         Route::post('/payments/mediation', [PaymentController::class, 'storeMediationPayment']);
 
+        // Stripe (Mobile : iOS / Android)
+        Route::post('/payments/stripe/listing/{listing}', [PaymentController::class, 'stripeCheckoutListing'])->middleware('throttle:5,1');
+        Route::get('/payments/stripe/session/{sessionId}', [PaymentController::class, 'stripeSessionStatus'])->middleware('throttle:30,1');
+
         // Subscriptions
         Route::get('/subscriptions', [SubscriptionController::class, 'index']);
         Route::get('/subscriptions/active', [SubscriptionController::class, 'active']);

@@ -332,16 +332,26 @@ class PaymentController extends Controller
         $sigHeader     = $request->header('Stripe-Signature');
         $webhookSecret = config('services.stripe.webhook_secret');
 
-        if ($webhookSecret) {
-            try {
-                $event = StripeWebhook::constructEvent($payload, $sigHeader, $webhookSecret);
-            } catch (SignatureVerificationException $e) {
-                Log::warning('Stripe webhook: invalid signature');
-                return response('Invalid signature', 400);
-            }
-        } else {
-            // No webhook secret configured — decode payload directly (dev only)
-            $event = json_decode($payload);
+        // SECURITY: Le secret est obligatoire. Sans lui, n'importe qui pourrait
+        // forger un évènement "checkout.session.completed" et activer un paiement.
+        if (! $webhookSecret) {
+            Log::error('Stripe webhook: STRIPE_WEBHOOK_SECRET not configured — webhook refused');
+            return response('Webhook secret not configured', 500);
+        }
+
+        if (! $sigHeader) {
+            Log::warning('Stripe webhook: missing Stripe-Signature header');
+            return response('Missing signature header', 400);
+        }
+
+        try {
+            $event = StripeWebhook::constructEvent($payload, $sigHeader, $webhookSecret);
+        } catch (SignatureVerificationException $e) {
+            Log::warning('Stripe webhook: invalid signature');
+            return response('Invalid signature', 400);
+        } catch (\UnexpectedValueException $e) {
+            Log::warning('Stripe webhook: invalid payload', ['error' => $e->getMessage()]);
+            return response('Invalid payload', 400);
         }
 
         $type = is_object($event) ? $event->type : ($event['type'] ?? '');
