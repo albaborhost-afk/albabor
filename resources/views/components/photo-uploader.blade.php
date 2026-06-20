@@ -377,7 +377,6 @@
             @change="handleSelect($event)"
         >
     </div>
-    @endif
 
 {{-- ─── Blur / Pixelate Editor Modal ──────────────────────────────────── --}}
 <div
