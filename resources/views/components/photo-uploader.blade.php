@@ -22,7 +22,7 @@
 
 <div
     data-photo-uploader
-    x-data="photoUploader({{ $maxNew }}, {{ $required ? 'true' : 'false' }}, @js($persistKey))"
+    x-data="photoUploader({{ $max }}, {{ $existingCount }}, {{ $required ? 'true' : 'false' }}, @js($persistKey))"
     x-init="init()"
 >
 
@@ -104,7 +104,7 @@
 
                 {{-- Delete button: instant removal --}}
                 <button type="button"
-                        @click.stop="removed = true; $nextTick(() => handleExistingRemoval({{ $media->id }}))"
+                        @click.stop="if (!removed) { removed = true; $nextTick(() => handleExistingRemoval({{ $media->id }})); }"
                         class="absolute -top-2 -right-2 w-8 h-8 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 z-10"
                         style="background:#E74C3C; color:white;"
                         title="Supprimer cette photo">
@@ -128,18 +128,17 @@
         </div>
     </div>
 
-    @if($maxNew > 0)
-    <div class="h-px w-full mb-5" style="background:linear-gradient(90deg, transparent, #E0E6ED, transparent);"></div>
-    <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#6B7B8D;">
+    <div x-show="slotsLeft > 0" class="h-px w-full mb-5" style="background:linear-gradient(90deg, transparent, #E0E6ED, transparent);"></div>
+    <p x-show="slotsLeft > 0" class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#6B7B8D;">
         Ajouter de nouvelles photos
-        <span class="ml-1 font-normal normal-case" style="color:#9BA8B7;">({{ $maxNew }} slot{{ $maxNew > 1 ? 's' : '' }} disponible{{ $maxNew > 1 ? 's' : '' }})</span>
+        <span class="ml-1 font-normal normal-case" style="color:#9BA8B7;">
+            (<span x-text="slotsLeft"></span> slot<span x-show="slotsLeft > 1">s</span> disponible<span x-show="slotsLeft > 1">s</span>)
+        </span>
     </p>
-    @endif
     @endif
 
     {{-- ─── Upload zone ──────────────────────────────────────────────── --}}
-    @if(!$hasExisting || $maxNew > 0)
-    <div>
+    <div x-show="slotsLeft > 0 || files.length > 0">
         {{-- Drop zone --}}
         <div
             class="relative border-2 border-dashed rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden"
@@ -166,7 +165,7 @@
                     <span x-show="!isDragging">Cliquez ou glissez vos photos ici</span>
                     <span x-show="isDragging">Lâchez pour ajouter</span>
                 </p>
-                <p class="text-[11px] mt-1" style="color:#9BA8B7;">JPEG, PNG, WebP, HEIC · Max 15 Mo · {{ $hasExisting ? $maxNew : $max }} photos max</p>
+                <p class="text-[11px] mt-1" style="color:#9BA8B7;">JPEG, PNG, WebP, HEIC · Max 15 Mo · <span x-text="maxFiles"></span> photo<span x-show="maxFiles > 1">s</span> max</p>
                 <p
                     x-show="!supportsManagedFiles"
                     x-cloak
@@ -182,7 +181,7 @@
                 {{-- Counter bar --}}
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-semibold" style="color:#1B2A4A;">
-                        <span x-text="files.length"></span> / {{ $hasExisting ? $maxNew : $max }} photo<span x-show="files.length > 1">s</span>
+                        <span x-text="files.length"></span> / <span x-text="maxFiles"></span> photo<span x-show="files.length > 1">s</span>
                     </span>
                     <span
                         class="text-[11px] px-2.5 py-0.5 rounded-full font-medium"
@@ -250,8 +249,6 @@
                             <button
                                 type="button"
                                 @click.stop="removeFile(index); handleNewRemoval(index)"
-                                x-show="supportsManagedFiles"
-                                x-cloak
                                 class="absolute top-1.5 right-1.5 w-7 h-7 sm:w-5 sm:h-5 rounded-full flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200 hover:scale-110"
                                 style="background:rgba(231,76,60,0.95); color:white;"
                                 title="Supprimer"
@@ -495,18 +492,29 @@
 {{-- ─── Alpine Component ─────────────────────────────────────────────── --}}
 <script>
 if (typeof photoUploader === 'undefined') {
-    function photoUploader(maxFiles, isRequired = false, persistKey = null) {
+    function photoUploader(absoluteMax, existingCount = 0, isRequired = false, persistKey = null) {
         return {
             files: [],
             isDragging: false,
             errors: [],
-            maxFiles: maxFiles,
+            absoluteMax: absoluteMax,
+            existingCount: existingCount,
+            removedExistingCount: 0,
             isRequired: isRequired,
             persistKey: persistKey,
             supportsManagedFiles: false,
             isProcessing: false,
             processedCount: 0,
             totalToProcess: 0,
+            _heic2anyPromise: null,
+
+            // Dynamic limit: total cap minus existing photos that haven't been
+            // removed in this session. Recomputed every render so deleting an
+            // existing photo on mobile immediately frees up an upload slot.
+            get maxFiles() {
+                const remainingExisting = Math.max(0, this.existingCount - this.removedExistingCount);
+                return Math.max(0, this.absoluteMax - remainingExisting);
+            },
 
             // ── Unified Principale (cover) state ──
             // null | "existing:<id>" | "new:<index>"
@@ -576,6 +584,11 @@ if (typeof photoUploader === 'undefined') {
             },
 
             handleExistingRemoval(removedId) {
+                // Free up an upload slot so the user can replace the deleted
+                // photo with a new one (especially when the listing was at the
+                // 20-photo cap).
+                this.removedExistingCount++;
+
                 if (this.cover === `existing:${removedId}`) {
                     const remainingIds = Array.from(this.$el.querySelectorAll('[data-existing-id]'))
                         .map(el => el.dataset.existingId)
@@ -849,6 +862,43 @@ if (typeof photoUploader === 'undefined') {
                 this.addFiles(dropped);
             },
 
+            // ── HEIC / HEIF support ────────────────────────────────────
+            // iPhone photos are often HEIC. Chrome/Android browsers can't
+            // decode HEIC, so the <img>/canvas pipeline fails (onerror) and
+            // the raw HEIC reaches the server — which rejects it with
+            // "doit être une image" (the `image` rule) and can't process it
+            // with GD anyway. We convert HEIC → JPEG in the browser so the
+            // server always receives a JPEG (also fixes the broken preview).
+            isHeic(file) {
+                const t = (file.type || '').toLowerCase();
+                if (t === 'image/heic' || t === 'image/heif') return true;
+                // Some browsers report an empty MIME type for HEIC — use the extension.
+                return /\.(heic|heif)$/i.test(file.name || '');
+            },
+
+            loadHeic2any() {
+                if (window.heic2any) return Promise.resolve();
+                if (!this._heic2anyPromise) {
+                    this._heic2anyPromise = new Promise((resolve, reject) => {
+                        const s = document.createElement('script');
+                        s.src = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+                        s.onload = () => resolve();
+                        s.onerror = () => { this._heic2anyPromise = null; reject(new Error('heic2any load failed')); };
+                        document.head.appendChild(s);
+                    });
+                }
+                return this._heic2anyPromise;
+            },
+
+            async convertHeicIfNeeded(file) {
+                if (!this.isHeic(file)) return file;
+                await this.loadHeic2any();
+                const out = await window.heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+                const blob = Array.isArray(out) ? out[0] : out;
+                const baseName = (file.name || 'photo').replace(/\.\w+$/, '');
+                return new File([blob], baseName + '.jpg', { type: 'image/jpeg' });
+            },
+
             // Compress image client-side before upload (max 2000px, JPEG 85%)
             compressImage(file) {
                 return new Promise((resolve) => {
@@ -912,10 +962,20 @@ if (typeof photoUploader === 'undefined') {
                 this.$dispatch('photos-processing');
 
                 for (const file of toProcess) {
-                    const optimized = await this.compressImage(file);
+                    // iPhone HEIC → JPEG before anything else, so the browser can
+                    // preview it and the server receives a processable image.
+                    let working = file;
+                    try {
+                        working = await this.convertHeicIfNeeded(file);
+                    } catch (e) {
+                        this.errors.push(`"${file.name}" : conversion HEIC impossible. Réessayez en JPEG.`);
+                        this.processedCount++;
+                        continue;
+                    }
+                    const optimized = await this.compressImage(working);
                     const id = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random());
                     const preview = URL.createObjectURL(optimized);
-                    this.files.push({ id, file: optimized, preview, size: optimized.size, name: file.name });
+                    this.files.push({ id, file: optimized, preview, size: optimized.size, name: working.name });
                     this.processedCount++;
                 }
                 this.isProcessing = false;
@@ -935,26 +995,27 @@ if (typeof photoUploader === 'undefined') {
             },
 
             removeFile(index) {
-                if (!this.supportsManagedFiles) {
-                    return;
-                }
+                if (index < 0 || index >= this.files.length) return;
                 URL.revokeObjectURL(this.files[index].preview);
                 this.files.splice(index, 1);
-                this.syncInput();
+                // syncInput uses DataTransfer which is unreliable on mobile;
+                // submission goes through getFilesForSubmit() (FormData) anyway.
+                if (this.supportsManagedFiles) {
+                    this.syncInput();
+                }
                 this.persistFiles();
             },
 
             /** Met la vignette choisie en tête de liste (= photo principale à l'enregistrement). */
             moveToFront(index) {
-                if (!this.supportsManagedFiles) {
-                    return;
-                }
                 if (index <= 0 || index >= this.files.length) {
                     return;
                 }
                 const [item] = this.files.splice(index, 1);
                 this.files.unshift(item);
-                this.syncInput();
+                if (this.supportsManagedFiles) {
+                    this.syncInput();
+                }
                 this.persistFiles();
             },
 
