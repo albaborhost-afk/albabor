@@ -1,5 +1,5 @@
 <x-app-layout
-    title="La Marketplace Nautique N°1 en Algérie"
+    title="La Marketplace Nautique en Algérie"
     description="Achetez et vendez des bateaux, jet-skis, moteurs et pièces détachées en Algérie. Annonces vérifiées, paiement sécurisé, livraison partout en Algérie."
 >
     <!-- Hero Section with Video Background -->
@@ -23,7 +23,7 @@
                 <!-- Tagline -->
                 <h1 class="text-2xl sm:text-3xl lg:text-5xl font-extrabold text-white leading-tight mb-5 animate-fade-in-up stagger-1" style="text-shadow: 0 2px 24px rgba(0,0,0,0.3); letter-spacing: -0.02em;">
                     {{ __('La marketplace nautique') }}<br>
-                    <span style="background: linear-gradient(135deg, #5DADE2, #76D7C4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ __('n°1 en Algerie') }}</span>
+                    <span style="background: linear-gradient(135deg, #5DADE2, #76D7C4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ __('en Algerie') }}</span>
                 </h1>
 
                 <p class="text-sm sm:text-base lg:text-lg max-w-lg mx-auto leading-relaxed mb-10 animate-fade-in-up stagger-2" style="color: rgba(255,255,255,0.7);">
@@ -347,7 +347,7 @@
                     <svg class="w-5 h-5 flex-shrink-0" style="color:#F59E0B;" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
-                    <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color:#1B2A4A;">{{ __('Annonces en vedette') }}</h2>
+                    <h2 class="text-lg sm:text-xl font-black tracking-tight" style="color:#1B2A4A;">{{ __('Annonces sponsorisées') }}</h2>
                 </div>
 
                 <div class="flex items-center gap-2">
