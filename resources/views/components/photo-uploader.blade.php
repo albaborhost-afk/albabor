@@ -1069,10 +1069,14 @@ if (typeof photoUploader === 'undefined') {
                     return;
                 }
 
+                // The native iOS/Android picker can't be capped from the web — we
+                // only learn the count after it closes. So instead of rejecting the
+                // whole selection when the user picks too many, keep the first
+                // maxFiles and tell them, rather than clearing everything.
+                let limitNotice = null;
                 if (selectedFiles.length > this.maxFiles) {
-                    this.errors = [`Veuillez sélectionner au maximum ${this.maxFiles} photo(s) à la fois.`];
-                    this.clearNativeSelection();
-                    return;
+                    limitNotice = `Vous avez sélectionné ${selectedFiles.length} photos. Seules les ${this.maxFiles} premières ont été conservées (maximum ${this.maxFiles}).`;
+                    selectedFiles = selectedFiles.slice(0, this.maxFiles);
                 }
 
                 const normalizedFiles = [];
@@ -1107,6 +1111,11 @@ if (typeof photoUploader === 'undefined') {
                 // pick the first new photo as the cover.
                 if (this.cover === null && this.files.length > 0) {
                     this.cover = 'new:0';
+                }
+                // Surface the "kept first N" notice now that the 20 photos are in
+                // (after the validation early-return, so it doesn't block them).
+                if (limitNotice) {
+                    this.errors = [limitNotice];
                 }
                 this.persistFiles();
             },
