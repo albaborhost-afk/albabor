@@ -61,6 +61,7 @@ Route::middleware('guest')->group(function () {
 // Public static pages (legal)
 Route::view('politique-confidentialite', 'pages.privacy')->name('pages.privacy');
 Route::view('conditions-utilisation', 'pages.terms')->name('pages.terms');
+Route::view('mentions-legales', 'pages.legal-notice')->name('pages.legal');
 
 // Public listing routes
 Route::get('annonces', [ListingController::class, 'index'])->name('listings.index');

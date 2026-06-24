@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ isset($title) ? $title . ' — AlBabor' : 'AlBabor — Marketplace Nautique N°1 en Algérie' }}</title>
+    <title>{{ isset($title) ? $title . ' — AlBabor' : 'AlBabor — Marketplace Nautique en Algérie' }}</title>
     <meta name="description" content="{{ $description ?? 'Achetez et vendez des bateaux, jet-skis, moteurs et pièces détachées en Algérie. La marketplace nautique de confiance avec paiement sécurisé.' }}">
     <meta name="keywords" content="bateau algérie, jet-ski, moteur hors-bord, vente bateau, achat bateau, nautisme algérie, albabor">
     <meta name="robots" content="index, follow">
@@ -14,7 +14,7 @@
     {{-- Open Graph --}}
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="AlBabor">
-    <meta property="og:title" content="{{ isset($title) ? $title . ' — AlBabor' : 'AlBabor — Marketplace Nautique N°1 en Algérie' }}">
+    <meta property="og:title" content="{{ isset($title) ? $title . ' — AlBabor' : 'AlBabor — Marketplace Nautique en Algérie' }}">
     <meta property="og:description" content="{{ $description ?? 'Achetez et vendez des bateaux, jet-skis, moteurs et pièces détachées en Algérie.' }}">
     <meta property="og:image" content="{{ $ogImage ?? asset('images/og-image.png') }}">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -22,7 +22,7 @@
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ isset($title) ? $title . ' — AlBabor' : 'AlBabor' }}">
-    <meta name="twitter:description" content="{{ $description ?? 'La marketplace nautique N°1 en Algérie.' }}">
+    <meta name="twitter:description" content="{{ $description ?? 'La marketplace nautique en Algérie.' }}">
     <meta name="twitter:image" content="{{ $ogImage ?? asset('images/og-image.png') }}">
 
     <link rel="icon" type="image/png" href="/favicon.png?v=5">
@@ -369,7 +369,7 @@
                         <img src="/images/logo-full.png" alt="AlBabor" style="height: 34px; filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.3));">
                     </div>
                     <p class="leading-relaxed text-sm mb-7" style="color: rgba(255,255,255,0.45); line-height: 1.7;">
-                        La marketplace nautique n°1 en Algerie. Achetez et vendez bateaux, jet-skis, moteurs et pieces en toute confiance.
+                        La marketplace nautique en Algerie. Achetez et vendez bateaux, jet-skis, moteurs et pieces en toute confiance.
                     </p>
                     <!-- Social Links -->
                     <div class="flex items-center gap-3">
@@ -422,6 +422,7 @@
                             @endauth
                             <li><a href="{{ route('pages.privacy') }}" class="footer-link text-sm">{{ __('Politique de confidentialite') }}</a></li>
                             <li><a href="{{ route('pages.terms') }}" class="footer-link text-sm">{{ __('Conditions d\'utilisation') }}</a></li>
+                            <li><a href="{{ route('pages.legal') }}" class="footer-link text-sm">{{ __('Mentions legales') }}</a></li>
                         </ul>
                     </div>
 

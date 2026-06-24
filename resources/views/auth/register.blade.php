@@ -296,7 +296,7 @@
                 </div>
 
                 <h1 class="text-3xl font-bold text-white mb-3 text-center auth-heading" style="text-shadow: 0 2px 20px rgba(0,0,0,0.25); letter-spacing: -0.02em;">{{ __('Rejoignez AlBabor') }}</h1>
-                <p class="text-lg mb-10 text-center auth-subheading" style="color: rgba(255,255,255,0.7);">{{ __('La communaute nautique N°1 en Algerie') }}</p>
+                <p class="text-lg mb-10 text-center auth-subheading" style="color: rgba(255,255,255,0.7);">{{ __('La communaute nautique en Algerie') }}</p>
 
                 <div class="space-y-5 max-w-sm w-full">
                     @foreach([
