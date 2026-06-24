@@ -861,6 +861,26 @@
                             </li>
                         </ul>
                     </div>
+
+                    {{-- ======== AVERTISSEMENT — disclaimer legal par annonce ======== --}}
+                    <div class="listing-card-frame annonce-safety-card rounded-3xl p-5 sm:p-6 mt-5">
+                        <div class="flex items-center gap-2.5 mb-3">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: rgba(155,168,183,0.12);">
+                                <svg class="w-4 h-4" style="color: #6B7B8D;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-800">{{ __('Avertissement') }}</h3>
+                        </div>
+                        <div class="space-y-2 text-xs" style="color: #6B7B8D; line-height: 1.65;">
+                            <p>{{ __('Les informations, photos et videos de cette annonce sont fournies a titre informatif et sont considerees exactes au moment de la publication.') }}</p>
+                            <p>{{ __('Le bateau est vendu « en l\'etat » sans garantie sauf mention ecrite contraire.') }}</p>
+                            <p>{{ __('Les acheteurs sont invites a effectuer leurs propres verifications et inspections avant achat.') }}</p>
+                            <p>{{ __('Le prix, la disponibilite et l\'etat du bateau peuvent changer sans preavis.') }}</p>
+                        </div>
+                        <a href="{{ route('pages.legal') }}" class="inline-flex items-center gap-1 text-xs font-semibold mt-3" style="color: #17A2B8;">
+                            {{ __('Lire les mentions legales') }}
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
                 </div>
             </div>
 
