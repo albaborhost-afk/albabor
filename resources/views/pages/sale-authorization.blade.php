@@ -108,11 +108,10 @@
         #autorisation-doc .auth-list li { margin-bottom: 6px; }
         #autorisation-doc .auth-sign { border-bottom: 1px solid #1B2A4A; height: 3em; margin-top: 8px; }
         @media print {
-            body * { visibility: hidden; }
-            #autorisation-doc, #autorisation-doc * { visibility: visible; }
-            #autorisation-doc { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; border: none !important; border-radius: 0 !important; padding: 0 !important; }
+            nav, footer, .no-print { display: none !important; }
+            #autorisation-doc { box-shadow: none !important; border: none !important; border-radius: 0 !important; padding: 0 !important; }
+            #autorisation-doc section { page-break-inside: avoid; break-inside: avoid; }
             @page { size: A4; margin: 16mm; }
-            .no-print { display: none !important; }
         }
     </style>
 </x-app-layout>
