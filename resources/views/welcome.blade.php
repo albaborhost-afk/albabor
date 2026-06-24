@@ -225,6 +225,26 @@
     </div>
     @endif
 
+    <!-- Positionnement / Marque -->
+    <section class="relative overflow-hidden" style="background: linear-gradient(135deg, #102B45 0%, #1B2A4A 55%, #1B4F72 100%);">
+        <div class="absolute inset-0 opacity-30" style="background: radial-gradient(ellipse at top right, rgba(23,162,184,0.25), transparent 60%);"></div>
+        <div class="max-w-4xl mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-16 relative text-center">
+            <div class="inline-flex items-center gap-2 text-sm font-semibold mb-4" style="color: #F39C12;">
+                <span>Albabor.com</span>
+                <span>🚤</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-5">
+                {{ __('Marketplace premium de yachts & bateaux') }}
+            </h2>
+            <p class="text-base sm:text-lg max-w-2xl mx-auto mb-6" style="color: rgba(255,255,255,0.85);">
+                {{ __('Nous mettons en avant les bateaux. Les proprietaires vendent. Les acheteurs contactent directement.') }}
+            </p>
+            <p class="text-xs sm:text-sm max-w-xl mx-auto" style="color: rgba(255,255,255,0.5);">
+                {{ __('Albabor.com agit uniquement comme plateforme marketing et n\'assume aucune responsabilite sur les transactions ou les biens.') }}
+            </p>
+        </div>
+    </section>
+
     <!-- Categories -->
     <div class="py-8 sm:py-10" style="background: #F0F4F8;">
         <div class="max-w-7xl mx-auto">
