@@ -213,7 +213,11 @@ class ListingResource extends Resource
                                             ->maxValue(2030),
                                         Forms\Components\Select::make('specs.general.immatriculation')
                                             ->label('Immatriculation')
-                                            ->options(array_combine(Listing::IMMATRICULATION_OPTIONS, Listing::IMMATRICULATION_OPTIONS))
+                                            ->options(collect(Listing::IMMATRICULATION_OPTIONS)
+                                                ->mapWithKeys(fn ($opt) => [
+                                                    $opt => (Listing::IMMATRICULATION_FLAGS[$opt] ?? '') . ' ' . $opt,
+                                                ])
+                                                ->all())
                                             ->placeholder('Selectionner...')
                                             ->native(false),
                                     ]),

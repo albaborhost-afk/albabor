@@ -115,6 +115,16 @@ class Listing extends Model
     const CARBURANT_OPTIONS = ['Essence', 'Diesel', 'Électrique', 'Hybride'];
     const IMMATRICULATION_OPTIONS = ['Algérien', 'Polonais', 'Espagnol', 'Français', 'Italien', 'Autre'];
 
+    /** Flag emoji for each immatriculation option (value stays the French label). */
+    const IMMATRICULATION_FLAGS = [
+        'Algérien' => '🇩🇿',
+        'Polonais' => '🇵🇱',
+        'Espagnol' => '🇪🇸',
+        'Français' => '🇫🇷',
+        'Italien' => '🇮🇹',
+        'Autre' => '🌍',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

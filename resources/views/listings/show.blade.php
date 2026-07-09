@@ -396,7 +396,14 @@
                                             <span style="color: #9BA8B7;" class="group-hover:text-[#17A2B8] transition-colors">{!! $info['icon'] !!}</span>
                                             <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
                                         </div>
-                                        <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('general', $key) }}</p>
+                                        <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">
+                                            @if($key === 'immatriculation')
+                                                @php $immatVal = $listing->getSpec('general', $key); @endphp
+                                                <span class="mr-1">{{ \App\Models\Listing::IMMATRICULATION_FLAGS[$immatVal] ?? '' }}</span>{{ $immatVal }}
+                                            @else
+                                                {{ $listing->getSpec('general', $key) }}
+                                            @endif
+                                        </p>
                                     </div>
                                     @php $specIndex++; @endphp
                                 @endif

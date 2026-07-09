@@ -343,12 +343,26 @@
                                 </div>
                                 <div x-show="category === 'boat' || category === 'jetski'">
                                     <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Immatriculation</label>
-                                    <select name="specs[general][immatriculation]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                        <option value="">-- Choisir --</option>
-                                        @foreach(\App\Models\Listing::IMMATRICULATION_OPTIONS as $opt)
-                                            <option value="{{ $opt }}" {{ old('specs.general.immatriculation', data_get($specs, 'general.immatriculation')) == $opt ? 'selected' : '' }}>{{ $opt }}</option>
-                                        @endforeach
-                                    </select>
+                                    <div x-data="{ immat: '{{ old('specs.general.immatriculation', data_get($specs, 'general.immatriculation', '')) }}' }">
+                                        <input type="hidden" name="specs[general][immatriculation]" :value="immat">
+                                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                                            @foreach(\App\Models\Listing::IMMATRICULATION_OPTIONS as $opt)
+                                                @php $flag = \App\Models\Listing::IMMATRICULATION_FLAGS[$opt] ?? '🏳️'; @endphp
+                                                <button type="button"
+                                                        @click="immat = '{{ $opt }}'"
+                                                        :class="immat === '{{ $opt }}' ? 'text-white shadow-md' : 'bg-white'"
+                                                        :style="immat === '{{ $opt }}'
+                                                            ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8); border: 1.5px solid #17A2B8;'
+                                                            : 'border: 1.5px solid #E0E6ED; color: #1B2A4A;'"
+                                                        class="flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5 transition-all hover:-translate-y-0.5"
+                                                        title="{{ $opt }}">
+                                                    <span class="text-2xl leading-none" aria-hidden="true">{{ $flag }}</span>
+                                                    <span class="text-[10px] font-semibold leading-tight text-center"
+                                                          :style="immat === '{{ $opt }}' ? 'color: rgba(255,255,255,0.95);' : 'color: #6B7B8D;'">{{ $opt }}</span>
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
