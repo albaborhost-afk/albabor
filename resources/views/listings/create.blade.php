@@ -358,7 +358,7 @@
                                     <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Immatriculation</label>
                                     <div x-data="{ immat: '{{ old('specs.general.immatriculation', '') }}' }">
                                         <input type="hidden" name="specs[general][immatriculation]" :value="immat">
-                                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                                        <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
                                             @foreach(\App\Models\Listing::IMMATRICULATION_OPTIONS as $opt)
                                                 @php $flag = \App\Models\Listing::IMMATRICULATION_FLAGS[$opt] ?? '🏳️'; @endphp
                                                 <button type="button"

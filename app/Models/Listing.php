@@ -113,15 +113,20 @@ class Listing extends Model
 
     const PROPULSION_OPTIONS = ['Hors-Bord', 'In-bord'];
     const CARBURANT_OPTIONS = ['Essence', 'Diesel', 'Électrique', 'Hybride'];
-    const IMMATRICULATION_OPTIONS = ['Algérien', 'Polonais', 'Espagnol', 'Français', 'Italien', 'Autre'];
+    const IMMATRICULATION_OPTIONS = ['Algérien', 'Tunisien', 'Marocain', 'Français', 'Espagnol', 'Italien', 'Maltais', 'Grec', 'Turc', 'Autre'];
 
     /** Flag emoji for each immatriculation option (value stays the French label). */
     const IMMATRICULATION_FLAGS = [
         'Algérien' => '🇩🇿',
-        'Polonais' => '🇵🇱',
-        'Espagnol' => '🇪🇸',
+        'Tunisien' => '🇹🇳',
+        'Marocain' => '🇲🇦',
         'Français' => '🇫🇷',
+        'Espagnol' => '🇪🇸',
         'Italien' => '🇮🇹',
+        'Maltais' => '🇲🇹',
+        'Grec' => '🇬🇷',
+        'Turc' => '🇹🇷',
+        'Polonais' => '🇵🇱', // plus sélectionnable — conservé pour l'affichage des annonces existantes
         'Autre' => '🌍',
     ];
 
