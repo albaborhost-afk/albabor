@@ -435,65 +435,24 @@ class ListingResource extends Resource
                         Forms\Components\Tabs\Tab::make('Medias')
                             ->icon('heroicon-o-photo')
                             ->schema([
-                                Forms\Components\Section::make('Images actuelles')
-                                    ->description('Galerie d\'images de l\'annonce')
+                                Forms\Components\Section::make('Gestion des photos')
+                                    ->description('Galerie de l\'annonce')
                                     ->icon('heroicon-o-photo')
+                                    ->hiddenOn('create')
                                     ->schema([
-                                        Forms\Components\Placeholder::make('media_gallery')
+                                        Forms\Components\Placeholder::make('media_manager_hint')
                                             ->label('')
-                                            ->content(function ($record) {
-                                                if (!$record || $record->media->isEmpty()) {
-                                                    return new \Illuminate\Support\HtmlString(
-                                                        '<p style="color: #9ca3af; font-style: italic;">Aucune image. Ajoutez des images ci-dessous.</p>'
-                                                    );
-                                                }
-
-                                                $disk = config('filesystems.listing_disk', 'public');
-                                                $html = '<div style="display: flex; flex-wrap: wrap; gap: 12px;">';
-                                                foreach ($record->media as $media) {
-                                                    try {
-                                                        $url = Storage::disk($disk)->url($media->path);
-                                                    } catch (\Throwable) {
-                                                        $url = route('listing-media.show', ['media' => $media->id]);
-                                                    }
-                                                    $html .= '<div style="position: relative;">';
-                                                    $html .= '<img src="' . e($url) . '" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid #e5e7eb;" />';
-                                                    $html .= '<span style="position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">#' . ($media->order + 1) . '</span>';
-                                                    $html .= '</div>';
-                                                }
-                                                $html .= '</div>';
-
-                                                return new \Illuminate\Support\HtmlString($html);
-                                            })
+                                            ->content(fn ($record) => new \Illuminate\Support\HtmlString(
+                                                '<p style="color: #6b7280;">Cette annonce compte <strong>' . ($record?->media()->count() ?? 0) . ' photo(s)</strong>. ' .
+                                                'La gestion complète (ajout, suppression, réorganisation, choix de la couverture) se fait dans la section <strong>« Photos »</strong> en bas de cette page.</p>'
+                                            ))
                                             ->columnSpanFull(),
-                                        Forms\Components\Actions::make([
-                                            Forms\Components\Actions\Action::make('deleteAllImages')
-                                                ->label('Supprimer toutes les images')
-                                                ->icon('heroicon-o-trash')
-                                                ->color('danger')
-                                                ->requiresConfirmation()
-                                                ->modalHeading('Supprimer toutes les images ?')
-                                                ->modalDescription('Cette action est irréversible.')
-                                                ->visible(fn ($record) => $record && $record->media->isNotEmpty())
-                                                ->action(function ($record) {
-                                                    $disk = Storage::disk(config('filesystems.listing_disk', 'public'));
-                                                    foreach ($record->media as $media) {
-                                                        try {
-                                                            $disk->delete($media->path);
-                                                            if ($media->thumbnail_path) {
-                                                                $disk->delete($media->thumbnail_path);
-                                                            }
-                                                        } catch (\Throwable) {}
-                                                        $media->delete();
-                                                    }
-                                                    Notification::make()->title('Images supprimées')->success()->send();
-                                                }),
-                                        ]),
                                     ]),
 
                                 Forms\Components\Section::make('Ajouter des images')
                                     ->description('Ajoutez jusqu\'à ' . \App\Models\Listing::MAX_IMAGES . ' images (JPEG, PNG, WebP — max 15 Mo chacune)')
                                     ->icon('heroicon-o-camera')
+                                    ->hiddenOn('edit')
                                     ->schema([
                                         Forms\Components\FileUpload::make('new_images')
                                             ->label('Nouvelles images')
@@ -1095,7 +1054,9 @@ class ListingResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            ListingResource\RelationManagers\MediaRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
