@@ -10,6 +10,20 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Plans are real production data.
+        $this->call([
+            PlanSeeder::class,
+        ]);
+
+        // The accounts below share one well-known password and exist only to
+        // develop against. Creating them in production would hand out an admin
+        // login, so they are never seeded outside local/testing.
+        if (! app()->environment(['local', 'testing'])) {
+            $this->command?->warn('Skipped demo accounts: they are only seeded in local/testing.');
+
+            return;
+        }
+
         // Create admin user
         User::updateOrCreate(
             ['email' => 'admin@dzboats.dz'],
@@ -48,10 +62,5 @@ class DatabaseSeeder extends Seeder
                 'verification_status' => 'none',
             ]
         );
-
-        // Run other seeders
-        $this->call([
-            PlanSeeder::class,
-        ]);
     }
 }

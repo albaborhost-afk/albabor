@@ -14,14 +14,23 @@ return new class extends Migration
             ->where('account_type', 'admin')
             ->delete();
 
-        // Create or update admin with new credentials
-        $exists = DB::table('users')->where('email', 'Albabordz@gmail.com')->exists();
+        $email    = env('ADMIN_EMAIL');
+        $password = env('ADMIN_PASSWORD');
+
+        // Never hardcode credentials here: this file is committed and the repo
+        // history is permanent. Without both env vars set, provision the admin
+        // out-of-band instead (`php artisan user:make-admin {email}`).
+        if (! $email || ! $password) {
+            return;
+        }
+
+        $exists = DB::table('users')->where('email', $email)->exists();
 
         if ($exists) {
             DB::table('users')
-                ->where('email', 'Albabordz@gmail.com')
+                ->where('email', $email)
                 ->update([
-                    'password'            => Hash::make('BILALbilal16@'),
+                    'password'            => Hash::make($password),
                     'account_type'        => 'admin',
                     'verified_badge'      => true,
                     'verification_status' => 'approved',
@@ -31,9 +40,9 @@ return new class extends Migration
         } else {
             DB::table('users')->insert([
                 'name'                => 'Admin Albabor',
-                'email'               => 'Albabordz@gmail.com',
+                'email'               => $email,
                 'phone'               => '0550000000',
-                'password'            => Hash::make('BILALbilal16@'),
+                'password'            => Hash::make($password),
                 'account_type'        => 'admin',
                 'verified_badge'      => true,
                 'verification_status' => 'approved',
@@ -46,6 +55,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::table('users')->where('email', 'Albabordz@gmail.com')->delete();
+        if ($email = env('ADMIN_EMAIL')) {
+            DB::table('users')->where('email', $email)->delete();
+        }
     }
 };
