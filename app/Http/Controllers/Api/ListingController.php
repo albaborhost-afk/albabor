@@ -8,6 +8,7 @@ use App\Models\ListingMedia;
 use App\Rules\AlgerianPhoneNumber;
 use App\Rules\InternationalPhoneNumber;
 use App\Services\ListingImageWatermark;
+use App\Services\ListingMediaStorage;
 use App\Models\ListingView;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -724,41 +725,13 @@ class ListingController extends Controller
      */
     protected function handleImageUpload(Listing $listing, array $images): int
     {
-        $order = $listing->media()->max('order') ?? 0;
+        $storage    = app(ListingMediaStorage::class);
+        $order      = $listing->media()->max('order') ?? 0;
         $savedCount = 0;
-        $disk = $this->listingDisk();
 
         foreach ($images as $image) {
-            try {
-                $order++;
-
-                // Générer un nom de fichier unique
-                $filename = uniqid('img_', true) . '.jpg';
-                $path = 'listings/' . $listing->id . '/' . $filename;
-                $thumbPath = 'listings/' . $listing->id . '/thumb_' . $filename;
-
-                // Redimensionner, watermark Albabor, puis sauvegarder l'image principale (max 1200px)
-                $img = Image::read($image);
-                $img->scaleDown(1200, 1200);
-                app(ListingImageWatermark::class)->apply($img);
-                Storage::disk($disk)->put($path, $img->toJpeg(85));
-
-                // Créer la miniature (300px) avec watermark
-                $thumb = Image::read($image);
-                $thumb->cover(300, 300);
-                app(ListingImageWatermark::class)->apply($thumb);
-                Storage::disk($disk)->put($thumbPath, $thumb->toJpeg(75));
-
-                ListingMedia::create([
-                    'listing_id' => $listing->id,
-                    'path' => $path,
-                    'thumbnail_path' => $thumbPath,
-                    'order' => $order,
-                ]);
-
+            if ($storage->store($listing, $image, ++$order) !== null) {
                 $savedCount++;
-            } catch (\Throwable $e) {
-                report($e);
             }
         }
 

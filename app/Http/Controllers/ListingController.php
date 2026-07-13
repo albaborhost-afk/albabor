@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Rules\AlgerianPhoneNumber;
 use App\Rules\InternationalPhoneNumber;
 use App\Services\ListingImageWatermark;
+use App\Services\ListingMediaStorage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -759,54 +760,13 @@ class ListingController extends Controller
 
     protected function handleImageUpload(Listing $listing, array $images): int
     {
-        $disk = $this->listingDisk();
-        $order = $listing->media()->max('order') ?? 0;
-        $saved = 0;
+        $storage = app(ListingMediaStorage::class);
+        $order   = $listing->media()->max('order') ?? 0;
+        $saved   = 0;
 
         foreach ($images as $image) {
-            $order++;
-
-            $filename  = uniqid('img_', true) . '.jpg';
-            $path      = 'listings/' . $listing->id . '/' . $filename;
-            $thumbPath = 'listings/' . $listing->id . '/thumb_' . $filename;
-
-            try {
-                // Resize and save main image (max 1200px)
-                $img = Image::read($image);
-                $img->scaleDown(1200, 1200);
-                app(ListingImageWatermark::class)->apply($img);
-                $mainStored = Storage::disk($disk)->put($path, (string) $img->toJpeg(85));
-
-                if (!$mainStored) {
-                    \Log::error('Storage::put returned false for listing image', [
-                        'path' => $path, 'disk' => $disk,
-                    ]);
-                    continue;
-                }
-
-                // Create thumbnail (300px) with watermark
-                $thumb = Image::read($image);
-                $thumb->cover(300, 300);
-                app(ListingImageWatermark::class)->apply($thumb);
-                $thumbStored = Storage::disk($disk)->put($thumbPath, (string) $thumb->toJpeg(75));
-
-                ListingMedia::create([
-                    'listing_id'     => $listing->id,
-                    'path'           => $path,
-                    'thumbnail_path' => $thumbStored ? $thumbPath : null,
-                    'order'          => $order,
-                ]);
-
+            if ($storage->store($listing, $image, ++$order) !== null) {
                 $saved++;
-
-            } catch (\Throwable $e) {
-                \Log::error('Exception while storing listing image', [
-                    'listing_id' => $listing->id,
-                    'path'       => $path,
-                    'disk'       => $disk,
-                    'error'      => $e->getMessage(),
-                    'trace'      => $e->getTraceAsString(),
-                ]);
             }
         }
 

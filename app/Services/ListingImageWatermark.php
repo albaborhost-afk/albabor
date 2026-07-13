@@ -8,52 +8,97 @@ use Intervention\Image\Interfaces\ImageInterface;
 class ListingImageWatermark
 {
     /**
+     * Filigranes déjà préparés pour cette requête, indexés par largeur cible.
+     * Sans ce cache, le logo était relu et ré-encodé en PNG pour chaque photo
+     * ET chaque miniature — 40 allers-retours disque pour une annonce de 20 photos.
+     *
+     * @var array<int, string>
+     */
+    private static array $prepared = [];
+
+    private static bool $cleanupRegistered = false;
+
+    /**
      * Apply Albabor logo watermark to an image (modifies in place).
      * Watermark is placed center-bottom by default.
      * Safe to call if watermark file is missing; then no change is made.
      */
     public function apply(ImageInterface $image): void
     {
-        $path = config('listings.watermark_path');
-        if (!$path || !File::isFile($path)) {
+        $source = config('listings.watermark_path');
+
+        if (! $source || ! File::isFile($source)) {
             return;
         }
 
         try {
-            $watermark = \Intervention\Image\Laravel\Facades\Image::read($path);
+            // Largeur du filigrane : fraction configurée de la largeur de l'image (min 80px).
+            $width = (int) round($image->width() * config('listings.watermark_max_width_ratio', 0.30));
+            $width = max($width, 80);
 
-            $imgWidth  = $image->width();
-            $imgHeight = $image->height();
+            $watermark = $this->prepare($source, $width);
 
-            // Scale watermark to configured fraction of image width (min 80px)
-            $maxW = (int) round($imgWidth * config('listings.watermark_max_width_ratio', 0.30));
-            if ($maxW < 80) {
-                $maxW = 80;
-            }
-            $watermark->scaleDown($maxW, 9999);
-
-            // Save watermark to a temp file for placement
-            $tmpFile = tempnam(sys_get_temp_dir(), 'albabor_wm_');
-            if ($tmpFile === false) {
+            if ($watermark === null) {
                 return;
             }
-            $tmpPng = $tmpFile . '.png';
-            rename($tmpFile, $tmpPng);
-
-            $watermark->toPng()->save($tmpPng);
 
             $image->place(
-                $tmpPng,
+                $watermark,
                 config('listings.watermark_position', 'bottom'),
                 config('listings.watermark_offset_x', 0),
                 config('listings.watermark_offset_y', 30),
                 config('listings.watermark_opacity', 30)
             );
-
-            @unlink($tmpPng);
         } catch (\Throwable $e) {
             report($e);
         }
+    }
+
+    /**
+     * Rend le logo à la largeur demandée dans un PNG temporaire, réutilisé
+     * pour toutes les images de la requête qui partagent cette largeur.
+     */
+    private function prepare(string $source, int $width): ?string
+    {
+        if (isset(self::$prepared[$width]) && is_file(self::$prepared[$width])) {
+            return self::$prepared[$width];
+        }
+
+        $tmpFile = tempnam(sys_get_temp_dir(), 'albabor_wm_');
+
+        if ($tmpFile === false) {
+            return null;
+        }
+
+        $tmpPng = $tmpFile . '.png';
+        rename($tmpFile, $tmpPng);
+
+        $watermark = \Intervention\Image\Laravel\Facades\Image::read($source);
+        $watermark->scaleDown($width, 9999);
+        $watermark->toPng()->save($tmpPng);
+        unset($watermark);
+
+        self::$prepared[$width] = $tmpPng;
+        self::registerCleanup();
+
+        return $tmpPng;
+    }
+
+    private static function registerCleanup(): void
+    {
+        if (self::$cleanupRegistered) {
+            return;
+        }
+
+        self::$cleanupRegistered = true;
+
+        register_shutdown_function(static function (): void {
+            foreach (self::$prepared as $path) {
+                @unlink($path);
+            }
+
+            self::$prepared = [];
+        });
     }
 
     /**
@@ -64,7 +109,8 @@ class ListingImageWatermark
     {
         try {
             $contents = \Illuminate\Support\Facades\Storage::disk($disk)->get($path);
-            if (!$contents) {
+
+            if (! $contents) {
                 return null;
             }
 
@@ -74,6 +120,7 @@ class ListingImageWatermark
             return (string) $image->toJpeg($quality);
         } catch (\Throwable $e) {
             report($e);
+
             return null;
         }
     }
