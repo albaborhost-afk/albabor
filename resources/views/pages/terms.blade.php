@@ -118,7 +118,7 @@
                     <div class="rounded-xl p-4" style="background: #F0F4F8;">
                         <p class="text-base" style="color: #3A4B5E;">
                             {{ __('Pour toute question concernant ces conditions :') }}
-                            <a href="mailto:contact@albabor.dz" class="font-semibold" style="color: #17A2B8;">contact@albabor.dz</a>
+                            <a href="mailto:contact@albabor.com" class="font-semibold" style="color: #17A2B8;">contact@albabor.com</a>
                         </p>
                     </div>
                 </section>

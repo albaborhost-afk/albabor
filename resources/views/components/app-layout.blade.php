@@ -434,7 +434,7 @@
                                 <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(23,162,184,0.1);">
                                     <svg class="w-3.5 h-3.5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                                 </div>
-                                <span class="break-all">contact@albabor.dz</span>
+                                <span class="break-all">contact@albabor.com</span>
                             </li>
                             <li class="flex items-center gap-3 text-sm" style="color: rgba(255,255,255,0.4);">
                                 <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(23,162,184,0.1);">
