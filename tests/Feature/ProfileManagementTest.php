@@ -46,7 +46,8 @@ class ProfileManagementTest extends TestCase
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'name' => 'Ayoub Benderdouch',
-            'phone' => '+213670123456',
+            'phone' => '0670123456',
+            'phone_country_code' => '+213',
         ]);
     }
 

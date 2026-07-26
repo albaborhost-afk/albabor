@@ -33,8 +33,10 @@ class InternationalPhoneNumber implements ValidationRule
 
         $cleaned = self::strip($value);
 
-        // Local Algerian format: implicit +213
-        if (preg_match('/^0[5-7]\d{8}$/', $cleaned)) {
+        // Local Algerian mobile: implicit +213, with or without the leading 0
+        // ("0770308424" or "770308424" — clients pairing a +213 selector with
+        // a bare national number submit the second shape).
+        if (preg_match('/^0?[5-7]\d{8}$/', $cleaned)) {
             return;
         }
 
@@ -54,10 +56,28 @@ class InternationalPhoneNumber implements ValidationRule
 
     /**
      * Strip formatting characters and normalize 00CC → +CC.
+     *
+     * Keeps only digits and a leading '+'. This also removes the invisible
+     * bidi/direction marks (U+200E, U+200F, …) and non-breaking spaces that
+     * phones insert when a number is pasted from contacts or WhatsApp on an
+     * Arabic-locale device — those used to survive and fail validation even
+     * though the number looked correct on screen.
      */
     public static function strip(string $phone): string
     {
-        $cleaned = preg_replace('/[\s\-\.\(\)]+/', '', trim($phone));
+        // Eastern Arabic (٠-٩) and Persian (۰-۹) digits → ASCII
+        $phone = strtr($phone, [
+            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+        ]);
+
+        // Drop every byte that is not a digit or '+', then keep '+' only in
+        // first position.
+        $cleaned = preg_replace('/[^0-9+]/', '', $phone);
+        $hasPlus = str_starts_with($cleaned, '+');
+        $cleaned = ($hasPlus ? '+' : '').str_replace('+', '', $cleaned);
 
         if (str_starts_with($cleaned, '00')) {
             $cleaned = '+'.substr($cleaned, 2);
@@ -84,9 +104,9 @@ class InternationalPhoneNumber implements ValidationRule
 
         $cleaned = self::strip($phone);
 
-        // Local Algerian format → implicit +213 country code
-        if (preg_match('/^0[5-7]\d{8}$/', $cleaned)) {
-            return ['+213', $cleaned];
+        // Local Algerian mobile (with or without leading 0) → implicit +213
+        if (preg_match('/^0?([5-7]\d{8})$/', $cleaned, $matches)) {
+            return ['+213', '0'.$matches[1]];
         }
 
         $code = PhoneCountry::detectCode($cleaned);
@@ -97,9 +117,10 @@ class InternationalPhoneNumber implements ValidationRule
         $national = substr($cleaned, strlen($code));
 
         // Algerian national numbers are stored with a leading 0 by historic
-        // convention; keep the existing storage shape on every Algerian save.
-        if ($code === '+213' && ! str_starts_with($national, '0')) {
-            $national = '0'.$national;
+        // convention; keep the existing storage shape on every Algerian save
+        // (ltrim guards against "+2130…" double-zero submissions).
+        if ($code === '+213') {
+            $national = '0'.ltrim($national, '0');
         }
 
         return [$code, $national];
@@ -127,9 +148,15 @@ class InternationalPhoneNumber implements ValidationRule
 
         $cleaned = self::strip($phone);
 
-        // +213XXXXXXXXX → 0XXXXXXXXX (legacy Algerian storage shape)
+        // Bare Algerian mobile (with or without leading 0) → 0XXXXXXXXX
+        if (preg_match('/^0?([5-7]\d{8})$/', $cleaned, $matches)) {
+            return '0'.$matches[1];
+        }
+
+        // +213XXXXXXXXX → 0XXXXXXXXX (legacy Algerian storage shape);
+        // ltrim guards against "+2130…" double-zero submissions.
         if (str_starts_with($cleaned, '+213')) {
-            return '0'.substr($cleaned, 4);
+            return '0'.ltrim(substr($cleaned, 4), '0');
         }
 
         return $cleaned;

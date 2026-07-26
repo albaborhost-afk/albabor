@@ -51,9 +51,20 @@
                 return country.name.toLowerCase().includes(searchTerm) || country.code.includes(searchTerm);
             });
         },
+        sanitizeNumber(value) {
+            return value
+                .replace(/[٠-٩]/g, d => String.fromCharCode(d.charCodeAt(0) - 1584))
+                .replace(/[۰-۹]/g, d => String.fromCharCode(d.charCodeAt(0) - 1728))
+                .replace(/\D/g, '')
+                .replace(/^0+/, '');
+        },
         get fullPhone() {
-            const number = this.phoneNumber.replace(/\\s+/g, '').trim();
+            const number = this.sanitizeNumber(this.phoneNumber);
             return number ? `${this.selected.code}${number}` : '';
+        },
+        handlePhoneInput() {
+            const cleaned = this.sanitizeNumber(this.phoneNumber);
+            if (cleaned !== this.phoneNumber) this.phoneNumber = cleaned;
         },
         selectCountry(country) {
             this.selected = country;
@@ -61,7 +72,7 @@
             this.search = '';
         },
         init() {
-            const currentPhone = (this.$el.dataset.currentPhone || '').replace(/\\s+/g, '').trim();
+            const currentPhone = (this.$el.dataset.currentPhone || '').replace(/[^0-9+]/g, '');
             if (!currentPhone) {
                 return;
             }
@@ -150,6 +161,7 @@
                 id="{{ $id }}"
                 type="tel"
                 x-model="phoneNumber"
+                @input="handlePhoneInput()"
                 @if($required) required @endif
                 placeholder="{{ __('messages.phone_placeholder') }}"
                 class="glass-input w-full py-3 px-4 rounded-xl"

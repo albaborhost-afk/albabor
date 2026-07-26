@@ -1153,16 +1153,24 @@
                                     const s = this.search.toLowerCase();
                                     return this.countries.filter(c => c.name.toLowerCase().includes(s) || c.code.includes(s));
                                 },
+                                sanitizeNumber(value) {
+                                    return value
+                                        .replace(/[٠-٩]/g, d => String.fromCharCode(d.charCodeAt(0) - 1584))
+                                        .replace(/[۰-۹]/g, d => String.fromCharCode(d.charCodeAt(0) - 1728))
+                                        .replace(/\D/g, '')
+                                        .replace(/^0+/, '');
+                                },
                                 get fullPhone() {
-                                    const num = this.phoneNumber.replace(/^0+/, '');
+                                    const num = this.sanitizeNumber(this.phoneNumber);
                                     return num ? this.selected.code + num : '';
                                 },
                                 handlePhoneInput() {
-                                    if (this.phoneNumber.startsWith('0')) this.phoneNumber = this.phoneNumber.replace(/^0+/, '');
+                                    const cleaned = this.sanitizeNumber(this.phoneNumber);
+                                    if (cleaned !== this.phoneNumber) this.phoneNumber = cleaned;
                                 },
                                 selectCountry(country) { this.selected = country; this.open = false; this.search = ''; },
                                 init() {
-                                    const old = this.$el.dataset.oldPhone || '';
+                                    const old = (this.$el.dataset.oldPhone || '').replace(/[^0-9+]/g, '');
                                     if (old) {
                                         const sorted = [...this.countries].sort((a, b) => b.code.length - a.code.length);
                                         for (const c of sorted) { if (old.startsWith(c.code)) { this.selected = c; this.phoneNumber = old.substring(c.code.length); return; } }
@@ -1224,16 +1232,24 @@
                                     const s = this.search.toLowerCase();
                                     return this.countries.filter(c => c.name.toLowerCase().includes(s) || c.code.includes(s));
                                 },
+                                sanitizeNumber(value) {
+                                    return value
+                                        .replace(/[٠-٩]/g, d => String.fromCharCode(d.charCodeAt(0) - 1584))
+                                        .replace(/[۰-۹]/g, d => String.fromCharCode(d.charCodeAt(0) - 1728))
+                                        .replace(/\D/g, '')
+                                        .replace(/^0+/, '');
+                                },
                                 get fullPhone() {
-                                    const num = this.phoneNumber.replace(/^0+/, '');
+                                    const num = this.sanitizeNumber(this.phoneNumber);
                                     return num ? this.selected.code + num : '';
                                 },
                                 handlePhoneInput() {
-                                    if (this.phoneNumber.startsWith('0')) this.phoneNumber = this.phoneNumber.replace(/^0+/, '');
+                                    const cleaned = this.sanitizeNumber(this.phoneNumber);
+                                    if (cleaned !== this.phoneNumber) this.phoneNumber = cleaned;
                                 },
                                 selectCountry(country) { this.selected = country; this.open = false; this.search = ''; },
                                 init() {
-                                    const old = this.$el.dataset.oldPhone || '';
+                                    const old = (this.$el.dataset.oldPhone || '').replace(/[^0-9+]/g, '');
                                     if (old) {
                                         const sorted = [...this.countries].sort((a, b) => b.code.length - a.code.length);
                                         for (const c of sorted) { if (old.startsWith(c.code)) { this.selected = c; this.phoneNumber = old.substring(c.code.length); return; } }
