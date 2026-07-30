@@ -30,8 +30,10 @@ interface ApiService {
     @GET("profile")
     suspend fun getProfile(): Response<ProfileResponse>
 
+    // Valeurs mixtes (String pour le nom, Boolean pour hide_name) : le corps
+    // est typé Any pour éviter d'envoyer « true » sous forme de chaîne.
     @PUT("profile")
-    suspend fun updateProfile(@Body body: Map<String, String>): Response<ApiResponse<User>>
+    suspend fun updateProfile(@Body body: Map<String, @JvmSuppressWildcards Any>): Response<ApiResponse<User>>
 
     @PUT("profile/password")
     suspend fun updatePassword(@Body body: Map<String, String>): Response<ApiResponse<Unit>>
@@ -55,6 +57,13 @@ interface ApiService {
 
     @GET("listings/{id}")
     suspend fun getListing(@Path("id") id: Int): Response<ListingDetailResponse>
+
+    /** Profil public d'un vendeur : ses annonces actives et ses compteurs. */
+    @GET("vendors/{id}")
+    suspend fun getSellerProfile(
+        @Path("id") id: Int,
+        @Query("page") page: Int = 1,
+    ): Response<SellerProfileResponse>
 
     @GET("my-listings")
     suspend fun getMyListings(): Response<PaginatedResponse<Listing>>

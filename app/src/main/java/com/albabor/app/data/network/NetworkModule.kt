@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -30,22 +29,44 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "al
 object TokenStore {
     private val TOKEN_KEY = stringPreferencesKey("auth_token")
 
+    // In-memory mirror of the persisted token. Interceptors read this synchronously
+    // so they never block a network thread on a DataStore read (previous ANR risk).
+    @Volatile
+    private var cachedToken: String? = null
+    @Volatile
+    private var primed = false
+
+    /** Best-effort token for interceptors — no suspension, no blocking. */
+    fun cached(): String? = cachedToken
+
     suspend fun save(context: Context, token: String) {
+        cachedToken = token
+        primed = true
         context.dataStore.edit { it[TOKEN_KEY] = token }
     }
 
     suspend fun get(context: Context): String? {
-        return context.dataStore.data.map { it[TOKEN_KEY] }.first()
+        val token = context.dataStore.data.map { it[TOKEN_KEY] }.first()
+        cachedToken = token
+        primed = true
+        return token
     }
 
     suspend fun clear(context: Context) {
+        cachedToken = null
+        primed = true
         context.dataStore.edit { it.remove(TOKEN_KEY) }
+    }
+
+    /** Load the persisted token into [cachedToken] once, at app startup. */
+    suspend fun prime(context: Context) {
+        if (!primed) get(context)
     }
 }
 
-class AuthInterceptor(private val context: Context) : Interceptor {
+class AuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
-        val token = runBlocking { TokenStore.get(context) }
+        val token = TokenStore.cached()
         val original = chain.request()
 
         // Don't override Content-Type for multipart — OkHttp sets it automatically with the boundary
@@ -86,7 +107,10 @@ class UnauthorizedInterceptor(private val context: Context) : Interceptor {
                 path.contains("/auth/register") ||
                 path.contains("/auth/google") ||
                 path.contains("/auth/forgot-password")
-            if (!isAuthAttempt) {
+            // Don't logout on background polling endpoints — a stale badge count
+            // is not a reason to kick the user out of the app.
+            val isBackgroundPoll = path.contains("/conversations/unread-count")
+            if (!isAuthAttempt && !isBackgroundPoll) {
                 scope.launch { TokenStore.clear(context) }
                 SessionBus.emitUnauthorized()
             }
@@ -120,7 +144,7 @@ object NetworkModule {
 
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(appContext))
+            .addInterceptor(AuthInterceptor())
             .addInterceptor(UnauthorizedInterceptor(appContext))
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)

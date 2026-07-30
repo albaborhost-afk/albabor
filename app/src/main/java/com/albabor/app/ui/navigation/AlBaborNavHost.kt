@@ -27,11 +27,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.albabor.app.data.network.NetworkModule
 import com.albabor.app.data.network.SessionBus
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,6 +59,7 @@ import com.albabor.app.ui.screens.favorites.FavoritesScreen
 import com.albabor.app.ui.screens.home.HomeScreen
 import com.albabor.app.ui.screens.listing.CreateListingScreen
 import com.albabor.app.ui.screens.listing.ListingDetailScreen
+import com.albabor.app.ui.screens.seller.SellerProfileScreen
 import com.albabor.app.ui.screens.mediation.MediationDetailScreen
 import com.albabor.app.ui.screens.mediation.MediationScreen
 import com.albabor.app.ui.screens.mylistings.MyListingsScreen
@@ -97,17 +96,6 @@ fun AlBaborNavHost() {
 
     val startDestination = if (loggedIn) Screen.Home.route else Screen.Login.route
 
-    // Unread messages count for badge
-    var unreadMessages by remember { mutableIntStateOf(0) }
-    LaunchedEffect(loggedIn) {
-        if (loggedIn) {
-            runCatching { NetworkModule.apiService.getUnreadCount() }
-                .onSuccess { response ->
-                    unreadMessages = response.body()?.unreadCount ?: 0
-                }
-        }
-    }
-
     // Listen for 401 session expiry — kick the user back to the Login screen
     LaunchedEffect(Unit) {
         SessionBus.unauthorized.collect {
@@ -120,7 +108,7 @@ fun AlBaborNavHost() {
     val bottomNavItems = listOf(
         BottomNavItem(Screen.Home, "Accueil", Icons.Filled.Home, Icons.Outlined.Home),
         BottomNavItem(Screen.Explore, "Explorer", Icons.Filled.Search, Icons.Outlined.Search),
-        BottomNavItem(Screen.Conversations, "Messages", Icons.AutoMirrored.Filled.Chat, Icons.Outlined.ChatBubbleOutline, badgeCount = unreadMessages),
+        BottomNavItem(Screen.Conversations, "Messages", Icons.AutoMirrored.Filled.Chat, Icons.Outlined.ChatBubbleOutline),
         BottomNavItem(Screen.CreateListing, "Publier", Icons.Filled.Add, Icons.Filled.Add),
         BottomNavItem(Screen.Favorites, "Favoris", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder),
         BottomNavItem(Screen.Profile, "Profil", Icons.Filled.Person, Icons.Outlined.Person),
@@ -233,9 +221,25 @@ fun AlBaborNavHost() {
                     onConversationRequested = { conversationId ->
                         navController.navigate(Screen.ConversationDetail.route(conversationId))
                     },
-                    onMediationRequested = { id ->
-                        navController.navigate(Screen.MediationDetail.route(id))
+                    onMediationRequested = { ticketId ->
+                        navController.navigate(Screen.MediationDetail.route(ticketId))
+                    },
+                    onSellerRequested = { sellerId ->
+                        navController.navigate(Screen.SellerProfile.route(sellerId))
                     }
+                )
+            }
+
+            // ── Profil public d'un vendeur ────────────────────────────────────────
+            composable(
+                route = Screen.SellerProfile.route,
+                arguments = listOf(navArgument("sellerId") { type = NavType.IntType }),
+            ) { backStackEntry ->
+                val sellerId = backStackEntry.arguments?.getInt("sellerId") ?: return@composable
+                SellerProfileScreen(
+                    sellerId = sellerId,
+                    navController = navController,
+                    onBack = { navController.popBackStack() }
                 )
             }
 

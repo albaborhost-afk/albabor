@@ -53,6 +53,12 @@ class ListingDetailViewModel(private val listingId: Int) : ViewModel() {
     private val _snackbar = MutableStateFlow<String?>(null)
     val snackbar: StateFlow<String?> = _snackbar.asStateFlow()
 
+    private val _isCreatingMediation = MutableStateFlow(false)
+    val isCreatingMediation: StateFlow<Boolean> = _isCreatingMediation.asStateFlow()
+
+    private val _createdTicketId = MutableStateFlow<Int?>(null)
+    val createdTicketId: StateFlow<Int?> = _createdTicketId.asStateFlow()
+
     // ── Init ──────────────────────────────────────────────────────────────────
 
     init {
@@ -109,14 +115,12 @@ class ListingDetailViewModel(private val listingId: Int) : ViewModel() {
         _favLoading.value  = true
 
         viewModelScope.launch {
-            val result = if (wasLiked) {
-                favRepo.removeFavorite(listingId)
-            } else {
-                favRepo.addFavorite(listingId)
-            }
-            result
-                .onSuccess {
-                    _snackbar.value = if (wasLiked) "Retiré des favoris" else "Ajouté aux favoris"
+            favRepo.toggleFavorite(listingId)
+                .onSuccess { nowFavorited ->
+                    // Trust the server's returned state rather than our optimistic guess,
+                    // so the heart can't drift out of sync with the backend.
+                    _isFavorited.value = nowFavorited
+                    _snackbar.value = if (nowFavorited) "Ajouté aux favoris" else "Retiré des favoris"
                 }
                 .onFailure {
                     // Revert optimistic update
@@ -125,6 +129,27 @@ class ListingDetailViewModel(private val listingId: Int) : ViewModel() {
                 }
             _favLoading.value = false
         }
+    }
+
+    fun createMediationTicket(message: String) {
+        val body = message.trim()
+        if (body.isEmpty() || _isCreatingMediation.value) return
+        viewModelScope.launch {
+            _isCreatingMediation.value = true
+            convoRepo.createTicket(listingId, body)
+                .onSuccess { ticket ->
+                    _createdTicketId.value = ticket.id
+                    _snackbar.value = "Ticket de médiation créé"
+                }
+                .onFailure { error ->
+                    _snackbar.value = error.message ?: "Impossible de créer le ticket de médiation"
+                }
+            _isCreatingMediation.value = false
+        }
+    }
+
+    fun clearCreatedTicket() {
+        _createdTicketId.value = null
     }
 
     fun clearSnackbar() {

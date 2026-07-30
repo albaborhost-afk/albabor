@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.albabor.app.BuildConfig
 import com.albabor.app.data.model.User
 import com.albabor.app.ui.navigation.Screen
 import com.albabor.app.ui.theme.*
@@ -146,7 +147,7 @@ fun ProfileScreen(navController: NavController) {
                     )
                     if (profileError != null) {
                         Text(
-                            text = profileError!!,
+                            text = profileError.orEmpty(),
                             style = MaterialTheme.typography.bodySmall.copy(color = Error500),
                             textAlign = TextAlign.Center
                         )
@@ -311,7 +312,7 @@ fun ProfileScreen(navController: NavController) {
 
             // Version footer
             Text(
-                text = "AlBabor v1.0.0 · La Mer, Votre Marche",
+                text = "AlBabor v${BuildConfig.VERSION_NAME} · La Mer, Votre Marche",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodySmall.copy(color = Gray300),

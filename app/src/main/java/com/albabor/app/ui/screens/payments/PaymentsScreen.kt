@@ -23,10 +23,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.UploadFile
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -40,10 +41,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -85,8 +90,9 @@ import com.albabor.app.viewmodel.PaymentsViewModel
 @Composable
 fun PaymentsScreen(navController: NavController) {
     val vm: PaymentsViewModel = viewModel()
-    val payments by vm.payments.collectAsStateWithLifecycle()
+    val payments  by vm.payments.collectAsStateWithLifecycle()
     val isLoading by vm.isLoading.collectAsStateWithLifecycle()
+    var proofDialogPayment by remember { mutableStateOf<com.albabor.app.data.model.Payment?>(null) }
 
     Scaffold(
         topBar = {
@@ -167,7 +173,7 @@ fun PaymentsScreen(navController: NavController) {
                     items(payments, key = { it.id }) { payment ->
                         PaymentCard(
                             payment = payment,
-                            onSubmitProof = { /* open proof upload flow */ },
+                            onSubmitProof = { proofDialogPayment = payment },
                             onViewListing = { listingId ->
                                 navController.navigate(Screen.ListingDetail.route(listingId))
                             }
@@ -193,6 +199,61 @@ fun PaymentsScreen(navController: NavController) {
                 LinearLoadingBar()
             }
         }
+    }
+
+    // Proof status dialog
+    proofDialogPayment?.let { payment ->
+        AlertDialog(
+            onDismissRequest = { proofDialogPayment = null },
+            title = {
+                Text(
+                    "Statut du paiement",
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    color = Gray900
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        "Votre preuve de paiement est en cours d'examen par notre équipe.",
+                        color = Gray700,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Surface(
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+                        color = OceanBlue100.copy(alpha = 0.5f)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                "Référence : #${payment.id}",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = OceanBlue700
+                            )
+                            Text(
+                                "Montant : ${payment.formattedAmount}",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = OceanBlue700
+                            )
+                        }
+                    }
+                    Text(
+                        "Si vous avez besoin d'aide, contactez-nous à contact@albabor.com",
+                        color = Gray500,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { proofDialogPayment = null },
+                    colors = ButtonDefaults.buttonColors(containerColor = OceanBlue700),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp)
+                ) { Text("Compris") }
+            },
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+            containerColor = White
+        )
     }
 }
 
@@ -375,7 +436,7 @@ private fun PaymentCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Filled.OpenInNew,
+                    imageVector = Icons.AutoMirrored.Filled.OpenInNew,
                     contentDescription = null,
                     tint = OceanBlue700,
                     modifier = Modifier.size(14.dp)

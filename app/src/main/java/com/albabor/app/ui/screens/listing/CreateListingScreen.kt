@@ -68,10 +68,14 @@ private val MEDITERRANEAN_COUNTRIES = listOf(
 
 private val IMMATRICULATION_OPTIONS = listOf(
     "Algérien",
-    "Polonais",
-    "Espagnol",
+    "Tunisien",
+    "Marocain",
     "Français",
+    "Espagnol",
     "Italien",
+    "Maltais",
+    "Grec",
+    "Turc",
     "Autre",
 )
 
@@ -600,6 +604,80 @@ private fun Step2Info(vm: CreateListingViewModel) {
                 icon          = Icons.Default.LocationCity,
                 maxLength     = 100
             )
+        }
+
+        FormCard {
+            SelectorGroup(
+                title   = "Échange",
+                options = listOf(
+                    "accepte" to "Accepte l'échange",
+                    "refuse"  to "N'accepte pas"
+                ),
+                selected  = vm.remarqueEchange,
+                onSelect  = { choice ->
+                    vm.remarqueEchange = choice
+                    if (choice == "refuse") {
+                        vm.exchangeDetail1 = ""
+                        vm.exchangeDetail2 = ""
+                        vm.exchangeDetail3 = ""
+                    }
+                },
+                compact   = true
+            )
+            Text(
+                text       = "Précisez si vous acceptez un échange contre un autre bien ou embarcation.",
+                style      = MaterialTheme.typography.bodySmall,
+                color      = Gray500,
+                modifier   = Modifier.padding(top = 6.dp)
+            )
+            AnimatedVisibility(visible = vm.remarqueEchange == "accepte") {
+                Column(
+                    modifier              = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    Text(
+                        text       = "Descriptions de l'échange (optionnel, jusqu'à 3 champs)",
+                        style      = MaterialTheme.typography.labelLarge,
+                        color      = Gray900,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    FormField(
+                        label         = "Description 1",
+                        value         = vm.exchangeDetail1,
+                        onValueChange = { vm.exchangeDetail1 = it },
+                        placeholder   = "Ce que vous proposez ou recherchez en priorité…",
+                        icon          = Icons.Default.Notes,
+                        singleLine    = false,
+                        minLines      = 2,
+                        maxLines      = 5,
+                        maxLength     = 500
+                    )
+                    FormField(
+                        label         = "Description 2",
+                        value         = vm.exchangeDetail2,
+                        onValueChange = { vm.exchangeDetail2 = it },
+                        placeholder   = "Conditions, budget équivalent, zone géographique…",
+                        icon          = Icons.Default.Notes,
+                        singleLine    = false,
+                        minLines      = 2,
+                        maxLines      = 5,
+                        maxLength     = 500
+                    )
+                    FormField(
+                        label         = "Description 3",
+                        value         = vm.exchangeDetail3,
+                        onValueChange = { vm.exchangeDetail3 = it },
+                        placeholder   = "Autres précisions pour les acheteurs intéressés…",
+                        icon          = Icons.Default.Notes,
+                        singleLine    = false,
+                        minLines      = 2,
+                        maxLines      = 5,
+                        maxLength     = 500
+                    )
+                }
+            }
         }
     }
 }

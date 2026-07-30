@@ -65,6 +65,8 @@ fun EditProfileScreen(
     // ── Profile fields ────────────────────────────────────────────────────────
     var name  by remember(user) { mutableStateOf(user?.name  ?: "") }
     var phone by remember(user) { mutableStateOf(user?.phone ?: "") }
+    // Publier sous « Invité » : masque le nom et la photo pour les acheteurs.
+    var hideName by remember(user) { mutableStateOf(user?.hideName ?: false) }
 
     // ── Password fields ───────────────────────────────────────────────────────
     var currentPassword  by remember { mutableStateOf("") }
@@ -267,7 +269,7 @@ fun EditProfileScreen(
                             keyboardActions = KeyboardActions(
                                 onDone = {
                                     focusManager.clearFocus()
-                                    if (!isProfileLoading) vm.updateProfile(name, phone)
+                                    if (!isProfileLoading) vm.updateProfile(name, phone, hideName)
                                 }
                             )
                         )
@@ -277,7 +279,7 @@ fun EditProfileScreen(
                             Spacer(modifier = Modifier.height(14.dp))
                             ReadOnlyField(
                                 label = "Adresse email",
-                                value = user!!.email,
+                                value = user?.email ?: "",
                                 icon = Icons.Outlined.Email
                             )
                             Text(
@@ -287,13 +289,20 @@ fun EditProfileScreen(
                             )
                         }
 
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        HideNameSetting(
+                            checked = hideName,
+                            onCheckedChange = { hideName = it }
+                        )
+
                         Spacer(modifier = Modifier.height(32.dp))
 
                         GradientButton(
                             text = "Enregistrer",
                             onClick = {
                                 focusManager.clearFocus()
-                                vm.updateProfile(name, phone)
+                                vm.updateProfile(name, phone, hideName)
                             },
                             enabled = !isProfileLoading && name.isNotBlank(),
                             isLoading = isProfileLoading,
@@ -525,6 +534,84 @@ private fun ReadOnlyField(
                     text = value,
                     style = MaterialTheme.typography.bodyMedium.copy(color = Gray500)
                 )
+            }
+        }
+    }
+}
+
+// ─── Confidentialité : publier sous « Invité » ────────────────────────────────
+
+@Composable
+private fun HideNameSetting(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        color = Gray100,
+        border = androidx.compose.foundation.BorderStroke(1.dp, Gray200)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.VisibilityOff,
+                    contentDescription = null,
+                    tint = Teal500,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .padding(top = 2.dp)
+                )
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Publier sous « Invité »",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = Gray900,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Votre nom et votre photo sont masqués sur vos annonces, " +
+                            "votre profil public et la messagerie. Les acheteurs vous " +
+                            "contactent normalement par téléphone, WhatsApp ou message.",
+                        style = MaterialTheme.typography.labelSmall.copy(color = Gray500),
+                        fontSize = 12.sp,
+                        lineHeight = 17.sp
+                    )
+                }
+
+                Switch(
+                    checked = checked,
+                    onCheckedChange = onCheckedChange,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = androidx.compose.ui.graphics.Color.White,
+                        checkedTrackColor = Teal500
+                    )
+                )
+            }
+
+            AnimatedVisibility(visible = checked, enter = fadeIn(), exit = fadeOut()) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    color = Teal500.copy(alpha = 0.10f)
+                ) {
+                    Text(
+                        text = "Actif : les acheteurs voient « Invité » à la place de votre nom. " +
+                            "Vous, et l'équipe AlBabor, continuez de voir votre vrai nom.",
+                        style = MaterialTheme.typography.labelSmall.copy(color = OceanBlue700),
+                        fontSize = 12.sp,
+                        lineHeight = 17.sp,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                    )
+                }
             }
         }
     }

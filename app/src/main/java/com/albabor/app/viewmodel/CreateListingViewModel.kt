@@ -62,6 +62,12 @@ class CreateListingViewModel : ViewModel() {
     var wilaya      by mutableStateOf("")   // selected country
     var ville       by mutableStateOf("")   // city / region free text
 
+    /** `accepte` | `refuse` | "" (non précisé — rien n'est envoyé à l'API). */
+    var remarqueEchange by mutableStateOf("")
+    var exchangeDetail1 by mutableStateOf("")
+    var exchangeDetail2 by mutableStateOf("")
+    var exchangeDetail3 by mutableStateOf("")
+
     // ── Step 3 – Prix & conditions ────────────────────────────────────────────
 
     var condition   by mutableStateOf("")   // new | like_new | good | average | needs_revision
@@ -241,9 +247,21 @@ class CreateListingViewModel : ViewModel() {
                     textPart("price_dzd", price.trim())
                     textPart("currency", currency)
                     textPart("mediation_enabled", if (mediationEnabled) "1" else "0")
+                    if (remarqueEchange.isNotBlank()) {
+                        textPart("remarque_echange", remarqueEchange.trim())
+                    }
 
                     fun specPart(group: String, key: String, value: String) {
                         textPart("specs[$group][$key]", value)
+                    }
+
+                    if (remarqueEchange == "accepte") {
+                        exchangeDetail1.trim().takeIf { it.isNotBlank() }
+                            ?.let { specPart("exchange", "detail_1", it) }
+                        exchangeDetail2.trim().takeIf { it.isNotBlank() }
+                            ?.let { specPart("exchange", "detail_2", it) }
+                        exchangeDetail3.trim().takeIf { it.isNotBlank() }
+                            ?.let { specPart("exchange", "detail_3", it) }
                     }
 
                     when (category) {

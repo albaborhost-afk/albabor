@@ -28,6 +28,11 @@ sealed class Screen(val route: String) {
     }
     object MyListings     : Screen("my_listings")
 
+    /** Profil public d'un vendeur : toutes ses annonces actives. */
+    object SellerProfile  : Screen("seller/{sellerId}") {
+        fun route(sellerId: Int) = "seller/$sellerId"
+    }
+
     // Payments
     object Payments       : Screen("payments")
     object PaymentDetail  : Screen("payment/{paymentId}") {

@@ -14,8 +14,8 @@ android {
         applicationId = "com.albabor.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 7
+        versionName = "1.1.5"
 
         // Play Store requires 64-bit support; strip 32-bit ABIs to reduce AAB size
         ndk {

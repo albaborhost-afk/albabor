@@ -56,7 +56,10 @@ class ProfileViewModel(private val context: Context) : ViewModel() {
 
     // ── Update profile ────────────────────────────────────────────────────────
 
-    fun updateProfile(name: String, phone: String) {
+    /**
+     * @param hideName publier sous « Invité ». `null` laisse le réglage tel quel.
+     */
+    fun updateProfile(name: String, phone: String, hideName: Boolean? = null) {
         if (name.isBlank()) {
             _updateState.value = UpdateState.Error("Le nom ne peut pas etre vide")
             return
@@ -71,7 +74,7 @@ class ProfileViewModel(private val context: Context) : ViewModel() {
         val normalizedPhone = if (phone.isBlank()) phone else normalizeAlgerianPhone(phone)
         viewModelScope.launch {
             _updateState.value = UpdateState.Loading
-            repo.updateProfile(name, normalizedPhone)
+            repo.updateProfile(name, normalizedPhone, hideName)
                 .onSuccess { updated ->
                     _user.value = updated
                     _updateState.value = UpdateState.Success

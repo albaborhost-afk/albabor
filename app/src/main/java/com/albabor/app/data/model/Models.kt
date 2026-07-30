@@ -40,6 +40,9 @@ val BOAT_TYPES: Map<String, String> = linkedMapOf(
 data class User(
     val id: Int,
     val name: String,
+    // Publier sous « Invité » : le serveur renvoie déjà le nom masqué aux
+    // tiers. Ce drapeau sert uniquement à l'écran de réglages du compte.
+    @SerializedName("hide_name") val hideName: Boolean = false,
     val email: String,
     val phone: String?,
     @SerializedName(value = "avatar", alternate = ["profile_picture_url"]) val avatar: String?,
@@ -259,7 +262,35 @@ data class ListingUser(
     val name: String,
     @SerializedName(value = "avatar", alternate = ["profile_picture_url"]) val avatar: String?,
     @SerializedName(value = "is_verified", alternate = ["verified_badge"]) val isVerified: Boolean = false,
-    val phone: String?
+    val phone: String?,
+    // Le nom arrive déjà masqué ; ce drapeau sert à afficher une silhouette
+    // plutôt que l'initiale « I » de « Invité ».
+    @SerializedName("hide_name") val hideName: Boolean = false
+)
+
+// ─── Profil public d'un vendeur ───────────────────────────────────────────────
+
+data class SellerProfileUser(
+    val id: Int,
+    val name: String,
+    @SerializedName("hide_name") val hideName: Boolean = false,
+    @SerializedName(value = "profile_picture_url", alternate = ["avatar"]) val avatar: String? = null,
+    @SerializedName("account_type") val accountType: String = "user",
+    @SerializedName("verified_badge") val verifiedBadge: Boolean = false,
+    @SerializedName("created_at") val createdAt: String? = null,
+) {
+    val isVendorAccount: Boolean get() = accountType == "vendor"
+}
+
+data class SellerProfileStats(
+    @SerializedName("active_listings") val activeListings: Int = 0,
+    @SerializedName("total_views") val totalViews: Int = 0,
+)
+
+data class SellerProfileResponse(
+    val user: SellerProfileUser,
+    val stats: SellerProfileStats = SellerProfileStats(),
+    val listings: PaginatedResponse<Listing>,
 )
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────

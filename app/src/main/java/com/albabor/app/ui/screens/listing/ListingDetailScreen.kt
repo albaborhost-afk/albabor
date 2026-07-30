@@ -12,6 +12,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,6 +43,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +51,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -76,22 +81,27 @@ private val HeroGradientSubtle = Brush.linearGradient(
 fun ListingDetailScreen(
     listingId: Int,
     onBack: () -> Unit,
-    onMediationRequested: (listingId: Int) -> Unit = {},
-    onConversationRequested: (conversationId: Int) -> Unit = {}
+    onMediationRequested: (ticketId: Int) -> Unit = {},
+    onConversationRequested: (conversationId: Int) -> Unit = {},
+    onSellerRequested: (sellerId: Int) -> Unit = {}
 ) {
     val vm: ListingDetailViewModel = viewModel(
         key     = "listing_$listingId",
         factory = ListingDetailViewModel.factory(listingId)
     )
-    val state       by vm.state.collectAsStateWithLifecycle()
-    val isFavorited by vm.isFavorited.collectAsStateWithLifecycle()
-    val currentUserId by vm.currentUserId.collectAsStateWithLifecycle()
+    val state                  by vm.state.collectAsStateWithLifecycle()
+    val isFavorited            by vm.isFavorited.collectAsStateWithLifecycle()
+    val currentUserId          by vm.currentUserId.collectAsStateWithLifecycle()
     val isStartingConversation by vm.isStartingConversation.collectAsStateWithLifecycle()
-    val startedConversationId by vm.startedConversationId.collectAsStateWithLifecycle()
-    val snackbar    by vm.snackbar.collectAsStateWithLifecycle()
+    val startedConversationId  by vm.startedConversationId.collectAsStateWithLifecycle()
+    val isCreatingMediation    by vm.isCreatingMediation.collectAsStateWithLifecycle()
+    val createdTicketId        by vm.createdTicketId.collectAsStateWithLifecycle()
+    val snackbar               by vm.snackbar.collectAsStateWithLifecycle()
     val host = remember { SnackbarHostState() }
-    var showMessageDialog by remember { mutableStateOf(false) }
-    var messageDraft by remember { mutableStateOf("") }
+    var showMessageDialog   by remember { mutableStateOf(false) }
+    var messageDraft        by remember { mutableStateOf("") }
+    var showMediationDialog by remember { mutableStateOf(false) }
+    var mediationDraft      by remember { mutableStateOf("") }
 
     LaunchedEffect(snackbar) { snackbar?.let { host.showSnackbar(it); vm.clearSnackbar() } }
     LaunchedEffect(startedConversationId) {
@@ -100,6 +110,14 @@ fun ListingDetailScreen(
             messageDraft = ""
             onConversationRequested(conversationId)
             vm.clearStartedConversation()
+        }
+    }
+    LaunchedEffect(createdTicketId) {
+        createdTicketId?.let { ticketId ->
+            showMediationDialog = false
+            mediationDraft = ""
+            onMediationRequested(ticketId)
+            vm.clearCreatedTicket()
         }
     }
 
@@ -117,13 +135,14 @@ fun ListingDetailScreen(
 
                 is ListingDetailViewModel.State.Success ->
                     DetailBody(
-                        listing = s.listing,
-                        isFavorited = isFavorited,
-                        currentUserId = currentUserId,
-                        onBack = onBack,
+                        listing          = s.listing,
+                        isFavorited      = isFavorited,
+                        currentUserId    = currentUserId,
+                        onBack           = onBack,
                         onToggleFavorite = vm::toggleFavorite,
-                        onMediationRequested = onMediationRequested,
-                        onDirectMessage = { showMessageDialog = true }
+                        onMediation      = { showMediationDialog = true },
+                        onDirectMessage  = { showMessageDialog = true },
+                        onSellerRequested = onSellerRequested
                     )
             }
         }
@@ -140,6 +159,18 @@ fun ListingDetailScreen(
             onSend = { vm.startConversation(messageDraft) }
         )
     }
+
+    if (showMediationDialog) {
+        DirectMessageDialog(
+            value = mediationDraft,
+            isSending = isCreatingMediation,
+            onValueChange = { mediationDraft = it },
+            onDismiss = { if (!isCreatingMediation) showMediationDialog = false },
+            onSend = { vm.createMediationTicket(mediationDraft) },
+            title = "Demander une médiation",
+            hint = "Décrivez votre demande de médiation au vendeur..."
+        )
+    }
 }
 
 // ── Main scrollable body ─────────────────────────────────────────────────────
@@ -151,8 +182,9 @@ private fun DetailBody(
     currentUserId: Int,
     onBack: () -> Unit,
     onToggleFavorite: () -> Unit,
-    onMediationRequested: (Int) -> Unit,
-    onDirectMessage: () -> Unit
+    onMediation: () -> Unit,
+    onDirectMessage: () -> Unit,
+    onSellerRequested: (sellerId: Int) -> Unit
 ) {
     val ctx = LocalContext.current
     val canDirectMessage = listing.user?.id?.let { sellerId ->
@@ -166,8 +198,11 @@ private fun DetailBody(
     ) {
         item { ImageGallery(listing, isFavorited, onBack, onToggleFavorite) }
         item { PriceHeroCard(listing) }
-        listing.user?.let { item { SellerCard(it) } }
+        listing.user?.let { seller ->
+            item { SellerCard(seller, onClick = { onSellerRequested(seller.id) }) }
+        }
         listing.description?.takeIf { it.isNotBlank() }?.let { item { DescriptionCard(it) } }
+        item { ExchangeDetailsSection(listing) }
         item { GeneralSection(listing) }
         item { DimensionsSection(listing) }
         item { MotorisationSection(listing) }
@@ -178,12 +213,12 @@ private fun DetailBody(
         item { SafetyTips() }
         item {
             BottomContactBar(
-                listing = listing,
-                isFavorited = isFavorited,
+                listing          = listing,
+                isFavorited      = isFavorited,
                 canDirectMessage = canDirectMessage,
                 onToggleFavorite = onToggleFavorite,
-                onDirectMessage = onDirectMessage,
-                onMediation = { onMediationRequested(listing.id) },
+                onDirectMessage  = onDirectMessage,
+                onMediation      = onMediation,
                 onCall = {
                     (listing.numeroMobile ?: listing.user?.phone)?.let {
                         ctx.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$it")))
@@ -193,6 +228,11 @@ private fun DetailBody(
                     listing.numeroWhatsapp?.let {
                         ctx.startActivity(Intent(Intent.ACTION_VIEW,
                             Uri.parse("https://wa.me/${it.replace(Regex("[^0-9]"), "")}")))
+                    }
+                },
+                onEmail = {
+                    listing.contactEmail?.let {
+                        ctx.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$it")))
                     }
                 },
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 20.dp)
@@ -215,6 +255,14 @@ private fun ImageGallery(
     val images    = listing.galleryImages.ifEmpty { listOf("") }
     val pager     = rememberPagerState(pageCount = { images.size })
     val scope     = rememberCoroutineScope()
+    var fullscreenOpen by remember { mutableStateOf(false) }
+    var fullscreenStart by remember { mutableIntStateOf(0) }
+
+    if (fullscreenOpen) {
+        FullscreenImageViewer(images = images, startPage = fullscreenStart) {
+            fullscreenOpen = false
+        }
+    }
 
     Column {
         // ── Main image ──────────────────────────────────────────────────
@@ -231,7 +279,15 @@ private fun ImageGallery(
                             .data(images[page]).crossfade(300).build(),
                         contentDescription = "Photo ${page + 1}",
                         contentScale       = ContentScale.Crop,
-                        modifier           = Modifier.fillMaxSize()
+                        modifier           = Modifier
+                            .fillMaxSize()
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                fullscreenStart = pager.currentPage
+                                fullscreenOpen = true
+                            }
                     )
                 } else {
                     Box(
@@ -361,6 +417,84 @@ private fun ImageGallery(
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FullscreenImageViewer(images: List<String>, startPage: Int, onDismiss: () -> Unit) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
+    ) {
+        val pager = rememberPagerState(initialPage = startPage) { images.size }
+
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
+            HorizontalPager(state = pager, modifier = Modifier.fillMaxSize()) { page ->
+                var scale by remember { mutableFloatStateOf(1f) }
+                var offset by remember { mutableStateOf(Offset.Zero) }
+
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .pointerInput(Unit) {
+                            detectTransformGestures { _, pan, zoom, _ ->
+                                scale = (scale * zoom).coerceIn(1f, 5f)
+                                offset = if (scale > 1f) offset + pan else Offset.Zero
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(images[page]).crossfade(true).build(),
+                        contentDescription = "Photo ${page + 1}",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .graphicsLayer(
+                                scaleX = scale,
+                                scaleY = scale,
+                                translationX = offset.x,
+                                translationY = offset.y
+                            )
+                    )
+                }
+            }
+
+            // Close button
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.55f))
+            ) {
+                Icon(Icons.Default.Close, contentDescription = "Fermer", tint = Color.White)
+            }
+
+            // Counter badge
+            if (images.size > 1) {
+                Surface(
+                    modifier = Modifier.align(Alignment.TopCenter).padding(top = 20.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    color = Color.Black.copy(alpha = 0.55f)
+                ) {
+                    Text(
+                        text = "${pager.currentPage + 1} / ${images.size}",
+                        color = Color.White,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                    )
                 }
             }
         }
@@ -549,9 +683,13 @@ private fun Pill(text: String, color: Color, icon: ImageVector? = null) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun SellerCard(seller: com.albabor.app.data.model.ListingUser) {
+private fun SellerCard(
+    seller: com.albabor.app.data.model.ListingUser,
+    onClick: () -> Unit,
+) {
     Surface(
-        Modifier.fillMaxWidth().padding(horizontal = 14.dp),
+        // Ouvre le profil public : un vendeur a souvent plusieurs annonces.
+        Modifier.fillMaxWidth().padding(horizontal = 14.dp).clickable(onClick = onClick),
         shape = CardShape, color = Color.White, shadowElevation = 6.dp
     ) {
         Row(
@@ -575,7 +713,12 @@ private fun SellerCard(seller: com.albabor.app.data.model.ListingUser) {
                             .border(2.dp, Color.White.copy(0.3f), RoundedCornerShape(18.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(seller.name.take(1).uppercase(), color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                        if (seller.hideName) {
+                            // Silhouette : l'initiale « I » d'« Invité » n'apprend rien.
+                            Icon(Icons.Outlined.Person, null, tint = Color.White, modifier = Modifier.size(30.dp))
+                        } else {
+                            Text(seller.name.take(1).uppercase(), color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
 
@@ -603,6 +746,9 @@ private fun SellerCard(seller: com.albabor.app.data.model.ListingUser) {
                 } else {
                     Text("Vendeur particulier", fontSize = 12.sp, color = Gray500)
                 }
+
+                Spacer(Modifier.height(2.dp))
+                Text("Voir toutes ses annonces", fontSize = 12.sp, color = Teal500, fontWeight = FontWeight.SemiBold)
             }
 
             // Arrow in a subtle circle
@@ -611,6 +757,42 @@ private fun SellerCard(seller: com.albabor.app.data.model.ListingUser) {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(Icons.Default.ChevronRight, null, tint = Gray500, modifier = Modifier.size(20.dp))
+            }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  ÉCHANGE — textes libres (specs.exchange.detail_*)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Composable
+private fun ExchangeDetailsSection(listing: Listing) {
+    if (listing.remarqueEchange != "accepte") return
+    val lines = listOfNotNull(
+        listing.getSpec("exchange", "detail_1")?.trim()?.takeIf { it.isNotBlank() },
+        listing.getSpec("exchange", "detail_2")?.trim()?.takeIf { it.isNotBlank() },
+        listing.getSpec("exchange", "detail_3")?.trim()?.takeIf { it.isNotBlank() },
+    )
+    if (lines.isEmpty()) return
+    Section("Détails sur l'échange", Icons.Default.SwapHoriz, accent = SafetyGreen) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            lines.forEachIndexed { index, text ->
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text       = "Description ${index + 1}",
+                        fontSize   = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color      = SafetyGreen,
+                        letterSpacing = 0.4.sp
+                    )
+                    Text(
+                        text       = text,
+                        style      = MaterialTheme.typography.bodyMedium,
+                        color      = Gray700,
+                        lineHeight = 22.sp
+                    )
+                }
             }
         }
     }
@@ -955,6 +1137,7 @@ private fun BottomContactBar(
     onMediation: () -> Unit,
     onCall: () -> Unit,
     onWhatsApp: () -> Unit,
+    onEmail: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -1015,6 +1198,15 @@ private fun BottomContactBar(
                             modifier = Modifier.weight(1f)
                         )
                     }
+                    if (listing.contactEmail != null) {
+                        GradientButton(
+                            onClick  = onEmail,
+                            gradient = Brush.linearGradient(listOf(Color(0xFF2E86C1), Color(0xFF1A5276))),
+                            icon     = Icons.Default.Email,
+                            text     = "Email",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
 
@@ -1048,12 +1240,14 @@ private fun DirectMessageDialog(
     isSending: Boolean,
     onValueChange: (String) -> Unit,
     onDismiss: () -> Unit,
-    onSend: () -> Unit
+    onSend: () -> Unit,
+    title: String = "Envoyer un message",
+    hint: String = "Bonjour, votre annonce est-elle toujours disponible ?"
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text("Envoyer un message", color = Gray900, fontWeight = FontWeight.Bold)
+            Text(title, color = Gray900, fontWeight = FontWeight.Bold)
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -1070,7 +1264,7 @@ private fun DirectMessageDialog(
                         .heightIn(min = 140.dp),
                     minLines = 5,
                     maxLines = 7,
-                    placeholder = { Text("Bonjour, votre annonce est-elle toujours disponible ?") },
+                    placeholder = { Text(hint) },
                     enabled = !isSending,
                     shape = RoundedCornerShape(16.dp)
                 )

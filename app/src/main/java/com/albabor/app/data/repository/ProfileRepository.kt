@@ -28,9 +28,24 @@ class ProfileRepository {
         )
     }
 
-    suspend fun updateProfile(name: String, phone: String): Result<User> = runCatching {
-        val response = api.updateProfile(mapOf("name" to name, "phone" to phone))
+    /**
+     * @param hideName publier sous « Invité ». `null` = ne pas y toucher.
+     */
+    suspend fun updateProfile(name: String, phone: String, hideName: Boolean? = null): Result<User> = runCatching {
+        val body = buildMap<String, Any> {
+            put("name", name)
+            put("phone", phone)
+            hideName?.let { put("hide_name", it) }
+        }
+        val response = api.updateProfile(body)
         if (response.isSuccessful) response.body()?.data ?: throw Exception("Empty response body")
+        else throw Exception(response.errorMessage())
+    }
+
+    /** Profil public d'un vendeur : ses annonces actives et ses compteurs. */
+    suspend fun getSellerProfile(sellerId: Int, page: Int = 1): Result<SellerProfileResponse> = runCatching {
+        val response = api.getSellerProfile(sellerId, page)
+        if (response.isSuccessful) response.body() ?: throw Exception("Empty response body")
         else throw Exception(response.errorMessage())
     }
 

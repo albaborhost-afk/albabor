@@ -8,6 +8,10 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ManageSearch
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -69,9 +73,8 @@ class VerificationViewModel : ViewModel() {
         viewModelScope.launch {
             _submitState.value = SubmitState.Loading
             try {
-                val stream = context.contentResolver.openInputStream(uri)
-                val bytes  = stream?.readBytes() ?: throw Exception("Impossible de lire le fichier")
-                stream.close()
+                val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                    ?: throw Exception("Impossible de lire le fichier")
                 val mime = context.contentResolver.getType(uri) ?: "image/jpeg"
                 repo.uploadVerification(bytes, mime).fold(
                     onSuccess = {
@@ -119,7 +122,7 @@ fun VerificationScreen(navController: NavController) {
                 title = { Text("Vérification d'identité", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Retour")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -385,7 +388,7 @@ private fun SubmitButton(
                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                 Spacer(Modifier.width(8.dp))
             } else {
-                Icon(Icons.Filled.Send, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
             }
             Text("Soumettre la demande", fontWeight = FontWeight.Bold, fontSize = 16.sp)
@@ -432,7 +435,7 @@ private fun PendingSection() {
             TimelineStep(
                 title = "En cours de vérification",
                 subtitle = "Notre équipe examine votre document",
-                icon = Icons.Filled.ManageSearch,
+                icon = Icons.AutoMirrored.Filled.ManageSearch,
                 color = Warning500,
                 isDone = false,
                 isActive = true
@@ -508,7 +511,7 @@ private fun ApprovedSection() {
     SectionCard(title = "AVANTAGES ACTIFS") {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             ActiveBenefitRow(icon = Icons.Filled.VerifiedUser, text = "Badge de confiance actif")
-            ActiveBenefitRow(icon = Icons.Filled.TrendingUp,   text = "Visibilité augmentée")
+            ActiveBenefitRow(icon = Icons.AutoMirrored.Filled.TrendingUp, text = "Visibilité augmentée")
             ActiveBenefitRow(icon = Icons.Filled.Shield,       text = "Médiation disponible")
         }
     }

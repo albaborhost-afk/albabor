@@ -17,6 +17,9 @@ class AlBaborApp : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         NetworkModule.init(this)
+        // Prime the auth-token cache once so interceptors can read it synchronously
+        // instead of blocking a network thread on a DataStore read per request.
+        runBlocking { TokenStore.prime(this@AlBaborApp) }
     }
 
     /**
@@ -25,9 +28,8 @@ class AlBaborApp : Application(), ImageLoaderFactory {
      * visible to their owner) from the server.
      */
     override fun newImageLoader(): ImageLoader {
-        val context = this
         val authInterceptor = Interceptor { chain ->
-            val token = runBlocking { TokenStore.get(context) }
+            val token = TokenStore.cached()
             val request = chain.request().newBuilder().apply {
                 token?.let { header("Authorization", "Bearer $it") }
             }.build()

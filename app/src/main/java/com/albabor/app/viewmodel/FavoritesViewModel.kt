@@ -69,7 +69,8 @@ class FavoritesViewModel : ViewModel() {
             _removingIds.value = _removingIds.value + listingId
             _listings.value = _listings.value.filter { it.id != listingId }
 
-            repo.removeFavorite(listingId)
+            // The item is shown because it's currently favorited, so toggling removes it.
+            repo.toggleFavorite(listingId)
                 .onFailure {
                     // Revert on failure by reloading
                     _error.value = it.message ?: "Echec de la suppression"
