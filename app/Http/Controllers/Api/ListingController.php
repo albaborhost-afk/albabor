@@ -323,7 +323,9 @@ class ListingController extends Controller
             'price_dzd' => $validated['price_dzd'],
             'currency' => $validated['currency'],
             'price_display_unit' => $validated['price_display_unit'] ?? null,
-            'type_offre' => $validated['type_offre'],
+            // Champ facultatif mais colonne NOT NULL : sans ce repli, une
+            // application qui ne l'envoie pas faisait planter l'enregistrement.
+            'type_offre' => $validated['type_offre'] ?? 'negociable',
             'etat' => $validated['etat'],
             'remarque_echange' => $validated['remarque_echange'] ?? null,
             'wilaya' => $validated['wilaya'] ?? null,
@@ -495,7 +497,9 @@ class ListingController extends Controller
             'price_dzd' => $validated['price_dzd'],
             'currency' => $validated['currency'],
             'price_display_unit' => $validated['price_display_unit'] ?? null,
-            'type_offre' => $validated['type_offre'],
+            // Champ facultatif mais colonne NOT NULL : sans ce repli, une
+            // application qui ne l'envoie pas faisait planter l'enregistrement.
+            'type_offre' => $validated['type_offre'] ?? 'negociable',
             'etat' => $validated['etat'],
             'remarque_echange' => $validated['remarque_echange'] ?? null,
             'wilaya' => $validated['wilaya'] ?? null,

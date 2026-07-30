@@ -262,7 +262,10 @@ class ListingController extends Controller
             'currency' => $validated['currency'],
             'currency_label' => $validated['currency'] === 'OTHER' ? ($validated['currency_label'] ?? null) : null,
             'price_display_unit' => $validated['price_display_unit'] ?? null,
-            'type_offre' => $validated['type_offre'] ?? null,
+            // La colonne est NOT NULL alors que le champ est facultatif : sans
+            // ce repli, un envoi sans type d'offre partait en 500 et l'annonce
+            // était perdue. « Négociable » est déjà la valeur par défaut affichée.
+            'type_offre' => $validated['type_offre'] ?? 'negociable',
             'etat' => $validated['etat'],
             'remarque_echange' => $validated['remarque_echange'] ?? null,
             'wilaya' => $validated['wilaya'] ?? null,
