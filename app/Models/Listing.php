@@ -12,6 +12,7 @@ class Listing extends Model
 {
     protected $fillable = [
         'user_id',
+        'client_token',
         'title',
         'description',
         'category',

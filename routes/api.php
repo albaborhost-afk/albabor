@@ -58,6 +58,11 @@ Route::prefix('v1')->group(function () {
 
         // My Listings
         Route::get('/my-listings', [ListingController::class, 'myListings']);
+        // Reprise d'un envoi dont la réponse s'est perdue (timeout, réseau mobile).
+        // Chemin sous /my-listings : /listings/{listing} est public et déclaré
+        // plus haut, il capterait « submission-status » comme identifiant.
+        Route::get('/my-listings/submission-status', [ListingController::class, 'submissionStatus'])
+            ->middleware('throttle:60,1');
         Route::post('/listings', [ListingController::class, 'store'])->middleware('throttle:10,1');
         Route::put('/listings/{listing}', [ListingController::class, 'update']);
         Route::delete('/listings/{listing}', [ListingController::class, 'destroy']);

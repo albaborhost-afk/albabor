@@ -1423,6 +1423,20 @@
                 {{-- ===================================================== --}}
                 {{-- NAVIGATION BUTTONS                                     --}}
                 {{-- ===================================================== --}}
+                {{-- Progression de l'envoi : 20 photos font plusieurs Mo, sans
+                     retour visible l'utilisateur croit que la page a planté. --}}
+                <div x-show="submitting" x-cloak class="px-5 pt-4">
+                    <div class="h-1.5 w-full rounded-full overflow-hidden" style="background: #E8EDF3;">
+                        <div class="h-full rounded-full transition-all duration-300"
+                             :style="`width: ${uploadPhase === 'processing' ? 100 : uploadProgress}%; background: linear-gradient(90deg, #1B4F72, #17A2B8);`"
+                             :class="uploadPhase === 'processing' ? 'animate-pulse' : ''"></div>
+                    </div>
+                    <p class="text-[11px] mt-2" style="color: #6B7B8D;"
+                       x-text="uploadPhase === 'processing'
+                            ? 'Photos reçues — traitement en cours. Ne fermez pas cette page.'
+                            : `Envoi des photos… ${uploadProgress}%`"></p>
+                </div>
+
                 <div class="flex justify-between items-center px-5 py-4" style="border-top: 1px solid #EDF0F4;">
                     <a href="{{ route('listings.my') }}"
                        @click="clearDraft()"
@@ -1468,7 +1482,7 @@
                             </span>
                             <span x-show="submitting" class="flex items-center gap-2">
                                 <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                                Envoi en cours...
+                                <span x-text="uploadPhase === 'processing' ? 'Traitement...' : `Envoi ${uploadProgress}%`"></span>
                             </span>
                         </button>
                     </div>
@@ -1501,6 +1515,10 @@
                 stepErrors: [],
                 submitting: false,
                 photosProcessing: false,
+                // Envoi : jeton d'idempotence + état affiché dans le bouton.
+                clientToken: null,
+                uploadProgress: 0,
+                uploadPhase: 'idle', // idle | uploading | processing
                 _saveTimer: null,
 
                 // ── Lifecycle: restore draft on init ──
@@ -1681,37 +1699,133 @@
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
 
+                // Jeton d'idempotence : identifie CET envoi côté serveur. Il est
+                // généré une seule fois par page et réutilisé à chaque tentative,
+                // c'est ce qui permet au serveur de reconnaître un renvoi et de
+                // renvoyer l'annonce déjà créée au lieu d'en créer un doublon.
+                ensureClientToken() {
+                    if (!this.clientToken) {
+                        this.clientToken = (crypto.randomUUID
+                            ? crypto.randomUUID()
+                            : 'tok-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10));
+                    }
+                    return this.clientToken;
+                },
+
+                // POST du formulaire en XHR (et non fetch) : seul XHR expose la
+                // progression de l'upload, indispensable ici — 20 photos font
+                // plusieurs Mo et un bouton figé passe pour un plantage.
+                postForm(url, method, formData) {
+                    return new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open(method, url);
+                        xhr.setRequestHeader('Accept', 'application/json');
+                        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                        xhr.withCredentials = true;
+
+                        xhr.upload.onprogress = (e) => {
+                            if (!e.lengthComputable) return;
+                            this.uploadProgress = Math.min(99, Math.round((e.loaded / e.total) * 100));
+                        };
+
+                        // Tous les octets sont partis : le serveur redimensionne
+                        // les photos. C'est la phase la plus longue.
+                        xhr.upload.onload = () => {
+                            this.uploadProgress = 100;
+                            this.uploadPhase = 'processing';
+                        };
+
+                        xhr.onload = () => {
+                            const contentType = xhr.getResponseHeader('content-type') || '';
+                            let payload = null;
+                            if (contentType.includes('application/json')) {
+                                try { payload = JSON.parse(xhr.responseText); } catch (e) { payload = null; }
+                            }
+                            resolve({
+                                status: xhr.status,
+                                ok: xhr.status >= 200 && xhr.status < 300,
+                                payload,
+                                finalUrl: xhr.responseURL || null,
+                            });
+                        };
+
+                        xhr.onerror = () => reject(new Error('network'));
+                        xhr.ontimeout = () => reject(new Error('timeout'));
+                        xhr.onabort = () => reject(new Error('abort'));
+
+                        xhr.send(formData);
+                    });
+                },
+
+                // L'envoi a « échoué » côté navigateur — mais le serveur a peut-être
+                // tout enregistré avant que la connexion ne tombe. On lui demande.
+                // Tant que la réponse est « pending », le traitement peut encore
+                // être en cours : on réessaie quelques secondes avant d'abandonner.
+                async recoverSubmission({ attempts = 6, delayMs = 4000 } = {}) {
+                    const token = this.clientToken;
+                    if (!token) return null;
+
+                    const url = '{{ route('listings.submission-status') }}?token=' + encodeURIComponent(token);
+
+                    for (let i = 0; i < attempts; i++) {
+                        try {
+                            const res = await fetch(url, {
+                                credentials: 'same-origin',
+                                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                            });
+
+                            if (res.ok) {
+                                const data = await res.json();
+                                if (data?.status === 'created' && data?.redirect) {
+                                    return data.redirect;
+                                }
+                            }
+                        } catch (e) {
+                            // Réseau toujours coupé : on retentera.
+                        }
+
+                        if (i < attempts - 1) {
+                            await new Promise(r => setTimeout(r, delayMs));
+                        }
+                    }
+
+                    return null;
+                },
+
+                leaveTo(url) {
+                    this.clearDraft();
+                    window.location.href = url;
+                },
+
                 async submitWithAjax(uploader) {
+                    const form = this.$root;
+                    this.uploadProgress = 0;
+                    this.uploadPhase = 'uploading';
+
                     try {
-                        const form = this.$root;
                         const formData = new FormData(form);
 
                         formData.delete('images');
                         formData.delete('images[]');
+                        formData.set('client_token', this.ensureClientToken());
 
                         uploader.getFilesForSubmit().forEach((file, index) => {
                             const filename = file.name || `photo-${index + 1}.jpg`;
                             formData.append('images[]', file, filename);
                         });
 
-                        const response = await fetch(form.action, {
-                            method: (form.method || 'POST').toUpperCase(),
-                            body: formData,
-                            credentials: 'same-origin',
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest',
-                            },
-                        });
-
-                        const contentType = response.headers.get('content-type') || '';
-                        const payload = contentType.includes('application/json') ? await response.json() : null;
+                        const response = await this.postForm(
+                            form.action,
+                            (form.method || 'POST').toUpperCase(),
+                            formData
+                        );
 
                         if (response.ok) {
-                            const redirectUrl = payload?.redirect || (response.redirected ? response.url : null);
+                            const redirectUrl = response.payload?.redirect
+                                || (response.finalUrl && response.finalUrl !== form.action ? response.finalUrl : null);
 
                             if (redirectUrl) {
-                                window.location.href = redirectUrl;
+                                this.leaveTo(redirectUrl);
                                 return;
                             }
 
@@ -1720,17 +1834,35 @@
                         }
 
                         if (response.status === 422) {
+                            this.uploadPhase = 'idle';
                             this.submitting = false;
-                            this.applyServerValidationErrors(payload?.errors || {});
+                            this.applyServerValidationErrors(response.payload?.errors || {});
                             return;
                         }
 
+                        // 500, 502, 504… l'annonce a pu être enregistrée avant l'erreur.
+                        const recovered = await this.recoverSubmission({ attempts: 3, delayMs: 3000 });
+                        if (recovered) {
+                            this.leaveTo(recovered);
+                            return;
+                        }
+
+                        this.uploadPhase = 'idle';
                         this.submitting = false;
-                        this.stepErrors = [payload?.message || 'Une erreur est survenue lors de l\'envoi de l\'annonce.'];
+                        this.stepErrors = [response.payload?.message || 'Une erreur est survenue lors de l\'envoi de l\'annonce.'];
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     } catch (e) {
+                        // Connexion coupée pendant l'envoi : c'est le cas où le
+                        // serveur a le plus souvent terminé malgré tout.
+                        const recovered = await this.recoverSubmission();
+                        if (recovered) {
+                            this.leaveTo(recovered);
+                            return;
+                        }
+
+                        this.uploadPhase = 'idle';
                         this.submitting = false;
-                        this.stepErrors = ['Le réseau a interrompu l’envoi de l’annonce. Veuillez réessayer.'];
+                        this.stepErrors = ['La connexion a été interrompue pendant l’envoi. Votre brouillon est conservé — vérifiez « Mes annonces » avant de renvoyer.'];
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 },

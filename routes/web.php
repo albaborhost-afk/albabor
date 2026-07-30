@@ -118,6 +118,10 @@ Route::middleware('auth')->group(function () {
     Route::get('mes-annonces', [ListingController::class, 'myListings'])->name('listings.my');
     Route::get('annonces/creer', [ListingController::class, 'create'])->name('listings.create');
     Route::post('annonces', [ListingController::class, 'store'])->middleware('throttle:10,1')->name('listings.store');
+    // Reprise d'un envoi dont la réponse s'est perdue (timeout, coupure réseau).
+    Route::get('annonces/etat-envoi', [ListingController::class, 'submissionStatus'])
+        ->middleware('throttle:60,1')
+        ->name('listings.submission-status');
     Route::get('annonces/{listing}/modifier', [ListingController::class, 'edit'])->name('listings.edit');
     Route::put('annonces/{listing}', [ListingController::class, 'update'])->name('listings.update');
     Route::delete('annonces/{listing}', [ListingController::class, 'destroy'])->name('listings.destroy');

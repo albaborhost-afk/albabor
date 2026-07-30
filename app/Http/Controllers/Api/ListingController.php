@@ -236,6 +236,28 @@ class ListingController extends Controller
     {
         $user = $request->user();
 
+        // Renvoi du même formulaire après un timeout ou une coupure réseau :
+        // l'annonce existe déjà, on la retourne au lieu d'en créer un doublon.
+        $clientToken = $this->normalizeClientToken($request->input('client_token'));
+
+        if ($clientToken !== null) {
+            $alreadySubmitted = Listing::where('user_id', $user->id)
+                ->where('client_token', $clientToken)
+                ->first();
+
+            if ($alreadySubmitted) {
+                return response()->json([
+                    'message'          => 'Cette annonce a déjà été envoyée.',
+                    'listing'          => $alreadySubmitted->load(['user', 'media']),
+                    'publish_price'    => $alreadySubmitted->status === 'awaiting_payment'
+                        ? $this->getPublishPrice($alreadySubmitted->category)
+                        : 0,
+                    'is_first_listing' => false,
+                    'already_created'  => true,
+                ]);
+            }
+        }
+
         // Vérifier les permissions de catégorie (moteur/pièces nécessitent un abonnement)
         $category = $request->category;
         if (in_array($category, ['engine', 'parts'])) {
@@ -313,7 +335,9 @@ class ListingController extends Controller
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
             'status' => 'awaiting_payment',
-        ] + (\Schema::hasColumn('listings', 'video_url') ? ['video_url' => $request->video_url] : []));
+        ]
+            + (\Schema::hasColumn('listings', 'video_url') ? ['video_url' => $request->video_url] : [])
+            + (\Schema::hasColumn('listings', 'client_token') ? ['client_token' => $clientToken] : []));
 
         // Gérer les images
         $savedCount = $this->handleImageUpload($listing, $request->file('images'));
@@ -710,6 +734,47 @@ class ListingController extends Controller
             ],
             'listings' => $listings,
         ]);
+    }
+
+    /**
+     * L'application demande si un envoi a abouti.
+     *
+     * Une annonce transporte jusqu'à 20 photos : sur un réseau mobile la
+     * requête peut expirer alors que le serveur a déjà tout enregistré.
+     * L'application interroge alors cette route avec le jeton envoyé, plutôt
+     * que de renvoyer l'annonce (et d'en créer un doublon).
+     */
+    public function submissionStatus(Request $request): JsonResponse
+    {
+        $token = $this->normalizeClientToken($request->query('token'));
+
+        if ($token === null) {
+            return response()->json(['status' => 'unknown'], 422);
+        }
+
+        $listing = Listing::where('user_id', $request->user()->id)
+            ->where('client_token', $token)
+            ->first();
+
+        if (! $listing) {
+            return response()->json(['status' => 'pending']);
+        }
+
+        return response()->json([
+            'status'  => 'created',
+            'listing' => $listing->load(['user', 'media']),
+        ]);
+    }
+
+    /**
+     * Jeton d'idempotence généré par le client (UUID). Toute autre forme est
+     * ignorée : l'envoi reste possible, simplement sans reprise après timeout.
+     */
+    protected function normalizeClientToken(mixed $token): ?string
+    {
+        $token = is_string($token) ? trim($token) : '';
+
+        return preg_match('/^[A-Za-z0-9-]{8,64}$/', $token) === 1 ? $token : null;
     }
 
     /**

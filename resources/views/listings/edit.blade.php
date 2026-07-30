@@ -1468,9 +1468,23 @@
                         </span>
                         <span x-show="submitting" class="flex items-center gap-2">
                             <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                            Envoi en cours...
+                            <span x-text="uploadPhase === 'processing' ? 'Traitement...' : `Envoi ${uploadProgress}%`"></span>
                         </span>
                     </button>
+                </div>
+
+                {{-- Progression de l'envoi : sans retour visible, un upload de
+                     plusieurs Mo passe pour une page figée. --}}
+                <div x-show="submitting" x-cloak class="px-5 pb-4">
+                    <div class="h-1.5 w-full rounded-full overflow-hidden" style="background: #E8EDF3;">
+                        <div class="h-full rounded-full transition-all duration-300"
+                             :style="`width: ${uploadPhase === 'processing' ? 100 : uploadProgress}%; background: linear-gradient(90deg, #1B4F72, #17A2B8);`"
+                             :class="uploadPhase === 'processing' ? 'animate-pulse' : ''"></div>
+                    </div>
+                    <p class="text-[11px] mt-2" style="color: #6B7B8D;"
+                       x-text="uploadPhase === 'processing'
+                            ? 'Photos reçues — traitement en cours. Ne fermez pas cette page.'
+                            : `Envoi des photos… ${uploadProgress}%`"></p>
                 </div>
 
                 </div> {{-- End step content area --}}
@@ -1496,6 +1510,10 @@
                 stepErrors: [],
                 submitting: false,
                 photosProcessing: false,
+                // Envoi : jeton d'idempotence + état affiché dans le bouton.
+                clientToken: null,
+                uploadProgress: 0,
+                uploadPhase: 'idle', // idle | uploading | processing
 
                 init() {},
 
@@ -1539,38 +1557,92 @@
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
 
+                // Jeton d'idempotence : réutilisé à chaque tentative pour que le
+                // serveur reconnaisse un renvoi et ne rajoute pas deux fois les
+                // mêmes photos si la réponse s'est perdue.
+                ensureClientToken() {
+                    if (!this.clientToken) {
+                        this.clientToken = (crypto.randomUUID
+                            ? crypto.randomUUID()
+                            : 'tok-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10));
+                    }
+                    return this.clientToken;
+                },
+
+                // XHR et non fetch : seul XHR expose la progression de l'upload.
+                postForm(url, formData) {
+                    return new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('POST', url);
+                        xhr.setRequestHeader('Accept', 'application/json');
+                        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                        xhr.withCredentials = true;
+
+                        xhr.upload.onprogress = (e) => {
+                            if (!e.lengthComputable) return;
+                            this.uploadProgress = Math.min(99, Math.round((e.loaded / e.total) * 100));
+                        };
+                        xhr.upload.onload = () => {
+                            this.uploadProgress = 100;
+                            this.uploadPhase = 'processing';
+                        };
+
+                        xhr.onload = () => {
+                            const contentType = xhr.getResponseHeader('content-type') || '';
+                            let payload = null;
+                            if (contentType.includes('application/json')) {
+                                try { payload = JSON.parse(xhr.responseText); } catch (e) { payload = null; }
+                            }
+                            resolve({
+                                status: xhr.status,
+                                ok: xhr.status >= 200 && xhr.status < 300,
+                                payload,
+                            });
+                        };
+                        xhr.onerror = () => reject(new Error('network'));
+                        xhr.ontimeout = () => reject(new Error('timeout'));
+                        xhr.onabort = () => reject(new Error('abort'));
+
+                        xhr.send(formData);
+                    });
+                },
+
                 async submitWithAjax(uploader) {
+                    const form = this.$root;
+                    this.uploadProgress = 0;
+                    this.uploadPhase = 'uploading';
+
                     try {
-                        const form = this.$root;
                         const formData = new FormData(form);
                         formData.delete('new_images');
                         formData.delete('new_images[]');
+                        formData.set('client_token', this.ensureClientToken());
                         uploader.getFilesForSubmit().forEach((file, index) => {
                             formData.append('new_images[]', file, file.name || `photo-${index + 1}.jpg`);
                         });
-                        const response = await fetch(form.action, {
-                            method: 'POST',
-                            body: formData,
-                            credentials: 'same-origin',
-                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                        });
-                        const contentType = response.headers.get('content-type') || '';
-                        const payload = contentType.includes('application/json') ? await response.json() : null;
+
+                        const response = await this.postForm(form.action, formData);
+
                         if (response.ok) {
-                            window.location.href = payload?.redirect || '{{ route("listings.my") }}';
+                            window.location.href = response.payload?.redirect || '{{ route("listings.my") }}';
                             return;
                         }
                         if (response.status === 422) {
+                            this.uploadPhase = 'idle';
                             this.submitting = false;
-                            this.applyServerValidationErrors(payload?.errors || {});
+                            this.applyServerValidationErrors(response.payload?.errors || {});
                             return;
                         }
+                        this.uploadPhase = 'idle';
                         this.submitting = false;
-                        this.stepErrors = [payload?.message || "Une erreur est survenue."];
+                        this.stepErrors = [response.payload?.message || "Une erreur est survenue."];
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     } catch (e) {
+                        // La connexion est tombée. Renvoyer est sans danger : le
+                        // même jeton empêche le serveur de dupliquer les photos.
+                        this.uploadPhase = 'idle';
                         this.submitting = false;
-                        this.stepErrors = ["Le réseau a interrompu l'envoi. Veuillez réessayer."];
+                        this.stepErrors = ["La connexion a été interrompue pendant l'envoi. Vérifiez votre annonce avant de renvoyer."];
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 },

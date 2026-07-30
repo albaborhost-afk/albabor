@@ -172,6 +172,21 @@ class ListingController extends Controller
     {
         $user = Auth::user();
 
+        // Renvoi du même formulaire (timeout de la passerelle, double clic,
+        // reprise après coupure réseau) : l'annonce a déjà été enregistrée, on
+        // renvoie sa destination au lieu de créer un doublon.
+        $clientToken = $this->normalizeClientToken($request->input('client_token'));
+
+        if ($clientToken !== null) {
+            $alreadySubmitted = Listing::where('user_id', $user->id)
+                ->where('client_token', $clientToken)
+                ->first();
+
+            if ($alreadySubmitted) {
+                return $this->listingSubmittedResponse($request, $alreadySubmitted);
+            }
+        }
+
         // Validate category permissions
         $category = $request->category;
         if (in_array($category, ['engine', 'parts'])) {
@@ -238,6 +253,7 @@ class ListingController extends Controller
         // Create listing
         $listingData = [
             'user_id' => $user->id,
+            'client_token' => $clientToken,
             'title' => $validated['title'],
             'description' => $validated['description'],
             'category' => $validated['category'],
@@ -310,16 +326,11 @@ class ListingController extends Controller
                 'published_until' => now()->addYear(),
             ]);
 
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'redirect' => route('listings.my'),
-                    'message' => __('Votre annonce a été créée et sera examinée par notre équipe.'),
-                ]);
-            }
-
-            return redirect()->route('listings.my')
-                ->with('success', __('Votre annonce a été créée et sera examinée par notre équipe.'))
-                ->with('listing_created', true);
+            return $this->listingSubmittedResponse(
+                $request,
+                $listing,
+                __('Votre annonce a été créée et sera examinée par notre équipe.')
+            );
         }
 
         // Vendor subscription covers engine/parts publication without an extra payment step.
@@ -329,16 +340,11 @@ class ListingController extends Controller
                 'published_until' => now()->addYear(),
             ]);
 
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'redirect' => route('listings.my'),
-                    'message' => __('Votre annonce vendeur a été créée et sera examinée par notre équipe.'),
-                ]);
-            }
-
-            return redirect()->route('listings.my')
-                ->with('success', __('Votre annonce vendeur a été créée et sera examinée par notre équipe.'))
-                ->with('listing_created', true);
+            return $this->listingSubmittedResponse(
+                $request,
+                $listing,
+                __('Votre annonce vendeur a été créée et sera examinée par notre équipe.')
+            );
         }
 
         // First listing is free — check if user has any other listing
@@ -352,27 +358,91 @@ class ListingController extends Controller
                 'published_until' => now()->addYear(),
             ]);
 
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'redirect' => route('listings.my'),
-                    'message' => __('messages.listing_created_free'),
-                ]);
-            }
-
-            return redirect()->route('listings.my')
-                ->with('success', __('messages.listing_created_free'))
-                ->with('listing_created', true);
+            return $this->listingSubmittedResponse($request, $listing, __('messages.listing_created_free'));
         }
+
+        return $this->listingSubmittedResponse($request, $listing, __('messages.listing_created_payment_required'));
+    }
+
+    /**
+     * Le navigateur demande si son envoi a abouti.
+     *
+     * Une annonce transporte jusqu'à 20 photos : la passerelle peut couper la
+     * connexion pendant que le serveur redimensionne, et le navigateur croit à
+     * un échec alors que tout est enregistré. Le formulaire interroge alors
+     * cette route avec le jeton qu'il a généré avant l'envoi.
+     *
+     * « pending » ne veut pas dire « échec » : le traitement peut encore être
+     * en cours, le client réessaie quelques secondes.
+     */
+    public function submissionStatus(Request $request)
+    {
+        $token = $this->normalizeClientToken($request->query('token'));
+
+        if ($token === null) {
+            return response()->json(['status' => 'unknown'], 422);
+        }
+
+        $listing = Listing::where('user_id', Auth::id())
+            ->where('client_token', $token)
+            ->first();
+
+        if (! $listing) {
+            return response()->json(['status' => 'pending']);
+        }
+
+        return response()->json([
+            'status'     => 'created',
+            'listing_id' => $listing->id,
+            'redirect'   => $this->listingSubmissionRedirect($listing),
+        ]);
+    }
+
+    /**
+     * Jeton d'idempotence du formulaire : un UUID généré par le navigateur.
+     * Toute autre forme est ignorée (l'envoi reste possible, sans reprise).
+     */
+    protected function normalizeClientToken(mixed $token): ?string
+    {
+        $token = is_string($token) ? trim($token) : '';
+
+        return preg_match('/^[A-Za-z0-9-]{8,64}$/', $token) === 1 ? $token : null;
+    }
+
+    /**
+     * Où atterrit l'utilisateur après un envoi réussi : la page de paiement si
+     * l'annonce en attend un, sinon ses annonces.
+     */
+    protected function listingSubmissionRedirect(Listing $listing): string
+    {
+        return $listing->status === 'awaiting_payment'
+            ? route('listings.payment', $listing)
+            : route('listings.my');
+    }
+
+    /**
+     * Réponse commune à un envoi qui a abouti — que ce soit à la création ou
+     * lors d'un renvoi du même jeton après un timeout.
+     */
+    protected function listingSubmittedResponse(Request $request, Listing $listing, ?string $message = null)
+    {
+        $awaitingPayment = $listing->status === 'awaiting_payment';
+        $redirect        = $this->listingSubmissionRedirect($listing);
+        $message       ??= $awaitingPayment
+            ? __('messages.listing_created_payment_required')
+            : __('Votre annonce a été créée et sera examinée par notre équipe.');
 
         if ($request->expectsJson()) {
             return response()->json([
-                'redirect' => route('listings.payment', $listing),
-                'message' => __('messages.listing_created_payment_required'),
+                'redirect'   => $redirect,
+                'message'    => $message,
+                'listing_id' => $listing->id,
             ]);
         }
 
-        return redirect()->route('listings.payment', $listing)
-            ->with('success', __('messages.listing_created_payment_required'));
+        $response = redirect()->to($redirect)->with('success', $message);
+
+        return $awaitingPayment ? $response : $response->with('listing_created', true);
     }
 
     public function edit(Listing $listing)
@@ -406,6 +476,14 @@ class ListingController extends Controller
         $this->authorize('update', $listing);
 
         $user = Auth::user();
+
+        // Même jeton que l'envoi précédent : le navigateur rejoue un formulaire
+        // dont la réponse s'est perdue. Retraiter les photos les dupliquerait.
+        $clientToken = $this->normalizeClientToken($request->input('client_token'));
+
+        if ($clientToken !== null && $listing->client_token === $clientToken) {
+            return $this->listingUpdatedResponse($request, $listing);
+        }
 
         // Validate category change: if switching to engine/parts, require active subscription
         $newCategory = $request->input('category', $listing->category);
@@ -484,6 +562,9 @@ class ListingController extends Controller
             'contact_email' => $validated['contact_email'] ?? null,
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
+            // Enregistré avant le traitement des photos : un renvoi pendant ce
+            // traitement retrouve le jeton et n'ajoute pas les mêmes photos.
+            'client_token' => $clientToken,
         ];
 
         // Only include video_url if the column exists
@@ -586,6 +667,23 @@ class ListingController extends Controller
                     }
                 }
             }
+        }
+
+        return $this->listingUpdatedResponse($request, $listing);
+    }
+
+    /**
+     * Réponse commune à une modification enregistrée — y compris lorsqu'un
+     * renvoi du même jeton court-circuite le retraitement.
+     */
+    protected function listingUpdatedResponse(Request $request, Listing $listing)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'redirect'   => route('listings.my'),
+                'message'    => __('messages.listing_updated'),
+                'listing_id' => $listing->id,
+            ]);
         }
 
         return redirect()->route('listings.my')

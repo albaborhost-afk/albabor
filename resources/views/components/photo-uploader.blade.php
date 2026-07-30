@@ -898,17 +898,22 @@ if (typeof photoUploader === 'undefined') {
                 return new File([blob], baseName + '.jpg', { type: 'image/jpeg' });
             },
 
-            // Compress image client-side before upload (max 2000px, JPEG 85%)
+            // Compress image client-side before upload (max 1600px, JPEG 82%).
+            //
+            // Le serveur ramène de toute façon les photos à 1200px : envoyer
+            // plus grand ne gagne aucun détail, mais 20 photos de 2 Mo font une
+            // requête de 40 Mo qui expire côté passerelle sur réseau mobile —
+            // l'annonce est enregistrée et l'utilisateur voit une erreur.
             compressImage(file) {
                 return new Promise((resolve) => {
-                    // Skip small files (< 1MB) — no need to compress
-                    if (file.size < 1024 * 1024) { resolve(file); return; }
+                    // Skip small files (< 400 Ko) — already light enough
+                    if (file.size < 400 * 1024) { resolve(file); return; }
 
                     const img = new Image();
                     const url = URL.createObjectURL(file);
                     img.onload = () => {
                         URL.revokeObjectURL(url);
-                        const MAX = 2000;
+                        const MAX = 1600;
                         let w = img.width, h = img.height;
                         if (w > MAX || h > MAX) {
                             if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
@@ -924,7 +929,7 @@ if (typeof photoUploader === 'undefined') {
                             } else {
                                 resolve(file); // Original is smaller, keep it
                             }
-                        }, 'image/jpeg', 0.85);
+                        }, 'image/jpeg', 0.82);
                     };
                     img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
                     img.src = url;
