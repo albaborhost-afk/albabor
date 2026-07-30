@@ -21,7 +21,7 @@ class MakeAdmin extends Command
         }
 
         $user->update(['account_type' => 'admin']);
-        $this->info("User {$user->name} ({$email}) is now admin.");
+        $this->info("User {$user->real_name} ({$email}) is now admin.");
         return 0;
     }
 }

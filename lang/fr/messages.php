@@ -432,4 +432,11 @@ return [
     'cannot_message_own_listing' => 'Vous ne pouvez pas envoyer un message sur votre propre annonce.',
     'listing_deleted' => 'Annonce supprimee',
     'deleted_user' => 'Utilisateur supprime',
+
+    // Confidentialite : publier sous « Invite »
+    'hide_name_label' => 'Publier sous « Invité »',
+    'hide_name_help' => 'Votre nom et votre photo de profil sont masqués sur vos annonces, sur votre profil public et dans la messagerie. Les acheteurs vous contactent normalement par téléphone, WhatsApp ou message.',
+    'hide_name_active_notice' => 'Actif : les acheteurs voient « Invité » à la place de votre nom. Vous, et l\'équipe AlBabor, continuez de voir votre vrai nom.',
+    'hide_name_badge' => 'Identité masquée',
+    'anonymous_seller' => 'Invité',
 ];

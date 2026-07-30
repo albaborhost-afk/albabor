@@ -765,31 +765,73 @@
                 <div class="lg:col-span-1 space-y-5 reveal-right" style="transition-delay: 0.25s;">
 
                     {{-- ======== SELLER CARD ======== --}}
+                    @php
+                        $seller = $listing->user;
+                        // Le nom vient du modèle : un vendeur qui publie sous
+                        // « Invité » arrive déjà anonymisé, photo comprise.
+                        $sellerAnonymous = (bool) $seller?->identityMasked();
+                        $sellerName = $seller?->name ?: __('Vendeur');
+                        $viewerIsSeller = auth()->check() && auth()->id() === $listing->user_id;
+                    @endphp
                     <div class="listing-card-frame listing-seller-card rounded-3xl overflow-hidden sticky top-24">
-                        {{-- Seller Header --}}
+                        {{-- Seller Header — ouvre le profil public du vendeur --}}
                         <div class="p-5 sm:p-6 relative annonce-seller-header">
-                            <div class="flex items-center gap-3.5">
+                            <a href="{{ $seller ? route('sellers.show', $seller) : '#' }}"
+                               class="flex items-center gap-3.5 group {{ $seller ? '' : 'pointer-events-none' }}">
                                 <div class="relative flex-shrink-0">
-                                    <div class="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center text-white font-bold text-xl" style="box-shadow: 0 4px 12px rgba(27,79,114,0.3);">
-                                        {{ strtoupper(substr($listing->user?->name ?? 'U', 0, 1)) }}
-                                    </div>
-                                    @if($listing->user?->verified_badge ?? false)
+                                    @if($seller?->profile_picture_url)
+                                        <img src="{{ $seller->profile_picture_url }}" alt="{{ $sellerName }}"
+                                             class="w-14 h-14 rounded-2xl object-cover" style="box-shadow: 0 4px 12px rgba(27,79,114,0.3);"
+                                             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                        <div class="w-14 h-14 gradient-primary rounded-2xl items-center justify-center text-white font-bold text-xl" style="display:none; box-shadow: 0 4px 12px rgba(27,79,114,0.3);">
+                                            {{ strtoupper(substr($sellerName, 0, 1)) }}
+                                        </div>
+                                    @else
+                                        <div class="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center text-white font-bold text-xl" style="box-shadow: 0 4px 12px rgba(27,79,114,0.3);">
+                                            @if($sellerAnonymous)
+                                                {{-- Silhouette : une initiale trahirait le nom --}}
+                                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                </svg>
+                                            @else
+                                                {{ strtoupper(substr($sellerName, 0, 1)) }}
+                                            @endif
+                                        </div>
+                                    @endif
+                                    @if($seller?->verified_badge ?? false)
                                         <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style="background: #27AE60; border: 2.5px solid white; box-shadow: 0 2px 4px rgba(39,174,96,0.3);">
                                             <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                                         </div>
                                     @endif
                                 </div>
-                                <div class="min-w-0">
-                                    <h3 class="font-bold text-base truncate" style="color: #1B2A4A;">{{ $listing->user?->name ?? __('Vendeur') }}</h3>
-                                    @if($listing->user?->verified_badge ?? false)
+                                <div class="min-w-0 flex-1">
+                                    <h3 class="font-bold text-base truncate group-hover:underline" style="color: #1B2A4A;">{{ $sellerName }}</h3>
+                                    @if($seller?->verified_badge ?? false)
                                         <span class="inline-flex items-center gap-1 text-xs font-semibold" style="color: #27AE60;">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                                             {{ __('Vendeur verifie') }}
                                         </span>
                                     @endif
-                                    <p class="text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Membre depuis') }} {{ $listing->user?->created_at?->format('m/Y') ?? 'N/A' }}</p>
+                                    <p class="text-xs mt-0.5 flex items-center gap-1" style="color: #17A2B8;">
+                                        {{ __('Voir toutes ses annonces') }}
+                                        <svg class="w-3 h-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                    </p>
+                                    <p class="text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Membre depuis') }} {{ $seller?->created_at?->format('m/Y') ?? 'N/A' }}</p>
                                 </div>
-                            </div>
+                            </a>
+
+                            @if($viewerIsSeller && $seller?->hidesName())
+                                {{-- Rappel au vendeur : voici ce que voient les acheteurs. --}}
+                                <div class="mt-3 flex items-start gap-2 rounded-xl px-3 py-2" style="background: rgba(155,168,183,0.12);">
+                                    <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: #6B7B8D;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                    </svg>
+                                    <p class="text-[11px] leading-snug" style="color: #6B7B8D;">
+                                        {{ __('Les acheteurs voient « Invité » a la place de votre nom.') }}
+                                        <a href="{{ route('profile.edit') }}" class="font-semibold hover:underline" style="color: #17A2B8;">{{ __('Modifier') }}</a>
+                                    </p>
+                                </div>
+                            @endif
                         </div>
 
                         {{-- Admin Quick Actions --}}

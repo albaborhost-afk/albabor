@@ -28,7 +28,8 @@ class ProfileController extends Controller
         ];
 
         return response()->json([
-            'user' => $user,
+            // Son propre profil : le réglage « Invité » ne s'applique pas à lui.
+            'user' => $user->withRealName(),
             'stats' => $stats,
         ]);
     }
@@ -37,9 +38,18 @@ class ProfileController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'hide_name' => 'nullable|boolean',
             'phone' => ['required', 'string', new InternationalPhoneNumber],
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        // Absent = l'application ne gère pas encore le réglage. On le laisse
+        // tel quel plutôt que de désactiver la confidentialité sans le vouloir.
+        if ($request->has('hide_name')) {
+            $validated['hide_name'] = $request->boolean('hide_name');
+        } else {
+            unset($validated['hide_name']);
+        }
 
         [$countryCode, $phoneNational] = InternationalPhoneNumber::split($validated['phone']);
         $validated['phone'] = $phoneNational;
@@ -67,7 +77,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'message' => 'Profil mis à jour avec succès.',
-            'user' => $user->fresh(),
+            'user' => $user->fresh()->withRealName(),
         ]);
     }
 
@@ -136,7 +146,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'message' => 'Votre compte a été mis à niveau en vendeur.',
-            'user' => $user->fresh(),
+            'user' => $user->fresh()->withRealName(),
         ]);
     }
 

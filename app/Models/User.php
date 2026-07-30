@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -17,8 +18,12 @@ class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    /** Nom affiché à la place du vrai nom quand le compte se masque. */
+    public const ANONYMOUS_NAME = 'Invité';
+
     protected $fillable = [
         'name',
+        'hide_name',
         'email',
         'phone',
         'phone_country_code',
@@ -51,7 +56,105 @@ class User extends Authenticatable implements FilamentUser
             'verified_badge' => 'boolean',
             'is_blocked' => 'boolean',
             'free_publishing' => 'boolean',
+            'hide_name' => 'boolean',
         ];
+    }
+
+    /**
+     * Laisse passer le vrai nom sur CETTE instance, quel que soit le lecteur.
+     *
+     * À réserver aux réponses destinées au compte lui-même (connexion,
+     * inscription, son propre profil) : sans cela, un utilisateur qui se masque
+     * verrait « Invité » à la place de son propre nom dans l'application.
+     */
+    protected bool $realNameRevealed = false;
+
+    // ── Confidentialité : publier sous « Invité » ──────────────────────────
+    //
+    // Le masquage est appliqué à la lecture de l'attribut, pas au point
+    // d'affichage : toute vue, toute réponse API et tout export passent par là.
+    // Le défaut est donc « masqué » — un nouvel écran ne peut pas oublier la
+    // règle et divulguer le nom.
+
+    /**
+     * Ce lecteur doit-il voir « Invité » à la place du nom ?
+     *
+     * Ni le compte lui-même ni un administrateur ne sont concernés : le vendeur
+     * doit reconnaître son propre profil, et le support a besoin du vrai nom.
+     * Hors requête HTTP (tâche planifiée, worker, commande), il n'y a pas de
+     * lecteur identifié : on masque, c'est le côté sûr.
+     */
+    public function identityMasked(): bool
+    {
+        if ($this->realNameRevealed || ! $this->hidesName()) {
+            return false;
+        }
+
+        $viewer = static::currentViewer();
+
+        if (! $viewer instanceof self) {
+            return true;
+        }
+
+        return $viewer->getKey() !== $this->getKey() && $viewer->account_type !== 'admin';
+    }
+
+    /**
+     * Qui regarde ? Session pour le site et l'administration, jeton Sanctum
+     * pour les applications — y compris sur les routes publiques, où le
+     * middleware n'a pas activé le garde et où `auth()` seul renverrait null
+     * (le vendeur verrait « Invité » à la place de son propre nom).
+     */
+    protected static function currentViewer(): ?self
+    {
+        $viewer = auth()->user();
+
+        if (! $viewer instanceof self) {
+            $viewer = auth('sanctum')->user();
+        }
+
+        return $viewer instanceof self ? $viewer : null;
+    }
+
+    /** Le compte a demandé à publier sous « Invité ». */
+    public function hidesName(): bool
+    {
+        return (bool) ($this->attributes['hide_name'] ?? false);
+    }
+
+    /**
+     * Affiche le vrai nom sur cette instance quel que soit le lecteur.
+     * Pour les réponses destinées au compte lui-même (connexion, profil).
+     */
+    public function withRealName(): static
+    {
+        $this->realNameRevealed = true;
+
+        return $this;
+    }
+
+    /** Nom réel, sans le réglage de confidentialité. Jamais sérialisé. */
+    public function getRealNameAttribute(): ?string
+    {
+        return $this->attributes['name'] ?? null;
+    }
+
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->identityMasked() ? self::ANONYMOUS_NAME : $value,
+        );
+    }
+
+    /**
+     * L'avatar Google porte le visage du vendeur : le laisser à côté de
+     * « Invité » viderait le réglage de son sens.
+     */
+    protected function avatar(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $this->identityMasked() ? null : $value,
+        );
     }
 
     // Relationships
@@ -226,6 +329,12 @@ class User extends Authenticatable implements FilamentUser
 
     public function getProfilePictureUrlAttribute(): ?string
     {
+        // Compte masqué : pas de photo non plus, sinon « Invité » resterait
+        // identifiable au premier coup d'œil.
+        if ($this->identityMasked()) {
+            return null;
+        }
+
         // If we have any stored picture (DB base64 or S3 path), serve via proxy
         if ($this->profile_picture_data || $this->profile_picture) {
             return route('profile.picture', ['userId' => $this->id]);

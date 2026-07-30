@@ -41,6 +41,7 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'hide_name' => 'nullable|boolean',
             'phone' => ['nullable', InternationalPhoneNumber::nullable()],
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,webp,heic,heif|max:5120',
         ]);
@@ -69,14 +70,21 @@ class ProfileController extends Controller
         }
 
         unset($validated['profile_picture']); // handled above
-        if (isset($filename)) {
-            $user->update(array_merge(
-                array_intersect_key($validated, array_flip(['name', 'phone', 'phone_country_code'])),
-                ['profile_picture' => $filename, 'profile_picture_data' => null]
-            ));
-        } else {
-            $user->update(array_intersect_key($validated, array_flip(['name', 'phone', 'phone_country_code'])));
+
+        $payload = array_intersect_key($validated, array_flip(['name', 'phone', 'phone_country_code']));
+
+        // Une case décochée n'est pas postée : le formulaire envoie toujours un
+        // champ caché à 0, on ne touche au réglage que s'il est bien présent.
+        if ($request->has('hide_name')) {
+            $payload['hide_name'] = $request->boolean('hide_name');
         }
+
+        if (isset($filename)) {
+            $payload['profile_picture'] = $filename;
+            $payload['profile_picture_data'] = null;
+        }
+
+        $user->update($payload);
 
         return redirect()->route('profile.show')
             ->with('success', __('messages.profile_updated'));

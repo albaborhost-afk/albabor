@@ -69,7 +69,8 @@ class GoogleMobileAuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            'user'  => $user,
+            // Son propre compte : il doit voir son vrai nom, pas « Invité ».
+            'user'  => $user->withRealName(),
         ]);
     }
 }

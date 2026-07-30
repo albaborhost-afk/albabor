@@ -13,6 +13,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VendorOnboardingController;
 use App\Http\Controllers\BoutiqueController;
+use App\Http\Controllers\SellerProfileController;
 use App\Models\Listing;
 use Illuminate\Support\Facades\Route;
 
@@ -71,6 +72,12 @@ Route::get('media/listings/{media}/{variant?}', [ListingMediaController::class, 
 // Profile picture proxy (serves from S3 privately)
 Route::get('media/profile/{userId}', function (int $userId) {
     $user = \App\Models\User::findOrFail($userId);
+
+    // Compte publiant sous « Invité » : la photo est masquée dans les vues,
+    // elle ne doit pas rester accessible en devinant l'identifiant.
+    if ($user->identityMasked()) {
+        abort(404);
+    }
 
     // Base64 stored in DB (legacy or fallback)
     if ($user->profile_picture_data && str_starts_with($user->profile_picture_data, 'data:')) {
@@ -169,6 +176,10 @@ Route::middleware('auth')->group(function () {
 Route::get('espace-vendeur', [VendorOnboardingController::class, 'landing'])->name('vendor.landing');
 Route::get('boutiques', [BoutiqueController::class, 'index'])->name('boutiques.index');
 Route::get('boutique/{vendorProfile}', [BoutiqueController::class, 'show'])->name('boutiques.show');
+
+// Profil public d'un vendeur (particulier ou pro) : toutes ses annonces.
+// Pluriel volontaire : /vendeur est déjà le panel Filament des boutiques.
+Route::get('vendeurs/{user}', [SellerProfileController::class, 'show'])->name('sellers.show');
 
 // Onboarding vendeur (authentification requise)
 Route::middleware('auth')->group(function () {

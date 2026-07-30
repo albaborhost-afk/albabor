@@ -50,7 +50,7 @@ class ClearUserTokens extends Command
         $count = $user->tokens()->count();
         $user->tokens()->delete();
 
-        $this->info("✓ {$count} token(s) supprimé(s) pour {$user->name} ({$email}).");
+        $this->info("✓ {$count} token(s) supprimé(s) pour {$user->real_name} ({$email}).");
         $this->line("  L'utilisateur devra se reconnecter pour récupérer les données fraîches.");
 
         return 0;
@@ -68,7 +68,7 @@ class ClearUserTokens extends Command
         $count = $user->tokens()->count();
         $user->tokens()->delete();
 
-        $this->info("✓ {$count} token(s) supprimé(s) pour {$user->name} (ID={$id}).");
+        $this->info("✓ {$count} token(s) supprimé(s) pour {$user->real_name} (ID={$id}).");
         $this->line("  L'utilisateur devra se reconnecter pour récupérer les données fraîches.");
 
         return 0;

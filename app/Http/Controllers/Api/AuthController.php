@@ -48,7 +48,8 @@ class AuthController extends Controller
         $user->load(['activeSubscription.plan', 'latestVerificationRequest']);
 
         return response()->json([
-            'user' => $user,
+            // Son propre compte : il doit voir son vrai nom, pas « Invité ».
+            'user' => $user->withRealName(),
             'token' => $token,
         ]);
     }
@@ -84,7 +85,8 @@ class AuthController extends Controller
         $user->load(['activeSubscription.plan', 'latestVerificationRequest']);
 
         return response()->json([
-            'user' => $user,
+            // Son propre compte : il doit voir son vrai nom, pas « Invité ».
+            'user' => $user->withRealName(),
             'token' => $token,
         ], 201);
     }

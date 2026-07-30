@@ -711,14 +711,19 @@ class ListingController extends Controller
      */
     public function vendorProfile(Request $request, User $user): JsonResponse
     {
+        // Un compte bloqué n'a plus de vitrine ; l'administration n'en a pas.
+        abort_if($user->isBlocked() || $user->isAdmin(), 404);
+
         $listings = $user->listings()
             ->with('media')
             ->active()
             ->orderByRaw('COALESCE(last_renewed_at, created_at) DESC')
             ->paginate(20);
 
-        // Hide seller contact info (guests always; authenticated per mediation rules)
-        $requestUser = $request->user();
+        // Hide seller contact info (guests always; authenticated per mediation rules).
+        // Route publique : le middleware n'active pas le garde Sanctum, il faut
+        // lire le jeton nous-mêmes pour que le vendeur voie ses propres infos.
+        $requestUser = $request->user() ?? auth('sanctum')->user();
         $listings->getCollection()->transform(function ($listing) use ($requestUser) {
             return $listing->applyContactVisibility($requestUser);
         });
@@ -726,11 +731,17 @@ class ListingController extends Controller
         return response()->json([
             'user' => [
                 'id' => $user->id,
+                // Masqué par le modèle si le vendeur publie sous « Invité ».
                 'name' => $user->name,
+                'hide_name' => $user->hidesName(),
                 'profile_picture_url' => $user->profile_picture_url,
                 'account_type' => $user->account_type,
                 'verified_badge' => $user->verified_badge,
                 'created_at' => $user->created_at,
+            ],
+            'stats' => [
+                'active_listings' => $listings->total(),
+                'total_views'     => (int) $user->listings()->active()->sum('views_count'),
             ],
             'listings' => $listings,
         ]);

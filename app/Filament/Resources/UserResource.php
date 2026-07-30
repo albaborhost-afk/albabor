@@ -94,6 +94,10 @@ class UserResource extends Resource
                             ->label('Publication gratuite')
                             ->helperText('Permet de publier des annonces sans paiement — toutes catégories, illimité')
                             ->onColor('success'),
+                        Forms\Components\Toggle::make('hide_name')
+                            ->label('Publier sous « Invité »')
+                            ->helperText('Masque le nom et la photo de profil sur les annonces et la messagerie. Le vrai nom reste visible ici.')
+                            ->onColor('warning'),
                     ])->columns(2),
             ]);
     }
@@ -158,6 +162,17 @@ class UserResource extends Resource
                     ->falseIcon('heroicon-o-minus-circle')
                     ->trueColor('success')
                     ->falseColor('gray'),
+                Tables\Columns\IconColumn::make('hide_name')
+                    ->label('Anonyme')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-eye-slash')
+                    ->falseIcon('heroicon-o-minus-circle')
+                    ->trueColor('warning')
+                    ->falseColor('gray')
+                    ->tooltip(fn (User $record): ?string => $record->hidesName()
+                        ? 'Publie sous « Invité » — acheteurs et messagerie ne voient pas son nom'
+                        : null)
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Créé le')
                     ->dateTime('d/m/Y H:i')
