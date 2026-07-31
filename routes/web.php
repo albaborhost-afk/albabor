@@ -13,6 +13,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VendorOnboardingController;
 use App\Http\Controllers\BoutiqueController;
+use App\Http\Controllers\BannerRequestController;
 use App\Http\Controllers\SellerProfileController;
 use App\Models\Listing;
 use Illuminate\Support\Facades\Route;
@@ -184,6 +185,12 @@ Route::get('boutique/{vendorProfile}', [BoutiqueController::class, 'show'])->nam
 // Profil public d'un vendeur (particulier ou pro) : toutes ses annonces.
 // Pluriel volontaire : /vendeur est déjà le panel Filament des boutiques.
 Route::get('vendeurs/{user}', [SellerProfileController::class, 'show'])->name('sellers.show');
+
+// Demande d'espace publicitaire — ouvert aux visiteurs, sans compte.
+Route::get('publicite', [BannerRequestController::class, 'create'])->name('publicite.create');
+Route::post('publicite', [BannerRequestController::class, 'store'])
+    ->middleware('throttle:5,10')
+    ->name('publicite.store');
 
 // Onboarding vendeur (authentification requise)
 Route::middleware('auth')->group(function () {

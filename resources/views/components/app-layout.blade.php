@@ -420,6 +420,7 @@
                                 <li><a href="{{ route('listings.create') }}" class="footer-link text-sm">{{ __('Publier une annonce') }}</a></li>
                                 <li><a href="{{ route('listings.my') }}" class="footer-link text-sm">{{ __('Mes annonces') }}</a></li>
                             @endauth
+                            <li><a href="{{ route('publicite.create') }}" class="footer-link text-sm">{{ __('messages.banner_request_nav') }}</a></li>
                             <li><a href="{{ route('pages.privacy') }}" class="footer-link text-sm">{{ __('Politique de confidentialite') }}</a></li>
                             <li><a href="{{ route('pages.terms') }}" class="footer-link text-sm">{{ __('Conditions d\'utilisation') }}</a></li>
                             <li><a href="{{ route('pages.legal') }}" class="footer-link text-sm">{{ __('Mentions legales') }}</a></li>
