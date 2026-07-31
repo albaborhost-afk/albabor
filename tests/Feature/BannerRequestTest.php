@@ -42,7 +42,20 @@ class BannerRequestTest extends TestCase
 
         $this->get(route('publicite.create'))
             ->assertOk()
-            ->assertSeeText(__('messages.banner_request_title'));
+            // Texte en dur, et non `__()` des deux côtés : comparer la page à
+            // `__(clé)` passerait aussi quand les deux affichent la clé brute.
+            ->assertSeeText('Annoncez sur AlBabor')
+            ->assertDontSee('messages.banner');
+    }
+
+    public function test_the_home_page_shows_the_advertising_button(): void
+    {
+        $this->withoutVite();
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee(route('publicite.create'))
+            ->assertDontSee('messages.banner');
     }
 
     public function test_a_visitor_can_send_a_request(): void

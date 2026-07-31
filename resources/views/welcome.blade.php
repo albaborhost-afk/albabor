@@ -183,15 +183,30 @@
             </div>
 
             {{-- Point d'entrée pour les annonceurs : juste sous les bannières,
-                 là où l'intérêt naît en voyant l'emplacement. --}}
-            <div class="mt-3 text-center">
+                 là où l'intérêt naît en voyant l'emplacement. Teinte dorée
+                 volontaire — c'est de la publicité, pas une action du marché. --}}
+            <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 rounded-2xl px-5 py-4"
+                 style="background: linear-gradient(135deg, rgba(243,156,18,0.07), rgba(243,156,18,0.02)); border: 1px solid rgba(243,156,18,0.20);">
+                <div class="flex items-center gap-3 text-center sm:text-left">
+                    <span class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style="background: rgba(243,156,18,0.14);">
+                        <svg class="w-4.5 h-4.5" style="color: #B97708;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                        </svg>
+                    </span>
+                    <span>
+                        <span class="block text-sm font-bold" style="color: #1B2A4A;">{{ __('messages.banner_cta_home') }}</span>
+                        <span class="block text-xs mt-0.5" style="color: #6B7B8D;">{{ __('messages.banner_cta_home_hint') }}</span>
+                    </span>
+                </div>
+
                 <a href="{{ route('publicite.create') }}"
-                   class="inline-flex items-center gap-1.5 text-xs font-semibold transition-opacity hover:opacity-70"
-                   style="color: #6B7B8D;">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                   class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white whitespace-nowrap transition-all duration-200 hover:-translate-y-0.5 w-full sm:w-auto flex-shrink-0"
+                   style="background: linear-gradient(135deg, #F39C12, #D68910); box-shadow: 0 6px 18px rgba(243,156,18,0.30);">
+                    {{ __('messages.banner_cta_home_button') }}
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                     </svg>
-                    {{ __('messages.banner_cta_home') }}
                 </a>
             </div>
         </div>

@@ -458,4 +458,43 @@ return [
     'cannot_message_own_listing' => 'Vous ne pouvez pas envoyer un message sur votre propre annonce.',
     'listing_deleted' => 'Annonce supprimee',
     'deleted_user' => 'Utilisateur supprime',
+
+    // Confidentialite : publier sous « Invite »
+    'hide_name_label' => 'Publier sous « Invité »',
+    'hide_name_help' => 'Votre nom et votre photo de profil sont masqués sur vos annonces, sur votre profil public et dans la messagerie. Les acheteurs vous contactent normalement par téléphone, WhatsApp ou message.',
+    'hide_name_active_notice' => 'Actif : les acheteurs voient « Invité » à la place de votre nom. Vous, et l\'équipe AlBabor, continuez de voir votre vrai nom.',
+    'hide_name_badge' => 'Identité masquée',
+    'anonymous_seller' => 'Invité',
+
+    // Demande d'espace publicitaire
+    'banner_request_nav' => 'Annoncez chez nous',
+    'banner_request_title' => 'Annoncez sur AlBabor',
+    'banner_request_meta' => 'Réservez un panneau publicitaire sur AlBabor et touchez les passionnés de nautisme en Algérie.',
+    'banner_request_intro' => 'Votre bannière en page d\'accueil du site et dans l\'application mobile. Dites-nous ce que vous souhaitez diffuser, nous vous rappelons.',
+    'banner_request_form_title' => 'Votre demande',
+    'banner_request_form_hint' => 'Remplissez ce formulaire, notre équipe vous contacte par e-mail ou WhatsApp.',
+    'banner_request_submit' => 'Envoyer ma demande',
+    'banner_request_sent' => 'Votre demande a bien été envoyée.',
+    'banner_request_sent_hint' => 'Notre équipe vous contacte par e-mail ou WhatsApp, généralement sous 48 heures.',
+    'banner_request_privacy' => 'Vos coordonnées servent uniquement à traiter cette demande.',
+    'banner_request_message_min' => 'Décrivez votre projet en quelques mots (10 caractères minimum).',
+
+    'banner_field_contact' => 'Votre nom',
+    'banner_field_company' => 'Entreprise',
+    'banner_field_company_placeholder' => 'Optionnel',
+    'banner_field_whatsapp_hint' => 'Avec l\'indicatif, par exemple +213 pour l\'Algérie.',
+    'banner_field_message' => 'Ce que vous souhaitez annoncer',
+    'banner_field_message_placeholder' => 'Décrivez votre activité, ce que vous voulez mettre en avant et la durée de diffusion souhaitée.',
+    'banner_field_budget' => 'Budget envisagé',
+    'banner_field_budget_hint' => 'Optionnel — cela nous aide à vous proposer la bonne formule.',
+
+    'banner_perk_visibility_title' => 'En page d\'accueil',
+    'banner_perk_visibility_text' => 'Votre bannière apparaît en haut de l\'accueil, là où arrivent tous les visiteurs.',
+    'banner_perk_audience_title' => 'Site et application',
+    'banner_perk_audience_text' => 'Une seule bannière, diffusée à la fois sur le site et dans l\'application mobile.',
+    'banner_cta_home' => 'Vous souhaitez votre publicité ici ?',
+    'banner_cta_home_hint' => 'Cet emplacement est disponible à la réservation.',
+    'banner_cta_home_button' => 'Réserver cet emplacement',
+    'banner_perk_stats_title' => 'Chiffres transparents',
+    'banner_perk_stats_text' => 'Nous vous communiquons vos diffusions, vos clics et votre taux de clic.',
 ];
