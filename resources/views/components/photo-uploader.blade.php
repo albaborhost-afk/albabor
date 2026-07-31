@@ -635,9 +635,13 @@ if (typeof photoUploader === 'undefined') {
                     const form = this.$el.closest('form');
                     if (form) {
                         form.addEventListener('submit', (e) => {
-                            const selectedCount = this.supportsManagedFiles
-                                ? this.files.length
-                                : (this.$refs.fileInput?.files?.length || 0);
+                            // Toujours compter this.files : c'est ce que
+                            // getFilesForSubmit() envoie réellement. Compter le
+                            // champ natif laissait passer le cas où les photos
+                            // avaient été écartées à la préparation — l'envoi
+                            // partait alors sans aucune image, et le serveur
+                            // répondait « le champ images est obligatoire ».
+                            const selectedCount = this.files.length;
 
                             // Manual required validation (browser native check runs before submit event)
                             if (this.isRequired && selectedCount === 0) {
@@ -936,38 +940,69 @@ if (typeof photoUploader === 'undefined') {
                 });
             },
 
-            async addFiles(newFiles) {
+            /**
+             * Préparation commune aux deux sélecteurs de photos.
+             *
+             * Le sélecteur natif (tous les mobiles, cf. prefersNativeSelection)
+             * ne passait par AUCUNE de ces étapes : pas de conversion HEIC, pas
+             * de compression, et une seule photo refusée effaçait la sélection
+             * entière. Résultat côté téléphone : soit un envoi de 100 Mo rejeté
+             * par la passerelle avant même d'atteindre PHP (donc invisible dans
+             * les journaux), soit un HEIC refusé par la règle `image`, soit un
+             * encadré de photos brutalement vidé. Les deux chemins partagent
+             * désormais exactement la même préparation.
+             *
+             * @param {File[]} incoming
+             * @param {{replace: boolean}} options  replace : le sélecteur natif
+             *        remplace la sélection au lieu de l'agrandir.
+             */
+            async processSelection(incoming, { replace }) {
                 this.errors = [];
-                const available = this.maxFiles - this.files.length;
-                let toProcess = [];
 
-                for (const file of newFiles) {
-                    if (toProcess.length >= available) {
-                        this.errors.push(`Limite de ${this.maxFiles} photo(s) atteinte.`);
+                const capacity = replace ? this.maxFiles : this.maxFiles - this.files.length;
+                const accepted = [];
+                let limitNotice = null;
+
+                for (const file of incoming) {
+                    if (accepted.length >= capacity) {
+                        // Le sélecteur natif ne peut pas être plafonné depuis le web :
+                        // on garde les premières plutôt que de tout refuser.
+                        limitNotice = replace
+                            ? `Vous avez sélectionné ${incoming.length} photos. Seules les ${this.maxFiles} premières ont été conservées.`
+                            : `Limite de ${this.maxFiles} photo(s) atteinte.`;
                         break;
                     }
                     if (file.size > 15 * 1024 * 1024) {
+                        // `continue` et non un abandon global : une photo trop
+                        // lourde ne doit pas emporter les 19 autres.
                         this.errors.push(`"${file.name}" dépasse la limite de 15 Mo.`);
                         continue;
                     }
                     const allowed = ['image/jpeg','image/jpg','image/png','image/webp','image/heic','image/heif',''];
-                    if (!allowed.includes(file.type)) {
+                    if (!allowed.includes(file.type) && !this.isHeic(file)) {
                         this.errors.push(`"${file.name}" : format non supporté.`);
                         continue;
                     }
-                    toProcess.push(file);
+                    accepted.push(file);
                 }
 
-                if (toProcess.length === 0) return;
+                if (accepted.length === 0) {
+                    if (limitNotice) {
+                        this.errors.push(limitNotice);
+                    }
+                    return;
+                }
 
                 this.isProcessing = true;
                 this.processedCount = 0;
-                this.totalToProcess = toProcess.length;
+                this.totalToProcess = accepted.length;
                 this.$dispatch('photos-processing');
 
-                for (const file of toProcess) {
-                    // iPhone HEIC → JPEG before anything else, so the browser can
-                    // preview it and the server receives a processable image.
+                const prepared = [];
+
+                for (const file of accepted) {
+                    // HEIC → JPEG d'abord : le navigateur peut alors afficher un
+                    // aperçu, et le serveur reçoit une image qu'il sait traiter.
                     let working = file;
                     try {
                         working = await this.convertHeicIfNeeded(file);
@@ -977,20 +1012,49 @@ if (typeof photoUploader === 'undefined') {
                         continue;
                     }
                     const optimized = await this.compressImage(working);
-                    const id = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random());
-                    const preview = URL.createObjectURL(optimized);
-                    this.files.push({ id, file: optimized, preview, size: optimized.size, name: working.name });
+                    prepared.push({
+                        id: crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random()),
+                        file: optimized,
+                        preview: URL.createObjectURL(optimized),
+                        size: optimized.size,
+                        name: working.name,
+                    });
                     this.processedCount++;
                 }
+
+                if (replace) {
+                    this.revokePreviews();
+                    this.files = prepared;
+                    // Ne pas écraser une couverture choisie parmi les photos déjà
+                    // enregistrées (mode édition).
+                    if (this.cover === null || String(this.cover).startsWith('new:')) {
+                        this.cover = prepared.length > 0 ? 'new:0' : null;
+                    }
+                } else {
+                    this.files.push(...prepared);
+                }
+
                 this.isProcessing = false;
-                // If no cover is set yet (e.g. create flow with no existing photos),
-                // pick the first new photo as the cover.
+
                 if (this.cover === null && this.files.length > 0) {
                     this.cover = 'new:0';
                 }
+
+                if (limitNotice) {
+                    this.errors.push(limitNotice);
+                }
+
                 this.$dispatch('photos-ready');
-                this.syncInput();
+
+                if (this.supportsManagedFiles) {
+                    this.syncInput();
+                }
+
                 await this.persistFiles();
+            },
+
+            addFiles(newFiles) {
+                return this.processSelection(newFiles, { replace: false });
             },
 
             get progressPercent() {
@@ -1066,63 +1130,18 @@ if (typeof photoUploader === 'undefined') {
                 return this.files.map(entry => entry.file).filter(file => file instanceof Blob);
             },
 
+            /**
+             * Sélecteur natif (mobile) : la sélection remplace la précédente,
+             * mais elle est préparée exactement comme sur ordinateur.
+             */
             replaceNativeSelection(selectedFiles) {
-                this.errors = [];
-
                 if (selectedFiles.length === 0) {
+                    this.errors = [];
                     this.clearNativeSelection();
-                    return;
+                    return Promise.resolve();
                 }
 
-                // The native iOS/Android picker can't be capped from the web — we
-                // only learn the count after it closes. So instead of rejecting the
-                // whole selection when the user picks too many, keep the first
-                // maxFiles and tell them, rather than clearing everything.
-                let limitNotice = null;
-                if (selectedFiles.length > this.maxFiles) {
-                    limitNotice = `Vous avez sélectionné ${selectedFiles.length} photos. Seules les ${this.maxFiles} premières ont été conservées (maximum ${this.maxFiles}).`;
-                    selectedFiles = selectedFiles.slice(0, this.maxFiles);
-                }
-
-                const normalizedFiles = [];
-
-                for (const file of selectedFiles) {
-                    if (file.size > 15 * 1024 * 1024) {
-                        this.errors.push(`"${file.name}" dépasse la limite de 15 Mo.`);
-                    }
-
-                    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif', ''];
-                    if (!allowed.includes(file.type)) {
-                        this.errors.push(`"${file.name}" : format non supporté.`);
-                    }
-
-                    normalizedFiles.push(file);
-                }
-
-                if (this.errors.length > 0) {
-                    this.clearNativeSelection();
-                    return;
-                }
-
-                this.revokePreviews();
-                this.files = normalizedFiles.map(file => ({
-                    id: crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random()),
-                    file,
-                    preview: URL.createObjectURL(file),
-                    size: file.size,
-                    name: file.name,
-                }));
-                // If no cover is set yet (e.g. native picker, no existing photos),
-                // pick the first new photo as the cover.
-                if (this.cover === null && this.files.length > 0) {
-                    this.cover = 'new:0';
-                }
-                // Surface the "kept first N" notice now that the 20 photos are in
-                // (after the validation early-return, so it doesn't block them).
-                if (limitNotice) {
-                    this.errors = [limitNotice];
-                }
-                this.persistFiles();
+                return this.processSelection(selectedFiles, { replace: true });
             },
 
             clearNativeSelection() {
@@ -1138,19 +1157,6 @@ if (typeof photoUploader === 'undefined') {
                     this.cover = remainingIds.length > 0 ? `existing:${remainingIds[0]}` : null;
                 }
                 this.clearPersistedFiles();
-            },
-
-            syncFilesFromInput() {
-                if (!this.$refs.fileInput) {
-                    return;
-                }
-
-                const selectedFiles = Array.from(this.$refs.fileInput.files || []);
-                if (selectedFiles.length === this.files.length) {
-                    return;
-                }
-
-                this.replaceNativeSelection(selectedFiles);
             },
 
             revokePreviews() {

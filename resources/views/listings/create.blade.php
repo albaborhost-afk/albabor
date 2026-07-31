@@ -1982,12 +1982,17 @@
                     }
                     if (step === 6) {
                         const uploader = this.getPhotoUploader();
-                        const managedFiles = uploader?.files?.length || 0;
-                        const fileInputs = this.$root.querySelectorAll('input[type="file"][name="images[]"]');
-                        let hasNativeFiles = false;
-                        fileInputs.forEach(input => { if (input.files && input.files.length > 0) hasNativeFiles = true; });
 
-                        if (!managedFiles && !hasNativeFiles) {
+                        // Seul `uploader.files` compte : c'est la source de
+                        // l'envoi. Accepter aussi le champ natif laissait
+                        // passer une étape où les photos avaient été écartées,
+                        // et l'annonce partait sans image.
+                        const readyPhotos = uploader
+                            ? (uploader.getFilesForSubmit?.()?.length || 0)
+                            : Array.from(this.$root.querySelectorAll('input[type="file"][name="images[]"]'))
+                                .reduce((total, input) => total + (input.files?.length || 0), 0);
+
+                        if (readyPhotos === 0) {
                             errors.push('Veuillez ajouter au moins une photo.');
                         }
                     }
