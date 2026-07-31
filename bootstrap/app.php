@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\TrackSiteVisit::class,
         ]);
         $middleware->validateCsrfTokens(except: [
             'stripe/webhook',

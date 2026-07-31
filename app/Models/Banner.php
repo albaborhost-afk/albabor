@@ -48,6 +48,34 @@ class Banner extends Model
             ->orderBy('id', 'desc');
     }
 
+    /**
+     * Compte une diffusion pour chaque bannière affichée.
+     *
+     * Le site n'incrémentait rien — seule l'application mobile comptait, si
+     * bien que « vues » sous-estimait fortement ce que l'annonceur a payé.
+     * Une seule requête, quel que soit le nombre de bannières.
+     */
+    public static function recordImpressions(iterable $banners): void
+    {
+        $ids = collect($banners)->pluck('id')->filter()->all();
+
+        if (empty($ids)) {
+            return;
+        }
+
+        static::whereIn('id', $ids)->increment('view_count');
+    }
+
+    /** Taux de clic, en pourcentage des diffusions. */
+    public function getClickThroughRateAttribute(): float
+    {
+        if (! $this->view_count) {
+            return 0.0;
+        }
+
+        return round(($this->click_count / $this->view_count) * 100, 2);
+    }
+
     public function getImageUrlAttribute(): ?string
     {
         if (!$this->image_path) {

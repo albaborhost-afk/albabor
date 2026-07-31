@@ -40,6 +40,10 @@ Route::get('/', function () {
 
     $banners = \App\Models\Banner::active()->take(10)->get();
 
+    // Le site ne comptait aucune diffusion : les chiffres montrés à
+    // l'annonceur ne reflétaient que l'application mobile.
+    \App\Models\Banner::recordImpressions($banners);
+
     return view('welcome', compact('featuredListings', 'latestListings', 'banners'));
 })->name('home');
 

@@ -12,9 +12,7 @@ class BannerController extends Controller
     {
         $banners = Banner::active()->get();
 
-        if ($banners->isNotEmpty()) {
-            Banner::whereIn('id', $banners->pluck('id'))->increment('view_count');
-        }
+        Banner::recordImpressions($banners);
 
         return response()->json([
             'banners' => $banners->map(fn (Banner $banner) => [
