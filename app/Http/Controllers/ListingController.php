@@ -454,19 +454,38 @@ class ListingController extends Controller
 
         $listing->load('media');
 
-        // Clean up orphaned media records (files missing from storage)
-        $disk = $this->listingDisk();
-        foreach ($listing->media as $media) {
-            if (!Storage::disk($disk)->exists($media->path)) {
-                \Log::info('Removing orphaned ListingMedia record', [
-                    'media_id'   => $media->id,
-                    'path'       => $media->path,
-                    'listing_id' => $listing->id,
-                ]);
-                $media->delete();
-            }
+        // Clean up orphaned media records (files missing from storage).
+        //
+        // Un `exists()` par photo faisait jusqu'à 20 allers-retours S3 à chaque
+        // ouverture de la page, en série — plusieurs secondes pendant lesquelles
+        // un processus FPM restait bloqué sur le réseau. On liste le dossier de
+        // l'annonce une seule fois et on compare en mémoire.
+        $disk       = $this->listingDisk();
+        $storedFiles = [];
+
+        try {
+            $storedFiles = array_flip(Storage::disk($disk)->files('listings/' . $listing->id));
+        } catch (\Throwable $e) {
+            \Log::warning('Could not list listing media directory; skipping orphan cleanup', [
+                'listing_id' => $listing->id,
+                'error'      => $e->getMessage(),
+            ]);
+            $storedFiles = null;
         }
-        $listing->unsetRelation('media')->load('media');
+
+        if ($storedFiles !== null) {
+            foreach ($listing->media as $media) {
+                if (! isset($storedFiles[$media->path])) {
+                    \Log::info('Removing orphaned ListingMedia record', [
+                        'media_id'   => $media->id,
+                        'path'       => $media->path,
+                        'listing_id' => $listing->id,
+                    ]);
+                    $media->delete();
+                }
+            }
+            $listing->unsetRelation('media')->load('media');
+        }
 
         $wilayas = $this->getWilayas();
         $exchangeRate = Setting::getExchangeRate();

@@ -98,16 +98,35 @@ Route::get('media/profile/{userId}', function (int $userId) {
         abort(404);
     }
 
-    $disk = \Storage::disk(config('filesystems.listing_disk', 'public'));
-    if (!$disk->exists($user->profile_picture)) {
+    $diskName = config('filesystems.listing_disk', 'public');
+    $disk     = \Storage::disk($diskName);
+
+    // Comme pour les photos d'annonces : sur S3 on redirige vers un lien
+    // signé au lieu de faire transiter le fichier par un processus PHP.
+    if (config("filesystems.disks.{$diskName}.driver") === 's3') {
+        try {
+            return redirect()->away(
+                $disk->temporaryUrl($user->profile_picture, now()->addHours(6)),
+                302,
+                ['Cache-Control' => 'private, max-age=3600'],
+            );
+        } catch (\Throwable $e) {
+            \Log::warning('Signed profile picture URL unavailable', ['user_id' => $user->id]);
+        }
+    }
+
+    try {
+        $content = $disk->get($user->profile_picture);
+    } catch (\Throwable) {
         abort(404);
     }
 
-    $content  = $disk->get($user->profile_picture);
-    $mimeType = $disk->mimeType($user->profile_picture) ?: 'image/jpeg';
+    if ($content === null) {
+        abort(404);
+    }
 
     return response($content, 200, [
-        'Content-Type'  => $mimeType,
+        'Content-Type'  => 'image/jpeg',
         'Cache-Control' => 'public, max-age=2592000',
     ]);
 })->name('profile.picture');
