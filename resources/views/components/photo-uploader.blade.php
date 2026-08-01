@@ -952,9 +952,15 @@ if (typeof photoUploader === 'undefined') {
              * encadré de photos brutalement vidé. Les deux chemins partagent
              * désormais exactement la même préparation.
              *
-             * @param {File[]} incoming
-             * @param {{replace: boolean}} options  replace : le sélecteur natif
-             *        remplace la sélection au lieu de l'agrandir.
+             * Attention : ne jamais écrire deux accolades ouvrantes de suite
+             * dans ce fichier, même en commentaire — Blade les compile en
+             * `echo`. Un type JSDoc écrit de cette façon a provoqué une erreur
+             * 500 sur toute la page de publication.
+             *
+             * @param incoming  les fichiers choisis (File[])
+             * @param options   objet avec `replace` : vrai pour le sélecteur
+             *                  natif, qui remplace la sélection au lieu de
+             *                  l'agrandir.
              */
             async processSelection(incoming, { replace }) {
                 this.errors = [];
