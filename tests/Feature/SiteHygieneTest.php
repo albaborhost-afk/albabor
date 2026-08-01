@@ -102,6 +102,7 @@ class SiteHygieneTest extends TestCase
 
         $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->assertHeader('X-Permitted-Cross-Domain-Policies', 'none');
+        $response->assertHeader('Strict-Transport-Security', 'max-age=31536000');
 
         $this->assertStringContainsString(
             'geolocation=()',

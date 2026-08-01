@@ -20,7 +20,9 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
     Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:3,1');
     Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:3,1');
-    Route::post('/auth/google', [App\Http\Controllers\Auth\GoogleMobileAuthController::class, 'login']);
+    // Seule route d'authentification qui n'était pas limitée en débit.
+    Route::post('/auth/google', [App\Http\Controllers\Auth\GoogleMobileAuthController::class, 'login'])
+        ->middleware('throttle:10,1');
 
     // Public listings
     Route::get('/listings', [ListingController::class, 'index']);
@@ -55,6 +57,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/profile/picture', [ProfileController::class, 'deletePicture']);
         Route::post('/profile/verification', [ProfileController::class, 'submitVerification']);
         Route::post('/profile/upgrade-vendor', [ProfileController::class, 'upgradeToVendor']);
+        Route::delete('/profile', [ProfileController::class, 'destroy']);
 
         // My Listings
         Route::get('/my-listings', [ListingController::class, 'myListings']);

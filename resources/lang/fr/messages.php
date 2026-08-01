@@ -338,7 +338,7 @@ return [
     'select_plan' => 'Choisir ce plan',
     'selected_plan' => 'Plan sélectionné',
     'subscription_payment_submitted' => 'Paiement d\'abonnement soumis',
-    'subscription_required_for_category' => 'Un abonnement vendeur est requis pour cette catégorie',
+    'subscription_required_for_category' => 'Un abonnement vendeur actif est requis pour publier un moteur ou une pièce détachée. Rendez-vous dans « Abonnement » pour en souscrire.',
     'already_vendor' => 'Vous êtes déjà vendeur professionnel',
     'upgraded_to_vendor' => 'Vous êtes maintenant vendeur professionnel',
 

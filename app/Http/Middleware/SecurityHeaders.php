@@ -13,10 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
  * mais rien pour limiter ce qui fuit vers les sites tiers ni ce que la page
  * a le droit de demander au navigateur.
  *
- * Volontairement absent : `Strict-Transport-Security`. Un navigateur retient
- * cet en-tête pendant toute sa durée de validité, donc une erreur ne se
- * corrige pas en redéployant. Il se règle d'un interrupteur côté Cloudflare,
- * qui est déjà devant le site — c'est le bon endroit pour ça.
  */
 class SecurityHeaders
 {
@@ -38,6 +34,16 @@ class SecurityHeaders
         // Bloque les anciens greffons Flash/PDF qui tentent de lire des
         // ressources du domaine via un crossdomain.xml.
         $response->headers->set('X-Permitted-Cross-Domain-Policies', 'none');
+
+        // Impose HTTPS pendant un an sur albabor.com.
+        //
+        // Volontairement SANS `includeSubDomains` ni `preload` : le premier
+        // imposerait HTTPS à des sous-domaines qui n'existent pas encore, le
+        // second inscrirait le domaine dans une liste intégrée aux navigateurs
+        // dont on ne sort qu'après des mois. En l'état, revenir en arrière se
+        // fait en passant `max-age` à 0 et en attendant l'expiration côté
+        // visiteurs. Les navigateurs ignorent cet en-tête en HTTP simple.
+        $response->headers->set('Strict-Transport-Security', 'max-age=31536000');
 
         return $response;
     }

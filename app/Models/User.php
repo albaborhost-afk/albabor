@@ -333,17 +333,28 @@ class User extends Authenticatable implements FilamentUser
         return $this->activeSubscription()->exists();
     }
 
+    /**
+     * Règle produit : publier un moteur ou une pièce exige un abonnement
+     * vendeur actif (voir CLAUDE.md, section Business).
+     *
+     * `hasActiveSubscription()` existait mais n'était appelée nulle part : il
+     * suffisait donc de passer son compte en « vendeur » — ce qui est gratuit
+     * et instantané — pour publier autant de moteurs et de pièces que voulu
+     * sans jamais payer. L'interface affichait déjà l'invitation à s'abonner
+     * dans ce cas ; seule cette méthode ne la déclenchait jamais.
+     */
     public function canPublishEngineOrParts(): bool
     {
+        // Dérogation accordée au cas par cas depuis l'administration.
         if ($this->hasFreePublishing()) {
             return true;
         }
 
-        if ($this->isVendor()) {
+        if ($this->isAdmin()) {
             return true;
         }
 
-        return false;
+        return $this->isVendor() && $this->hasActiveSubscription();
     }
 
     public function hasFreePublishing(): bool
