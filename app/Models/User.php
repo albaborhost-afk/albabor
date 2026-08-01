@@ -42,6 +42,25 @@ class User extends Authenticatable implements FilamentUser
     protected $hidden = [
         'password',
         'remember_token',
+        // Image encodée en base64 : `profile_picture_url` sert à l'affichage,
+        // la donnée brute n'a rien à faire dans une réponse.
+        'profile_picture_data',
+    ];
+
+    /**
+     * Champs retirés des réponses destinées à un tiers.
+     *
+     * `GET /api/v1/listings` est public et sérialise le vendeur : l'adresse
+     * e-mail de chaque vendeur était donc récupérable sans compte, en une
+     * requête, avec en prime des indicateurs internes (compte bloqué,
+     * publication gratuite, identifiant Google).
+     */
+    private const VIEWER_RESTRICTED_FIELDS = [
+        'email',
+        'email_verified_at',
+        'google_id',
+        'is_blocked',
+        'free_publishing',
     ];
 
     protected $appends = [
@@ -90,13 +109,7 @@ class User extends Authenticatable implements FilamentUser
             return false;
         }
 
-        $viewer = static::currentViewer();
-
-        if (! $viewer instanceof self) {
-            return true;
-        }
-
-        return $viewer->getKey() !== $this->getKey() && $viewer->account_type !== 'admin';
+        return ! $this->viewerIsSelfOrAdmin();
     }
 
     /**
@@ -114,6 +127,42 @@ class User extends Authenticatable implements FilamentUser
         }
 
         return $viewer instanceof self ? $viewer : null;
+    }
+
+    /**
+     * Sérialisation : un tiers ne reçoit ni l'e-mail ni les indicateurs
+     * internes du compte.
+     *
+     * Le filtrage se fait ici plutôt qu'à chaque point d'affichage : le
+     * défaut devient « masqué », donc un futur écran ne peut pas divulguer
+     * l'adresse en oubliant une règle. Le compte lui-même et l'administration
+     * gardent tout — c'est le même critère que pour le nom.
+     */
+    public function toArray(): array
+    {
+        $data = parent::toArray();
+
+        if ($this->realNameRevealed || $this->viewerIsSelfOrAdmin()) {
+            return $data;
+        }
+
+        foreach (self::VIEWER_RESTRICTED_FIELDS as $field) {
+            unset($data[$field]);
+        }
+
+        return $data;
+    }
+
+    /** Le lecteur est-il le compte lui-même, ou un administrateur ? */
+    private function viewerIsSelfOrAdmin(): bool
+    {
+        $viewer = static::currentViewer();
+
+        if (! $viewer instanceof self) {
+            return false;
+        }
+
+        return $viewer->getKey() === $this->getKey() || $viewer->account_type === 'admin';
     }
 
     /** Le compte a demandé à publier sous « Invité ». */
