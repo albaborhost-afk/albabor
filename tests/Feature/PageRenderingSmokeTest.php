@@ -145,6 +145,38 @@ class PageRenderingSmokeTest extends TestCase
     }
 
     /**
+     * La zone de dépôt doit être un <label> relié au champ de fichiers.
+     *
+     * Elle ouvrait la galerie via `$refs.fileInput.click()`. Sur Android, un
+     * clic déclenché depuis JavaScript n'ouvre pas toujours le sélecteur, et
+     * le moindre appui un peu long sélectionnait le texte au lieu d'ouvrir
+     * quoi que ce soit : l'utilisateur voyait « Cliquez » surligné en bleu et
+     * ne pouvait plus rien envoyer. Un <label for="…"> est traité nativement.
+     */
+    public function test_the_photo_drop_zone_opens_the_picker_natively(): void
+    {
+        $html = $this->actingAs($this->seller())
+            ->get(route('listings.create'))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString(
+            'id="photo-uploader-images"',
+            $html,
+            'Le champ de fichiers doit porter un identifiant pour être ciblé par un label.'
+        );
+
+        $this->assertGreaterThanOrEqual(
+            2,
+            substr_count($html, 'for="photo-uploader-images"'),
+            'La zone vide et la tuile « Ajouter » doivent toutes deux être des labels.'
+        );
+
+        // Un appui ne doit jamais se transformer en sélection de texte.
+        $this->assertStringContainsString('-webkit-touch-callout:none', $html);
+    }
+
+    /**
      * Aucune commande photo ne doit dépendre du survol.
      *
      * Supprimer et Flouter étaient masqués au-delà de 640 px et ne

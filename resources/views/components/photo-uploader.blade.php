@@ -18,6 +18,10 @@
     $existingCount = $existingMedia->count();
     $maxNew        = $max - $existingCount;
     $hasExisting   = $existingCount > 0;
+
+    // Un identifiant stable : les zones cliquables sont des <label for="…">,
+    // seul moyen fiable d'ouvrir la galerie sur Android.
+    $uploaderInputId = 'photo-uploader-' . \Illuminate\Support\Str::slug($inputName);
 @endphp
 
 <style>
@@ -181,11 +185,23 @@
             @dragleave.prevent="isDragging = false"
             @dragover.prevent
             @drop.prevent="handleDrop($event)"
-            @click="$refs.fileInput.click()"
             :style="files.length > 0 ? 'padding: 1rem;' : 'padding: 2.5rem 1.5rem;'"
         >
-            {{-- Empty state --}}
-            <div x-show="files.length === 0" class="text-center">
+            {{-- Empty state.
+
+                 Un <label> et non un @click : sur Android, `input.click()`
+                 déclenché depuis JavaScript n'ouvre pas toujours la galerie,
+                 et le moindre appui un peu long sur le texte le sélectionnait
+                 au lieu d'ouvrir quoi que ce soit — l'utilisateur se
+                 retrouvait avec « Cliquez » surligné en bleu et rien d'autre.
+                 Un label est traité nativement par le navigateur : il ouvre le
+                 sélecteur de fichiers sans passer par du code. --}}
+            <label
+                x-show="files.length === 0"
+                for="{{ $uploaderInputId }}"
+                class="block text-center cursor-pointer select-none"
+                style="-webkit-user-select:none; -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent;"
+            >
                 <div class="w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center transition-all duration-300"
                      :style="isDragging ? 'background:rgba(23,162,184,0.15);' : 'background:#F0F4F8;'">
                     <svg class="w-7 h-7 transition-colors duration-300" :style="isDragging ? 'color:#17A2B8;' : 'color:#9BA8B7;'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,7 +221,7 @@
                 >
                     Sur certains navigateurs mobiles, ajoutez toutes vos photos en une seule sélection.
                 </p>
-            </div>
+            </label>
 
             {{-- Filled state — preview grid + add more button --}}
             <div x-show="files.length > 0">
@@ -317,12 +333,13 @@
                         </div>
                     </template>
 
-                    {{-- Add more slot --}}
+                    {{-- Add more slot — label lui aussi, même raison. --}}
                     <template x-if="supportsManagedFiles ? slotsLeft > 0 : true">
-                        <div
-                            class="aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all duration-200 hover:border-[#17A2B8] hover:bg-[#17A2B8]/5"
-                            style="border-color:#E0E6ED;"
-                            @click.stop="$refs.fileInput.click()"
+                        <label
+                            for="{{ $uploaderInputId }}"
+                            class="aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all duration-200 hover:border-[#17A2B8] hover:bg-[#17A2B8]/5 select-none"
+                            style="border-color:#E0E6ED; -webkit-user-select:none; -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent;"
+                            @click.stop
                         >
                             <svg class="w-5 h-5 mb-1" style="color:#9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -332,7 +349,7 @@
                                 style="color:#9BA8B7;"
                                 x-text="supportsManagedFiles ? 'Ajouter' : 'Remplacer'"
                             ></span>
-                        </div>
+                        </label>
                     </template>
                 </div>
 
@@ -402,6 +419,7 @@
         {{-- Hidden actual file input --}}
         <input
             x-ref="fileInput"
+            id="{{ $uploaderInputId }}"
             type="file"
             name="{{ $inputName }}[]"
             multiple
