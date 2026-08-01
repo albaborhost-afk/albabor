@@ -1,2 +1,17 @@
 User-agent: *
-Disallow:
+
+# Espaces privés : rien à indexer, et cela évite aux robots de consommer
+# des processus PHP sur des pages qu'ils ne verront jamais.
+Disallow: /admin
+Disallow: /vendeur
+Disallow: /profil
+Disallow: /mes-annonces
+Disallow: /messages
+Disallow: /favoris
+Disallow: /paiements
+Disallow: /mediation
+Disallow: /annonces/creer
+
+Allow: /
+
+Sitemap: https://albabor.com/sitemap.xml

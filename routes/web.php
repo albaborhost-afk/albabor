@@ -15,6 +15,7 @@ use App\Http\Controllers\VendorOnboardingController;
 use App\Http\Controllers\BoutiqueController;
 use App\Http\Controllers\BannerRequestController;
 use App\Http\Controllers\SellerProfileController;
+use App\Http\Controllers\SitemapController;
 use App\Models\Listing;
 use Illuminate\Support\Facades\Route;
 
@@ -204,6 +205,10 @@ Route::get('boutique/{vendorProfile}', [BoutiqueController::class, 'show'])->nam
 // Profil public d'un vendeur (particulier ou pro) : toutes ses annonces.
 // Pluriel volontaire : /vendeur est déjà le panel Filament des boutiques.
 Route::get('vendeurs/{user}', [SellerProfileController::class, 'show'])->name('sellers.show');
+
+// Plan du site : /sitemap.xml renvoyait 404, les annonces n'étaient
+// découvertes qu'en suivant les liens de la page d'accueil.
+Route::get('sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 // Demande d'espace publicitaire — ouvert aux visiteurs, sans compte.
 Route::get('publicite', [BannerRequestController::class, 'create'])->name('publicite.create');
