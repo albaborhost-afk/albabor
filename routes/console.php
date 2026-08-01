@@ -10,3 +10,7 @@ Artisan::command('inspire', function () {
 
 // Supprime chaque nuit les annonces "awaiting_payment" abandonnées (> 7 jours, aucun paiement soumis)
 Schedule::command('listings:cleanup-abandoned')->daily();
+
+// Passe chaque nuit les annonces expirées (published_until dépassé) au statut "expired"
+// et nettoie les mises en avant terminées.
+Schedule::command('listings:expire')->daily();

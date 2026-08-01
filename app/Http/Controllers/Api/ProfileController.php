@@ -192,4 +192,41 @@ class ProfileController extends Controller
             'message' => 'Photo de profil supprimée.',
         ]);
     }
+
+    /**
+     * Permanently delete the authenticated user's account and associated data.
+     * Required by Apple App Store Guideline 5.1.1(v) for apps with account creation.
+     */
+    public function destroy(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $disk = config('filesystems.listing_disk', 'public');
+
+        // Delete the profile picture file.
+        if ($user->profile_picture) {
+            Storage::disk($disk)->delete($user->profile_picture);
+        }
+
+        // Delete the user's listing media files from storage.
+        foreach ($user->listings()->with('media')->get() as $listing) {
+            foreach ($listing->media as $media) {
+                if ($media->path) {
+                    Storage::disk($disk)->delete($media->path);
+                }
+                if ($media->thumbnail_path) {
+                    Storage::disk($disk)->delete($media->thumbnail_path);
+                }
+            }
+        }
+
+        // Revoke all access tokens.
+        $user->tokens()->delete();
+
+        // Permanently delete the account (cascades to listings, favorites, payments, etc.).
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Votre compte a été supprimé définitivement.',
+        ]);
+    }
 }
