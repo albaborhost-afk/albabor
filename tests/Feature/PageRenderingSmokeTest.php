@@ -145,6 +145,32 @@ class PageRenderingSmokeTest extends TestCase
     }
 
     /**
+     * Aucune commande photo ne doit dépendre du survol.
+     *
+     * Supprimer et Flouter étaient masqués au-delà de 640 px et ne
+     * réapparaissaient qu'au survol : sur une tablette — écran large, pas de
+     * survol — ils étaient définitivement inaccessibles, et sur ordinateur
+     * personne ne devine qu'il faut survoler une photo pour la supprimer.
+     *
+     * Les libellés d'aide passent par la classe `photo-hint`, qui n'est
+     * masquée que sous `@media (hover: hover)`.
+     */
+    public function test_no_photo_control_is_hidden_behind_hover(): void
+    {
+        $component = file_get_contents(
+            resource_path('views/components/photo-uploader.blade.php')
+        );
+
+        foreach (['sm:opacity-0', 'opacity-0 group-hover', 'sm:group-hover:opacity-100'] as $pattern) {
+            $this->assertStringNotContainsString(
+                $pattern,
+                $component,
+                "« {$pattern} » rend une commande inaccessible sur écran tactile large."
+            );
+        }
+    }
+
+    /**
      * Blade compile toute accolade doublée en `echo`, y compris dans un
      * commentaire JavaScript. C'est ce qui a provoqué la panne.
      */

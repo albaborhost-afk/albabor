@@ -20,6 +20,38 @@
     $hasExisting   = $existingCount > 0;
 @endphp
 
+<style>
+    /*
+     * Les boutons Supprimer et Flouter étaient masqués au-delà de 640 px et ne
+     * réapparaissaient qu'au survol de la vignette. Sur un écran tactile large
+     * — une tablette — il n'y a pas de survol : ils étaient donc définitivement
+     * inaccessibles. Et sur ordinateur, personne ne devine qu'il faut survoler
+     * une photo pour pouvoir la supprimer.
+     *
+     * Une commande reste donc toujours visible. Seuls les libellés d'aide
+     * (« Définir principale ») peuvent se cacher, et uniquement là où le survol
+     * existe réellement.
+     */
+    [data-photo-uploader] .photo-action {
+        opacity: 1;
+    }
+
+    [data-photo-uploader] .photo-hint {
+        opacity: 1;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        [data-photo-uploader] .photo-hint {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        [data-photo-uploader] .group:hover .photo-hint {
+            opacity: 1;
+        }
+    }
+</style>
+
 <div
     data-photo-uploader
     x-data="photoUploader({{ $max }}, {{ $existingCount }}, {{ $required ? 'true' : 'false' }}, @js($persistKey))"
@@ -88,12 +120,10 @@
                         Principale
                     </div>
 
-                    {{-- Hover overlay: "Définir comme principale" for non-cover images --}}
+                    {{-- « Définir principale » : visible au survol sur ordinateur,
+                         visible en permanence là où le survol n'existe pas. --}}
                     <div x-show="cover !== 'existing:{{ $media->id }}'"
-                         x-transition:enter="transition-opacity duration-150"
-                         x-transition:enter-start="opacity-0"
-                         x-transition:enter-end="opacity-100"
-                         class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                         class="photo-hint absolute inset-0 flex flex-col items-center justify-center"
                          style="background:rgba(0,0,0,0.42);">
                         <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" style="color:white;">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
@@ -113,13 +143,14 @@
                     </svg>
                 </button>
 
-                {{-- Blur button for existing photo --}}
+                {{-- Flouter une photo déjà enregistrée — toujours visible --}}
                 <button type="button"
                         @click.stop="$dispatch('open-blur-existing', { id: {{ $media->id }}, url: '{{ $media->url }}' })"
-                        class="absolute bottom-1.5 right-1 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 active:scale-95 opacity-100 sm:opacity-0 group-hover:opacity-100"
-                        style="background:rgba(27,79,114,0.92); color:white; box-shadow:0 2px 8px rgba(0,0,0,0.35);"
-                        title="Flouter une zone privée">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        class="photo-action absolute bottom-1.5 right-1 w-7 h-7 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
+                        style="background:rgba(27,79,114,0.95); color:white; box-shadow:0 2px 6px rgba(0,0,0,0.35), 0 0 0 1.5px rgba(255,255,255,0.9);"
+                        title="Flouter une zone privée"
+                        aria-label="Flouter une zone privée">
+                    <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6.536-6.536a2.5 2.5 0 013.536 3.536L12 15H9v-3l.232-.232z"/>
                     </svg>
                 </button>
@@ -226,7 +257,7 @@
                                 {{-- Tap / click hint on non-cover thumbnails --}}
                                 <div
                                     x-show="!(index === 0 && cover === 'new:0')"
-                                    class="absolute inset-0 flex flex-col items-center justify-end pb-2 px-1 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+                                    class="photo-hint absolute inset-0 flex flex-col items-center justify-end pb-2 px-1 bg-gradient-to-t from-black/55 via-black/10 to-transparent pointer-events-none"
                                 >
                                     <span class="text-[8px] font-bold text-white text-center leading-tight drop-shadow-sm">
                                         Principale
@@ -245,28 +276,30 @@
                                 style="background:rgba(23,162,184,0.9); backdrop-filter: blur(4px);"
                             >Principale</div>
 
-                            {{-- Remove button --}}
+                            {{-- Supprimer — toujours visible, y compris sur tablette --}}
                             <button
                                 type="button"
                                 @click.stop="removeFile(index); handleNewRemoval(index)"
-                                class="absolute top-1.5 right-1.5 w-7 h-7 sm:w-5 sm:h-5 rounded-full flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200 hover:scale-110"
-                                style="background:rgba(231,76,60,0.95); color:white;"
-                                title="Supprimer"
+                                class="photo-action absolute top-1.5 right-1.5 w-7 h-7 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
+                                style="background:rgba(231,76,60,0.97); color:white; box-shadow:0 2px 6px rgba(0,0,0,0.35), 0 0 0 1.5px rgba(255,255,255,0.9);"
+                                title="Supprimer cette photo"
+                                aria-label="Supprimer cette photo"
                             >
                                 <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
                             </button>
 
-                            {{-- Blur/Pixelate button — always visible mobile, hover desktop --}}
+                            {{-- Flouter — toujours visible aussi --}}
                             <button
                                 type="button"
                                 @click.stop="openBlurEditor(index)"
-                                class="absolute bottom-5 right-1 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 active:scale-95 sm:opacity-0 sm:group-hover:opacity-100"
-                                style="background:rgba(27,79,114,0.92); color:white; box-shadow:0 2px 8px rgba(0,0,0,0.35);"
+                                class="photo-action absolute bottom-5 right-1 w-7 h-7 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
+                                style="background:rgba(27,79,114,0.95); color:white; box-shadow:0 2px 6px rgba(0,0,0,0.35), 0 0 0 1.5px rgba(255,255,255,0.9);"
                                 title="Flouter une zone privée"
+                                aria-label="Flouter une zone privée"
                             >
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6.536-6.536a2.5 2.5 0 013.536 3.536L12 15H9v-3l.232-.232z"/>
                                 </svg>
                             </button>
