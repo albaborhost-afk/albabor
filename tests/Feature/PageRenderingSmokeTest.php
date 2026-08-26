@@ -132,6 +132,93 @@ class PageRenderingSmokeTest extends TestCase
         }
     }
 
+    /**
+     * Les deux pages où l'on paie doivent s'afficher.
+     *
+     * Ni la page de paiement d'une annonce ni celle des abonnements n'étaient
+     * couvertes : la refonte du sélecteur de moyens de paiement s'y jouait
+     * entièrement, sans filet.
+     */
+    public function test_the_payment_pages_render(): void
+    {
+        $seller  = $this->seller();
+        $listing = $this->listingFor($seller);
+        $listing->update(['status' => 'awaiting_payment']);
+
+        $pages = [
+            "paiement d'une annonce" => route('listings.payment', $listing),
+            'abonnements'            => route('subscription.plans'),
+        ];
+
+        foreach ($pages as $name => $url) {
+            $this->actingAs($seller)->get($url)->assertOk("La page « {$name} » ne s'affiche pas.");
+        }
+
+        // Sans clés Stripe, le bloc « paiement en ligne » ne s'affiche pas du
+        // tout : sans ce second passage, la partie neuve de la page ne serait
+        // jamais rendue par les tests.
+        config([
+            'services.stripe.key'    => 'pk_test_smoke',
+            'services.stripe.secret' => 'sk_test_smoke',
+        ]);
+
+        $html = $this->actingAs($seller)
+            ->get(route('listings.payment', $listing))
+            ->assertOk("La page de paiement ne s'affiche plus une fois Stripe configuré.")
+            ->getContent();
+
+        $this->assertStringContainsString('/images/payments/apple-pay.svg', $html);
+        $this->assertStringContainsString('/images/payments/visa.svg', $html);
+        $this->assertStringNotContainsString('upload.wikimedia.org', $html);
+    }
+
+    /**
+     * Chaque logo affiché doit exister sur le disque.
+     *
+     * Les logos Visa et Mastercard étaient chargés depuis Wikipédia avec un
+     * `onerror` qui les faisait disparaître en silence : la page semblait
+     * n'accepter aucune carte.
+     */
+    public function test_every_payment_logo_exists(): void
+    {
+        $component = file_get_contents(resource_path('views/components/payment-online.blade.php'))
+            . file_get_contents(resource_path('views/components/payment-manual-methods.blade.php'));
+
+        preg_match_all("#'(/images/[^']+\.(?:svg|png|webp))'#", $component, $matches);
+
+        $this->assertNotEmpty($matches[1], 'Aucun logo trouvé — le sélecteur a-t-il changé de forme ?');
+
+        foreach (array_unique($matches[1]) as $path) {
+            $this->assertFileExists(public_path(ltrim($path, '/')), "Le logo « {$path} » est référencé mais absent.");
+        }
+    }
+
+    /**
+     * Le paiement en ligne ne doit jamais être restreint à « card ».
+     *
+     * En fixant `payment_method_types` à « card », la page Stripe se limitait
+     * à la saisie d'un numéro de carte : ni Apple Pay, ni Google Pay, ni Link.
+     * Ce test échoue si le paramètre revient dans l'un des deux contrôleurs.
+     */
+    public function test_stripe_checkout_does_not_restrict_the_payment_methods(): void
+    {
+        $controllers = [
+            'app/Http/Controllers/PaymentController.php',
+            'app/Http/Controllers/Api/PaymentController.php',
+        ];
+
+        foreach ($controllers as $relative) {
+            $source = file_get_contents(base_path($relative));
+
+            $this->assertDoesNotMatchRegularExpression(
+                "/'payment_method_types\[\d+\]'\s*=>/",
+                $source,
+                "{$relative} impose une liste de moyens de paiement à Stripe : "
+                    ."Apple Pay, Google Pay et Link disparaissent de la page de paiement."
+            );
+        }
+    }
+
     public function test_the_admin_panel_renders(): void
     {
         $admin = User::factory()->create([

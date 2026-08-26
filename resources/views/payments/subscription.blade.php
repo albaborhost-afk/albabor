@@ -162,7 +162,8 @@
 
             <!-- Payment Form (hidden by default) -->
             <div id="paymentForm" class="hidden">
-                <form action="{{ route('payments.subscription') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <form action="{{ route('payments.subscription') }}" method="POST" enctype="multipart/form-data"
+                      x-data="{ method: '{{ old('method', '') }}' }" class="space-y-6">
                     @csrf
                     <input type="hidden" name="plan_id" id="selectedPlanId">
 
@@ -176,58 +177,7 @@
                         </div>
                     </div>
 
-                    <!-- Payment Method -->
-                    <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03);">
-                        <h2 class="text-lg font-bold mb-4 flex items-center gap-2" style="color: #1B2A4A;">
-                            <svg class="w-5 h-5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                            {{ __('messages.payment_method') }}
-                        </h2>
-
-                        <div class="space-y-3">
-                            <label class="flex items-start p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
-                                <input type="radio" name="method" value="baridimob" required style="accent-color: #17A2B8; margin-top: 3px;">
-                                <img src="/images/baridimob.png" alt="BaridiMob" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
-                                <span class="ml-3">
-                                    <span class="block font-semibold" style="color: #1B2A4A;">BaridiMob</span>
-                                    <span class="block text-sm" style="color: #6B7B8D;"><span class="font-mono break-all">00799999002543569223</span></span>
-                                    <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
-                                </span>
-                            </label>
-
-                            <label class="flex items-start p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
-                                <input type="radio" name="method" value="bank_transfer" style="accent-color: #17A2B8; margin-top: 3px;">
-                                <img src="/images/bea.png" alt="BEA" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
-                                <span class="ml-3">
-                                    <span class="block font-semibold" style="color: #1B2A4A;">BEA – Banque Extérieure d'Algérie</span>
-                                    <span class="block text-sm" style="color: #6B7B8D;">🇩🇿 RIB : <span class="font-mono break-all">00200090090220206690</span></span>
-                                    <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
-                                </span>
-                            </label>
-
-                            <label class="flex items-start p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
-                                <input type="radio" name="method" value="paypal" style="accent-color: #17A2B8; margin-top: 3px;">
-                                <img src="/images/paypal.png" alt="PayPal" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
-                                <span class="ml-3">
-                                    <span class="block font-semibold" style="color: #1B2A4A;">PayPal</span>
-                                    <span class="block text-sm" style="color: #6B7B8D;">albabordz@gmail.com</span>
-                                    <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
-                                </span>
-                            </label>
-
-                            <label class="flex items-start p-4 rounded-xl cursor-pointer transition-all" style="border: 1px solid #E0E6ED;">
-                                <input type="radio" name="method" value="card" style="accent-color: #17A2B8; margin-top: 3px;">
-                                <img src="/images/mastercard-visa.webp" alt="Mastercard Visa" class="ml-3 h-8 w-8 object-contain flex-shrink-0 rounded-lg">
-                                <span class="ml-3">
-                                    <span class="block font-semibold" style="color: #1B2A4A;">Carte Bancaire – Mastercard / Visa</span>
-                                    <span class="block text-sm" style="color: #6B7B8D;">💳 Paiement international sécurisé</span>
-                                    <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
-                                </span>
-                            </label>
-
-                        </div>
-                    </div>
+                    <x-payment-manual-methods :only="['baridimob', 'bank_transfer', 'paypal', 'card']" />
 
                     <!-- Payment Proof -->
                     <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03);">

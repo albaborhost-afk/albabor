@@ -50,11 +50,7 @@ class PaymentResource extends Resource
                             ->disabled(),
                         Forms\Components\Select::make('method')
                             ->label("Méthode")
-                            ->options([
-                                'baridimob' => 'BaridiMob',
-                                'ccp' => 'CCP',
-                                'bank_transfer' => 'Virement bancaire',
-                            ])
+                            ->options(Payment::methodLabels())
                             ->disabled(),
                     ])->columns(2),
 
@@ -124,18 +120,8 @@ class PaymentResource extends Resource
                         Infolists\Components\TextEntry::make('method')
                             ->label("Méthode")
                             ->badge()
-                            ->color(fn (string $state): string => match ($state) {
-                                'baridimob' => 'success',
-                                'ccp' => 'info',
-                                'bank_transfer' => 'purple',
-                                default => 'gray',
-                            })
-                            ->formatStateUsing(fn (string $state): string => match ($state) {
-                                'baridimob' => 'BaridiMob',
-                                'ccp' => 'CCP',
-                                'bank_transfer' => 'Virement bancaire',
-                                default => $state,
-                            }),
+                            ->color(fn (string $state): string => Payment::methodColors()[$state] ?? 'gray')
+                            ->formatStateUsing(fn (string $state): string => Payment::methodLabels()[$state] ?? $state),
                         Infolists\Components\TextEntry::make('status')
                             ->label('Statut')
                             ->badge()
@@ -270,18 +256,8 @@ class PaymentResource extends Resource
                 Tables\Columns\TextColumn::make('method')
                     ->label("Méthode")
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'baridimob' => 'success',
-                        'ccp' => 'info',
-                        'bank_transfer' => 'purple',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'baridimob' => 'BaridiMob',
-                        'ccp' => 'CCP',
-                        'bank_transfer' => 'Virement',
-                        default => $state,
-                    }),
+                    ->color(fn (string $state): string => Payment::methodColors()[$state] ?? 'gray')
+                    ->formatStateUsing(fn (string $state): string => Payment::methodLabels()[$state] ?? $state),
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Statut')
@@ -336,11 +312,7 @@ class PaymentResource extends Resource
 
                 Tables\Filters\SelectFilter::make('method')
                     ->label("Méthode")
-                    ->options([
-                        'baridimob' => 'BaridiMob',
-                        'ccp' => 'CCP',
-                        'bank_transfer' => 'Virement bancaire',
-                    ])
+                    ->options(Payment::methodLabels())
                     ->placeholder("Toutes les méthodes"),
 
                 Tables\Filters\Filter::make('created_at')

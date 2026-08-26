@@ -74,16 +74,59 @@ class Payment extends Model
         };
     }
 
+    /**
+     * Libellé lisible du moyen de paiement.
+     *
+     * `stripe` et `card` manquaient : l'administration affichait la valeur
+     * brute de la colonne pour tout paiement en ligne.
+     */
     public function getMethodLabelAttribute(): string
     {
-        return match($this->method) {
-            'baridimob' => 'BaridiMob',
-            'ccp' => 'CCP',
+        return self::methodLabels()[$this->method] ?? (string) $this->method;
+    }
+
+    /**
+     * Tous les moyens acceptés par la contrainte CHECK de `payments.method`.
+     * Source unique : l'administration s'en sert pour ses options et filtres,
+     * qui dérivaient jusqu'ici de la liste des seules méthodes manuelles.
+     *
+     * @return array<string, string>
+     */
+    public static function methodLabels(): array
+    {
+        return [
+            'stripe'        => 'Paiement en ligne (Stripe)',
+            'card'          => 'Carte bancaire',
+            'baridimob'     => 'BaridiMob',
+            'ccp'           => 'CCP',
             'bank_transfer' => 'BEA – Virement bancaire',
-            'paypal' => 'PayPal',
-            'redotpay' => 'RedotPay – SEPA',
-            default => $this->method,
-        };
+            'paypal'        => 'PayPal',
+            'redotpay'      => 'RedotPay – SEPA',
+        ];
+    }
+
+    /**
+     * Couleur de badge par moyen, pour l'administration.
+     *
+     * @return array<string, string>
+     */
+    public static function methodColors(): array
+    {
+        return [
+            'stripe'        => 'primary',
+            'card'          => 'warning',
+            'baridimob'     => 'success',
+            'ccp'           => 'info',
+            'bank_transfer' => 'purple',
+            'paypal'        => 'info',
+            'redotpay'      => 'warning',
+        ];
+    }
+
+    /** Un paiement en ligne est confirmé par Stripe, sans justificatif. */
+    public function isOnline(): bool
+    {
+        return $this->method === 'stripe';
     }
 
     public function getStatusLabelAttribute(): string

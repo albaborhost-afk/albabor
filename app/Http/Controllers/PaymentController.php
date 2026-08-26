@@ -234,8 +234,15 @@ class PaymentController extends Controller
 
         // Convert DZD → EUR using platform exchange rate
         $rate = (float) (Setting::where('key', 'exchange_rate_eur_dzd')->value('value') ?: 238);
-        $amountEur = $rate > 0 ? round($amountDzd / $rate, 2) : 21.00;
-        $amountCents = max(50, (int) ($amountEur * 100)); // Stripe minimum: 50 cents
+        $amountEur = $rate > 0 ? round($amountDzd / $rate, 2) : 0.0;
+        $amountCents = (int) round($amountEur * 100);
+
+        // Stripe refuse toute charge sous 0,50 €. L'ancien `max(50, …)` forçait
+        // le montant à 50 centimes au lieu de s'arrêter : une annonce gratuite
+        // (moteur, pièce) se serait fait facturer, un taux de change cassé aussi.
+        if ($amountCents < 50) {
+            return back()->with('error', 'Le paiement en ligne n\'est pas disponible pour ce montant. Utilisez un virement.');
+        }
 
         try {
             // Use Guzzle directly — Stripe SDK cURL client fails on Laravel Cloud
@@ -243,7 +250,12 @@ class PaymentController extends Controller
             $response = $client->post('https://api.stripe.com/v1/checkout/sessions', [
                 'auth' => [config('services.stripe.secret'), ''],
                 'form_params' => [
-                    'payment_method_types[0]'              => 'card',
+                    // `payment_method_types` n'est volontairement PAS envoyé.
+                    // Le fixer à « card » limitait la page Stripe à la saisie
+                    // d'un numéro de carte : ni Apple Pay, ni Google Pay, ni
+                    // Link n'apparaissaient. Sans ce paramètre, Stripe propose
+                    // tout ce qui est activé dans le tableau de bord et que
+                    // l'appareil du visiteur sait présenter.
                     'line_items[0][price_data][currency]'   => 'eur',
                     'line_items[0][price_data][unit_amount]' => $amountCents,
                     'line_items[0][price_data][product_data][name]' => 'Publication AlBabor — ' . $listing->title,
