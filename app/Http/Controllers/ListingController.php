@@ -10,6 +10,7 @@ use App\Rules\AlgerianPhoneNumber;
 use App\Rules\InternationalPhoneNumber;
 use App\Services\ListingImageWatermark;
 use App\Services\ListingMediaStorage;
+use Filament\Notifications\Notification as AdminNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -157,6 +158,11 @@ class ListingController extends Controller
     public function create()
     {
         $user = Auth::user();
+
+        if ($user->isAdmin()) {
+            return $this->refuseAdminPublishing(request());
+        }
+
         $wilayas = $this->getWilayas();
 
         $exchangeRate = Setting::getExchangeRate();
@@ -171,6 +177,10 @@ class ListingController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
+
+        if ($user->isAdmin()) {
+            return $this->refuseAdminPublishing($request);
+        }
 
         // Renvoi du même formulaire (timeout de la passerelle, double clic,
         // reprise après coupure réseau) : l'annonce a déjà été enregistrée, on
@@ -446,6 +456,34 @@ class ListingController extends Controller
         $response = redirect()->to($redirect)->with('success', $message);
 
         return $awaitingPayment ? $response : $response->with('listing_created', true);
+    }
+
+    /**
+     * Un compte administrateur ne publie pas d'annonces à son nom : le site
+     * afficherait l'administration comme vendeur, et la vraie personne n'aurait
+     * accès ni à l'annonce, ni aux messages des acheteurs. L'administration
+     * publie au nom du vendeur depuis le panneau — on l'y envoie directement
+     * (voir App\Services\ListingOwnership).
+     */
+    private function refuseAdminPublishing(Request $request)
+    {
+        $message = __('messages.admin_cannot_publish');
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => $message,
+                'errors'  => ['user' => [$message]],
+            ], 403);
+        }
+
+        AdminNotification::make()
+            ->title('Publiez au nom du vendeur')
+            ->body($message)
+            ->warning()
+            ->persistent()
+            ->send();
+
+        return redirect()->route('filament.admin.resources.listings.create');
     }
 
     public function edit(Listing $listing)

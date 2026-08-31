@@ -497,4 +497,7 @@ return [
     'banner_cta_home_button' => 'Réserver cet emplacement',
     'banner_perk_stats_title' => 'Chiffres transparents',
     'banner_perk_stats_text' => 'Nous vous communiquons vos diffusions, vos clics et votre taux de clic.',
+
+    // Propriété des annonces
+    'admin_cannot_publish' => 'Un compte administrateur ne publie pas d\'annonces à son nom. Créez l\'annonce au nom du vendeur depuis l\'administration (Annonces → Nouvelle annonce) : le vendeur la retrouvera dans son compte, avec les messages des acheteurs.',
 ];

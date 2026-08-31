@@ -3,6 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ListingResource\Pages;
+use App\Filament\Support\ListingOwnerSelect;
+use App\Filament\Support\TransferListingAction;
 use App\Models\Listing;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,6 +16,7 @@ use Filament\Infolists;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 
 class ListingResource extends Resource
 {
@@ -102,21 +105,19 @@ class ListingResource extends Resource
                                             ->icon('heroicon-o-tag')
                                             ->columnSpan(1)
                                             ->schema([
-                                                Forms\Components\Select::make('user_id')
-                                                    ->relationship('user', 'name')
-                                                    ->label('Vendeur')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->required()
-                                                    ->createOptionForm([
-                                                        Forms\Components\TextInput::make('name')
-                                                            ->label('Nom')
-                                                            ->required(),
-                                                        Forms\Components\TextInput::make('email')
-                                                            ->label('Email')
-                                                            ->email()
-                                                            ->required(),
-                                                    ]),
+                                                // À la création : choix (ou création sur place) du compte
+                                                // vendeur — jamais un compte administrateur.
+                                                // À la modification : lecture seule. Le changement de
+                                                // propriétaire passe par « Transférer », pour que les
+                                                // conversations et les médiations suivent l'annonce.
+                                                ListingOwnerSelect::make('user_id')
+                                                    ->visibleOn('create'),
+                                                Forms\Components\Placeholder::make('owner')
+                                                    ->label('Vendeur (propriétaire de l\'annonce)')
+                                                    ->visibleOn('edit')
+                                                    ->content(fn (?Listing $record): HtmlString => static::ownerSummary($record))
+                                                    ->hint('Pour changer de vendeur : « Transférer à un autre compte », en haut de la page.')
+                                                    ->hintIcon('heroicon-o-arrow-right-circle'),
                                                 Forms\Components\Select::make('category')
                                                     ->label('Categorie')
                                                     ->options([
@@ -608,8 +609,23 @@ class ListingResource extends Resource
                     ->sortable()
                     ->limit(40)
                     ->weight(FontWeight::SemiBold)
-                    ->tooltip(fn (Listing $record) => $record->title)
-                    ->description(fn (Listing $record): string => $record->user?->name ?? 'N/A'),
+                    ->tooltip(fn (Listing $record) => $record->title),
+
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Vendeur')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(30)
+                    ->icon(fn (Listing $record): ?string => $record->user?->isAdmin() ? 'heroicon-o-exclamation-triangle' : null)
+                    ->color(fn (Listing $record): ?string => $record->user?->isAdmin() ? 'danger' : null)
+                    ->weight(fn (Listing $record): ?FontWeight => $record->user?->isAdmin() ? FontWeight::Bold : null)
+                    ->description(fn (Listing $record): ?string => $record->user?->isAdmin()
+                        ? 'Compte administrateur — à transférer'
+                        : $record->user?->email)
+                    ->tooltip(fn (Listing $record): ?string => $record->user?->isAdmin()
+                        ? 'Publiée au nom de l\'administration : transférez-la au vrai vendeur (menu Actions → Transférer).'
+                        : null)
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('category')
                     ->label('Categorie')
@@ -871,6 +887,20 @@ class ListingResource extends Resource
                     ->label('A valider')
                     ->query(fn (Builder $query): Builder => $query->where('status', 'pending_review'))
                     ->toggle(),
+
+                Tables\Filters\SelectFilter::make('user_id')
+                    ->label('Vendeur')
+                    ->relationship('user', 'name')
+                    ->searchable()
+                    ->indicator('Vendeur'),
+
+                Tables\Filters\Filter::make('admin_owned')
+                    ->label('Au nom d\'un administrateur')
+                    ->query(fn (Builder $query): Builder => $query->whereHas(
+                        'user',
+                        fn (Builder $user): Builder => $user->where('account_type', 'admin'),
+                    ))
+                    ->toggle(),
             ])
             ->filtersFormColumns(3)
             ->actions([
@@ -1004,6 +1034,8 @@ class ListingResource extends Resource
                                 ->send();
                         }),
 
+                    TransferListingAction::configure(Tables\Actions\Action::make('transfer')),
+
                     Tables\Actions\ViewAction::make()
                         ->label('Voir'),
 
@@ -1041,6 +1073,8 @@ class ListingResource extends Resource
                                 ->success()
                                 ->send();
                         }),
+
+                    TransferListingAction::configureBulk(Tables\Actions\BulkAction::make('transfer_bulk')),
 
                     Tables\Actions\DeleteBulkAction::make()
                         ->label('Supprimer la selection'),
@@ -1097,5 +1131,33 @@ class ListingResource extends Resource
             'Prix' => $record->formatted_price,
             'Wilaya' => $record->wilaya,
         ];
+    }
+
+    /** Propriétaire affiché en lecture seule sur la page de modification. */
+    public static function ownerSummary(?Listing $record): HtmlString
+    {
+        $user = $record?->user;
+
+        if (! $user) {
+            return new HtmlString('<span class="text-gray-500">—</span>');
+        }
+
+        $details = array_filter([
+            $user->email,
+            $user->phone ? trim(($user->phone_country_code ?? '').' '.$user->phone) : null,
+        ]);
+
+        $html = '<span class="font-medium">'.e($user->real_name).'</span>';
+
+        if ($details) {
+            $html .= '<br><span class="text-sm text-gray-500">'.e(implode(' — ', $details)).'</span>';
+        }
+
+        if ($user->isAdmin()) {
+            $html .= '<br><span class="text-sm font-semibold text-danger-600 dark:text-danger-400">'
+                .'⚠️ Compte administrateur — cette annonce doit être transférée au vrai vendeur.</span>';
+        }
+
+        return new HtmlString($html);
     }
 }

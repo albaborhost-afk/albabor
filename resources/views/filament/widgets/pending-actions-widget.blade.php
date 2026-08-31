@@ -1,6 +1,21 @@
 <x-filament-widgets::widget>
     <x-filament::section heading="Actions en attente">
         <div class="space-y-2">
+            {{-- Annonces au nom d'un administrateur : a transferer au vrai vendeur --}}
+            @if($this->getAdminOwnedListingsCount() > 0)
+                <a href="{{ $this->getAdminOwnedListingsUrl() }}" class="flex items-center justify-between rounded-lg border border-danger-300 bg-danger-50 p-3 transition hover:bg-danger-100 dark:border-danger-500/40 dark:bg-danger-500/10 dark:hover:bg-danger-500/20">
+                    <div class="flex items-center gap-3">
+                        <div class="rounded-lg bg-danger-500/10 p-2">
+                            <x-heroicon-o-exclamation-triangle class="h-5 w-5 text-danger-600 dark:text-danger-400" />
+                        </div>
+                        <span class="font-medium text-danger-700 dark:text-danger-300">Annonces au nom d'un administrateur — a transferer</span>
+                    </div>
+                    <span class="rounded-full bg-danger-500 px-2.5 py-0.5 text-xs font-bold text-white">
+                        {{ $this->getAdminOwnedListingsCount() }}
+                    </span>
+                </a>
+            @endif
+
             {{-- Annonces a valider --}}
             <a href="{{ $this->getListingsUrl() }}" class="flex items-center justify-between rounded-lg p-3 transition hover:bg-gray-50 dark:hover:bg-white/5">
                 <div class="flex items-center gap-3">

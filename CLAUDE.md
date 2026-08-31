@@ -62,6 +62,16 @@ Verification:
 - User uploads ID doc
 - Admin approves to enable Verified badge
 
+Ownership (since 2026-08-31):
+- A listing NEVER belongs to an admin account (`account_type = admin`) — rule lives in `User::listingOwnershipRefusal()`.
+  Website + API refuse listing creation from an admin account; Filament's « Vendeur » field excludes admins.
+- Admin publishes ON BEHALF of a seller in Filament (Annonces → Nouvelle annonce → « Vendeur »), creating the
+  seller account inline if needed (`ListingOwnerSelect`).
+- Changing the owner of an existing listing = the « Transférer à un autre compte » action only
+  (row action, bulk action, edit-page header) → `App\Services\ListingOwnership::transfer()`:
+  moves the listing + its conversations + mediation tickets; payments stay with the payer; the listing's
+  displayed contact fields are untouched. The edit form shows the owner read-only.
+
 ## Deployment (Laravel Cloud)
 - ENV values with long strings MUST be quoted: `KEY="long_value_here"`
 - Migrations run automatically during deployment
