@@ -53,8 +53,26 @@ return [
          */
         'allowed_client_ids' => env(
             'GOOGLE_ALLOWED_CLIENT_IDS',
-            '364258394169-6osv054m4a6ckphm8l78d7arrah8se2p.apps.googleusercontent.com'
+            // Web (utilisé par Android via requestIdToken) + iOS.
+            // Le SDK Google iOS émet un id_token dont `aud` est l'identifiant
+            // client iOS ; les deux sont donc listés pour que les deux
+            // applications passent le contrôle sans configuration d'hébergement.
+            '364258394169-6osv054m4a6ckphm8l78d7arrah8se2p.apps.googleusercontent.com,'
+            .'364258394169-s51euhvkdn1ncjlhovjka2if0kqrfotd.apps.googleusercontent.com'
         ),
+    ],
+
+    /*
+     * Connexion Apple depuis l'application iOS.
+     *
+     * Contrairement à Google, Apple n'expose aucun point d'entrée « tokeninfo » :
+     * l'`identityToken` est un JWT RS256 qu'il faut vérifier soi-même contre les
+     * clés publiques d'Apple. Aucun secret n'est nécessaire pour un flux natif —
+     * ni Services ID, ni clé .p8 — seulement l'audience attendue.
+     */
+    'apple' => [
+        'allowed_client_ids' => env('APPLE_ALLOWED_CLIENT_IDS', 'com.albabor.app'),
+        'keys_url' => 'https://appleid.apple.com/auth/keys',
     ],
 
     'stripe' => [

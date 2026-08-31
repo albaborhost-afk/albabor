@@ -23,6 +23,8 @@ Route::prefix('v1')->group(function () {
     // Seule route d'authentification qui n'était pas limitée en débit.
     Route::post('/auth/google', [App\Http\Controllers\Auth\GoogleMobileAuthController::class, 'login'])
         ->middleware('throttle:10,1');
+    Route::post('/auth/apple', [App\Http\Controllers\Auth\AppleMobileAuthController::class, 'login'])
+        ->middleware('throttle:10,1');
 
     // Public listings
     Route::get('/listings', [ListingController::class, 'index']);

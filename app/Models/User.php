@@ -37,6 +37,7 @@ class User extends Authenticatable implements FilamentUser
         'is_blocked',
         'free_publishing',
         'google_id',
+        'apple_id',
     ];
 
     protected $hidden = [
