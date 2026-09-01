@@ -36,20 +36,6 @@ class PendingActionsWidget extends Widget
         return MediationTicket::where('status', 'in_progress')->count();
     }
 
-    /**
-     * Annonces publiées depuis un compte administrateur (« au nom d'Albabor ») :
-     * à transférer au vrai vendeur — voir App\Services\ListingOwnership.
-     */
-    public function getAdminOwnedListingsCount(): int
-    {
-        return Listing::whereHas('user', fn ($query) => $query->where('account_type', 'admin'))->count();
-    }
-
-    public function getAdminOwnedListingsUrl(): string
-    {
-        return route('filament.admin.resources.listings.index', ['tableFilters[admin_owned][isActive]' => 'true']);
-    }
-
     public function getListingsUrl(): string
     {
         return route('filament.admin.resources.listings.index', ['tableFilters[status][value]' => 'pending_review']);

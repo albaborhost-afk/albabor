@@ -236,17 +236,6 @@ class ListingController extends Controller
     {
         $user = $request->user();
 
-        // Un compte administrateur ne publie pas d'annonces à son nom : l'annonce
-        // afficherait l'administration comme vendeur, et la vraie personne n'y
-        // aurait pas accès. L'administration publie au nom du vendeur depuis le
-        // panneau (voir App\Services\ListingOwnership).
-        if ($user->isAdmin()) {
-            return response()->json([
-                'message' => 'Un compte administrateur ne publie pas d\'annonces à son nom. '
-                    .'Publiez au nom du vendeur depuis l\'administration (Annonces → Nouvelle annonce).',
-            ], 403);
-        }
-
         // Renvoi du même formulaire après un timeout ou une coupure réseau :
         // l'annonce existe déjà, on la retourne au lieu d'en créer un doublon.
         $clientToken = $this->normalizeClientToken($request->input('client_token'));

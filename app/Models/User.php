@@ -358,37 +358,6 @@ class User extends Authenticatable implements FilamentUser
         return $this->isVendor() && $this->hasActiveSubscription();
     }
 
-    // ── Propriété des annonces ────────────────────────────────────────────
-    //
-    // Un compte administrateur administre ; il ne vend pas. Une annonce publiée
-    // « au nom d'Albabor » affiche l'administration comme vendeur, et la vraie
-    // personne n'a accès ni à son annonce, ni aux conversations des acheteurs.
-    // La règle vit ici pour que le site, l'API, l'administration et le
-    // transfert d'annonce la partagent — voir App\Services\ListingOwnership.
-
-    /**
-     * Pourquoi ce compte ne peut pas être propriétaire d'une annonce.
-     * Retourne null s'il le peut.
-     */
-    public function listingOwnershipRefusal(): ?string
-    {
-        if ($this->isAdmin()) {
-            return 'Une annonce ne peut pas appartenir à un compte administrateur. '
-                .'Publiez-la au nom du vendeur — créez son compte s\'il n\'en a pas.';
-        }
-
-        if ($this->isBlocked()) {
-            return 'Ce compte est bloqué : il ne peut pas recevoir d\'annonces.';
-        }
-
-        return null;
-    }
-
-    public function canOwnListings(): bool
-    {
-        return $this->listingOwnershipRefusal() === null;
-    }
-
     public function hasFreePublishing(): bool
     {
         return $this->free_publishing === true;
