@@ -95,8 +95,8 @@ class UserResource extends Resource
                             ->helperText('Permet de publier des annonces sans paiement — toutes catégories, illimité')
                             ->onColor('success'),
                         Forms\Components\Toggle::make('hide_name')
-                            ->label('Publier sous « Invité »')
-                            ->helperText('Masque le nom et la photo de profil sur les annonces et la messagerie. Le vrai nom reste visible ici.')
+                            ->label('Profil privé')
+                            ->helperText('Le vendeur apparaît comme « Invité » (nom et photo masqués) et ses coordonnées — téléphone, WhatsApp, e-mail — ne sont pas affichées sur ses annonces : les acheteurs le contactent uniquement par la messagerie. Le vrai nom reste visible ici.')
                             ->onColor('warning'),
                     ])->columns(2),
             ]);
@@ -163,14 +163,14 @@ class UserResource extends Resource
                     ->trueColor('success')
                     ->falseColor('gray'),
                 Tables\Columns\IconColumn::make('hide_name')
-                    ->label('Anonyme')
+                    ->label('Privé')
                     ->boolean()
-                    ->trueIcon('heroicon-o-eye-slash')
+                    ->trueIcon('heroicon-o-lock-closed')
                     ->falseIcon('heroicon-o-minus-circle')
                     ->trueColor('warning')
                     ->falseColor('gray')
-                    ->tooltip(fn (User $record): ?string => $record->hidesName()
-                        ? 'Publie sous « Invité » — acheteurs et messagerie ne voient pas son nom'
+                    ->tooltip(fn (User $record): ?string => $record->hasPrivateProfile()
+                        ? 'Profil privé — les acheteurs voient « Invité », aucune coordonnée, contact par messagerie uniquement'
                         : null)
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')

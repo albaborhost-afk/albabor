@@ -89,12 +89,18 @@ class User extends Authenticatable implements FilamentUser
      */
     protected bool $realNameRevealed = false;
 
-    // ── Confidentialité : publier sous « Invité » ──────────────────────────
+    // ── Confidentialité : profil privé ─────────────────────────────────────
     //
-    // Le masquage est appliqué à la lecture de l'attribut, pas au point
-    // d'affichage : toute vue, toute réponse API et tout export passent par là.
-    // Le défaut est donc « masqué » — un nouvel écran ne peut pas oublier la
-    // règle et divulguer le nom.
+    // Un vendeur peut rendre son profil privé (colonne `hide_name`, exposée
+    // telle quelle à l'API pour les applications). Deux effets, indissociables :
+    //  1. son nom et sa photo sont remplacés par « Invité » (ici, à la lecture
+    //     de l'attribut — toute vue, réponse API et export passent par là) ;
+    //  2. ses coordonnées directes (téléphone du compte, mobile, WhatsApp et
+    //     e-mail de l'annonce) ne sont pas affichées : les acheteurs le
+    //     contactent uniquement par la messagerie du site — voir
+    //     Listing::contactHiddenFor().
+    // Le défaut est « masqué » — un nouvel écran ne peut pas oublier la règle
+    // et divulguer le nom. Le compte lui-même et l'administration voient tout.
 
     /**
      * Ce lecteur doit-il voir « Invité » à la place du nom ?
@@ -166,10 +172,16 @@ class User extends Authenticatable implements FilamentUser
         return $viewer->getKey() === $this->getKey() || $viewer->account_type === 'admin';
     }
 
-    /** Le compte a demandé à publier sous « Invité ». */
-    public function hidesName(): bool
+    /** Le vendeur a rendu son profil privé (nom masqué + contact par messagerie seulement). */
+    public function hasPrivateProfile(): bool
     {
         return (bool) ($this->attributes['hide_name'] ?? false);
+    }
+
+    /** Volet « identité » du profil privé : le nom et la photo sont masqués. */
+    public function hidesName(): bool
+    {
+        return $this->hasPrivateProfile();
     }
 
     /**

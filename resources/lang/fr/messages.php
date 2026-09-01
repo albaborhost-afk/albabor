@@ -460,10 +460,12 @@ return [
     'deleted_user' => 'Utilisateur supprime',
 
     // Confidentialite : publier sous « Invite »
-    'hide_name_label' => 'Publier sous « Invité »',
-    'hide_name_help' => 'Votre nom et votre photo de profil sont masqués sur vos annonces, sur votre profil public et dans la messagerie. Les acheteurs vous contactent normalement par téléphone, WhatsApp ou message.',
-    'hide_name_active_notice' => 'Actif : les acheteurs voient « Invité » à la place de votre nom. Vous, et l\'équipe AlBabor, continuez de voir votre vrai nom.',
-    'hide_name_badge' => 'Identité masquée',
+    'hide_name_label' => 'Profil privé',
+    'hide_name_help' => 'Votre nom et votre photo sont masqués — vous apparaissez comme « Invité » sur vos annonces, sur votre profil public et dans la messagerie — et vos numéros de téléphone, WhatsApp et e-mail ne sont pas affichés. Les acheteurs vous contactent uniquement par la messagerie AlBabor.',
+    'hide_name_active_notice' => 'Actif : les acheteurs voient « Invité », ne voient aucune de vos coordonnées et vous écrivent par la messagerie. Vous, et l\'équipe AlBabor, continuez de voir votre vrai nom.',
+    'hide_name_badge' => 'Profil privé',
+    'private_seller_notice' => 'Profil privé : ce vendeur ne peut être contacté que par la messagerie AlBabor.',
+    'private_profile_owner_reminder' => 'Profil privé : les acheteurs voient « Invité », ne voient ni votre numéro ni votre e-mail, et vous contactent par la messagerie.',
     'anonymous_seller' => 'Invité',
 
     // Demande d'espace publicitaire

@@ -55,6 +55,12 @@ Mediation:
 - If ON: hide seller phone; contact via Admin ticket
 - If OFF: show seller phone + direct call button
 
+Private profile (since 2026-09-01, `users.hide_name` — column name kept for the mobile apps' API contract):
+- Seller-controlled toggle on their profile (web + `PUT /api/v1/profile`), also editable by admin in Filament.
+- If ON: name + photo → « Invité » (`User::identityMasked()`), AND listing contact fields (numero_mobile,
+  numero_whatsapp, contact_email) + user.phone are hidden for third parties → contact ONLY via in-site messaging.
+- Single rule for site + API: `Listing::contactHiddenFor($viewer)` (owner + admin always see everything).
+
 Stats:
 - Track listing views (unique per day) + favorites count
 

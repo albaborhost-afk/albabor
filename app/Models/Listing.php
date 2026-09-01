@@ -208,28 +208,45 @@ class Listing extends Model
     }
 
     /**
-     * Hide seller contact info based on mediation settings.
+     * Les coordonnées directes (mobile, WhatsApp, e-mail de l'annonce et
+     * téléphone du compte) sont-elles masquées pour ce lecteur ?
      *
-     * Rules:
-     * - Owner or admin: see everything
-     * - mediation_enabled ON: hide phone/WhatsApp/email (contact goes through mediation ticket)
-     * - mediation_enabled OFF: everyone (including guests) can see contact info
+     * - Propriétaire ou administrateur : jamais.
+     * - Médiation activée sur l'annonce : oui, le contact passe par
+     *   l'administration (ticket de médiation).
+     * - Vendeur au profil privé : oui, le contact passe par la messagerie du
+     *   site — voir User::hasPrivateProfile().
+     * - Sinon : tout le monde, visiteurs compris, voit les coordonnées.
+     *
+     * Une seule règle pour le site et l'API : un écran qui l'oublie affiche
+     * les coordonnées d'un vendeur qui a demandé à ne pas être joint ainsi.
      */
-    public function applyContactVisibility(?User $viewer): self
+    public function contactHiddenFor(?User $viewer): bool
     {
         $isOwner = $viewer && $viewer->id === $this->user_id;
         $isAdmin = $viewer && method_exists($viewer, 'isAdmin') && $viewer->isAdmin();
 
         if ($isOwner || $isAdmin) {
+            return false;
+        }
+
+        return (bool) $this->mediation_enabled || (bool) $this->user?->hasPrivateProfile();
+    }
+
+    /**
+     * Retire des réponses API les coordonnées que ce lecteur ne doit pas voir
+     * (règle : contactHiddenFor).
+     */
+    public function applyContactVisibility(?User $viewer): self
+    {
+        if (! $this->contactHiddenFor($viewer)) {
             return $this;
         }
 
-        if ($this->mediation_enabled) {
-            $this->makeHidden(['numero_whatsapp', 'numero_mobile', 'contact_email']);
+        $this->makeHidden(['numero_whatsapp', 'numero_mobile', 'contact_email']);
 
-            if ($this->relationLoaded('user') && $this->user) {
-                $this->user->makeHidden(['phone']);
-            }
+        if ($this->relationLoaded('user') && $this->user) {
+            $this->user->makeHidden(['phone', 'phone_country_code']);
         }
 
         return $this;

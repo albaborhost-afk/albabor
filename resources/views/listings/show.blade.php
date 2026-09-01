@@ -33,6 +33,13 @@
         ];
         $typeOffreLabels = ['negociable' => 'Negociable', 'fix' => 'Prix fixe', 'offert' => 'Offert'];
 
+        // Coordonnées directes : masquées si médiation, ou si le vendeur a un
+        // profil privé (contact par messagerie seulement). Le propriétaire et
+        // l'administration voient tout — règle unique dans Listing::contactHiddenFor().
+        $viewerIsOwner = auth()->check() && auth()->id() === $listing->user_id;
+        $contactHidden = $listing->contactHiddenFor(auth()->user());
+        $sellerPrivate = (bool) $listing->user?->hasPrivateProfile();
+
         // Format WhatsApp number: strip non-digits, replace leading 0 with 213
         $waRaw = preg_replace('/[^0-9]/', '', $listing->numero_whatsapp ?? '');
         if ($waRaw !== '' && $waRaw[0] === '0') {
@@ -326,8 +333,8 @@
                                         </a>
                                     @endauth
 
-                                    {{-- Direct contact — visible to everyone when mediation is OFF --}}
-                                    @if(!$listing->mediation_enabled)
+                                    {{-- Direct contact — masqué si médiation ou profil privé --}}
+                                    @if(!$contactHidden)
                                         @if($listing->numero_whatsapp)
                                             <a href="https://wa.me/{{ $waNumber }}" target="_blank"
                                                class="flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-white font-semibold text-xs transition-all"
@@ -827,7 +834,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                                     </svg>
                                     <p class="text-[11px] leading-snug" style="color: #6B7B8D;">
-                                        {{ __('Les acheteurs voient « Invité » a la place de votre nom.') }}
+                                        {{ __('messages.private_profile_owner_reminder') }}
                                         <a href="{{ route('profile.edit') }}" class="font-semibold hover:underline" style="color: #17A2B8;">{{ __('Modifier') }}</a>
                                     </p>
                                 </div>
@@ -852,8 +859,8 @@
 
                         {{-- Action Buttons --}}
                         <div class="p-5 space-y-3">
-                            {{-- WhatsApp / Call / Email — visible to everyone (non-owner, mediation OFF) --}}
-                            @if(!$listing->mediation_enabled && !(auth()->check() && auth()->id() === $listing->user_id))
+                            {{-- WhatsApp / Call / Email — masqués pour le propriétaire, si médiation ou si profil privé --}}
+                            @if(!$contactHidden && !$viewerIsOwner)
                                 @if($listing->numero_whatsapp)
                                     <a href="https://wa.me/{{ $waNumber }}" target="_blank" class="w-full flex items-center justify-center gap-2.5 px-4 py-3.5 text-white rounded-xl font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 cta-whatsapp-glow" style="background: linear-gradient(135deg, #25D366, #128C7E); box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);">
                                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z M12 0C5.373 0 0 5.373 0 12c0 2.126.553 4.122 1.519 5.859L.057 24l6.305-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.892a9.875 9.875 0 01-5.031-1.378l-.361-.214-3.741.981.999-3.648-.235-.374A9.861 9.861 0 012.108 12C2.108 6.967 6.967 2.108 12 2.108S21.892 6.967 21.892 12 17.033 21.892 12 21.892z"/></svg>
@@ -884,6 +891,16 @@
                             {{-- Message / Mediation / Favoris — login required --}}
                             @auth
                                 @if(auth()->id() !== $listing->user_id)
+                                    @if($sellerPrivate)
+                                        {{-- Profil privé : aucune coordonnée, la messagerie est le seul canal --}}
+                                        <div class="mb-3 flex items-start gap-2 rounded-xl px-3 py-2.5" style="background: rgba(23,162,184,0.08);">
+                                            <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: #117A8B;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                            <p class="text-xs leading-snug" style="color: #117A8B;">{{ __('messages.private_seller_notice') }}</p>
+                                        </div>
+                                    @endif
+
                                     {{-- Direct Message — pre-filled like Facebook Marketplace --}}
                                     <div class="mb-3" id="mobile-msg-section">
                                         <form action="{{ route('conversations.store', $listing) }}" method="POST" x-data="{ msg: '{{ old('body', 'Bonjour, je suis interesse(e) par votre annonce « ' . addslashes(Str::limit($listing->title, 40)) . ' ». Est-il/elle toujours disponible ?') }}' }">
@@ -930,6 +947,9 @@
                                     <div class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4" style="background: linear-gradient(135deg, rgba(27,79,114,0.06), rgba(23,162,184,0.08));">
                                         <svg class="w-8 h-8" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                     </div>
+                                    @if($sellerPrivate && !$listing->mediation_enabled)
+                                        <p class="text-xs mb-3 rounded-xl px-3 py-2" style="background: rgba(23,162,184,0.08); color: #117A8B;">{{ __('messages.private_seller_notice') }}</p>
+                                    @endif
                                     <p class="text-sm font-medium mb-4" style="color: #6B7B8D;">{{ $listing->mediation_enabled ? __('Connectez-vous pour contacter le vendeur') : __('Connectez-vous pour envoyer un message') }}</p>
                                     <a href="{{ route('login') }}" class="block w-full px-4 py-3.5 text-white rounded-xl font-semibold text-sm text-center transition-all duration-200 hover:-translate-y-0.5" style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27, 79, 114, 0.3);">{{ __('Se connecter') }}</a>
                                     <p class="text-xs mt-3" style="color: #9BA8B7;">{{ __('Pas encore de compte?') }} <a href="{{ route('register') }}" class="font-semibold hover:underline" style="color: #17A2B8;">{{ __('Inscrivez-vous') }}</a></p>
