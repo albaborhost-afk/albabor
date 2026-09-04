@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Conversation;
+use App\Models\Favorite;
 use App\Models\Listing;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -9,7 +11,7 @@ use Tests\TestCase;
 
 /**
  * Profil privé du vendeur : les acheteurs ne voient ni qui a publié l'annonce
- * (« Invité », voir AnonymousSellerNameTest) ni aucune coordonnée directe —
+ * (« Privé », voir AnonymousSellerNameTest) ni aucune coordonnée directe —
  * ils ne peuvent le joindre que par la messagerie du site.
  */
 class PrivateSellerProfileTest extends TestCase
@@ -48,6 +50,21 @@ class PrivateSellerProfileTest extends TestCase
             'numero_whatsapp' => self::WHATSAPP,
             'contact_email'   => self::EMAIL,
         ], $attributes));
+    }
+
+    /** Formulaire de modification complet et valide, tel que le navigateur le poste. */
+    private function listingForm(Listing $listing, array $overrides = []): array
+    {
+        return array_merge([
+            'title'       => $listing->title,
+            'description' => $listing->description,
+            'category'    => $listing->category,
+            'type'        => $listing->type,
+            'price_dzd'   => $listing->price_dzd,
+            'currency'    => $listing->currency,
+            'type_offre'  => 'negociable',
+            'etat'        => $listing->etat,
+        ], $overrides);
     }
 
     /**
@@ -250,5 +267,180 @@ class PrivateSellerProfileTest extends TestCase
             ->assertOk()
             ->assertSeeText('Profil privé')
             ->assertSeeText('uniquement par la messagerie');
+    }
+
+    // ── Pas de profil public ─────────────────────────────────────────────────
+
+    public function test_the_listing_page_no_longer_links_to_the_seller_page(): void
+    {
+        $this->withoutVite();
+        $seller = $this->seller();
+        $buyer  = User::factory()->create();
+
+        // Deux annonces : la vue d'une même annonce deux fois le même jour est
+        // un cas à part sur SQLite (ListingView::recordView).
+        $this->actingAs($buyer)->get(route('listings.show', $this->listing($seller)))
+            ->assertOk()
+            ->assertDontSee(route('sellers.show', $seller))
+            ->assertDontSeeText('Voir toutes ses annonces')
+            ->assertSeeText('Contact par messagerie uniquement');
+
+        // Le vendeur, lui, garde le lien vers sa propre page.
+        $this->actingAs($seller)->get(route('listings.show', $this->listing($seller)))
+            ->assertOk()
+            ->assertSee(route('sellers.show', $seller));
+    }
+
+    public function test_a_private_seller_has_no_public_page(): void
+    {
+        $this->withoutVite();
+        $seller = $this->seller();
+        $this->listing($seller);
+        $buyer  = User::factory()->create();
+        $admin  = User::factory()->create(['account_type' => 'admin']);
+
+        $this->get(route('sellers.show', $seller))->assertNotFound();
+        $this->actingAs($buyer)->get(route('sellers.show', $seller))->assertNotFound();
+
+        // Le vendeur et l'administration la voient encore, avec le rappel.
+        $this->actingAs($seller)->get(route('sellers.show', $seller))
+            ->assertOk()
+            ->assertSeeText('Karim Benali')
+            ->assertSeeText('visible que par vous');
+        $this->actingAs($admin)->get(route('sellers.show', $seller))->assertOk();
+
+        // Un profil public garde sa page.
+        $public = $this->seller(false, ['email' => 'public@example.dz']);
+        $this->listing($public);
+        $this->get(route('sellers.show', $public))->assertOk();
+    }
+
+    public function test_the_api_has_no_vendor_page_for_a_private_seller(): void
+    {
+        $seller = $this->seller();
+        $this->listing($seller);
+        $buyer  = User::factory()->create();
+
+        $this->getJson('/api/v1/vendors/'.$seller->id)
+            ->assertNotFound()
+            ->assertJsonPath('message', __('messages.private_seller_no_public_page'))
+            ->assertJsonPath('code', 'private_profile');
+        $this->actingAs($buyer, 'sanctum')->getJson('/api/v1/vendors/'.$seller->id)->assertNotFound();
+
+        $this->actingAs($seller, 'sanctum')->getJson('/api/v1/vendors/'.$seller->id)
+            ->assertOk()
+            ->assertJsonPath('user.name', 'Karim Benali')
+            ->assertJsonPath('user.hide_name', true);
+    }
+
+    // ── Aucun autre écran ne livre le numéro ─────────────────────────────────
+
+    public function test_the_conversation_api_does_not_reveal_the_private_sellers_phone(): void
+    {
+        $seller  = $this->seller();
+        $listing = $this->listing($seller);
+        $buyer   = User::factory()->create(['phone' => '0555000001']);
+
+        $this->actingAs($buyer, 'sanctum')
+            ->postJson('/api/v1/conversations/listing/'.$listing->id, ['body' => 'Bonjour'])
+            ->assertCreated()
+            ->assertJsonPath('conversation.seller.name', User::ANONYMOUS_NAME)
+            ->assertJsonPath('conversation.seller.hide_name', true)
+            ->assertJsonMissingPath('conversation.seller.phone')
+            ->assertJsonMissingPath('conversation.listing.numero_mobile')
+            ->assertJsonMissingPath('conversation.listing.numero_whatsapp');
+
+        $conversation = Conversation::firstOrFail();
+
+        foreach (['/api/v1/conversations', '/api/v1/conversations/'.$conversation->id] as $url) {
+            $body = $this->actingAs($buyer, 'sanctum')->getJson($url)->assertOk()->getContent();
+            $this->assertStringNotContainsString(self::SELLER_PHONE, $body, $url);
+            $this->assertStringNotContainsString(self::MOBILE, $body, $url);
+            $this->assertStringNotContainsString(self::WHATSAPP, $body, $url);
+            $this->assertStringNotContainsString('Karim Benali', $body, $url);
+        }
+
+        // Le vendeur voit son propre numéro et le nom de l'acheteur.
+        $this->actingAs($seller, 'sanctum')
+            ->getJson('/api/v1/conversations/'.$conversation->id)
+            ->assertOk()
+            ->assertJsonPath('seller.phone', self::SELLER_PHONE)
+            ->assertJsonPath('buyer.name', $buyer->name);
+    }
+
+    public function test_the_favorites_api_hides_the_contact_details_of_a_private_seller(): void
+    {
+        $seller  = $this->seller();
+        $listing = $this->listing($seller);
+        $buyer   = User::factory()->create();
+        Favorite::create(['user_id' => $buyer->id, 'listing_id' => $listing->id]);
+
+        $body = $this->actingAs($buyer, 'sanctum')->getJson('/api/v1/favorites')->assertOk()->getContent();
+
+        $this->assertStringContainsString($listing->title, $body);
+        $this->assertStringNotContainsString(self::MOBILE, $body);
+        $this->assertStringNotContainsString(self::WHATSAPP, $body);
+        $this->assertStringNotContainsString(self::SELLER_PHONE, $body);
+        $this->assertStringNotContainsString(self::EMAIL, $body);
+        $this->assertStringNotContainsString('Karim Benali', $body);
+    }
+
+    public function test_the_favorites_api_still_shows_the_contact_details_of_a_public_seller(): void
+    {
+        $listing = $this->listing($this->seller(false, ['email' => 'public@example.dz']));
+        $buyer   = User::factory()->create();
+        Favorite::create(['user_id' => $buyer->id, 'listing_id' => $listing->id]);
+
+        $this->actingAs($buyer, 'sanctum')->getJson('/api/v1/favorites')
+            ->assertOk()
+            ->assertJsonPath('data.0.numero_mobile', self::MOBILE);
+    }
+
+    // ── « Publier anonymement » depuis le formulaire d'annonce ──────────────
+
+    public function test_the_listing_forms_offer_anonymous_publishing(): void
+    {
+        $this->withoutVite();
+        $seller  = $this->seller(false);
+        $listing = $this->listing($seller);
+
+        $this->actingAs($seller)->get(route('listings.create'))
+            ->assertOk()->assertSeeText('Publier anonymement');
+        $this->actingAs($seller)->get(route('listings.edit', $listing))
+            ->assertOk()->assertSeeText('Publier anonymement');
+    }
+
+    public function test_saving_the_listing_with_anonymous_publishing_makes_the_profile_private(): void
+    {
+        $seller  = $this->seller(false);
+        $listing = $this->listing($seller);
+
+        $this->actingAs($seller)
+            ->put(route('listings.update', $listing), $this->listingForm($listing, ['hide_name' => 1]))
+            ->assertSessionHasNoErrors();
+
+        $this->assertTrue($seller->fresh()->hasPrivateProfile());
+        $this->assertTrue($listing->fresh()->contactHiddenFor(null));
+
+        // Et retour, depuis le même formulaire.
+        $this->actingAs($seller)
+            ->put(route('listings.update', $listing), $this->listingForm($listing, ['hide_name' => 0]))
+            ->assertSessionHasNoErrors();
+
+        $this->assertFalse($seller->fresh()->hasPrivateProfile());
+    }
+
+    public function test_an_admin_editing_the_listing_does_not_flip_any_profile(): void
+    {
+        $seller  = $this->seller(false);
+        $listing = $this->listing($seller);
+        $admin   = User::factory()->create(['account_type' => 'admin']);
+
+        $this->actingAs($admin)
+            ->put(route('listings.update', $listing), $this->listingForm($listing, ['hide_name' => 1]))
+            ->assertSessionHasNoErrors();
+
+        $this->assertFalse($admin->fresh()->hasPrivateProfile());
+        $this->assertFalse($seller->fresh()->hasPrivateProfile());
     }
 }

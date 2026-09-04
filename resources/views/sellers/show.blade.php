@@ -1,5 +1,5 @@
 @php
-    // Le nom passe par le modèle : un vendeur qui publie sous « Invité »
+    // Le nom passe par le modèle : un vendeur qui publie sous « Privé »
     // arrive déjà anonymisé ici, photo comprise.
     $sellerName = $user->name ?: __('Vendeur');
     $isAnonymous = $user->identityMasked();
@@ -116,6 +116,14 @@
                 </div>
             </div>
         </div>
+
+        @if($user->hasPrivateProfile())
+            {{-- Seuls le vendeur et l'administration arrivent ici (404 pour les autres). --}}
+            <div class="mt-4 flex items-start gap-2.5 rounded-2xl px-5 py-4" style="background: rgba(23,162,184,0.08); color: #117A8B;">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                <p class="text-sm leading-relaxed">{{ __('messages.private_profile_page_owner_notice') }}</p>
+            </div>
+        @endif
 
         @if($boutique)
             <a href="{{ route('boutiques.show', $boutique) }}"

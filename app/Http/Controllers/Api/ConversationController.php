@@ -14,7 +14,7 @@ class ConversationController extends Controller
         $user = $request->user();
 
         $conversations = Conversation::forUser($user)
-            ->with(['listing.media', 'buyer', 'seller', 'latestMessage'])
+            ->with(['listing.media', 'listing.user', 'buyer', 'seller', 'latestMessage'])
             ->orderByDesc('last_message_at')
             ->paginate(20);
 
@@ -31,7 +31,7 @@ class ConversationController extends Controller
     {
         $this->authorize('view', $conversation);
 
-        $conversation->load(['listing.media', 'buyer', 'seller', 'messages.sender']);
+        $conversation->load(['listing.media', 'listing.user', 'buyer', 'seller', 'messages.sender']);
         $conversation->markAsReadFor($request->user());
 
         return response()->json($conversation);

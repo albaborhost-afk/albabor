@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
 use App\Models\Setting;
+use App\Models\User;
 
 class ListingController extends Controller
 {
@@ -126,6 +127,26 @@ class ListingController extends Controller
         return view('listings.index', compact('listings', 'wilayas'));
     }
 
+    /**
+     * « Publier anonymement » sur le formulaire d'annonce = le profil privé du
+     * compte (users.hide_name) : un seul réglage, valable pour toutes les
+     * annonces, aussi modifiable depuis le profil. Seul le propriétaire le
+     * touche — un administrateur qui corrige une annonce ne doit pas basculer
+     * son propre compte.
+     */
+    private function syncAnonymousPublishing(Request $request, User $user, Listing $listing): void
+    {
+        if (! $request->has('hide_name') || $user->id !== $listing->user_id) {
+            return;
+        }
+
+        $wanted = $request->boolean('hide_name');
+
+        if ($user->hasPrivateProfile() !== $wanted) {
+            $user->forceFill(['hide_name' => $wanted])->save();
+        }
+    }
+
     public function show(Listing $listing)
     {
         // Only show active listings to non-owners/non-admins
@@ -235,6 +256,7 @@ class ListingController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
+            'hide_name' => 'nullable|boolean',
             'images' => 'required|array|min:1|max:' . Listing::MAX_IMAGES,
             'images.*' => 'image|mimes:jpeg,png,jpg,webp,heic,heif|max:' . Listing::MAX_IMAGE_SIZE_KB,
             'video_url' => 'nullable|url|max:500',
@@ -303,6 +325,8 @@ class ListingController extends Controller
 
             return back()->withInput()->withErrors(['general' => 'Une erreur est survenue lors de la création de l\'annonce. Veuillez réessayer.']);
         }
+
+        $this->syncAnonymousPublishing($request, $user, $listing);
 
         // Handle images
         $savedCount = $this->handleImageUpload($listing, $request->file('images'));
@@ -546,6 +570,7 @@ class ListingController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
             'mediation_enabled' => 'boolean',
+            'hide_name' => 'nullable|boolean',
             'new_images' => 'nullable|array|max:' . Listing::MAX_IMAGES,
             'new_images.*' => 'image|mimes:jpeg,png,jpg,webp,heic,heif|max:' . Listing::MAX_IMAGE_SIZE_KB,
             'delete_images' => 'nullable|array',
@@ -603,6 +628,8 @@ class ListingController extends Controller
         $updateData = $this->filterListingPayloadForSchema($updateData);
 
         $listing->update($updateData);
+
+        $this->syncAnonymousPublishing($request, $user, $listing);
 
         // Delete selected images
         if (!empty($validated['delete_images'])) {

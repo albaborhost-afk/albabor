@@ -96,7 +96,7 @@ class UserResource extends Resource
                             ->onColor('success'),
                         Forms\Components\Toggle::make('hide_name')
                             ->label('Profil privé')
-                            ->helperText('Le vendeur apparaît comme « Invité » (nom et photo masqués) et ses coordonnées — téléphone, WhatsApp, e-mail — ne sont pas affichées sur ses annonces : les acheteurs le contactent uniquement par la messagerie. Le vrai nom reste visible ici.')
+                            ->helperText('Le vendeur apparaît comme « Privé » (nom et photo masqués) et ses coordonnées — téléphone, WhatsApp, e-mail — ne sont pas affichées sur ses annonces : les acheteurs le contactent uniquement par la messagerie. Le vrai nom reste visible ici.')
                             ->onColor('warning'),
                     ])->columns(2),
             ]);
@@ -170,7 +170,7 @@ class UserResource extends Resource
                     ->trueColor('warning')
                     ->falseColor('gray')
                     ->tooltip(fn (User $record): ?string => $record->hasPrivateProfile()
-                        ? 'Profil privé — les acheteurs voient « Invité », aucune coordonnée, contact par messagerie uniquement'
+                        ? 'Profil privé — les acheteurs voient « Privé », aucune coordonnée, contact par messagerie uniquement'
                         : null)
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')

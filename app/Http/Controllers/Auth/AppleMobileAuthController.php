@@ -86,7 +86,7 @@ class AppleMobileAuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            // Son propre compte : il doit voir son vrai nom, pas « Invité ».
+            // Son propre compte : il doit voir son vrai nom, pas « Privé ».
             'user'  => $user->withRealName(),
         ]);
     }

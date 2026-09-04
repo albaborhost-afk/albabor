@@ -459,14 +459,20 @@ return [
     'listing_deleted' => 'Annonce supprimee',
     'deleted_user' => 'Utilisateur supprime',
 
-    // Confidentialite : publier sous « Invite »
+    // Confidentialite : publier sous « Privé »
     'hide_name_label' => 'Profil privé',
-    'hide_name_help' => 'Votre nom et votre photo sont masqués — vous apparaissez comme « Invité » sur vos annonces, sur votre profil public et dans la messagerie — et vos numéros de téléphone, WhatsApp et e-mail ne sont pas affichés. Les acheteurs vous contactent uniquement par la messagerie AlBabor.',
-    'hide_name_active_notice' => 'Actif : les acheteurs voient « Invité », ne voient aucune de vos coordonnées et vous écrivent par la messagerie. Vous, et l\'équipe AlBabor, continuez de voir votre vrai nom.',
+    'hide_name_help' => 'Votre nom et votre photo sont masqués — vous apparaissez comme « Privé » sur vos annonces, sur votre profil public et dans la messagerie — et vos numéros de téléphone, WhatsApp et e-mail ne sont pas affichés. Les acheteurs vous contactent uniquement par la messagerie AlBabor.',
+    'hide_name_active_notice' => 'Actif : les acheteurs voient « Privé », ne voient aucune de vos coordonnées et vous écrivent par la messagerie. Vous, et l\'équipe AlBabor, continuez de voir votre vrai nom.',
     'hide_name_badge' => 'Profil privé',
     'private_seller_notice' => 'Profil privé : ce vendeur ne peut être contacté que par la messagerie AlBabor.',
-    'private_profile_owner_reminder' => 'Profil privé : les acheteurs voient « Invité », ne voient ni votre numéro ni votre e-mail, et vous contactent par la messagerie.',
-    'anonymous_seller' => 'Invité',
+    'private_profile_owner_reminder' => 'Profil privé : les acheteurs voient « Privé », ne voient ni votre numéro ni votre e-mail, et vous contactent par la messagerie.',
+    'anonymous_seller' => 'Privé',
+    'private_seller_card_hint' => 'Contact par messagerie uniquement',
+    'private_seller_no_public_page' => 'Ce vendeur a un profil privé : il n\'a pas de page publique. Vous pouvez lui écrire par la messagerie depuis son annonce.',
+    'private_profile_page_owner_notice' => 'Profil privé : cette page n\'est visible que par vous et l\'équipe AlBabor. Les acheteurs ne voient ni votre nom, ni votre photo, ni vos coordonnées — ils vous écrivent par la messagerie.',
+    'anonymous_publish_label' => 'Publier anonymement',
+    'anonymous_publish_help' => 'Vous apparaissez comme « Privé » sur toutes vos annonces, sans photo ni profil public. Vos numéros et votre e-mail ne sont pas affichés : les acheteurs vous écrivent uniquement par la messagerie AlBabor.',
+    'anonymous_publish_scope' => 'Actif : c\'est le réglage « Profil privé » de votre compte — il vaut pour toutes vos annonces et se modifie aussi depuis votre profil. Vous, et l\'équipe AlBabor, continuez de voir votre vrai nom.',
 
     // Demande d'espace publicitaire
     'banner_request_nav' => 'Annoncez chez nous',

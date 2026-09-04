@@ -6,7 +6,7 @@
                 $startStep = 1;
                 if ($errors->any()) {
                     if ($errors->has('images')) $startStep = 6;
-                    elseif ($errors->hasAny(['numero_whatsapp', 'numero_mobile', 'contact_email', 'mediation_enabled'])) $startStep = 5;
+                    elseif ($errors->hasAny(['numero_whatsapp', 'numero_mobile', 'contact_email', 'mediation_enabled', 'hide_name'])) $startStep = 5;
                     elseif ($errors->hasAny(['wilaya', 'pays', 'visible_a', 'price_dzd', 'currency', 'type_offre', 'etat', 'remarque_echange'])) $startStep = 4;
                     elseif ($errors->hasAny(['category', 'type'])) $startStep = 1;
                     else $startStep = 2;
@@ -1312,6 +1312,31 @@
                             </label>
                         </div>
 
+
+                        {{-- Publier anonymement = profil privé du compte (users.hide_name),
+                             valable pour toutes les annonces. Le champ caché est toujours
+                             posté, le bouton ne fait que le basculer. --}}
+                        <div class="mt-5 pt-5" style="border-top: 1px solid #E0E6ED;">
+                            <input type="hidden" name="hide_name" :value="hideName ? 1 : 0" value="{{ old('hide_name', auth()->user()->hide_name) ? 1 : 0 }}">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium flex items-center gap-2" style="color: #1B2A4A;">
+                                        <svg class="w-4 h-4 flex-shrink-0" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                        {{ __('messages.anonymous_publish_label') }}
+                                    </p>
+                                    <p class="text-xs mt-0.5 leading-relaxed" style="color: #9BA8B7;">{{ __('messages.anonymous_publish_help') }}</p>
+                                </div>
+                                <button type="button" role="switch" :aria-checked="hideName ? 'true' : 'false'"
+                                        aria-label="{{ __('messages.anonymous_publish_label') }}"
+                                        @click="hideName = !hideName"
+                                        class="relative inline-flex flex-shrink-0 h-7 w-12 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                        :style="hideName ? 'background: #17A2B8;' : 'background: #D3DCE6;'">
+                                    <span class="inline-block h-5 w-5 mt-1 bg-white rounded-full shadow transform transition-transform duration-200" :class="hideName ? 'translate-x-6' : 'translate-x-1'"></span>
+                                </button>
+                            </div>
+                            <p x-show="hideName" x-cloak class="text-xs mt-3 rounded-lg px-3 py-2 leading-relaxed" style="background: rgba(23,162,184,0.08); color: #117A8B;">{{ __('messages.anonymous_publish_scope') }}</p>
+                        </div>
+
                         {{-- ---- Services AlBabor (shown when mediation enabled) ---- --}}
                         <div x-show="mediationEnabled"
                              x-transition:enter="transition ease-out duration-300"
@@ -1509,6 +1534,7 @@
                 hasRemorque: '{{ old('specs.extras.remorque', '') }}',
                 hasPort: '{{ old('specs.extras.place_au_port', '') }}',
                 mediationEnabled: {{ old('mediation_enabled') ? 'true' : 'false' }},
+                hideName: {{ old('hide_name', auth()->user()->hide_name) ? 'true' : 'false' }},
                 hasFreePublishing: {{ $hasFreePublishing ? 'true' : 'false' }},
                 isFirstListing: {{ $isFirstListing ? 'true' : 'false' }},
                 canPublishEngineOrParts: {{ $canPublishEngineOrParts ? 'true' : 'false' }},
@@ -1665,7 +1691,7 @@
                     const normalized = (field || '').replace(/\.\d+$/, '');
 
                     if (normalized.startsWith('images') || normalized === 'video_url') return 6;
-                    if (['numero_whatsapp', 'numero_mobile', 'contact_email', 'mediation_enabled'].includes(normalized)) return 5;
+                    if (['numero_whatsapp', 'numero_mobile', 'contact_email', 'mediation_enabled', 'hide_name'].includes(normalized)) return 5;
                     if (['wilaya', 'pays', 'visible_a', 'price_dzd', 'currency', 'currency_label', 'type_offre', 'etat', 'remarque_echange'].includes(normalized)) return 4;
                     if (normalized === 'category' || normalized === 'type') return 1;
 

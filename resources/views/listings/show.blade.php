@@ -775,16 +775,21 @@
                     @php
                         $seller = $listing->user;
                         // Le nom vient du modèle : un vendeur qui publie sous
-                        // « Invité » arrive déjà anonymisé, photo comprise.
+                        // « Privé » arrive déjà anonymisé, photo comprise.
                         $sellerAnonymous = (bool) $seller?->identityMasked();
                         $sellerName = $seller?->name ?: __('Vendeur');
                         $viewerIsSeller = auth()->check() && auth()->id() === $listing->user_id;
                     @endphp
                     <div class="listing-card-frame listing-seller-card rounded-3xl overflow-hidden sticky top-24">
-                        {{-- Seller Header — ouvre le profil public du vendeur --}}
+                        {{-- Seller Header — ouvre le profil public du vendeur. Un profil
+                             privé n'a pas de page publique : pas de lien (ni initiale, ni photo). --}}
+                        @php $sellerHasPublicPage = $seller && ! $sellerAnonymous; @endphp
                         <div class="p-5 sm:p-6 relative annonce-seller-header">
-                            <a href="{{ $seller ? route('sellers.show', $seller) : '#' }}"
-                               class="flex items-center gap-3.5 group {{ $seller ? '' : 'pointer-events-none' }}">
+                            @if($sellerHasPublicPage)
+                                <a href="{{ route('sellers.show', $seller) }}" class="flex items-center gap-3.5 group">
+                            @else
+                                <div class="flex items-center gap-3.5">
+                            @endif
                                 <div class="relative flex-shrink-0">
                                     @if($seller?->profile_picture_url)
                                         <img src="{{ $seller->profile_picture_url }}" alt="{{ $sellerName }}"
@@ -812,20 +817,31 @@
                                     @endif
                                 </div>
                                 <div class="min-w-0 flex-1">
-                                    <h3 class="font-bold text-base truncate group-hover:underline" style="color: #1B2A4A;">{{ $sellerName }}</h3>
+                                    <h3 class="font-bold text-base truncate {{ $sellerHasPublicPage ? 'group-hover:underline' : '' }}" style="color: #1B2A4A;">{{ $sellerName }}</h3>
                                     @if($seller?->verified_badge ?? false)
                                         <span class="inline-flex items-center gap-1 text-xs font-semibold" style="color: #27AE60;">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                                             {{ __('Vendeur verifie') }}
                                         </span>
                                     @endif
-                                    <p class="text-xs mt-0.5 flex items-center gap-1" style="color: #17A2B8;">
-                                        {{ __('Voir toutes ses annonces') }}
-                                        <svg class="w-3 h-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                                    </p>
+                                    @if($sellerHasPublicPage)
+                                        <p class="text-xs mt-0.5 flex items-center gap-1" style="color: #17A2B8;">
+                                            {{ __('Voir toutes ses annonces') }}
+                                            <svg class="w-3 h-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                        </p>
+                                    @elseif($sellerAnonymous)
+                                        <p class="text-xs mt-0.5 flex items-center gap-1" style="color: #6B7B8D;">
+                                            <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                            {{ __('messages.hide_name_badge') }} · {{ __('messages.private_seller_card_hint') }}
+                                        </p>
+                                    @endif
                                     <p class="text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Membre depuis') }} {{ $seller?->created_at?->format('m/Y') ?? 'N/A' }}</p>
                                 </div>
-                            </a>
+                            @if($sellerHasPublicPage)
+                                </a>
+                            @else
+                                </div>
+                            @endif
 
                             @if($viewerIsSeller && $seller?->hidesName())
                                 {{-- Rappel au vendeur : voici ce que voient les acheteurs. --}}

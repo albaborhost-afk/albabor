@@ -40,7 +40,7 @@
         'value' => old('phone', $user->phone),
     ])
 
-    {{-- Confidentialité : publier sous « Invité ». Le champ caché est toujours
+    {{-- Confidentialité : publier sous « Privé ». Le champ caché est toujours
          posté (une case décochée ne l'est pas), le bouton ne fait que le
          basculer — le réglage reste enregistrable sans JavaScript. --}}
     <div

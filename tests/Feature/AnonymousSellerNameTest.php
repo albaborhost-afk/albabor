@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * Réglage « publier sous Invité » : le nom et la photo d'un vendeur sont
+ * Réglage « publier sous Privé » : le nom et la photo d'un vendeur sont
  * masqués pour les tiers, mais restent visibles pour lui-même et l'admin.
  *
  * Le masquage se fait à la lecture de l'attribut : ces tests vérifient qu'un
@@ -130,31 +130,39 @@ class AnonymousSellerNameTest extends TestCase
         $response->assertSeeText(User::ANONYMOUS_NAME);
     }
 
-    public function test_the_public_seller_profile_lists_the_listings_without_the_name(): void
+    public function test_the_public_seller_page_does_not_exist_for_a_private_seller(): void
     {
         $this->withoutVite();
 
         $seller  = $this->seller();
         $listing = $this->activeListing($seller);
 
-        $response = $this->get(route('sellers.show', $seller));
+        // Pas de page publique du tout : elle réunirait toutes les annonces
+        // d'un vendeur qui a demandé à ne pas être identifié
+        // (détails dans PrivateSellerProfileTest).
+        $this->get(route('sellers.show', $seller))->assertNotFound();
 
-        $response->assertOk();
-        $response->assertDontSee('Karim Benali');
-        $response->assertSeeText($listing->title);
+        // Le vendeur y voit encore sa propre page, avec son vrai nom.
+        $this->actingAs($seller)->get(route('sellers.show', $seller))
+            ->assertOk()
+            ->assertSeeText('Karim Benali')
+            ->assertSeeText($listing->title);
     }
 
-    public function test_the_api_vendor_profile_masks_the_name(): void
+    public function test_the_api_vendor_profile_does_not_exist_for_a_private_seller(): void
     {
         $seller = $this->seller();
         $this->activeListing($seller);
 
-        $response = $this->getJson('/api/v1/vendors/' . $seller->id);
+        $this->getJson('/api/v1/vendors/' . $seller->id)
+            ->assertNotFound()
+            ->assertJsonStructure(['message']);
 
-        $response->assertOk();
-        $response->assertJsonPath('user.name', User::ANONYMOUS_NAME);
-        $response->assertJsonPath('user.hide_name', true);
-        $response->assertJsonPath('stats.active_listings', 1);
+        $this->actingAs($seller, 'sanctum')->getJson('/api/v1/vendors/' . $seller->id)
+            ->assertOk()
+            ->assertJsonPath('user.name', 'Karim Benali')
+            ->assertJsonPath('user.hide_name', true)
+            ->assertJsonPath('stats.active_listings', 1);
     }
 
     public function test_the_account_sees_its_own_real_name_through_the_api(): void

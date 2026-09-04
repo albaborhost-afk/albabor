@@ -28,7 +28,7 @@ class ProfileController extends Controller
         ];
 
         return response()->json([
-            // Son propre profil : le réglage « Invité » ne s'applique pas à lui.
+            // Son propre profil : le réglage « Privé » ne s'applique pas à lui.
             'user' => $user->withRealName(),
             'stats' => $stats,
         ]);

@@ -19,7 +19,7 @@ class User extends Authenticatable implements FilamentUser
     use HasApiTokens, HasFactory, Notifiable;
 
     /** Nom affiché à la place du vrai nom quand le compte se masque. */
-    public const ANONYMOUS_NAME = 'Invité';
+    public const ANONYMOUS_NAME = 'Privé';
 
     protected $fillable = [
         'name',
@@ -60,6 +60,11 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'email_verified_at',
         'google_id',
+        'apple_id',
+        // Chemin brut du fichier : les applications lisent `profile_picture_url`
+        // / `avatar`, tous deux vidés pour un profil privé — le chemin, lui,
+        // restait dans la réponse.
+        'profile_picture',
         'is_blocked',
         'free_publishing',
     ];
@@ -85,7 +90,7 @@ class User extends Authenticatable implements FilamentUser
      *
      * À réserver aux réponses destinées au compte lui-même (connexion,
      * inscription, son propre profil) : sans cela, un utilisateur qui se masque
-     * verrait « Invité » à la place de son propre nom dans l'application.
+     * verrait « Privé » à la place de son propre nom dans l'application.
      */
     protected bool $realNameRevealed = false;
 
@@ -93,7 +98,7 @@ class User extends Authenticatable implements FilamentUser
     //
     // Un vendeur peut rendre son profil privé (colonne `hide_name`, exposée
     // telle quelle à l'API pour les applications). Deux effets, indissociables :
-    //  1. son nom et sa photo sont remplacés par « Invité » (ici, à la lecture
+    //  1. son nom et sa photo sont remplacés par « Privé » (ici, à la lecture
     //     de l'attribut — toute vue, réponse API et export passent par là) ;
     //  2. ses coordonnées directes (téléphone du compte, mobile, WhatsApp et
     //     e-mail de l'annonce) ne sont pas affichées : les acheteurs le
@@ -103,7 +108,7 @@ class User extends Authenticatable implements FilamentUser
     // et divulguer le nom. Le compte lui-même et l'administration voient tout.
 
     /**
-     * Ce lecteur doit-il voir « Invité » à la place du nom ?
+     * Ce lecteur doit-il voir « Privé » à la place du nom ?
      *
      * Ni le compte lui-même ni un administrateur ne sont concernés : le vendeur
      * doit reconnaître son propre profil, et le support a besoin du vrai nom.
@@ -123,9 +128,12 @@ class User extends Authenticatable implements FilamentUser
      * Qui regarde ? Session pour le site et l'administration, jeton Sanctum
      * pour les applications — y compris sur les routes publiques, où le
      * middleware n'a pas activé le garde et où `auth()` seul renverrait null
-     * (le vendeur verrait « Invité » à la place de son propre nom).
+     * (le vendeur verrait « Privé » à la place de son propre nom).
+     *
+     * Publique : Listing::toArray() applique la même règle de lecteur aux
+     * coordonnées de l'annonce.
      */
-    protected static function currentViewer(): ?self
+    public static function currentViewer(): ?self
     {
         $viewer = auth()->user();
 
@@ -155,6 +163,13 @@ class User extends Authenticatable implements FilamentUser
 
         foreach (self::VIEWER_RESTRICTED_FIELDS as $field) {
             unset($data[$field]);
+        }
+
+        // Profil privé : le téléphone du compte ne sort pas non plus. La
+        // messagerie sérialise l'acheteur, le vendeur et l'expéditeur de chaque
+        // message — elle livrerait sinon le numéro que l'annonce vient de cacher.
+        if ($this->hasPrivateProfile()) {
+            unset($data['phone'], $data['phone_country_code']);
         }
 
         return $data;
@@ -210,7 +225,7 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * L'avatar Google porte le visage du vendeur : le laisser à côté de
-     * « Invité » viderait le réglage de son sens.
+     * « Privé » viderait le réglage de son sens.
      */
     protected function avatar(): Attribute
     {
@@ -402,7 +417,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function getProfilePictureUrlAttribute(): ?string
     {
-        // Compte masqué : pas de photo non plus, sinon « Invité » resterait
+        // Compte masqué : pas de photo non plus, sinon « Privé » resterait
         // identifiable au premier coup d'œil.
         if ($this->identityMasked()) {
             return null;

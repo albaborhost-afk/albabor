@@ -13,8 +13,9 @@ use App\Models\User;
  * ce que /boutique offre déjà aux vendeurs professionnels.
  *
  * La page ne révèle rien de plus qu'une annonce : ni e-mail, ni téléphone.
- * Un vendeur qui publie sous « Invité » y apparaît anonymisé comme ailleurs,
- * le masquage étant appliqué par le modèle User.
+ * Un vendeur au profil privé n'a pas de page publique du tout (404) : elle
+ * réunirait toutes les annonces de quelqu'un qui a demandé à ne pas être
+ * identifié. Lui-même et l'administration la voient encore.
  */
 class SellerProfileController extends Controller
 {
@@ -22,6 +23,9 @@ class SellerProfileController extends Controller
     {
         // Un compte bloqué n'a plus de vitrine ; l'administration n'en a pas.
         abort_if($user->isBlocked() || $user->isAdmin(), 404);
+
+        // Profil privé : masqué pour ce lecteur = pas de page (voir en-tête).
+        abort_if($user->identityMasked(), 404);
 
         $listings = $user->listings()
             ->active()

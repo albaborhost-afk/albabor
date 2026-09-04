@@ -55,11 +55,16 @@ Mediation:
 - If ON: hide seller phone; contact via Admin ticket
 - If OFF: show seller phone + direct call button
 
-Private profile (since 2026-09-01, `users.hide_name` — column name kept for the mobile apps' API contract):
-- Seller-controlled toggle on their profile (web + `PUT /api/v1/profile`), also editable by admin in Filament.
-- If ON: name + photo → « Invité » (`User::identityMasked()`), AND listing contact fields (numero_mobile,
-  numero_whatsapp, contact_email) + user.phone are hidden for third parties → contact ONLY via in-site messaging.
-- Single rule for site + API: `Listing::contactHiddenFor($viewer)` (owner + admin always see everything).
+Private profile = anonymous listings (since 2026-09-01, `users.hide_name` — column name kept for the mobile apps' API contract):
+- Seller-controlled: toggle on their profile (web + `PUT /api/v1/profile`) and « Publier anonymement » on the web
+  listing create/edit form (same flag, `ListingController::syncAnonymousPublishing`, owner only); admin edits it in Filament.
+- If ON, for third parties: name + photo → « Privé » (`User::identityMasked()`); listing contact fields (numero_mobile,
+  numero_whatsapp, contact_email) + user.phone/phone_country_code absent; NO public seller page — `/vendeurs/{id}` and
+  `GET /api/v1/vendors/{id}` answer 404 (JSON `message` in French + `code: private_profile` for the apps) and the listing page shows no link
+  → contact ONLY via in-site messaging. Owner + admin always see everything (page included).
+- Single rule for site + API: `Listing::contactHiddenFor($viewer)`, applied by default at serialization
+  (`Listing::toArray()`, `User::toArray()` for the phone) — favorites, conversations and any future endpoint are covered
+  without calling `applyContactVisibility()`. Viewer resolution: `User::currentViewer()` (session or Sanctum token).
 
 Stats:
 - Track listing views (unique per day) + favorites count

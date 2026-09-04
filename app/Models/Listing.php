@@ -239,6 +239,11 @@ class Listing extends Model
      */
     public function applyContactVisibility(?User $viewer): self
     {
+        // Route publique appelée avec un jeton : le contrôleur reçoit null
+        // alors que le lecteur est connu — sinon le vendeur ne verrait pas ses
+        // propres coordonnées sur sa propre annonce.
+        $viewer ??= User::currentViewer();
+
         if (! $this->contactHiddenFor($viewer)) {
             return $this;
         }
@@ -290,6 +295,29 @@ class Listing extends Model
             $q->where('title', 'like', "%{$term}%")
               ->orWhere('description', 'like', "%{$term}%");
         });
+    }
+
+    /**
+     * Sérialisation : les coordonnées suivent contactHiddenFor() par défaut,
+     * quel que soit le point de sortie. Avant, chaque contrôleur devait penser
+     * à applyContactVisibility() — les favoris et la messagerie l'oubliaient et
+     * livraient le numéro d'un vendeur au profil privé.
+     */
+    public function toArray(): array
+    {
+        $data = parent::toArray();
+
+        if (! $this->contactHiddenFor(User::currentViewer())) {
+            return $data;
+        }
+
+        unset($data['numero_whatsapp'], $data['numero_mobile'], $data['contact_email']);
+
+        if (isset($data['user']) && is_array($data['user'])) {
+            unset($data['user']['phone'], $data['user']['phone_country_code']);
+        }
+
+        return $data;
     }
 
     public function getPrimaryImageAttribute()

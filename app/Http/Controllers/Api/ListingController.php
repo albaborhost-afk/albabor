@@ -187,9 +187,11 @@ class ListingController extends Controller
         // Enregistrer la vue (unique par jour par IP)
         ListingView::recordView($listing, $request->user(), $request->ip());
 
-        // Annonces similaires (même catégorie)
+        // Annonces similaires (même catégorie). `user` chargé d'avance : la
+        // sérialisation applique la règle de contact et lirait sinon le vendeur
+        // de chaque annonce une par une.
         $relatedListings = Listing::query()
-            ->with(['media'])
+            ->with(['media', 'user'])
             ->active()
             ->where('id', '!=', $listing->id)
             ->where('category', $listing->category)
@@ -718,6 +720,17 @@ class ListingController extends Controller
         // Un compte bloqué n'a plus de vitrine ; l'administration n'en a pas.
         abort_if($user->isBlocked() || $user->isAdmin(), 404);
 
+        // Profil privé : pas de page publique non plus — elle réunirait toutes
+        // les annonces d'un vendeur qui a demandé à ne pas être identifié. Le
+        // vendeur et l'administration la voient encore. Message en clair : les
+        // applications l'affichent tel quel à la place de « Profil indisponible ».
+        if ($user->identityMasked()) {
+            return response()->json([
+                'message' => __('messages.private_seller_no_public_page'),
+                'code'    => 'private_profile', // stable pour les applications (le texte peut changer)
+            ], 404);
+        }
+
         $listings = $user->listings()
             ->with('media')
             ->active()
@@ -735,7 +748,7 @@ class ListingController extends Controller
         return response()->json([
             'user' => [
                 'id' => $user->id,
-                // Masqué par le modèle si le vendeur publie sous « Invité ».
+                // Masqué par le modèle si le vendeur publie sous « Privé ».
                 'name' => $user->name,
                 'hide_name' => $user->hidesName(),
                 'profile_picture_url' => $user->profile_picture_url,
