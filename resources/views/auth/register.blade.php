@@ -100,6 +100,8 @@
             box-shadow: 0 0 0 4px rgba(23, 162, 184, 0.12), 0 4px 16px rgba(23, 162, 184, 0.08);
             outline: none;
         }
+        .auth-input { color-scheme: light; -webkit-text-fill-color: #1B2A4A; caret-color: #1B4F72; }
+        .auth-input:-webkit-autofill { -webkit-text-fill-color: #1B2A4A; box-shadow: 0 0 0 1000px #F7FAFD inset; }
         .auth-input::placeholder {
             color: #9BA8B7;
         }

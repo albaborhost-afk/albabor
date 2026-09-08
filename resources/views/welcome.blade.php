@@ -253,26 +253,6 @@
     </div>
     @endif
 
-    <!-- Positionnement / Marque -->
-    <section class="relative overflow-hidden" style="background: linear-gradient(135deg, #102B45 0%, #1B2A4A 55%, #1B4F72 100%);">
-        <div class="absolute inset-0 opacity-30" style="background: radial-gradient(ellipse at top right, rgba(23,162,184,0.25), transparent 60%);"></div>
-        <div class="max-w-4xl mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-16 relative text-center">
-            <div class="inline-flex items-center gap-2 text-sm font-semibold mb-4" style="color: #F39C12;">
-                <span>Albabor.com</span>
-                <span>🚤</span>
-            </div>
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-5">
-                {{ __('Marketplace premium de yachts & bateaux') }}
-            </h2>
-            <p class="text-base sm:text-lg max-w-2xl mx-auto mb-6" style="color: rgba(255,255,255,0.85);">
-                {{ __('Nous mettons en avant les bateaux. Les proprietaires vendent. Les acheteurs contactent directement.') }}
-            </p>
-            <p class="text-xs sm:text-sm max-w-xl mx-auto" style="color: rgba(255,255,255,0.5);">
-                {{ __('Albabor.com agit uniquement comme plateforme marketing et n\'assume aucune responsabilite sur les transactions ou les biens.') }}
-            </p>
-        </div>
-    </section>
-
     <!-- Categories -->
     <div class="py-8 sm:py-10" style="background: #F0F4F8;">
         <div class="max-w-7xl mx-auto">
@@ -501,6 +481,22 @@
     @endif
 
     <!-- Latest Listings -->
+    @foreach($countryGroups ?? [] as $group)
+        <section class="py-6 sm:py-8" style="background:#F0F4F8" aria-label="{{ $group['country'] }}">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center mb-4 gap-3">
+                    <div><h2 class="text-xl font-bold text-slate-800">{{ $group['flag'] }} {{ $group['country'] }}</h2><p class="text-xs text-slate-500 mt-1">{{ $group['count'] }} {{ __('annonces') }}</p></div>
+                    <a href="{{ route('listings.index', ['pays' => $group['country']]) }}" class="text-sm font-semibold text-cyan-700">{{ __('Voir tout') }} →</a>
+                </div>
+                <div class="flex gap-4 overflow-x-auto snap-x pb-4">
+                    @foreach($group['listings'] as $listing)
+                        <div class="w-64 sm:w-72 flex-shrink-0 snap-start"><x-listing-card :listing="$listing" /></div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endforeach
+
     @if(isset($latestListings) && $latestListings->count() > 0)
     <div class="py-8 sm:py-10" style="background-color: #F0F4F8;">
         <div
@@ -698,6 +694,26 @@
             </div>
         </div>
     </div>
+
+    <!-- Positionnement / Marque -->
+    <section class="relative overflow-hidden" style="background: linear-gradient(135deg, #102B45 0%, #1B2A4A 55%, #1B4F72 100%);">
+        <div class="absolute inset-0 opacity-30" style="background: radial-gradient(ellipse at top right, rgba(23,162,184,0.25), transparent 60%);"></div>
+        <div class="max-w-4xl mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-16 relative text-center">
+            <div class="inline-flex items-center gap-2 text-sm font-semibold mb-4" style="color: #F39C12;">
+                <span>Albabor.com</span>
+                <span>🚤</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-5">
+                {{ __('Marketplace premium de yachts & bateaux') }}
+            </h2>
+            <p class="text-base sm:text-lg max-w-2xl mx-auto mb-6" style="color: rgba(255,255,255,0.85);">
+                {{ __('Nous mettons en avant les bateaux. Les proprietaires vendent. Les acheteurs contactent directement.') }}
+            </p>
+            <p class="text-xs sm:text-sm max-w-xl mx-auto" style="color: rgba(255,255,255,0.5);">
+                {{ __('Albabor.com agit uniquement comme plateforme marketing et n\'assume aucune responsabilite sur les transactions ou les biens.') }}
+            </p>
+        </div>
+    </section>
 
     {{-- Payment section moved to footer in app-layout --}}
 

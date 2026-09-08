@@ -231,7 +231,7 @@
 
             @if($listings->count() > 0)
                 <!-- Desktop Table View -->
-                <div class="hidden md:block bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03);">
+                <div class="hidden xl:block bg-white rounded-2xl overflow-x-auto" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03);">
                     <table class="min-w-full">
                         <thead>
                             <tr style="background: #F0F4F8; border-bottom: 1px solid #E0E6ED;">
@@ -378,11 +378,11 @@
                                                 </a>
                                             @endif
 
-                                            @if($listing->status === 'active')
-                                                <a href="{{ route('listings.show', $listing) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(23, 162, 184, 0.1); color: #17A2B8;">
+                                            <a href="{{ route('listings.show', $listing) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(23, 162, 184, 0.1); color: #17A2B8;">
                                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                     {{ __('Voir') }}
                                                 </a>
+                                            @if($listing->status === 'active')
                                                 <a href="{{ route('listings.edit', $listing) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(107, 123, 141, 0.1); color: #6B7B8D;">
                                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                                     {{ __('Modifier') }}
@@ -472,7 +472,7 @@
                 </div>
 
                 <!-- Mobile Card View -->
-                <div class="md:hidden space-y-4">
+                <div class="xl:hidden space-y-4">
                     @foreach($listings as $listing)
                         <div class="bg-white rounded-2xl overflow-hidden animate-fade-in-up opacity-0" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03); animation-delay: {{ $loop->index * 0.08 }}s;">
                             <div class="flex items-start p-4 gap-4">
@@ -574,7 +574,6 @@
                                     @endif
 
                                     {{-- Voir l'annonce --}}
-                                    @if($listing->status === 'active')
                                     <a href="{{ route('listings.show', $listing) }}"
                                        class="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95"
                                        style="background: rgba(23,162,184,0.1); color: #17A2B8; border: 1.5px solid rgba(23,162,184,0.25);">
@@ -583,7 +582,7 @@
                                         </svg>
                                         {{ __('Voir') }}
                                     </a>
-                                    @endif
+
 
                                 </div>
 

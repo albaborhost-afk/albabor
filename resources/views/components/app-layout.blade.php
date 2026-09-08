@@ -54,7 +54,7 @@
                 </div>
 
                 <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-1">
+                <div class="hidden xl:flex items-center space-x-1">
                     <a href="{{ route('listings.index', ['category' => 'boat']) }}" class="nav-link-animated nav-item-boat px-3 py-2 rounded-xl font-medium text-sm inline-flex items-center gap-1.5">
                         <img src="/images/nav-boat.png" alt="" class="w-5 h-5 object-contain" style="filter: invert(30%) sepia(20%) saturate(800%) hue-rotate(170deg) brightness(90%);">{{ __('Bateaux') }}
                     </a>
@@ -86,7 +86,7 @@
                 </div>
 
                 <!-- Desktop Auth -->
-                <div class="hidden md:flex items-center space-x-3">
+                <div class="hidden xl:flex items-center space-x-3">
                     <!-- Language Switcher -->
                     <div class="relative" x-data="{ langOpen: false }" @click.away="langOpen = false">
                         <button @click="langOpen = !langOpen" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors hover:bg-gray-100" style="color: #6B7B8D;">
@@ -193,7 +193,7 @@
                 </div>
 
                 <!-- Mobile menu button -->
-                <div class="md:hidden flex items-center gap-2">
+                <div class="xl:hidden flex items-center gap-2">
                     @auth
                         <a href="{{ route('listings.create') }}" class="btn-create-glow inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
@@ -226,7 +226,7 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 translate-y-0"
              x-transition:leave-end="opacity-0 -translate-y-2"
-             class="md:hidden mobile-menu-glass origin-top">
+             class="xl:hidden mobile-menu-glass origin-top">
             <div class="px-4 py-5 space-y-1">
 
                 <!-- Category links with image icons -->

@@ -27,82 +27,7 @@ class ListingController extends Controller
             ->with(['user', 'media'])
             ->active();
 
-        // Filtre par catégorie
-        if ($request->filled('category')) {
-            $query->byCategory($request->category);
-        }
-
-        // Filtre par wilaya
-        if ($request->filled('wilaya')) {
-            $query->byWilaya($request->wilaya);
-        }
-
-        // Filtre par état
-        if ($request->filled('etat')) {
-            $query->where('etat', $request->etat);
-        }
-
-        // Filtre par type d'offre
-        if ($request->filled('type_offre')) {
-            $query->where('type_offre', $request->type_offre);
-        }
-
-        // Filtre par type (ex: type de bateau)
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
-
-        // Filtre par prix minimum
-        if ($request->filled('price_min')) {
-            $query->where('price_dzd', '>=', $request->price_min);
-        }
-
-        // Filtre par prix maximum
-        if ($request->filled('price_max')) {
-            $query->where('price_dzd', '<=', $request->price_max);
-        }
-
-        // Filtre par devise
-        if ($request->filled('currency')) {
-            $query->where('currency', $request->currency);
-        }
-
-        // Recherche textuelle
-        if ($request->filled('q')) {
-            $query->search($request->q);
-        }
-
-        // Filtres avancés sur les spécifications (JSON)
-        if ($request->filled('fabricant')) {
-            $query->whereRaw("json_extract(specs, '$.general.fabricant') LIKE ?", ['%' . $request->fabricant . '%']);
-        }
-        if ($request->filled('year_min')) {
-            $query->whereRaw("json_extract(specs, '$.general.annee_construction') >= ?", [(int) $request->year_min]);
-        }
-        if ($request->filled('year_max')) {
-            $query->whereRaw("json_extract(specs, '$.general.annee_construction') <= ?", [(int) $request->year_max]);
-        }
-        if ($request->filled('length_min')) {
-            $query->whereRaw("json_extract(specs, '$.dimensions.longueur') >= ?", [(float) $request->length_min]);
-        }
-        if ($request->filled('length_max')) {
-            $query->whereRaw("json_extract(specs, '$.dimensions.longueur') <= ?", [(float) $request->length_max]);
-        }
-        if ($request->filled('power_min')) {
-            $query->whereRaw("json_extract(specs, '$.motorisation.puissance_totale') >= ?", [(int) $request->power_min]);
-        }
-        if ($request->filled('power_max')) {
-            $query->whereRaw("json_extract(specs, '$.motorisation.puissance_totale') <= ?", [(int) $request->power_max]);
-        }
-        if ($request->filled('engine_brand')) {
-            $query->whereRaw("json_extract(specs, '$.motorisation.marque_moteur') LIKE ?", ['%' . $request->engine_brand . '%']);
-        }
-        if ($request->filled('cabins_min')) {
-            $query->whereRaw("json_extract(specs, '$.amenagements.nombre_cabines') >= ?", [(int) $request->cabins_min]);
-        }
-        if ($request->filled('berths_min')) {
-            $query->whereRaw("json_extract(specs, '$.amenagements.nombre_couchettes') >= ?", [(int) $request->berths_min]);
-        }
+        \App\Support\ListingSearch::apply($query, $request, false);
 
         // Annonces mises en avant en premier (tri primaire)
         $query->orderByRaw("CASE WHEN featured_until IS NOT NULL AND featured_until > ? THEN 1 ELSE 0 END DESC", [now()]);
@@ -141,6 +66,16 @@ class ListingController extends Controller
         });
 
         return response()->json($listings);
+    }
+
+    public function countries(Request $request): JsonResponse
+    {
+        $groups = \App\Support\ListingCountries::groups()->map(function ($group) use ($request) {
+            $group['listings']->each(fn ($listing) => $listing->applyContactVisibility($request->user()));
+            return $group;
+        });
+
+        return response()->json(['data' => $groups]);
     }
 
     /**
@@ -300,7 +235,16 @@ class ListingController extends Controller
             'numero_mobile' => ['nullable', 'string', InternationalPhoneNumber::nullable()],
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
+            'specs.general.immatriculation_autre' => 'nullable|string|max:100',
+            'specs.motorisation.type_helice' => 'nullable|string|max:100',
+            'specs.reservoirs.nombre_reservoirs' => 'nullable|integer|min:1|max:100',
+            'specs.reservoirs.reservoir_carburant' => 'nullable|numeric|min:0',
+            'specs.reservoirs.reservoir_eau_douce' => 'nullable|numeric|min:0',
+            'specs.reservoirs.stockage' => 'nullable|numeric|min:0',
+            'specs.tags.*' => 'nullable|array',
+            'specs.tags.*.*' => 'string|max:150',
             'mediation_enabled' => 'boolean',
+            'hide_name' => 'nullable|boolean',
             'images' => 'required|array|min:1|max:' . Listing::MAX_IMAGES,
             'images.*' => 'image|mimes:jpeg,png,jpg,webp,heic,heif|max:' . Listing::MAX_IMAGE_SIZE_KB,
             'video_url' => 'nullable|url|max:500',
@@ -352,6 +296,11 @@ class ListingController extends Controller
             return response()->json([
                 'message' => 'Impossible de traiter les images. Veuillez réessayer avec d\'autres fichiers.',
             ], 422);
+        }
+
+        if ($request->has('hide_name') && $user->id === $listing->user_id) {
+            $user->forceFill(['hide_name' => $request->boolean('hide_name')])->save();
+            $listing->unsetRelation('user');
         }
 
         // Publication gratuite pour les utilisateurs autorisés
@@ -472,7 +421,16 @@ class ListingController extends Controller
             'numero_mobile' => ['nullable', 'string', InternationalPhoneNumber::nullable()],
             'contact_email' => 'nullable|email|max:255',
             'specs' => 'nullable|array',
+            'specs.general.immatriculation_autre' => 'nullable|string|max:100',
+            'specs.motorisation.type_helice' => 'nullable|string|max:100',
+            'specs.reservoirs.nombre_reservoirs' => 'nullable|integer|min:1|max:100',
+            'specs.reservoirs.reservoir_carburant' => 'nullable|numeric|min:0',
+            'specs.reservoirs.reservoir_eau_douce' => 'nullable|numeric|min:0',
+            'specs.reservoirs.stockage' => 'nullable|numeric|min:0',
+            'specs.tags.*' => 'nullable|array',
+            'specs.tags.*.*' => 'string|max:150',
             'mediation_enabled' => 'boolean',
+            'hide_name' => 'nullable|boolean',
             'new_images' => 'nullable|array|max:' . Listing::MAX_IMAGES,
             'new_images.*' => 'image|mimes:jpeg,png,jpg,webp,heic,heif|max:' . Listing::MAX_IMAGE_SIZE_KB,
             'delete_images' => 'nullable|array',
@@ -498,7 +456,9 @@ class ListingController extends Controller
             'type' => $validated['type'] ?? null,
             'price_dzd' => $validated['price_dzd'],
             'currency' => $validated['currency'],
-            'price_display_unit' => $validated['price_display_unit'] ?? null,
+            'price_display_unit' => $validated['currency'] === 'DZD'
+                ? ($request->has('price_display_unit') ? ($validated['price_display_unit'] ?? null) : $listing->price_display_unit)
+                : null,
             // Champ facultatif mais colonne NOT NULL : sans ce repli, une
             // application qui ne l'envoie pas faisait planter l'enregistrement.
             'type_offre' => $validated['type_offre'] ?? 'negociable',
@@ -513,6 +473,11 @@ class ListingController extends Controller
             'specs' => $validated['specs'] ?? null,
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
         ] + (\Schema::hasColumn('listings', 'video_url') ? ['video_url' => $request->video_url] : []));
+
+        if ($request->has('hide_name') && $user->id === $listing->user_id) {
+            $user->forceFill(['hide_name' => $request->boolean('hide_name')])->save();
+            $listing->unsetRelation('user');
+        }
 
         // Supprimer les images sélectionnées
         if (!empty($validated['delete_images'])) {

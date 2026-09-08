@@ -327,6 +327,7 @@
                                     <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Fabricant</label>
                                     <input type="text" name="specs[general][fabricant]" value="{{ old('specs.general.fabricant', data_get($specs, 'general.fabricant')) }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="Ex: Yamaha, Mercury...">
+                                    <x-brand-suggestions />
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Modele</label>
@@ -362,6 +363,10 @@
                                                 </button>
                                             @endforeach
                                         </div>
+                                        <label x-show="immat === 'Autre'" x-cloak class="block mt-3 text-xs font-semibold text-slate-600">
+                                            {{ __('Pays d’immatriculation') }}
+                                            <input type="text" name="specs[general][immatriculation_autre]" value="{{ old('specs.general.immatriculation_autre', data_get($specs, 'general.immatriculation_autre', '')) }}" maxlength="100" :disabled="immat !== 'Autre'" class="glass-input w-full mt-1 rounded-xl px-3 py-2 text-sm" placeholder="{{ __('Précisez le pays') }}">
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -527,6 +532,15 @@
                                     </select>
                                 </div>
                                 <div>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5 text-slate-600">{{ __('Type d’hélice') }}</label>
+                                    <select name="specs[motorisation][type_helice]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
+                                        <option value="">{{ __('Choisir') }}</option>
+                                        @foreach(\App\Support\ListingCatalog::DRIVE_TYPES as $drive)
+                                            <option value="{{ $drive }}" @selected(old('specs.motorisation.type_helice', data_get($specs, 'motorisation.type_helice', '')) === $drive)>{{ $drive }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
                                     <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Type de carburant</label>
                                     <select name="specs[motorisation][type_carburant]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
                                         <option value="">-- Choisir --</option>
@@ -601,17 +615,9 @@
                                  carb:  {{ (float) old('specs.reservoirs.reservoir_carburant', data_get($specs, 'reservoirs.reservoir_carburant', 0)) }},
                                  eau:   {{ (float) old('specs.reservoirs.reservoir_eau_douce', data_get($specs, 'reservoirs.reservoir_eau_douce', 0)) }},
                                  stk:   {{ (float) old('specs.reservoirs.stockage', data_get($specs, 'reservoirs.stockage', 0)) }},
-                                 totalCarbLitres: 0,
-                                 totalLitres: 0,
-                             }"
-                             x-effect="
-                                 const n = Math.max(1, parseInt(nbRes, 10) || 1);
-                                 const c = parseFloat(carb) || 0;
-                                 const e = parseFloat(eau) || 0;
-                                 const s = parseFloat(stk) || 0;
-                                 totalCarbLitres = n * c;
-                                 totalLitres = totalCarbLitres + e + s;
-                             ">
+                                 get totalCarbLitres() { return Math.max(1, parseInt(this.nbRes, 10) || 1) * Math.max(0, parseFloat(this.carb) || 0); },
+                                 get totalLitres() { return this.totalCarbLitres + Math.max(0, parseFloat(this.eau) || 0) + Math.max(0, parseFloat(this.stk) || 0); },
+                             }">
                             <h2 class="text-base font-semibold mb-4 flex items-center gap-3" style="color: #1B2A4A;">
                                 <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #1ABC9C, #48C9B0);">
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
@@ -699,126 +705,7 @@
                             </div>
                         </div>
 
-                        {{-- Equipements (boat / jetski) --}}
-                        @php
-                            $predefinedEquipement = ['Gilets de sauvetage', 'Extincteur', 'Fusees de detresse', 'Ancre', 'Bimini', 'Echelle de bain', 'Plateforme de bain', 'Douche de pont', 'Guindeau'];
-                            $predefinedOptions = ['Taud de soleil', 'Glaciere', 'Table cockpit', 'Coffre de rangement', 'Porte-cannes', 'Vivier', 'Siege rabattable', 'Cabine'];
-                            $predefinedElectronique = ['GPS', 'Sondeur', 'VHF', 'Radar', 'Pilote automatique', 'Eclairage LED', 'Bluetooth / Audio', 'Chargeur de batterie'];
-
-                            $existingEquipement = old('specs.tags.equipement', data_get($specs, 'tags.equipement', []));
-                            $existingOptions = old('specs.tags.options', data_get($specs, 'tags.options', []));
-                            $existingElectronique = old('specs.tags.electronique', data_get($specs, 'tags.electronique', []));
-
-                            if (!is_array($existingEquipement)) $existingEquipement = $existingEquipement ? [$existingEquipement] : [];
-                            if (!is_array($existingOptions)) $existingOptions = $existingOptions ? [$existingOptions] : [];
-                            if (!is_array($existingElectronique)) $existingElectronique = $existingElectronique ? [$existingElectronique] : [];
-
-                            $customEquipement = array_values(array_diff($existingEquipement, $predefinedEquipement));
-                            $customOptions = array_values(array_diff($existingOptions, $predefinedOptions));
-                            $customElectronique = array_values(array_diff($existingElectronique, $predefinedElectronique));
-                        @endphp
-                        <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-top: 4px solid #17A2B8;"
-                             x-show="category === 'boat' || category === 'jetski'">
-                            <h2 class="text-base font-semibold mb-4 flex items-center gap-3" style="color: #1B2A4A;">
-                                <div class="w-10 h-10 rounded-xl flex items-center justify-center gradient-primary">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                                </div>
-                                <div>
-                                    <span class="block">Equipements, Options & Electronique</span>
-                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">Selectionnez ou ajoutez</span>
-                                </div>
-                            </h2>
-
-                            <div class="mb-5" x-data="{ customTags: @js($customEquipement), newTag: '' }">
-                                <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Equipement de securite</label>
-                                <div class="flex flex-wrap gap-2">
-                                    @foreach($predefinedEquipement as $equip)
-                                        <label class="inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" name="specs[tags][equipement][]" value="{{ $equip }}"
-                                                   {{ in_array($equip, $existingEquipement) ? 'checked' : '' }}
-                                                   class="sr-only peer">
-                                            <span class="px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer peer-checked:border-[#17A2B8] peer-checked:text-[#17A2B8] peer-checked:bg-[#17A2B8]/10"
-                                                  style="border: 1.5px solid #E0E6ED; color: #6B7B8D;">{{ $equip }}</span>
-                                        </label>
-                                    @endforeach
-                                    <template x-for="(tag, i) in customTags" :key="'ce-'+i">
-                                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium"
-                                              style="border: 1.5px solid #17A2B8; color: #17A2B8; background: rgba(23,162,184,0.1);">
-                                            <span x-text="tag"></span>
-                                            <button type="button" @click="customTags.splice(i, 1)" class="ml-0.5 hover:opacity-60 text-sm leading-none">&times;</button>
-                                            <input type="hidden" name="specs[tags][equipement][]" :value="tag">
-                                        </span>
-                                    </template>
-                                </div>
-                                <div class="mt-2.5 flex gap-2">
-                                    <input type="text" x-model="newTag" @keydown.enter.prevent="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
-                                           class="glass-input flex-1 rounded-xl px-3 py-2 text-xs" placeholder="Ajouter un equipement..." style="min-width: 0;">
-                                    <button type="button" @click="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
-                                            class="px-3 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:-translate-y-0.5"
-                                            style="background: linear-gradient(135deg, #1B4F72, #17A2B8); white-space: nowrap;">+ Ajouter</button>
-                                </div>
-                            </div>
-
-                            <div class="mb-5" x-data="{ customTags: @js($customOptions), newTag: '' }">
-                                <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Options de confort</label>
-                                <div class="flex flex-wrap gap-2">
-                                    @foreach($predefinedOptions as $opt)
-                                        <label class="inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" name="specs[tags][options][]" value="{{ $opt }}"
-                                                   {{ in_array($opt, $existingOptions) ? 'checked' : '' }}
-                                                   class="sr-only peer">
-                                            <span class="px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer peer-checked:border-[#17A2B8] peer-checked:text-[#17A2B8] peer-checked:bg-[#17A2B8]/10"
-                                                  style="border: 1.5px solid #E0E6ED; color: #6B7B8D;">{{ $opt }}</span>
-                                        </label>
-                                    @endforeach
-                                    <template x-for="(tag, i) in customTags" :key="'co-'+i">
-                                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium"
-                                              style="border: 1.5px solid #17A2B8; color: #17A2B8; background: rgba(23,162,184,0.1);">
-                                            <span x-text="tag"></span>
-                                            <button type="button" @click="customTags.splice(i, 1)" class="ml-0.5 hover:opacity-60 text-sm leading-none">&times;</button>
-                                            <input type="hidden" name="specs[tags][options][]" :value="tag">
-                                        </span>
-                                    </template>
-                                </div>
-                                <div class="mt-2.5 flex gap-2">
-                                    <input type="text" x-model="newTag" @keydown.enter.prevent="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
-                                           class="glass-input flex-1 rounded-xl px-3 py-2 text-xs" placeholder="Ajouter une option..." style="min-width: 0;">
-                                    <button type="button" @click="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
-                                            class="px-3 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:-translate-y-0.5"
-                                            style="background: linear-gradient(135deg, #1B4F72, #17A2B8); white-space: nowrap;">+ Ajouter</button>
-                                </div>
-                            </div>
-
-                            <div x-data="{ customTags: @js($customElectronique), newTag: '' }">
-                                <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Electronique</label>
-                                <div class="flex flex-wrap gap-2">
-                                    @foreach($predefinedElectronique as $elec)
-                                        <label class="inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" name="specs[tags][electronique][]" value="{{ $elec }}"
-                                                   {{ in_array($elec, $existingElectronique) ? 'checked' : '' }}
-                                                   class="sr-only peer">
-                                            <span class="px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer peer-checked:border-[#17A2B8] peer-checked:text-[#17A2B8] peer-checked:bg-[#17A2B8]/10"
-                                                  style="border: 1.5px solid #E0E6ED; color: #6B7B8D;">{{ $elec }}</span>
-                                        </label>
-                                    @endforeach
-                                    <template x-for="(tag, i) in customTags" :key="'cel-'+i">
-                                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium"
-                                              style="border: 1.5px solid #17A2B8; color: #17A2B8; background: rgba(23,162,184,0.1);">
-                                            <span x-text="tag"></span>
-                                            <button type="button" @click="customTags.splice(i, 1)" class="ml-0.5 hover:opacity-60 text-sm leading-none">&times;</button>
-                                            <input type="hidden" name="specs[tags][electronique][]" :value="tag">
-                                        </span>
-                                    </template>
-                                </div>
-                                <div class="mt-2.5 flex gap-2">
-                                    <input type="text" x-model="newTag" @keydown.enter.prevent="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
-                                           class="glass-input flex-1 rounded-xl px-3 py-2 text-xs" placeholder="Ajouter un electronique..." style="min-width: 0;">
-                                    <button type="button" @click="if(newTag.trim()) { customTags.push(newTag.trim()); newTag = ''; }"
-                                            class="px-3 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:-translate-y-0.5"
-                                            style="background: linear-gradient(135deg, #1B4F72, #17A2B8); white-space: nowrap;">+ Ajouter</button>
-                                </div>
-                            </div>
-                        </div>
+                        <x-equipment-fields :specs="$specs" />
 
                         {{-- Extras (boat / jetski) --}}
                         <div class="bg-white rounded-2xl p-6" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06);"
@@ -966,8 +853,8 @@
 
                             {{-- ② PRIX : entree libre + 2 boutons (Milliard / Million) qui choisissent l'unite d'affichage --}}
                             <div x-data="{
-                                rawValue: '{{ (old('type_offre', $listing->type_offre) ?? '') === 'offert' ? '0' : old('price_input', $existingDisplay ?? '') }}',
-                                unit: '{{ (old('type_offre', $listing->type_offre) ?? '') === 'offert' ? '' : old('price_display_unit', $existingUnit ?? '') }}',
+                                rawValue: '{{ old('price_input', $existingDisplay ?? '') }}',
+                                unit: '{{ old('price_display_unit', $existingUnit ?? '') }}',
                                 offertSelected: {{ (old('type_offre', $listing->type_offre) ?? '') === 'offert' ? 'true' : 'false' }},
                                 get actualValue() { return parseFloat(this.rawValue) || 0; },
                                 get factor() {
@@ -1001,22 +888,22 @@
                             }"
                                  @albabor-offert.window="
                                      offertSelected = $event.detail.offert;
-                                     if (offertSelected) { rawValue = '0'; unit = ''; }
+
                                  ">
                                 <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
                                     Prix <span style="color: #E74C3C;">*</span>
-                                    <span x-show="offertSelected" x-cloak class="ml-1 text-[10px] font-semibold normal-case" style="color:#27AE60;">(gratuit si « Offert »)</span>
+                                    <span x-show="offertSelected" x-cloak class="ml-1 text-[10px] font-semibold normal-case" style="color:#27AE60;">{{ __('Offert : montant de l’offre reçue') }}</span>
                                 </label>
 
                                 {{-- Visible: l'utilisateur tape ce qui sera affiche (4,5 ou 1400000) --}}
                                 <div class="relative">
                                     <input type="number" x-model="rawValue"
                                            min="0" step="any"
-                                           :required="!offertSelected"
-                                           :disabled="offertSelected"
-                                           :placeholder="offertSelected ? '0' : (unit === 'milliard' ? 'Ex: 4,5' : (unit === 'million' ? 'Ex: 900' : 'Ex: 1400000'))"
+                                           required
+
+                                           :placeholder="unit === 'milliard' ? 'Ex: 4,5' : (unit === 'million' ? 'Ex: 900' : 'Ex: 1400000')"
                                            class="glass-input w-full rounded-xl px-4 py-3.5 pr-24 text-xl font-bold"
-                                           :class="offertSelected ? 'opacity-60 cursor-not-allowed' : ''"
+
                                            style="color: #1B2A4A;">
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
                                         <span class="text-sm font-bold px-2 py-1 rounded-lg whitespace-nowrap"
@@ -1030,7 +917,7 @@
                                 <input type="hidden" name="price_display_unit" :value="unit">
 
                                 {{-- 2 boutons : Milliard / Million (DZD uniquement) --}}
-                                <div x-show="currency === 'DZD' && !offertSelected" x-transition class="mt-2.5 grid grid-cols-2 gap-2">
+                                <div x-show="currency === 'DZD'" x-transition class="mt-2.5 grid grid-cols-2 gap-2">
                                     <button type="button" @click="toggleUnit('milliard')"
                                             class="px-3 py-3 rounded-xl text-sm font-bold transition-all hover:shadow-md active:scale-95"
                                             :style="unit === 'milliard'
@@ -1069,7 +956,7 @@
                                     @foreach([
                                         'negociable' => ['label'=>'Négociable','desc'=>'Prix ouvert','icon'=>'🤝'],
                                         'fix'        => ['label'=>'Prix fixe','desc'=>'Non négociable','icon'=>'🔒'],
-                                        'offert'     => ['label'=>'Offert','desc'=>'Gratuit / don','icon'=>'🎁'],
+                                        'offert'     => ['label'=>'Offert','desc'=>'Offre déjà reçue','icon'=>'💬'],
                                     ] as $val => $item)
                                         <label class="cursor-pointer">
                                             <input type="radio" name="type_offre" value="{{ $val }}"
@@ -1689,7 +1576,7 @@
 
                     const offer = this.$root.querySelector('input[name="type_offre"]:checked')?.value || '';
                     const price = val('price_dzd');
-                    if (offer !== 'offert' && (!price || parseFloat(price) <= 0)) {
+                    if ((!price || parseFloat(price) <= 0)) {
                         errors.push("Le prix est obligatoire.");
                         this.markField('price_dzd');
                     }

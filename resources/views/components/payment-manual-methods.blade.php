@@ -16,34 +16,8 @@
 ])
 
 @php
-    $holder = 'DJAMAA BILEL';
-
-    $catalogue = [
-        'baridimob' => [
-            'logo'    => '/images/baridimob.png',
-            'name'    => 'BaridiMob',
-            'detail'  => 'Numéro : 00799999002543569223',
-            'mono'    => true,
-        ],
-        'bank_transfer' => [
-            'logo'    => '/images/bea.png',
-            'name'    => "BEA – Banque Extérieure d'Algérie",
-            'detail'  => 'RIB : 00200090090220206690',
-            'mono'    => true,
-        ],
-        'paypal' => [
-            'logo'    => '/images/payments/paypal-tile.svg',
-            'name'    => 'PayPal',
-            'detail'  => 'albabordz@gmail.com',
-            'mono'    => false,
-        ],
-        'card' => [
-            'logo'    => '/images/payments/card.svg',
-            'name'    => 'Carte bancaire — Mastercard / Visa',
-            'detail'  => 'Paiement international, puis justificatif',
-            'mono'    => false,
-        ],
-    ];
+    $holder = config('payment_methods.holder');
+    $catalogue = config('payment_methods.methods');
 
     $methods = array_values(array_filter(
         array_map(fn ($key) => isset($catalogue[$key]) ? ['key' => $key] + $catalogue[$key] : null, $only)
@@ -63,7 +37,7 @@
 
     <div class="space-y-3">
         @foreach($methods as $index => $m)
-            <label class="flex items-center gap-3 p-3 sm:p-4 rounded-2xl cursor-pointer transition-all"
+            <label class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
                    x-bind:style="method === '{{ $m['key'] }}'
                         ? 'border: 2px solid #17A2B8; background: rgba(23,162,184,0.05); box-shadow: 0 4px 14px rgba(23,162,184,0.14);'
                         : 'border: 1px solid #E0E6ED; background: #FFFFFF;'"
@@ -74,15 +48,15 @@
                        class="flex-shrink-0" style="accent-color: #17A2B8;">
 
                 {{-- Tuile logo, comme sur Yachtei : le moyen se reconnaît d'un coup d'œil --}}
-                <span class="flex h-14 w-20 sm:h-16 sm:w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl p-2"
+                <span class="flex h-10 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl p-2"
                       style="background: #FFFFFF; border: 1px solid #E8EEF4; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);">
                     <img src="{{ $m['logo'] }}" alt="{{ $m['name'] }}" class="max-h-full max-w-full object-contain">
                 </span>
 
                 <span class="min-w-0 flex-1">
                     <span class="block font-semibold text-sm sm:text-base" style="color: #1B2A4A;">{{ $m['name'] }}</span>
-                    <span class="block text-xs sm:text-sm mt-0.5 {{ $m['mono'] ? 'font-mono break-all' : 'break-all' }}" style="color: #6B7B8D;">{{ $m['detail'] }}</span>
-                    <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : {{ $holder }}</span>
+                    <span x-show="method === '{{ $m['key'] }}'" x-cloak class="block text-xs sm:text-sm mt-0.5 {{ $m['mono'] ? 'font-mono break-all' : 'break-all' }}" style="color: #6B7B8D;">{{ $m['detail'] }}</span>
+                    <span x-show="method === '{{ $m['key'] }}'" x-cloak class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : {{ $holder }}</span>
                 </span>
 
                 <svg class="w-5 h-5 flex-shrink-0 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"

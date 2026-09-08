@@ -78,7 +78,7 @@ class Listing extends Model
 
     const TYPE_OFFRE_LABELS = [
         'negociable' => 'Négociable',
-        'offert' => 'Offert',
+        'offert' => 'Offert (offre reçue)',
         'fix' => 'Prix fixe',
     ];
 
@@ -114,7 +114,7 @@ class Listing extends Model
 
     const PROPULSION_OPTIONS = ['Hors-Bord', 'In-bord'];
     const CARBURANT_OPTIONS = ['Essence', 'Diesel', 'Électrique', 'Hybride'];
-    const IMMATRICULATION_OPTIONS = ['Algérien', 'Tunisien', 'Marocain', 'Français', 'Espagnol', 'Italien', 'Maltais', 'Grec', 'Turc', 'Autre'];
+    const IMMATRICULATION_OPTIONS = ['Algérien', 'Tunisien', 'Marocain', 'Français', 'Espagnol', 'Italien', 'Maltais', 'Grec', 'Turc', 'Polonais', 'Autre'];
 
     /** Flag emoji for each immatriculation option (value stays the French label). */
     const IMMATRICULATION_FLAGS = [
@@ -127,9 +127,24 @@ class Listing extends Model
         'Maltais' => '🇲🇹',
         'Grec' => '🇬🇷',
         'Turc' => '🇹🇷',
-        'Polonais' => '🇵🇱', // plus sélectionnable — conservé pour l'affichage des annonces existantes
+        'Polonais' => '🇵🇱',
         'Autre' => '🌍',
     ];
+
+    protected static function booted(): void
+    {
+        static::retrieved(function (Listing $listing) {
+            if ($listing->specs !== null) {
+                $listing->specs = \App\Support\ListingCatalog::normalizeSpecs($listing->specs);
+                $listing->syncOriginalAttribute('specs');
+            }
+        });
+        static::saving(function (Listing $listing) {
+            if ($listing->isDirty('specs')) {
+                $listing->specs = \App\Support\ListingCatalog::normalizeSpecs($listing->specs);
+            }
+        });
+    }
 
     public function user(): BelongsTo
     {

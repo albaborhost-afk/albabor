@@ -30,13 +30,13 @@ Route::get('/lang/{locale}', function (string $locale) {
 
 // Home
 Route::get('/', function () {
-    $featuredListings = Listing::where('status', 'active')
+    $featuredListings = Listing::active()->with(['user', 'media'])
         ->where('featured_until', '>', now())
         ->orderByRaw('COALESCE(last_renewed_at, created_at) DESC')
         ->take(4)
         ->get();
 
-    $latestListings = Listing::where('status', 'active')
+    $latestListings = Listing::active()->with(['user', 'media'])
         ->orderByRaw('COALESCE(last_renewed_at, created_at) DESC')
         ->take(25)
         ->get();
@@ -47,7 +47,9 @@ Route::get('/', function () {
     // l'annonceur ne reflétaient que l'application mobile.
     \App\Models\Banner::recordImpressions($banners);
 
-    return view('welcome', compact('featuredListings', 'latestListings', 'banners'));
+    $countryGroups = \App\Support\ListingCountries::groups();
+
+    return view('welcome', compact('featuredListings', 'latestListings', 'banners', 'countryGroups'));
 })->name('home');
 
 // Guest routes

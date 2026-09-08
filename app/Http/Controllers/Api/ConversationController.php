@@ -53,6 +53,13 @@ class ConversationController extends Controller
             return response()->json(['message' => __('messages.listing_not_available')], 422);
         }
 
+        if ($listing->mediation_enabled) {
+            return response()->json([
+                'message' => 'La médiation est activée. Contactez l’administration AlBabor pour cette annonce.',
+                'code' => 'mediation_required',
+            ], 422);
+        }
+
         $conversation = Conversation::firstOrCreate(
             [
                 'listing_id' => $listing->id,

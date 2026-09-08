@@ -487,6 +487,9 @@
         {{-- Brush size --}}
         <div class="flex items-center gap-2 py-3">
             <span class="text-[11px] font-medium flex-shrink-0" style="color:#6B8CA8;">Pinceau :</span>
+            <button type="button" @click="blurBrushLevel=0" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-xs font-semibold" :style="blurBrushLevel===0?'background:#17A2B8;color:white;':'background:rgba(255,255,255,.07);color:#CBD5E1;'">
+                <span class="inline-block rounded-full" style="width:4px;height:4px;background:currentColor;"></span>Très petit
+            </button>
             <button type="button" @click="blurBrushLevel=1"
                     class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
                     :style="blurBrushLevel===1?'background:linear-gradient(135deg,#1B4F72,#17A2B8);color:white;':'background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);'">
@@ -1325,7 +1328,7 @@ if (typeof photoUploader === 'undefined') {
             blurRadius() {
                 if (!this.blurCanvas) return 50;
                 const base = Math.min(this.blurCanvas.width, this.blurCanvas.height);
-                return Math.round(base * [0.04, 0.07, 0.12][this.blurBrushLevel - 1]);
+                return Math.round(base * [0.012, 0.04, 0.07, 0.12][this.blurBrushLevel]);
             },
 
             blurDown(e) {

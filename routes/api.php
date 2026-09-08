@@ -29,12 +29,14 @@ Route::prefix('v1')->group(function () {
     // Public listings
     Route::get('/listings', [ListingController::class, 'index']);
     Route::get('/listings/featured', [ListingController::class, 'featured']);
+    Route::get('/listings/countries', [ListingController::class, 'countries']);
     Route::get('/listings/{listing}', [ListingController::class, 'show']);
 
     // Public vendor profile
     Route::get('/vendors/{user}', [ListingController::class, 'vendorProfile']);
 
     // Settings
+    Route::get('/settings/payment-methods', [SettingsController::class, 'paymentMethods']);
     Route::get('/settings/exchange-rate', [SettingsController::class, 'exchangeRate']);
 
     // Subscription plans (public)
