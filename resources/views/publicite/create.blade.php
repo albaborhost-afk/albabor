@@ -147,11 +147,22 @@
                             <label for="whatsapp" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">
                                 WhatsApp <span style="color: #E74C3C;">*</span>
                             </label>
-                            <input type="tel" name="whatsapp" id="whatsapp" required
-                                   value="{{ old('whatsapp', auth()->user()?->phone ? trim((auth()->user()->phone_country_code ?? '') . auth()->user()->phone) : '') }}"
-                                   placeholder="+213 6 70 00 00 00"
-                                   class="glass-input w-full py-3 px-4 rounded-xl">
-                            <p class="text-xs mt-1.5" style="color: #9BA8B7;">{{ __('messages.banner_field_whatsapp_hint') }}</p>
+                            <div class="flex gap-2" dir="ltr">
+                                <label for="whatsapp_country_code" class="sr-only">{{ __('messages.banner_field_whatsapp_country') }}</label>
+                                <select name="whatsapp_country_code" id="whatsapp_country_code" required
+                                        autocomplete="tel-country-code"
+                                        class="glass-input w-32 shrink-0 py-3 pl-3 pr-7 rounded-xl text-sm">
+                                    @foreach(\App\Support\PhoneCountry::COUNTRIES as $code => $country)
+                                        <option value="{{ $code }}" @selected($whatsappCountryCode === $code)>{{ $country['flag'] }} {{ $code }} — {{ $country['name'] }}</option>
+                                    @endforeach
+                                </select>
+                                <input type="tel" name="whatsapp" id="whatsapp" required maxlength="30"
+                                       value="{{ $whatsappNumber }}"
+                                       autocomplete="tel-national" inputmode="tel" aria-describedby="whatsapp_hint"
+                                       placeholder="6 70 00 00 00"
+                                       class="glass-input w-full min-w-0 py-3 px-4 rounded-xl">
+                            </div>
+                            <p id="whatsapp_hint" class="text-xs mt-1.5" style="color: #9BA8B7;">{{ __('messages.banner_field_whatsapp_hint') }}</p>
                         </div>
                     </div>
 

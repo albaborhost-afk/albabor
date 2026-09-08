@@ -86,6 +86,9 @@ class BannerRequest extends Model
     {
         $digits = preg_replace('/\D+/', '', (string) $this->whatsapp);
 
-        return str_starts_with($digits, '0') ? substr($digits, 1) : $digits;
+        // En Italie, le zéro initial fait partie du numéro international.
+        return $this->whatsapp_country_code !== '+39' && str_starts_with($digits, '0')
+            ? substr($digits, 1)
+            : $digits;
     }
 }

@@ -50,3 +50,14 @@ Source : les 15 pages de « App Modification 7 SEP 2026.pdf ».
 - Vérification visuelle sur ordinateur et à 390 pixels ; les trois images chargent.
 - Build Vite et 12 tests de régression (68 assertions) réussis. Les mêmes images
   sont intégrées aux projets natifs locaux ; builds Android et iOS réussis.
+
+## Indicatif WhatsApp du formulaire publicitaire
+
+- `/publicite` propose un sélecteur de pays à gauche du numéro WhatsApp, avec
+  drapeau et indicatif. La liste reprend `PhoneCountry::COUNTRIES`.
+- Le pays du profil est prérempli. Les numéros internationaux collés sont reconnus
+  sans doubler l'indicatif ; la sélection et le numéro sont conservés après une erreur.
+- Le lien WhatsApp de l'administration conserve le zéro initial des numéros italiens.
+- Validation : `php artisan test --compact --filter='BannerRequestTest|PageRenderingSmokeTest'`
+  (31 tests, 145 assertions), `npm run build`, puis contrôle visuel sur ordinateur
+  et à 390 pixels et envoi d'une demande artificielle dans la base locale de test.

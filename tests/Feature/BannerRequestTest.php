@@ -98,6 +98,80 @@ class BannerRequestTest extends TestCase
         $this->assertSame($user->id, BannerRequest::sole()->user_id);
     }
 
+    public function test_the_selected_country_is_used_for_national_whatsapp_numbers(): void
+    {
+        foreach ([
+            ['+213', '0670 00 00 00', '213670000000'],
+            ['+33', '06 70 00 00 00', '33670000000'],
+            ['+34', '612 345 678', '34612345678'],
+            ['+39', '06 1234 5678', '390612345678'],
+        ] as [$code, $number, $whatsappDigits]) {
+            $this->post(route('publicite.store'), $this->payload([
+                'whatsapp_country_code' => $code,
+                'whatsapp' => $number,
+            ]))->assertRedirect(route('publicite.create'))->assertSessionHasNoErrors();
+
+            $request = BannerRequest::latest('id')->firstOrFail();
+            $this->assertSame($code, $request->whatsapp_country_code);
+            $this->assertSame('https://wa.me/'.$whatsappDigits, $request->whatsapp_url);
+        }
+    }
+
+    public function test_pasting_an_international_number_does_not_duplicate_the_selected_code(): void
+    {
+        $this->post(route('publicite.store'), $this->payload([
+            'whatsapp_country_code' => '+213',
+            'whatsapp' => '0033 6 70 00 00 00',
+        ]))->assertSessionHasNoErrors();
+
+        $request = BannerRequest::sole();
+        $this->assertSame('+33', $request->whatsapp_country_code);
+        $this->assertSame('https://wa.me/33670000000', $request->whatsapp_url);
+    }
+
+    public function test_country_and_number_are_preserved_after_another_field_fails_validation(): void
+    {
+        $this->withoutVite();
+
+        $this->from(route('publicite.create'))->post(route('publicite.store'), $this->payload([
+            'whatsapp_country_code' => '+34',
+            'whatsapp' => '612 345 678',
+            'message' => 'court',
+        ]))->assertSessionHasErrors('message')
+            ->assertSessionHasInput('whatsapp_country_code', '+34')
+            ->assertSessionHasInput('whatsapp', '612 345 678');
+
+        $this->get(route('publicite.create'))->assertOk()
+            ->assertViewHas('whatsappCountryCode', '+34')
+            ->assertViewHas('whatsappNumber', '612 345 678');
+        $this->assertSame(0, BannerRequest::count());
+    }
+
+    public function test_the_country_selector_rejects_unknown_codes_and_empty_numbers(): void
+    {
+        $this->post(route('publicite.store'), $this->payload([
+            'whatsapp_country_code' => '+999',
+            'whatsapp' => '612345678',
+        ]))->assertSessionHasErrors('whatsapp_country_code');
+
+        $this->post(route('publicite.store'), $this->payload([
+            'whatsapp_country_code' => '+213',
+            'whatsapp' => '',
+        ]))->assertSessionHasErrors('whatsapp');
+
+        $this->assertSame(0, BannerRequest::count());
+    }
+
+    public function test_an_international_profile_number_prefills_the_country_and_national_number(): void
+    {
+        $this->withoutVite();
+        $user = User::factory()->create(['phone' => '+33670000000', 'phone_country_code' => '+33']);
+
+        $this->actingAs($user)->get(route('publicite.create'))->assertOk()
+            ->assertViewHas('whatsappCountryCode', '+33')
+            ->assertViewHas('whatsappNumber', '670000000');
+    }
+
     public function test_required_fields_are_enforced(): void
     {
         $this->post(route('publicite.store'), [])
