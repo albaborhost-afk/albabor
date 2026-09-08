@@ -15,6 +15,12 @@ class ListingCatalog
         'Monaco' => '🇲🇨', 'Slovénie' => '🇸🇮', 'Pologne' => '🇵🇱',
     ];
 
+    public const COUNTRY_FLAG_IMAGES = [
+        'Algérie' => 'images/flags/countries/algeria.png',
+        'Espagne' => 'images/flags/countries/spain.png',
+        'France' => 'images/flags/countries/france.png',
+    ];
+
     public const EQUIPMENT = [
         'equipement' => [
             'Radeau de survie', 'Alarme de niveau d’eau', 'Gilets et bouée de sauvetage',

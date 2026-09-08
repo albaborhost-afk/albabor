@@ -485,7 +485,18 @@
         <section class="py-6 sm:py-8" style="background:#F0F4F8" aria-label="{{ $group['country'] }}">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center mb-4 gap-3">
-                    <div><h2 class="text-xl font-bold text-slate-800">{{ $group['flag'] }} {{ $group['country'] }}</h2><p class="text-xs text-slate-500 mt-1">{{ $group['count'] }} {{ __('annonces') }}</p></div>
+                    <div>
+                        <h2 class="flex items-center gap-2 text-xl font-bold text-slate-800">
+                            @php($flagImage = \App\Support\ListingCatalog::COUNTRY_FLAG_IMAGES[$group['country']] ?? null)
+                            @if($flagImage)
+                                <img src="{{ asset($flagImage) }}" alt="" width="28" height="28" class="h-7 w-7 shrink-0 object-contain">
+                            @else
+                                <span aria-hidden="true">{{ $group['flag'] }}</span>
+                            @endif
+                            <span>{{ $group['country'] }}</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">{{ $group['count'] }} {{ __('annonces') }}</p>
+                    </div>
                     <a href="{{ route('listings.index', ['pays' => $group['country']]) }}" class="text-sm font-semibold text-cyan-700">{{ __('Voir tout') }} →</a>
                 </div>
                 <div class="flex gap-4 overflow-x-auto snap-x pb-4">

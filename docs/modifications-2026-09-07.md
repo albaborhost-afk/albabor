@@ -41,3 +41,12 @@ Source : les 15 pages de « App Modification 7 SEP 2026.pdf ».
 - Les modifications natives Android et iOS sont dans leurs projets séparés et
   nécessitent leur propre publication, après la mise en service de cette API.
 - Aucun paiement réel ni envoi externe d'e-mail n'a été effectué pendant les tests.
+
+## Drapeaux fournis le 8 septembre 2026
+
+- L'accueil utilise les PNG fournis : `spain.png` pour l'Espagne,
+  `Algeria (3).png` pour l'Algérie et `france (3).png` pour la France.
+- Images originales conservées, affichées en 28 × 28 pixels à côté du pays.
+- Vérification visuelle sur ordinateur et à 390 pixels ; les trois images chargent.
+- Build Vite et 12 tests de régression (68 assertions) réussis. Les mêmes images
+  sont intégrées aux projets natifs locaux ; builds Android et iOS réussis.
