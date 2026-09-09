@@ -29,7 +29,7 @@ class VendorPanelProvider extends PanelProvider
         return $panel
             ->id('vendeur')
             ->path('vendeur')
-            ->login()
+            ->login(\App\Filament\Auth\Login::class)
             ->brandName('Albabor Pro')
             ->brandLogo(asset('vendor-panel/logo.svg'))
             ->brandLogoHeight('2rem')
