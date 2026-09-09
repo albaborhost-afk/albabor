@@ -501,7 +501,7 @@
                 </div>
                 <div class="flex gap-4 overflow-x-auto snap-x pb-4">
                     @foreach($group['listings'] as $listing)
-                        <div class="w-64 sm:w-72 flex-shrink-0 snap-start"><x-listing-card :listing="$listing" /></div>
+                        <div class="flex w-64 sm:w-72 flex-shrink-0 snap-start"><x-listing-card :listing="$listing" /></div>
                     @endforeach
                 </div>
             </div>

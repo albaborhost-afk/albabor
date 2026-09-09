@@ -27,22 +27,22 @@
         : '';
 @endphp
 
-<div class="listing-card group bg-white rounded-2xl overflow-hidden relative cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300 {{ $isFeatured ? 'listing-card--featured' : '' }}"
+<div class="listing-card group flex h-full w-full flex-col bg-white rounded-2xl overflow-hidden relative cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300 {{ $isFeatured ? 'listing-card--featured' : '' }}"
      style="{{ $cardInlineStyle }}"
      role="link"
      tabindex="0"
      onclick="if (!event.target.closest('form')) window.location.href='{{ route('listings.show', $listing) }}';"
      onkeydown="if ((event.key === 'Enter' || event.key === ' ') && !event.target.closest('form')) { event.preventDefault(); window.location.href='{{ route('listings.show', $listing) }}'; }">
 
-    <a href="{{ route('listings.show', $listing) }}" class="block">
+    <a href="{{ route('listings.show', $listing) }}" class="flex flex-1 flex-col">
 
         {{-- Image Section --}}
-        <div class="relative overflow-hidden" style="aspect-ratio: 4/3; background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);">
+        <div class="relative shrink-0 overflow-hidden" style="aspect-ratio: 4/3; background: linear-gradient(135deg, #E8EEF4 0%, #F0F4F8 100%);">
 
             @if($firstMedia)
                 <img src="{{ $firstMedia->url }}"
                      alt="{{ $listing->title }}"
-                     class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                      loading="lazy"
                      onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'">
                 <div class="absolute inset-0 flex-col items-center justify-center gap-2" style="display: none;">
@@ -104,39 +104,37 @@
         </div>
 
         {{-- Info Section --}}
-        <div class="bg-white px-3 pt-2.5 pb-3">
+        <div class="flex flex-1 flex-col bg-white px-3 pt-2.5 pb-3">
 
             {{-- Title --}}
             <h3 class="text-sm font-bold line-clamp-1 leading-snug mb-1.5 group-hover:text-[#2471A3] transition-colors duration-200" style="color: #1B2A4A;">
                 {{ $listing->title }}
             </h3>
 
-            {{-- Location --}}
-            @if($location)
-                <div class="flex items-center gap-1 mb-2">
+            {{-- Preserve the location row when it is missing to keep cards aligned. --}}
+            <div class="flex min-h-3 items-center gap-1 mb-2">
+                @if($location)
                     <svg class="w-3 h-3 flex-shrink-0" style="color: #6B7B8D;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
                     <span class="text-xs leading-none truncate" style="color: #6B7B8D;">{{ $location }}</span>
-                </div>
-            @endif
+                @endif
+            </div>
 
-            {{-- Chips: Année + CV --}}
-            @if($annee || $puissance)
-                <div class="flex flex-wrap gap-2">
-                    @if($annee)
-                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full" style="background: #F0F4F8; color: #1B2A4A;">
-                            {{ $annee }}
-                        </span>
-                    @endif
-                    @if($puissance)
-                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full" style="background: #F0F4F8; color: #1B2A4A;">
-                            {{ $puissance }} CV
-                        </span>
-                    @endif
-                </div>
-            @endif
+            {{-- Reserve one row for optional year/power chips, even when neither is supplied. --}}
+            <div class="mt-auto flex min-h-6 flex-wrap items-start gap-2">
+                @if($annee)
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full" style="background: #F0F4F8; color: #1B2A4A;">
+                        {{ $annee }}
+                    </span>
+                @endif
+                @if($puissance)
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full" style="background: #F0F4F8; color: #1B2A4A;">
+                        {{ $puissance }} CV
+                    </span>
+                @endif
+            </div>
 
         </div>
     </a>

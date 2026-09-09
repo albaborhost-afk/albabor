@@ -61,3 +61,14 @@ Source : les 15 pages de « App Modification 7 SEP 2026.pdf ».
 - Validation : `php artisan test --compact --filter='BannerRequestTest|PageRenderingSmokeTest'`
   (31 tests, 145 assertions), `npm run build`, puis contrôle visuel sur ordinateur
   et à 390 pixels et envoi d'une demande artificielle dans la base locale de test.
+
+## Alignement des cartes du 9 septembre 2026
+
+- Les cartes gardent la même hauteur lorsque l'année, la puissance ou le lieu
+  ne sont pas renseignés. Les lignes facultatives réservent leur place et les
+  cartes remplissent leur conteneur, dans les rangées par pays comme dans la grille.
+- Contrôle visuel et mesure des hauteurs à 1512, 1280 et 390 pixels, avec quatre
+  combinaisons année/puissance et un titre long sans lieu dans une base de test séparée.
+- Vérification : `npm run build` et
+  `php artisan test --compact --filter='PageRenderingSmokeTest|SeptemberModificationTest'`
+  (23 tests, 114 assertions) réussis. Aucun changement des données d'annonces.
