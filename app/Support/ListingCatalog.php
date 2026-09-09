@@ -76,6 +76,11 @@ class ListingCatalog
             }
         }
         foreach (array_keys(self::EQUIPMENT) as $group) {
+            // Older admin saves stored comma-separated strings. Read them as
+            // lists too, so opening and saving the new form retains those tags.
+            if (isset($specs['tags'][$group]) && is_string($specs['tags'][$group])) {
+                $specs['tags'][$group] = explode(',', $specs['tags'][$group]);
+            }
             if (isset($specs['tags'][$group]) && is_array($specs['tags'][$group])) {
                 $specs['tags'][$group] = array_values(array_unique(array_filter(array_map('trim', $specs['tags'][$group]))));
             }

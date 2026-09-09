@@ -27,7 +27,7 @@ wurde im Browser kontrolliert. Es wurden keine echten Konten oder Inserate bearb
 | Telefon-Landesvorwahl | Utilisateurs → Créer/Modifier → Informations personnelles | `Pays`, Flagge und Vorwahl sowie separates lokales Nummernfeld live vorhanden. |
 | Motor-Gesamtleistung | Annonces → Modifier → Specifications → Motorisation | `Puissance / moteur (CV)` und automatisch berechnete `Puissance totale (CV)` live vorhanden. |
 
-## Im Admin-Inseratsformular noch fehlend
+## Bei der ersten Prüfung noch fehlend
 
 | Punkt aus dem PDF | Befund in Annonces → Modifier → Specifications |
 | --- | --- |
@@ -57,3 +57,43 @@ angeforderte zusätzliche Korrektur.
 Die Live-Prüfung öffnete das vorhandene Inserat ANTARES 8.8 und die leere
 Benutzer-Erstellungsmaske. Es wurden ausschließlich Felder und Optionen angesehen;
 keine Speicher-, Erstellungs-, Freigabe- oder Löschaktion wurde ausgelöst.
+
+## Korrektur des Datenverlusts beim Admin-Speichern
+
+Nach der anschließenden Fehlermeldung wurde der tatsächliche Filament-Speicherablauf
+mit einer vollständigen künstlichen Anzeige reproduziert. Bereits eine reine
+Preisänderung entfernte `immatriculation_autre`, `type_helice`, `nombre_reservoirs`,
+`specs.tags.extras` und Angaben außerhalb des Formularschemas. Aus zwei Tanks und
+420 Litern Gesamtkapazität wurden dadurch ein angenommener Tank und 270 Liter.
+Die drei vorhandenen TagsInput-Felder wandelten außerdem Arrays in Kommatext um.
+
+Die Edit-Seite übernimmt jetzt nur eingereichte Felder in die bestehenden
+Spezifikationsgruppen. Nicht dargestellte und bedingt ausgeblendete Angaben bleiben
+erhalten. Einzelne Feldwerte werden vollständig ersetzt: leere Listen, gelöschte
+Felder, `0` und `false` werden als bewusste Änderungen gespeichert. Ausstattungslisten
+werden als Arrays gespeichert; ältere Kommatexte werden beim Einlesen normalisiert.
+
+Die folgenden zuvor fehlenden Adminfelder wurden ergänzt: Herstellervorschläge,
+Freitextregistrierung bei „Autre“, Antriebsart, Tankanzahl mit automatisch angezeigten
+Summen und alle vier Ausstattungsgruppen mit Vorschlägen und freier Eingabe.
+Die separate Kontaktvorbelegung beim Verkäuferwechsel gehört nicht zu dieser
+Speicherkorrektur und ist weiterhin offen.
+
+Prüfung:
+
+- Gesamte Laravel-Suite: **197 Tests, 801 Assertions erfolgreich**.
+- Neun neue Tests führen echtes Filament-/Livewire-Erstellen und -Speichern aus:
+  dreimaliges Wiederöffnen und Speichern, alle vier Kategorien, ausgeblendete Felder,
+  einzelne Tag-Entfernung und leere Listen, Null/0/false, alte Kommatexte, Validierungsfehler,
+  Anzeigen ohne optionale Daten, Händlerbearbeitung sowie öffentliche Website und API.
+- Browser mit separater SQLite-Datenbank und künstlichem Admin: Nur Preis geändert,
+  gespeichert und erneut geöffnet; alle ursprünglichen technischen Angaben erhalten.
+  Danach Tankanzahl von 2 auf 3 geändert und nur „Table cockpit“ entfernt: öffentliche
+  Anzeige zeigt 450 L Kraftstoff, 570 L Gesamtkapazität und die übrige Ausstattung.
+- Fotos und Kontaktdaten bleiben beim Ändern des Preises in den Regressionstests erhalten.
+- Pint für die neuen/kleinen PHP-Dateien und `git diff --check` erfolgreich.
+
+Die Korrektur verhindert weitere Verluste. Bereits zuvor aus der Datenbank gelöschte
+Werte werden dadurch nicht rekonstruiert; dafür sind die ursprünglichen Angaben oder
+ein passender Datenbankstand erforderlich. Echte Live-Anzeigen wurden nicht testweise
+gespeichert oder mit geschätzten Daten ergänzt.

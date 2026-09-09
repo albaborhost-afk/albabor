@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ListingResource\Pages;
 use App\Models\Listing;
+use App\Support\ListingCatalog;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -205,7 +206,8 @@ class ListingResource extends Resource
                                         Forms\Components\TextInput::make('specs.general.modele')
                                             ->label('Modele'),
                                         Forms\Components\TextInput::make('specs.general.fabricant')
-                                            ->label('Fabricant'),
+                                            ->label('Fabricant')
+                                            ->datalist(ListingCatalog::BRANDS),
                                         Forms\Components\TextInput::make('specs.general.annee_construction')
                                             ->label('Annee de construction')
                                             ->numeric()
@@ -219,7 +221,11 @@ class ListingResource extends Resource
                                                 ])
                                                 ->all())
                                             ->placeholder('Selectionner...')
-                                            ->native(false),
+                                            ->native(false)
+                                            ->live(),
+                                        Forms\Components\TextInput::make('specs.general.immatriculation_autre')
+                                            ->label(__('Autre immatriculation'))
+                                            ->visible(fn (Forms\Get $get) => $get('specs.general.immatriculation') === 'Autre'),
                                     ]),
 
                                 // Dimensions (boat/jetski)
@@ -277,6 +283,9 @@ class ListingResource extends Resource
                                             ->options(array_combine(Listing::CARBURANT_OPTIONS, Listing::CARBURANT_OPTIONS))
                                             ->placeholder('Selectionner...')
                                             ->native(false),
+                                        Forms\Components\TextInput::make('specs.motorisation.type_helice')
+                                            ->label(__('Type d’entraînement'))
+                                            ->datalist(ListingCatalog::DRIVE_TYPES),
                                         Forms\Components\TextInput::make('specs.motorisation.nombre_moteurs')
                                             ->label('Nombre de moteurs')
                                             ->numeric()
@@ -317,15 +326,39 @@ class ListingResource extends Resource
                                     ->visible(fn ($get) => $get('category') === 'boat')
                                     ->columns(3)
                                     ->schema([
+                                        Forms\Components\TextInput::make('specs.reservoirs.nombre_reservoirs')
+                                            ->label(__('Nombre de réservoirs carburant'))
+                                            ->integer()
+                                            ->minValue(1)
+                                            ->default(1)
+                                            ->live(onBlur: true),
                                         Forms\Components\TextInput::make('specs.reservoirs.reservoir_carburant')
-                                            ->label('Reservoir carburant (L)')
-                                            ->numeric(),
+                                            ->label(__('Carburant par réservoir (L)'))
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->live(onBlur: true),
                                         Forms\Components\TextInput::make('specs.reservoirs.reservoir_eau_douce')
                                             ->label('Eau douce (L)')
-                                            ->numeric(),
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->live(onBlur: true),
                                         Forms\Components\TextInput::make('specs.reservoirs.stockage')
                                             ->label('Stockage (L)')
-                                            ->numeric(),
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->live(onBlur: true),
+                                        Forms\Components\Placeholder::make('total_carburant')
+                                            ->label(__('Carburant total'))
+                                            ->content(fn (Forms\Get $get) => number_format(
+                                                ListingCatalog::normalizeSpecs(['reservoirs' => $get('specs.reservoirs') ?? []])['reservoirs']['total_carburant'],
+                                                0, ',', ' '
+                                            ).' L'),
+                                        Forms\Components\Placeholder::make('capacite_totale')
+                                            ->label(__('Capacité totale'))
+                                            ->content(fn (Forms\Get $get) => number_format(
+                                                ListingCatalog::normalizeSpecs(['reservoirs' => $get('specs.reservoirs') ?? []])['reservoirs']['capacite_totale'],
+                                                0, ',', ' '
+                                            ).' L'),
                                     ]),
 
                                 // Amenagements (boat only)
@@ -358,15 +391,19 @@ class ListingResource extends Resource
                                         Forms\Components\TagsInput::make('specs.tags.equipement')
                                             ->label('Equipement')
                                             ->placeholder('Ajouter un equipement...')
-                                            ->separator(','),
+                                            ->suggestions(ListingCatalog::EQUIPMENT['equipement']),
                                         Forms\Components\TagsInput::make('specs.tags.options')
                                             ->label('Options')
                                             ->placeholder('Ajouter une option...')
-                                            ->separator(','),
+                                            ->suggestions(ListingCatalog::EQUIPMENT['options']),
                                         Forms\Components\TagsInput::make('specs.tags.electronique')
                                             ->label('Electronique')
                                             ->placeholder('Ajouter un equipement electronique...')
-                                            ->separator(','),
+                                            ->suggestions(ListingCatalog::EQUIPMENT['electronique']),
+                                        Forms\Components\TagsInput::make('specs.tags.extras')
+                                            ->label(__(ListingCatalog::EQUIPMENT_LABELS['extras']))
+                                            ->placeholder(__('Ajouter une option...'))
+                                            ->suggestions(ListingCatalog::EQUIPMENT['extras']),
                                     ]),
 
                                 // Extras (boat/jetski)
