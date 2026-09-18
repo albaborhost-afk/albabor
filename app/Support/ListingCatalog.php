@@ -55,6 +55,64 @@ class ListingCatalog
         'electronique' => 'Équipements électroniques', 'extras' => 'Options / Équipements en plus',
     ];
 
+    /**
+     * Every spec leaf the website, the API and the apps may store, by section.
+     *
+     * Each leaf needs its own validation rule: Laravel drops unvalidated keys
+     * from validated() when a rule with `array` also has nested rules, so a
+     * field missing here is silently discarded on save.
+     */
+    public const SPEC_FIELDS = [
+        'general' => [
+            'modele', 'fabricant', 'annee_construction', 'immatriculation',
+            'immatriculation_autre', 'nombre_places', 'part_number', 'part_type',
+            'compatible_with',
+        ],
+        'dimensions' => [
+            'longueur', 'largeur', 'tirant_eau', 'tirant_air', 'tonnage',
+            'tonnage_t', 'tonnage_unit',
+        ],
+        'motorisation' => [
+            'marque_moteur', 'propulsion', 'type_carburant', 'type_helice',
+            'nombre_moteurs', 'puissance_par_moteur', 'puissance_totale',
+            'nombre_heures', 'cylindree', 'nombre_cylindres', 'refroidissement',
+        ],
+        'reservoirs' => [
+            'nombre_reservoirs', 'reservoir_carburant', 'reservoir_eau_douce', 'stockage',
+        ],
+        'amenagements' => [
+            'nombre_cabines', 'nombre_couchettes', 'nombre_cuisine', 'nombre_sanitaire',
+        ],
+        'extras' => [
+            'remorque', 'marque_remorque', 'place_au_port', 'adresse_port',
+            'longueur_place', 'largeur_place', 'annexe',
+        ],
+    ];
+
+    /**
+     * Validation rules covering the whole specs payload.
+     *
+     * The leaves stay untyped on purpose: the website posts strings while the
+     * apps post JSON numbers and booleans, and a type rule would reject one of
+     * them. normalizeSpecs() trims and drops blanks instead.
+     */
+    public static function specRules(): array
+    {
+        $rules = [
+            'specs' => 'nullable|array',
+            'specs.tags.*' => 'nullable|array',
+            'specs.tags.*.*' => 'string|max:150',
+        ];
+
+        foreach (self::SPEC_FIELDS as $section => $fields) {
+            foreach ($fields as $field) {
+                $rules["specs.{$section}.{$field}"] = 'nullable';
+            }
+        }
+
+        return $rules;
+    }
+
     public static function normalizeSpecs(?array $specs): ?array
     {
         if ($specs === null) {
@@ -65,9 +123,13 @@ class ListingCatalog
         if (isset($specs['reservoirs']) && is_array($specs['reservoirs'])) {
             $tanks = &$specs['reservoirs'];
             $count = max(1, (int) ($tanks['nombre_reservoirs'] ?? 1));
-            $tanks['total_carburant'] = $count * $number($tanks['reservoir_carburant'] ?? 0);
-            $tanks['capacite_totale'] = $tanks['total_carburant']
-                + $number($tanks['reservoir_eau_douce'] ?? 0) + $number($tanks['stockage'] ?? 0);
+            $total = $count * $number($tanks['reservoir_carburant'] ?? 0);
+            $capacity = $total + $number($tanks['reservoir_eau_douce'] ?? 0) + $number($tanks['stockage'] ?? 0);
+            // Only keep the computed totals when the seller entered something.
+            // Writing zeros made the detail page render an empty Reservoirs card.
+            $tanks['total_carburant'] = $total > 0 ? $total : null;
+            $tanks['capacite_totale'] = $capacity > 0 ? $capacity : null;
+            unset($tanks);
         }
         if (isset($specs['motorisation']) && is_array($specs['motorisation'])) {
             $motor = &$specs['motorisation'];
@@ -83,6 +145,28 @@ class ListingCatalog
             }
             if (isset($specs['tags'][$group]) && is_array($specs['tags'][$group])) {
                 $specs['tags'][$group] = array_values(array_unique(array_filter(array_map('trim', $specs['tags'][$group]))));
+            }
+        }
+
+        // Drop blank leaves so a section is only considered present when it has
+        // something to show, and keep stored strings tidy.
+        foreach ($specs as $section => $fields) {
+            if ($section === 'tags' || !is_array($fields)) {
+                continue;
+            }
+            foreach ($fields as $key => $value) {
+                // No truncation here: this also runs on retrieved(), so
+                // shortening a stored value would quietly persist the cut.
+                if (is_string($value)) {
+                    $value = trim($value);
+                    $specs[$section][$key] = $value;
+                }
+                if ($value === null || $value === '' || $value === []) {
+                    unset($specs[$section][$key]);
+                }
+            }
+            if ($specs[$section] === []) {
+                unset($specs[$section]);
             }
         }
 

@@ -350,13 +350,13 @@ class ListingResource extends Resource
                                         Forms\Components\Placeholder::make('total_carburant')
                                             ->label(__('Carburant total'))
                                             ->content(fn (Forms\Get $get) => number_format(
-                                                ListingCatalog::normalizeSpecs(['reservoirs' => $get('specs.reservoirs') ?? []])['reservoirs']['total_carburant'],
+                                                data_get(ListingCatalog::normalizeSpecs(['reservoirs' => $get('specs.reservoirs') ?? []]), 'reservoirs.total_carburant', 0),
                                                 0, ',', ' '
                                             ).' L'),
                                         Forms\Components\Placeholder::make('capacite_totale')
                                             ->label(__('Capacité totale'))
                                             ->content(fn (Forms\Get $get) => number_format(
-                                                ListingCatalog::normalizeSpecs(['reservoirs' => $get('specs.reservoirs') ?? []])['reservoirs']['capacite_totale'],
+                                                data_get(ListingCatalog::normalizeSpecs(['reservoirs' => $get('specs.reservoirs') ?? []]), 'reservoirs.capacite_totale', 0),
                                                 0, ',', ' '
                                             ).' L'),
                                     ]),

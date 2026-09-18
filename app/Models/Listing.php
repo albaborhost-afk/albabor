@@ -533,8 +533,9 @@ class Listing extends Model
 
     public function hasSpecSection(string $section): bool
     {
-        $data = $this->getSpecSection($section);
-        return !empty(array_filter($data, fn($v) => $v !== null && $v !== '' && $v !== []));
+        // Mirror the truthiness the detail page uses per field, so a section
+        // never renders its header with no visible value underneath.
+        return !empty(array_filter($this->getSpecSection($section)));
     }
 
     public function scopeByEtat($query, $etat)
