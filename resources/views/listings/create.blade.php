@@ -1034,7 +1034,7 @@
                     <div class="px-5 py-5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {{-- WhatsApp --}}
-                            <div data-old-phone="{{ old('numero_whatsapp', auth()->user()->phone) }}" x-data="{
+                            <div data-old-phone="{{ old('numero_whatsapp') }}" x-data="{
                                 open: false, search: '', phoneNumber: '',
                                 countries: [
                                     { name: 'Algerie', code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
@@ -1110,7 +1110,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <input type="tel" x-model="phoneNumber" @input="handlePhoneInput()" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" placeholder="676085441" style="min-width: 0;">
+                                    <input type="tel" x-model="phoneNumber" @input="handlePhoneInput()" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" style="min-width: 0;">
                                 </div>
                             </div>
 
@@ -1189,7 +1189,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <input type="tel" x-model="phoneNumber" @input="handlePhoneInput()" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" placeholder="676085441" style="min-width: 0;">
+                                    <input type="tel" x-model="phoneNumber" @input="handlePhoneInput()" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" style="min-width: 0;">
                                 </div>
                             </div>
                         </div>

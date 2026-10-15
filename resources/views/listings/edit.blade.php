@@ -1120,7 +1120,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <input type="tel" x-model="phoneNumber" @input="handlePhoneInput()" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" placeholder="676085441" style="min-width: 0;">
+                                    <input type="tel" x-model="phoneNumber" @input="handlePhoneInput()" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" style="min-width: 0;">
                                 </div>
                             </div>
 
@@ -1199,7 +1199,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <input type="tel" x-model="phoneNumber" @input="handlePhoneInput()" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" placeholder="676085441" style="min-width: 0;">
+                                    <input type="tel" x-model="phoneNumber" @input="handlePhoneInput()" class="glass-input flex-1 rounded-xl px-4 py-3 text-sm" style="min-width: 0;">
                                 </div>
                             </div>
                         </div>
