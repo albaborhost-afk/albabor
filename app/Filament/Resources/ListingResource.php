@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ListingResource\Pages;
 use App\Models\Listing;
+use App\Models\User;
 use App\Support\ListingCatalog;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -109,6 +110,8 @@ class ListingResource extends Resource
                                                     ->searchable()
                                                     ->preload()
                                                     ->required()
+                                                    ->live()
+                                                    ->afterStateUpdated(fn (Forms\Set $set, $state) => $set('hide_name', User::find($state)?->hasPrivateProfile() ?? false))
                                                     ->createOptionForm([
                                                         Forms\Components\TextInput::make('name')
                                                             ->label('Nom')
@@ -556,6 +559,12 @@ class ListingResource extends Resource
                                                     ->label('Mediation activee')
                                                     ->helperText('Si active, le numero du vendeur sera masque')
                                                     ->inline(false),
+                                                Forms\Components\Toggle::make('hide_name')
+                                                    ->label('Profil privé du vendeur')
+                                                    ->helperText('Sur toutes les annonces de ce vendeur, son nom est remplacé par « Privé », sa photo et ses coordonnées sont masquées. Les acheteurs le contactent uniquement par la messagerie AlBabor.')
+                                                    ->hiddenOn('create')
+                                                    ->inline(false)
+                                                    ->onColor('warning'),
                                             ]),
 
                                         Forms\Components\Section::make('Dates de publication')

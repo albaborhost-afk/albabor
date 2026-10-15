@@ -85,14 +85,15 @@ class SitemapController extends Controller
                 }
             });
 
-        // Boutiques professionnelles actives.
+        // Boutiques professionnelles actives dont le propriétaire est public.
         VendorProfile::query()
             ->where('is_active', true)
-            ->select(['id', 'updated_at'])
+            ->whereHas('user', fn ($query) => $query->where('hide_name', false))
+            ->select(['id', 'slug', 'updated_at'])
             ->chunk(200, function ($boutiques) use (&$urls) {
                 foreach ($boutiques as $boutique) {
                     $urls[] = [
-                        'loc'      => route('boutiques.show', $boutique->id),
+                        'loc'      => route('boutiques.show', $boutique),
                         'lastmod'  => $boutique->updated_at?->toAtomString(),
                         'priority' => '0.5',
                         'freq'     => 'weekly',

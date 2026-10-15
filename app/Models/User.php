@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -72,6 +73,15 @@ class User extends Authenticatable implements FilamentUser
     protected $appends = [
         'profile_picture_url',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(function (self $user): void {
+            if ($user->wasChanged('hide_name')) {
+                Cache::forget('sitemap.xml');
+            }
+        });
+    }
 
     protected function casts(): array
     {

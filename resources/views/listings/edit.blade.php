@@ -1227,12 +1227,12 @@
                         </div>
 
 
-                        @if(auth()->id() === $listing->user_id)
+                        @if(auth()->id() === $listing->user_id || auth()->user()->isAdmin())
                         {{-- Publier anonymement = profil privé du compte (users.hide_name),
                              valable pour toutes les annonces. Le champ caché est toujours
                              posté, le bouton ne fait que le basculer. --}}
                         <div class="mt-5 pt-5" style="border-top: 1px solid #E0E6ED;">
-                            <input type="hidden" name="hide_name" :value="hideName ? 1 : 0" value="{{ old('hide_name', auth()->user()->hide_name) ? 1 : 0 }}">
+                            <input type="hidden" name="hide_name" :value="hideName ? 1 : 0" value="{{ old('hide_name', $listing->user?->hide_name) ? 1 : 0 }}">
                             <div class="flex items-start justify-between gap-4">
                                 <div class="min-w-0">
                                     <p class="text-sm font-medium flex items-center gap-2" style="color: #1B2A4A;">
@@ -1419,7 +1419,7 @@
                 hasRemorque: '{{ old('specs.extras.remorque', data_get($listing->specs, 'extras.remorque', '')) }}',
                 hasPort: '{{ old('specs.extras.place_au_port', data_get($listing->specs, 'extras.place_au_port', '')) }}',
                 mediationEnabled: {{ old('mediation_enabled', $listing->mediation_enabled) ? 'true' : 'false' }},
-                hideName: {{ old('hide_name', auth()->user()->hide_name) ? 'true' : 'false' }},
+                hideName: {{ old('hide_name', $listing->user?->hide_name) ? 'true' : 'false' }},
                 canPublishEngineOrParts: {{ ($canPublishEngineOrParts ?? false) ? 'true' : 'false' }},
                 existingMediaCount: {{ $listing->media->count() }},
                 stepErrors: [],

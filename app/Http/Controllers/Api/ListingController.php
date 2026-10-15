@@ -458,8 +458,8 @@ class ListingController extends Controller
             'mediation_enabled' => $validated['mediation_enabled'] ?? false,
         ] + (\Schema::hasColumn('listings', 'video_url') ? ['video_url' => $request->video_url] : []));
 
-        if ($request->has('hide_name') && $user->id === $listing->user_id) {
-            $user->forceFill(['hide_name' => $request->boolean('hide_name')])->save();
+        if ($request->has('hide_name') && ($user->id === $listing->user_id || $user->isAdmin())) {
+            $listing->user?->forceFill(['hide_name' => $request->boolean('hide_name')])->save();
             $listing->unsetRelation('user');
         }
 

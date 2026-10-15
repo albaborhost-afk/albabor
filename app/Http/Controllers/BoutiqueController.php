@@ -13,6 +13,7 @@ class BoutiqueController extends Controller
     public function index()
     {
         $boutiques = VendorProfile::where('is_active', true)
+            ->whereHas('user', fn ($query) => $query->where('hide_name', false))
             ->with('user')
             ->withCount(['listings' => fn ($q) => $q->where('status', 'active')])
             ->orderBy('shop_name')
@@ -25,6 +26,11 @@ class BoutiqueController extends Controller
     public function show(VendorProfile $vendorProfile)
     {
         abort_unless($vendorProfile->is_active, 404);
+
+        // Une vitrine regroupe les annonces et les coordonnées du vendeur :
+        // elle suit la même confidentialité que son profil public.
+        $vendorProfile->loadMissing('user');
+        abort_if(! $vendorProfile->user || $vendorProfile->user->identityMasked(), 404);
 
         $listings = $vendorProfile->listings()
             ->where('status', 'active')

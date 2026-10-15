@@ -430,17 +430,113 @@ class PrivateSellerProfileTest extends TestCase
         $this->assertFalse($seller->fresh()->hasPrivateProfile());
     }
 
-    public function test_an_admin_editing_the_listing_does_not_flip_any_profile(): void
+    public function test_an_admin_editing_the_listing_changes_only_the_sellers_privacy(): void
     {
         $seller  = $this->seller(false);
         $listing = $this->listing($seller);
+        $otherListing = $this->listing($seller);
         $admin   = User::factory()->create(['account_type' => 'admin']);
+        $unrelated = User::factory()->create(['hide_name' => false]);
 
         $this->actingAs($admin)
             ->put(route('listings.update', $listing), $this->listingForm($listing, ['hide_name' => 1]))
             ->assertSessionHasNoErrors();
 
         $this->assertFalse($admin->fresh()->hasPrivateProfile());
+        $this->assertFalse($unrelated->fresh()->hasPrivateProfile());
+        $this->assertTrue($seller->fresh()->hasPrivateProfile());
+        $this->assertTrue($otherListing->fresh()->contactHiddenFor(null));
+
+        $this->actingAs(User::factory()->create())
+            ->getJson('/api/v1/listings/'.$otherListing->id)->assertOk()
+            ->assertJsonPath('listing.user.name', User::ANONYMOUS_NAME)
+            ->assertJsonMissingPath('listing.numero_mobile')
+            ->assertJsonMissingPath('listing.numero_whatsapp')
+            ->assertJsonMissingPath('listing.contact_email');
+
+        $this->actingAs($admin)
+            ->put(route('listings.update', $listing), $this->listingForm($listing, ['hide_name' => 0]))
+            ->assertSessionHasNoErrors();
+
+        $this->assertFalse($seller->fresh()->hasPrivateProfile());
+        $this->assertFalse($admin->fresh()->hasPrivateProfile());
+    }
+
+    public function test_an_admin_sees_the_sellers_privacy_setting_in_the_listing_form(): void
+    {
+        $this->withoutVite();
+        $seller = $this->seller();
+        $listing = $this->listing($seller);
+        $admin = User::factory()->create(['account_type' => 'admin', 'hide_name' => false]);
+
+        $response = $this->actingAs($admin)->get(route('listings.edit', $listing))->assertOk()
+            ->assertSeeText('Publier anonymement');
+
+        $document = new \DOMDocument;
+        @$document->loadHTML($response->getContent());
+        $field = (new \DOMXPath($document))->query('//input[@name="hide_name"]')->item(0);
+        $this->assertNotNull($field);
+        $this->assertSame('1', $field->getAttribute('value'));
+        $response->assertSee('hideName: true', false);
+    }
+
+    public function test_admin_edits_without_the_privacy_field_preserve_the_sellers_setting(): void
+    {
+        $seller = $this->seller();
+        $listing = $this->listing($seller);
+        $admin = User::factory()->create(['account_type' => 'admin']);
+
+        $this->actingAs($admin)
+            ->put(route('listings.update', $listing), $this->listingForm($listing))
+            ->assertSessionHasNoErrors();
+        $this->assertTrue($seller->fresh()->hasPrivateProfile());
+
+        $this->actingAs($admin, 'sanctum')
+            ->putJson('/api/v1/listings/'.$listing->id, $this->listingForm($listing))->assertOk();
+        $this->assertTrue($seller->fresh()->hasPrivateProfile());
+        $this->assertFalse($admin->fresh()->hasPrivateProfile());
+    }
+
+    public function test_the_admin_can_change_seller_privacy_through_the_listing_api(): void
+    {
+        $seller = $this->seller(false);
+        $listing = $this->listing($seller);
+        $admin = User::factory()->create(['account_type' => 'admin']);
+
+        foreach ([true, false] as $private) {
+            $this->actingAs($admin, 'sanctum')
+                ->putJson('/api/v1/listings/'.$listing->id, $this->listingForm($listing, ['hide_name' => $private]))
+                ->assertOk()
+                ->assertJsonPath('listing.user.hide_name', $private);
+
+            $this->assertSame($private, $seller->fresh()->hasPrivateProfile());
+            $this->assertFalse($admin->fresh()->hasPrivateProfile());
+        }
+    }
+
+    public function test_another_user_cannot_change_the_sellers_privacy(): void
+    {
+        $seller = $this->seller(false);
+        $listing = $this->listing($seller);
+        $buyer = User::factory()->create();
+        $payload = $this->listingForm($listing, ['hide_name' => true]);
+
+        $this->actingAs($buyer)->put(route('listings.update', $listing), $payload)->assertForbidden();
+        $this->actingAs($buyer, 'sanctum')->putJson('/api/v1/listings/'.$listing->id, $payload)->assertForbidden();
+
+        $this->assertFalse($seller->fresh()->hasPrivateProfile());
+    }
+
+    public function test_invalid_listing_edits_do_not_change_seller_privacy(): void
+    {
+        $seller = $this->seller(false);
+        $listing = $this->listing($seller);
+        $admin = User::factory()->create(['account_type' => 'admin']);
+        $payload = $this->listingForm($listing, ['hide_name' => true, 'title' => '']);
+
+        $this->actingAs($admin)->put(route('listings.update', $listing), $payload)->assertSessionHasErrors('title');
+        $this->actingAs($admin, 'sanctum')->putJson('/api/v1/listings/'.$listing->id, $payload)->assertUnprocessable();
+
         $this->assertFalse($seller->fresh()->hasPrivateProfile());
     }
 }

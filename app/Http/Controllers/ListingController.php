@@ -57,21 +57,23 @@ class ListingController extends Controller
     /**
      * « Publier anonymement » sur le formulaire d'annonce = le profil privé du
      * compte (users.hide_name) : un seul réglage, valable pour toutes les
-     * annonces, aussi modifiable depuis le profil. Seul le propriétaire le
-     * touche — un administrateur qui corrige une annonce ne doit pas basculer
-     * son propre compte.
+     * annonces, aussi modifiable depuis le profil. Le propriétaire ou un
+     * administrateur peuvent le changer, toujours sur le compte du vendeur.
      */
     private function syncAnonymousPublishing(Request $request, User $user, Listing $listing): void
     {
-        if (! $request->has('hide_name') || $user->id !== $listing->user_id) {
+        if (! $request->has('hide_name') || ($user->id !== $listing->user_id && ! $user->isAdmin())) {
             return;
         }
 
         $wanted = $request->boolean('hide_name');
+        $seller = $listing->user;
 
-        if ($user->hasPrivateProfile() !== $wanted) {
-            $user->forceFill(['hide_name' => $wanted])->save();
+        if ($seller && $seller->hasPrivateProfile() !== $wanted) {
+            $seller->forceFill(['hide_name' => $wanted])->save();
         }
+
+        $listing->unsetRelation('user');
     }
 
     public function show(Listing $listing)
