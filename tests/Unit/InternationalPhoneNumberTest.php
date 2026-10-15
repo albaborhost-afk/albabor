@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Rules\InternationalPhoneNumber;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class InternationalPhoneNumberTest extends TestCase
 {

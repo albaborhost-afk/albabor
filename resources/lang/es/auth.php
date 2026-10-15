@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'failed' => 'Estas credenciales no coinciden con nuestros registros.',
+    'password' => 'La contraseña introducida es incorrecta.',
+    'throttle' => 'Demasiados intentos de inicio de sesión. Vuelve a intentarlo en :seconds segundos.',
+    'login' => 'Iniciar sesión',
+    'register' => 'Registrarse',
+    'logout' => 'Cerrar sesión',
+    'email' => 'Correo electrónico',
+    'password_label' => 'Contraseña',
+    'confirm_password' => 'Confirmar contraseña',
+    'remember_me' => 'Recordarme',
+    'forgot_password' => '¿Has olvidado tu contraseña?',
+    'reset_password' => 'Restablecer contraseña',
+    'send_reset_link' => 'Enviar enlace para restablecer la contraseña',
+    'name' => 'Nombre completo',
+    'phone' => 'Número de teléfono',
+    'already_registered' => '¿Ya tienes una cuenta?',
+    'not_registered' => '¿Aún no tienes una cuenta?',
+    'create_account' => 'Crear una cuenta',
+    'welcome_back' => 'Te damos la bienvenida',
+    'sign_in_to_continue' => 'Inicia sesión para continuar',
+    'register_to_continue' => 'Regístrate para empezar',
+];

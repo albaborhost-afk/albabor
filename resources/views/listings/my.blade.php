@@ -47,7 +47,7 @@
             @if(session('listing_created'))
                 {{-- ★ Confirmation card après création / paiement ★ --}}
                 @php
-                    $waMsg = urlencode("Bonjour AlBabor 👋\nJ'ai une question concernant mon annonce. Pouvez-vous m'aider ? 🙏");
+                    $waMsg = urlencode(__('Bonjour AlBabor 👋') . "\n" . __("J'ai une question concernant mon annonce. Pouvez-vous m'aider ? 🙏"));
                 @endphp
                 <div class="mb-6 rounded-2xl overflow-hidden" style="box-shadow: 0 12px 35px rgba(27,79,114,0.15); border: 1px solid rgba(27,79,114,0.1);">
 
@@ -415,9 +415,9 @@
                                                         </button>
                                                     </form>
                                                 @else
-                                                    <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold cursor-not-allowed opacity-60" style="background: rgba(155,168,183,0.08); color: #9BA8B7;" title="{{ __('Renouvellement dans') }} {{ $listing->daysUntilRenewal() }}j">
+                                                    <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold cursor-not-allowed opacity-60" style="background: rgba(155,168,183,0.08); color: #9BA8B7;" title="{{ __('Renouvellement dans :days jours', ['days' => $listing->daysUntilRenewal()]) }}">
                                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                        {{ $listing->daysUntilRenewal() }}j
+                                                        {{ $listing->daysUntilRenewal() }}{{ __('j') }}
                                                     </span>
                                                 @endif
 
@@ -455,7 +455,7 @@
                                                 </a>
                                             @endif
 
-                                            <form action="{{ route('listings.destroy', $listing) }}" method="POST" class="inline" onsubmit="return confirm('{{ addslashes(__('Etes-vous sur de vouloir supprimer cette annonce ?')) }}')">
+                                            <form action="{{ route('listings.destroy', $listing) }}" method="POST" class="inline" onsubmit="return confirm(@js(__('Etes-vous sur de vouloir supprimer cette annonce ?')))">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105" style="background: rgba(231, 76, 60, 0.1); color: #E74C3C;">
@@ -620,7 +620,7 @@
                                             <span class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold opacity-50 cursor-not-allowed"
                                                   style="background: rgba(155,168,183,0.08); color: #9BA8B7; border: 1.5px solid rgba(155,168,183,0.15);">
                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                {{ $listing->daysUntilRenewal() }}j
+                                                {{ $listing->daysUntilRenewal() }}{{ __('j') }}
                                             </span>
                                         @endif
                                     @endif
@@ -651,7 +651,7 @@
 
                                     {{-- Supprimer --}}
                                     <form action="{{ route('listings.destroy', $listing) }}" method="POST" class="inline ml-auto"
-                                          onsubmit="return confirm('{{ addslashes(__('Supprimer cette annonce definitivement ?')) }}')">
+                                          onsubmit="return confirm(@js(__('Supprimer cette annonce definitivement ?')))">
                                         @csrf @method('DELETE')
                                         <button type="submit"
                                                 class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"

@@ -66,10 +66,10 @@ class Payment extends Model
     public function getTypeLabelAttribute(): string
     {
         return match($this->type) {
-            'publish_listing' => 'Publication d\'annonce',
-            'featured_listing' => 'Mise en avant',
-            'vendor_subscription' => 'Abonnement vendeur',
-            'mediation_fee' => 'Frais de médiation',
+            'publish_listing' => __('Publication d\'annonce'),
+            'featured_listing' => __('Mise en avant'),
+            'vendor_subscription' => __('Abonnement vendeur'),
+            'mediation_fee' => __('Frais de médiation'),
             default => $this->type,
         };
     }
@@ -95,13 +95,13 @@ class Payment extends Model
     public static function methodLabels(): array
     {
         return [
-            'stripe'        => 'Paiement en ligne (Stripe)',
-            'card'          => 'Carte bancaire',
-            'baridimob'     => 'BaridiMob',
-            'ccp'           => 'CCP',
-            'bank_transfer' => 'BEA – Virement bancaire',
-            'paypal'        => 'PayPal',
-            'redotpay'      => 'RedotPay – SEPA',
+            'stripe'        => __('Paiement en ligne (Stripe)'),
+            'card'          => __('Carte bancaire'),
+            'baridimob'     => __('BaridiMob'),
+            'ccp'           => __('CCP'),
+            'bank_transfer' => __('BEA – Virement bancaire'),
+            'paypal'        => __('PayPal'),
+            'redotpay'      => __('RedotPay – SEPA'),
         ];
     }
 
@@ -132,9 +132,9 @@ class Payment extends Model
     public function getStatusLabelAttribute(): string
     {
         return match($this->status) {
-            'pending' => 'En attente',
-            'approved' => 'Approuvé',
-            'rejected' => 'Refusé',
+            'pending' => __('En attente'),
+            'approved' => __('Approuvé'),
+            'rejected' => __('Refusé'),
             default => $this->status,
         };
     }

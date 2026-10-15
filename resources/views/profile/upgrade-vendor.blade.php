@@ -3,9 +3,9 @@
         <div class="max-w-6xl mx-auto">
             <!-- Header -->
             <div class="text-center mb-8">
-                <h1 class="text-3xl sm:text-4xl font-bold mb-3" style="color: #1B2A4A;">Devenir Vendeur</h1>
-                <p class="text-lg mb-6" style="color: #6B7B8D;">Passez au niveau superieur</p>
-                <p class="text-base max-w-2xl mx-auto" style="color: #6B7B8D;">Devenez vendeur professionnel sur Albabor et accedez a des fonctionnalites exclusives pour developper votre activite.</p>
+                <h1 class="text-3xl sm:text-4xl font-bold mb-3" style="color: #1B2A4A;">{{ __('Devenir Vendeur') }}</h1>
+                <p class="text-lg mb-6" style="color: #6B7B8D;">{{ __('Passez au niveau superieur') }}</p>
+                <p class="text-base max-w-2xl mx-auto" style="color: #6B7B8D;">{{ __('Devenez vendeur professionnel sur Albabor et accedez a des fonctionnalites exclusives pour developper votre activite.') }}</p>
             </div>
 
             <!-- Account Transition -->
@@ -17,8 +17,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </div>
-                        <p class="text-sm" style="color: #9BA8B7;">Votre compte actuel</p>
-                        <p class="font-bold" style="color: #1B2A4A;">Utilisateur</p>
+                        <p class="text-sm" style="color: #9BA8B7;">{{ __('Votre compte actuel') }}</p>
+                        <p class="font-bold" style="color: #1B2A4A;">{{ __('Utilisateur') }}</p>
                     </div>
                     <svg class="w-8 h-8 flex-shrink-0" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -29,15 +29,15 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                             </svg>
                         </div>
-                        <p class="text-sm" style="color: #9BA8B7;">Objectif</p>
-                        <p class="font-bold" style="color: #17A2B8;">Vendeur</p>
+                        <p class="text-sm" style="color: #9BA8B7;">{{ __('Objectif') }}</p>
+                        <p class="font-bold" style="color: #17A2B8;">{{ __('Vendeur') }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Advantages -->
             <div class="mb-8">
-                <h2 class="text-xl font-bold mb-4 text-center" style="color: #9BA8B7;">AVANTAGES VENDEUR</h2>
+                <h2 class="text-xl font-bold mb-4 text-center" style="color: #9BA8B7;">{{ __('AVANTAGES VENDEUR') }}</h2>
                 <div class="bg-white rounded-2xl p-6 mb-6" style="box-shadow: 0 8px 24px rgba(0,0,0,0.06);">
 
                     <!-- Benefits List -->
@@ -49,8 +49,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="font-bold text-base mb-1" style="color: #1B2A4A;">Vendre moteurs et pieces</h3>
-                                <p class="text-sm" style="color: #6B7B8D;">Publiez des annonces pour moteurs et pieces detachees</p>
+                                <h3 class="font-bold text-base mb-1" style="color: #1B2A4A;">{{ __('Vendre moteurs et pieces') }}</h3>
+                                <p class="text-sm" style="color: #6B7B8D;">{{ __('Publiez des annonces pour moteurs et pieces detachees') }}</p>
                             </div>
                         </div>
 
@@ -61,8 +61,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="font-bold text-base mb-1" style="color: #1B2A4A;">Badge vendeur</h3>
-                                <p class="text-sm" style="color: #6B7B8D;">Affichez votre statut professionnel</p>
+                                <h3 class="font-bold text-base mb-1" style="color: #1B2A4A;">{{ __('Badge vendeur') }}</h3>
+                                <p class="text-sm" style="color: #6B7B8D;">{{ __('Affichez votre statut professionnel') }}</p>
                             </div>
                         </div>
 
@@ -73,8 +73,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="font-bold text-base mb-1" style="color: #1B2A4A;">Plus de visibilite</h3>
-                                <p class="text-sm" style="color: #6B7B8D;">Vos annonces sont mises en avant</p>
+                                <h3 class="font-bold text-base mb-1" style="color: #1B2A4A;">{{ __('Plus de visibilite') }}</h3>
+                                <p class="text-sm" style="color: #6B7B8D;">{{ __('Vos annonces sont mises en avant') }}</p>
                             </div>
                         </div>
 
@@ -85,8 +85,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="font-bold text-base mb-1" style="color: #1B2A4A;">Statistiques avancees</h3>
-                                <p class="text-sm" style="color: #6B7B8D;">Suivez les performances de vos annonces</p>
+                                <h3 class="font-bold text-base mb-1" style="color: #1B2A4A;">{{ __('Statistiques avancees') }}</h3>
+                                <p class="text-sm" style="color: #6B7B8D;">{{ __('Suivez les performances de vos annonces') }}</p>
                             </div>
                         </div>
 
@@ -97,8 +97,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="font-bold text-base mb-1" style="color: #1B2A4A;">Support prioritaire</h3>
-                                <p class="text-sm" style="color: #6B7B8D;">Une equipe dediee a votre service</p>
+                                <h3 class="font-bold text-base mb-1" style="color: #1B2A4A;">{{ __('Support prioritaire') }}</h3>
+                                <p class="text-sm" style="color: #6B7B8D;">{{ __('Une equipe dediee a votre service') }}</p>
                             </div>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
 
             <!-- Subscription Plans -->
             <div class="mb-8">
-                <h2 class="text-xl font-bold mb-6 text-center" style="color: #9BA8B7;">CHOISIR UN ABONNEMENT</h2>
+                <h2 class="text-xl font-bold mb-6 text-center" style="color: #9BA8B7;">{{ __('CHOISIR UN ABONNEMENT') }}</h2>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     <!-- Starter Plan -->
@@ -123,8 +123,8 @@
 
                         <div class="mb-6">
                             <div class="flex items-baseline gap-2">
-                                <span class="text-2xl sm:text-3xl md:text-4xl font-black" style="color: #17A2B8;">2 000 DA</span>
-                                <span class="text-sm" style="color: #6B7B8D;">/ mois</span>
+                                <span class="text-2xl sm:text-3xl md:text-4xl font-black" style="color: #17A2B8;">{{ __('2 000 DA') }}</span>
+                                <span class="text-sm" style="color: #6B7B8D;">{{ __('/ mois') }}</span>
                             </div>
                         </div>
 
@@ -133,19 +133,19 @@
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span>Badge vendeur verifie</span>
+                                <span>{{ __('Badge vendeur verifie') }}</span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span>Jusqu'a 10 annonces actives</span>
+                                <span>{{ __('Jusqu\'a 10 annonces actives') }}</span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span>Support par email</span>
+                                <span>{{ __('Support par email') }}</span>
                             </li>
                         </ul>
 
@@ -153,7 +153,7 @@
                             @csrf
                             <input type="hidden" name="plan" value="starter">
                             <button type="submit" class="w-full py-3 rounded-xl font-semibold transition-all" style="background: #2C5F7C; color: white;">
-                                Choisir
+                                {{ __('Choisir') }}
                             </button>
                         </form>
                     </div>
@@ -161,7 +161,7 @@
                     <!-- Pro Plan (Recommended) -->
                     <div class="bg-white rounded-2xl p-6 relative" style="box-shadow: 0 12px 32px rgba(231,76,60,0.2); border: 2px solid #E74C3C;">
                         <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white" style="background: #E74C3C;">
-                            ★ RECOMMANDÉ
+                            {{ __('★ RECOMMANDÉ') }}
                         </div>
 
                         <div class="flex items-center justify-between mb-4">
@@ -175,8 +175,8 @@
 
                         <div class="mb-6">
                             <div class="flex items-baseline gap-2">
-                                <span class="text-2xl sm:text-3xl md:text-4xl font-black" style="color: #E74C3C;">5 000 DA</span>
-                                <span class="text-sm" style="color: #6B7B8D;">/ mois</span>
+                                <span class="text-2xl sm:text-3xl md:text-4xl font-black" style="color: #E74C3C;">{{ __('5 000 DA') }}</span>
+                                <span class="text-sm" style="color: #6B7B8D;">{{ __('/ mois') }}</span>
                             </div>
                         </div>
 
@@ -185,31 +185,31 @@
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span>Badge vendeur verifie</span>
+                                <span>{{ __('Badge vendeur verifie') }}</span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span><strong>Annonces illimitees</strong></span>
+                                <span><strong>{{ __('Annonces illimitees') }}</strong></span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span><strong>2 mises en avant gratuites/mois</strong></span>
+                                <span><strong>{{ __('2 mises en avant gratuites/mois') }}</strong></span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span>Support prioritaire</span>
+                                <span>{{ __('Support prioritaire') }}</span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span>Statistiques avancees</span>
+                                <span>{{ __('Statistiques avancees') }}</span>
                             </li>
                         </ul>
 
@@ -217,7 +217,7 @@
                             @csrf
                             <input type="hidden" name="plan" value="pro">
                             <button type="submit" class="w-full py-3 rounded-xl text-white font-bold transition-all" style="background: #E74C3C; box-shadow: 0 4px 12px rgba(231,76,60,0.3);">
-                                Choisir
+                                {{ __('Choisir') }}
                             </button>
                         </form>
                     </div>
@@ -235,8 +235,8 @@
 
                         <div class="mb-6">
                             <div class="flex items-baseline gap-2">
-                                <span class="text-2xl sm:text-3xl md:text-4xl font-black" style="color: #17A2B8;">10 000 DA</span>
-                                <span class="text-sm" style="color: #6B7B8D;">/ mois</span>
+                                <span class="text-2xl sm:text-3xl md:text-4xl font-black" style="color: #17A2B8;">{{ __('10 000 DA') }}</span>
+                                <span class="text-sm" style="color: #6B7B8D;">{{ __('/ mois') }}</span>
                             </div>
                         </div>
 
@@ -245,43 +245,43 @@
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span>Badge vendeur verifie</span>
+                                <span>{{ __('Badge vendeur verifie') }}</span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span><strong>Annonces illimitees</strong></span>
+                                <span><strong>{{ __('Annonces illimitees') }}</strong></span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span><strong>5 mises en avant gratuites/mois</strong></span>
+                                <span><strong>{{ __('5 mises en avant gratuites/mois') }}</strong></span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span><strong>Support dedie 24/7</strong></span>
+                                <span><strong>{{ __('Support dedie 24/7') }}</strong></span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span>Statistiques avancees</span>
+                                <span>{{ __('Statistiques avancees') }}</span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span><strong>Page vendeur personnalisee</strong></span>
+                                <span><strong>{{ __('Page vendeur personnalisee') }}</strong></span>
                             </li>
                             <li class="flex items-start gap-2 text-sm" style="color: #1B2A4A;">
                                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span><strong>Priorite dans les resultats</strong></span>
+                                <span><strong>{{ __('Priorite dans les resultats') }}</strong></span>
                             </li>
                         </ul>
 
@@ -289,7 +289,7 @@
                             @csrf
                             <input type="hidden" name="plan" value="premium">
                             <button type="submit" class="w-full py-3 rounded-xl font-semibold transition-all" style="background: #2C5F7C; color: white;">
-                                Choisir
+                                {{ __('Choisir') }}
                             </button>
                         </form>
                     </div>
@@ -302,7 +302,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Retour au profil
+                    {{ __('Retour au profil') }}
                 </a>
             </div>
         </div>

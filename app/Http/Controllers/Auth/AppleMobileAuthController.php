@@ -46,7 +46,7 @@ class AppleMobileAuthController extends Controller
         $claims = $this->decodeIdentityToken($validated['identity_token']);
 
         if ($claims === null) {
-            return response()->json(['message' => 'Token Apple invalide'], 401);
+            return response()->json(['message' => __('Token Apple invalide')], 401);
         }
 
         if ($rejection = $this->rejectionReason($claims)) {
@@ -56,7 +56,7 @@ class AppleMobileAuthController extends Controller
                 'iss'    => $claims['iss'] ?? null,
             ]);
 
-            return response()->json(['message' => 'Token Apple invalide'], 401);
+            return response()->json(['message' => __('Token Apple invalide')], 401);
         }
 
         $appleId = $claims['sub'];
@@ -72,14 +72,13 @@ class AppleMobileAuthController extends Controller
                 // compte. Se produit si l'utilisateur a déjà autorisé l'app
                 // puis que le compte a été supprimé côté AlBabor.
                 return response()->json([
-                    'message' => "Connexion Apple incomplète. Retirez AlBabor dans Réglages > "
-                        ."Apple > Connexion avec Apple, puis réessayez.",
+                    'message' => __('Connexion Apple incomplète. Retirez AlBabor dans Réglages > Apple > Connexion avec Apple, puis réessayez.'),
                 ], 422);
             }
         }
 
         if ($user->isBlocked()) {
-            return response()->json(['message' => 'Votre compte a été bloqué.'], 403);
+            return response()->json(['message' => __('Votre compte a été bloqué.')], 403);
         }
 
         $token = $user->createToken('mobile-apple')->plainTextToken;

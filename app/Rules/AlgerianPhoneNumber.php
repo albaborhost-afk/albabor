@@ -23,7 +23,7 @@ class AlgerianPhoneNumber implements ValidationRule
     {
         if ($value === null || trim($value) === '') {
             if ($this->required) {
-                $fail('Le numéro de téléphone est obligatoire.');
+                $fail(__('Le numéro de téléphone est obligatoire.'));
             }
             return;
         }
@@ -32,9 +32,7 @@ class AlgerianPhoneNumber implements ValidationRule
 
         if (! preg_match('/^(0[5-7]\d{8}|\+213[5-7]\d{8})$/', $cleaned)) {
             $fail(
-                'Le numéro de téléphone doit être un numéro algérien valide ' .
-                '(ex: 0676085441 ou +213676085441). ' .
-                'Vérifiez que le numéro contient exactement 10 chiffres.'
+                __('Le numéro de téléphone doit être un numéro algérien valide de 10 chiffres (ex. : 0555123456).')
             );
         }
     }

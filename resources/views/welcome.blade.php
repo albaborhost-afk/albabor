@@ -172,7 +172,7 @@
                             <button
                                 type="button"
                                 @click="goTo(i-1)"
-                                :aria-label="'Aller a la diapositive ' + i"
+                                :aria-label="@js(__('Aller à la diapositive :number')).replace(':number', i)"
                                 class="rounded-full transition-all duration-300"
                                 :class="active === (i-1) ? 'w-6 h-2' : 'w-2 h-2'"
                                 :style="active === (i-1) ? 'background: white' : 'background: rgba(255,255,255,0.5)'"
@@ -307,7 +307,7 @@
                 <div x-show="showHint" x-transition:leave="transition ease-in duration-500" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                      class="lg:hidden absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
                     <div class="animate-bounce-x flex items-center gap-1 bg-white/90 backdrop-blur rounded-full px-3 py-1.5 shadow-lg">
-                        <span class="text-xs font-medium" style="color:#2471A3;">Glisser</span>
+                        <span class="text-xs font-medium" style="color:#2471A3;">{{ __('Glisser') }}</span>
                         <svg class="w-4 h-4" style="color:#2471A3;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </div>
                 </div>
@@ -482,7 +482,7 @@
 
     <!-- Latest Listings -->
     @foreach($countryGroups ?? [] as $group)
-        <section class="py-6 sm:py-8" style="background:#F0F4F8" aria-label="{{ $group['country'] }}">
+        <section class="py-6 sm:py-8" style="background:#F0F4F8" aria-label="{{ __($group['country']) }}">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center mb-4 gap-3">
                     <div>
@@ -493,7 +493,7 @@
                             @else
                                 <span aria-hidden="true">{{ $group['flag'] }}</span>
                             @endif
-                            <span>{{ $group['country'] }}</span>
+                            <span>{{ __($group['country']) }}</span>
                         </h2>
                         <p class="text-xs text-slate-500 mt-1">{{ $group['count'] }} {{ __('annonces') }}</p>
                     </div>
@@ -532,7 +532,7 @@
                     {{-- Grid / List toggle button --}}
                     <button
                         @click="toggle()"
-                        :title="grid ? 'Vue liste' : 'Vue grille'"
+                        :title="grid ? @js(__('Vue liste')) : @js(__('Vue grille'))"
                         class="relative flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-xs font-semibold transition-all duration-300 focus:outline-none"
                         :style="grid
                             ? 'background: #17A2B8; color: #fff; box-shadow: 0 4px 14px rgba(23,162,184,0.35);'
@@ -768,7 +768,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const easedProgress = easeOutExpo(progress);
                     const current = Math.round(easedProgress * end);
 
-                    el.textContent = current.toLocaleString('fr-FR') + (end >= 100 ? '+' : '');
+                    el.textContent = current.toLocaleString(document.documentElement.lang) + (end >= 100 ? '+' : '');
 
                     if (progress < 1) {
                         requestAnimationFrame(updateCounter);

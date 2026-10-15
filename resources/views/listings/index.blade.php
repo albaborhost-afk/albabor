@@ -3,8 +3,8 @@
     $pageTitle = request('category') ? ($pageCatNames[request('category')] ?? 'Annonces') : 'Toutes les Annonces';
 @endphp
 <x-app-layout
-    :title="$pageTitle"
-    description="Parcourez toutes les annonces de bateaux, jet-skis, moteurs et pièces détachées en Algérie. Filtrez par wilaya, état et prix."
+    :title="__($pageTitle)"
+    :description="__('Parcourez toutes les annonces de bateaux, jet-skis, moteurs et pièces détachées en Algérie. Filtrez par wilaya, état et prix.')"
 >
     <!-- Breadcrumb Bar -->
     <div style="background: #FFFFFF; border-bottom: 1px solid #E0E6ED;">

@@ -20,7 +20,7 @@ class SocialAuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Erreur de connexion avec Google. Veuillez reessayer.');
+            return redirect()->route('login')->with('error', __('Erreur de connexion avec Google. Veuillez reessayer.'));
         }
 
         // Check if user already exists with this google_id
@@ -28,7 +28,7 @@ class SocialAuthController extends Controller
 
         if ($user) {
             if ($user->isBlocked()) {
-                return redirect()->route('login')->withErrors(['email' => 'Votre compte a ete bloque.']);
+                return redirect()->route('login')->withErrors(['email' => __('Votre compte a ete bloque.')]);
             }
 
             Auth::login($user, true);
@@ -46,7 +46,7 @@ class SocialAuthController extends Controller
             ]);
 
             if ($user->isBlocked()) {
-                return redirect()->route('login')->withErrors(['email' => 'Votre compte a ete bloque.']);
+                return redirect()->route('login')->withErrors(['email' => __('Votre compte a ete bloque.')]);
             }
 
             Auth::login($user, true);

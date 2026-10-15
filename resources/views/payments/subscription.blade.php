@@ -7,7 +7,7 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    Accueil
+                    {{ __('Accueil') }}
                 </a>
                 <svg class="w-4 h-4" style="color: #E0E6ED;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -78,25 +78,25 @@
                     @php
                         $planFeatures = [
                             'Starter' => [
-                                'Badge vendeur verifie',
-                                'Jusqu\'a 10 annonces actives',
-                                'Support par email'
+                                __('Badge vendeur verifie'),
+                                __('Jusqu\'a 10 annonces actives'),
+                                __('Support par email')
                             ],
                             'Pro' => [
-                                'Badge vendeur verifie',
-                                '<strong>Annonces illimitees</strong>',
-                                '<strong>2 mises en avant gratuites/mois</strong>',
-                                'Support prioritaire',
-                                'Statistiques avancees'
+                                __('Badge vendeur verifie'),
+                                __('<strong>Annonces illimitees</strong>'),
+                                __('<strong>2 mises en avant gratuites/mois</strong>'),
+                                __('Support prioritaire'),
+                                __('Statistiques avancees')
                             ],
                             'Premium' => [
-                                'Badge vendeur verifie',
-                                '<strong>Annonces illimitees</strong>',
-                                '<strong>5 mises en avant gratuites/mois</strong>',
-                                '<strong>Support dedie 24/7</strong>',
-                                'Statistiques avancees',
-                                '<strong>Page vendeur personnalisee</strong>',
-                                '<strong>Priorite dans les resultats</strong>'
+                                __('Badge vendeur verifie'),
+                                __('<strong>Annonces illimitees</strong>'),
+                                __('<strong>5 mises en avant gratuites/mois</strong>'),
+                                __('<strong>Support dedie 24/7</strong>'),
+                                __('Statistiques avancees'),
+                                __('<strong>Page vendeur personnalisee</strong>'),
+                                __('<strong>Priorite dans les resultats</strong>')
                             ]
                         ];
                         $features = $planFeatures[$plan->name] ?? [];
@@ -108,7 +108,7 @@
                     <div class="bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 relative" style="box-shadow: 0 10px 25px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.03); border: 2px solid {{ $borderColor }};">
                         @if($isPro)
                             <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white" style="background: #E74C3C;">
-                                ★ RECOMMANDÉ
+                                {{ __('★ RECOMMANDÉ') }}
                             </div>
                         @endif
 
@@ -135,7 +135,7 @@
                             <div class="mb-6">
                                 <div class="flex items-baseline gap-2">
                                     <span class="text-2xl sm:text-3xl md:text-4xl font-black" style="color: {{ $isPro ? '#E74C3C' : '#17A2B8' }};">{{ number_format($plan->price_dzd, 0, ',', ' ') }} DA</span>
-                                    <span class="text-sm" style="color: #6B7B8D;">/ mois</span>
+                                    <span class="text-sm" style="color: #6B7B8D;">{{ __('/ mois') }}</span>
                                 </div>
                             </div>
 
@@ -150,10 +150,10 @@
                                 @endforeach
                             </ul>
 
-                            <button type="button" onclick="selectPlan({{ $plan->id }}, '{{ $plan->name }}', {{ $plan->price_dzd }})"
+                            <button type="button" onclick="selectPlan({{ $plan->id }}, {{ \Illuminate\Support\Js::from($plan->name) }}, {{ $plan->price_dzd }})"
                                     class="w-full px-4 py-3 rounded-xl font-bold text-white transition-all duration-300 hover:-translate-y-0.5"
                                     style="background: {{ $buttonBg }}; {{ $isPro ? 'box-shadow: 0 4px 12px rgba(231,76,60,0.3);' : '' }}">
-                                Choisir ce plan
+                                {{ __('Choisir ce plan') }}
                             </button>
                         </div>
                     </div>
@@ -209,7 +209,7 @@
         function selectPlan(id, name, price) {
             document.getElementById('selectedPlanId').value = id;
             document.getElementById('selectedPlanName').textContent = name;
-            document.getElementById('selectedPlanPrice').textContent = new Intl.NumberFormat('fr-DZ').format(price) + ' DA';
+            document.getElementById('selectedPlanPrice').textContent = new Intl.NumberFormat(document.documentElement.lang).format(price) + ' DA';
             document.getElementById('paymentForm').classList.remove('hidden');
             document.getElementById('paymentForm').scrollIntoView({ behavior: 'smooth' });
         }

@@ -29,12 +29,12 @@ class VendorOnboardingController extends Controller
     {
         if (! Auth::check()) {
             return redirect()->route('login')
-                ->with('info', 'Veuillez vous connecter pour créer votre boutique.');
+                ->with('info', __('Veuillez vous connecter pour créer votre boutique.'));
         }
 
         if (Auth::user()->hasVendorProfile()) {
             return redirect(url('/vendeur'))
-                ->with('info', 'Vous disposez déjà d\'une boutique vendeur.');
+                ->with('info', __('Vous disposez déjà d\'une boutique vendeur.'));
         }
 
         return view('vendor.onboarding.create');
@@ -45,7 +45,7 @@ class VendorOnboardingController extends Controller
     {
         if (! Auth::check()) {
             return redirect()->route('login')
-                ->with('info', 'Veuillez vous connecter pour créer votre boutique.');
+                ->with('info', __('Veuillez vous connecter pour créer votre boutique.'));
         }
 
         $user = Auth::user();
@@ -59,17 +59,17 @@ class VendorOnboardingController extends Controller
             'address'       => 'nullable|string|max:500',
             'logo'          => 'nullable|image|max:15360',
         ], [
-            'shop_name.required' => 'Le nom de la boutique est obligatoire.',
-            'contact_email.email' => 'L\'adresse e-mail de contact n\'est pas valide.',
-            'logo.image'         => 'Le logo doit être une image.',
-            'logo.max'           => 'Le logo ne doit pas dépasser 15 Mo.',
+            'shop_name.required' => __('Le nom de la boutique est obligatoire.'),
+            'contact_email.email' => __('L\'adresse e-mail de contact n\'est pas valide.'),
+            'logo.image'         => __('Le logo doit être une image.'),
+            'logo.max'           => __('Le logo ne doit pas dépasser 15 Mo.'),
         ]);
 
         // 1. L'utilisateur a déjà une boutique.
         if ($user->hasVendorProfile()) {
             return back()
                 ->withInput()
-                ->with('error', 'Vous disposez déjà d\'une boutique vendeur.');
+                ->with('error', __('Vous disposez déjà d\'une boutique vendeur.'));
         }
 
         // 2. Upload du logo (optionnel).
@@ -104,6 +104,6 @@ class VendorOnboardingController extends Controller
 
         // 5. Redirection vers l'espace vendeur Filament.
         return redirect(url('/vendeur'))
-            ->with('success', 'Votre boutique a été créée ! Bienvenue dans votre espace vendeur.');
+            ->with('success', __('Votre boutique a été créée ! Bienvenue dans votre espace vendeur.'));
     }
 }

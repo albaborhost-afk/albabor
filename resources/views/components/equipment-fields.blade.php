@@ -13,11 +13,11 @@
                 @foreach($suggestions as $item)
                     <label class="cursor-pointer">
                         <input type="checkbox" name="specs[tags][{{ $group }}][]" value="{{ $item }}" @checked(in_array($item, $selected)) class="peer sr-only">
-                        <span class="inline-flex rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-600 peer-checked:bg-cyan-50 peer-checked:border-cyan-600 peer-checked:text-cyan-800 peer-focus-visible:ring-2 peer-focus-visible:ring-cyan-600">{{ $item }}</span>
+                        <span class="inline-flex rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-600 peer-checked:bg-cyan-50 peer-checked:border-cyan-600 peer-checked:text-cyan-800 peer-focus-visible:ring-2 peer-focus-visible:ring-cyan-600">{{ __($item) }}</span>
                     </label>
                 @endforeach
                 <template x-for="(tag, index) in customTags" :key="tag">
-                    <button type="button" @click="customTags.splice(index, 1)" class="rounded-full border border-cyan-600 bg-cyan-50 px-3 py-2 text-xs text-cyan-800" :aria-label="'Retirer ' + tag">
+                    <button type="button" @click="customTags.splice(index, 1)" class="rounded-full border border-cyan-600 bg-cyan-50 px-3 py-2 text-xs text-cyan-800" :aria-label="@js(__('Retirer :tag')).replace(':tag', () => tag)">
                         <input type="hidden" name="specs[tags][{{ $group }}][]" :value="tag">
                         <span x-text="tag"></span> ×
                     </button>

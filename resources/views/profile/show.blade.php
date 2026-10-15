@@ -63,12 +63,12 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    Accueil
+                    {{ __('Accueil') }}
                 </a>
                 <svg class="w-4 h-4" style="color: #E0E6ED;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <span style="color: #1B2A4A;" class="font-medium">Mon Profil</span>
+                <span style="color: #1B2A4A;" class="font-medium">{{ __('Mon Profil') }}</span>
             </nav>
         </div>
     </div>
@@ -120,7 +120,7 @@
                         {{ auth()->user()->name }}
                     </h1>
                     @if(auth()->user()->verified_badge)
-                        <div class="flex items-center justify-center w-10 h-10 rounded-full" style="background: linear-gradient(135deg, #27AE60, #2ECC71); box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);" title="Compte verifie">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full" style="background: linear-gradient(135deg, #27AE60, #2ECC71); box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);" title="{{ __('Compte verifie') }}">
                             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                             </svg>
@@ -145,7 +145,7 @@
                             <svg class="w-4 h-4" style="color: #F39C12;" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
-                            Vendeur Pro
+                            {{ __('Vendeur Pro') }}
                         </span>
                     @endif
                 </div>
@@ -166,7 +166,7 @@
                 <p class="text-4xl font-black count-up" style="color: #1B4F72;" data-count="{{ auth()->user()->listings()->count() }}">
                     {{ auth()->user()->listings()->count() }}
                 </p>
-                <p class="text-sm mt-1 font-medium" style="color: #6B7B8D;">Total Annonces</p>
+                <p class="text-sm mt-1 font-medium" style="color: #6B7B8D;">{{ __('Total Annonces') }}</p>
             </div>
 
             <!-- Vues Totales -->
@@ -180,7 +180,7 @@
                 <p class="text-4xl font-black count-up" style="color: #17A2B8;" data-count="{{ auth()->user()->listings()->sum('views_count') ?? 0 }}">
                     {{ number_format(auth()->user()->listings()->sum('views_count') ?? 0) }}
                 </p>
-                <p class="text-sm mt-1 font-medium" style="color: #6B7B8D;">Vues Totales</p>
+                <p class="text-sm mt-1 font-medium" style="color: #6B7B8D;">{{ __('Vues Totales') }}</p>
             </div>
 
             <!-- Favoris Recus -->
@@ -193,7 +193,7 @@
                 <p class="text-4xl font-black count-up" style="color: #FF6B6B;" data-count="{{ auth()->user()->listings()->withCount('favorites')->get()->sum('favorites_count') ?? 0 }}">
                     {{ number_format(auth()->user()->listings()->withCount('favorites')->get()->sum('favorites_count') ?? 0) }}
                 </p>
-                <p class="text-sm mt-1 font-medium" style="color: #6B7B8D;">Favoris Recus</p>
+                <p class="text-sm mt-1 font-medium" style="color: #6B7B8D;">{{ __('Favoris Recus') }}</p>
             </div>
 
             <!-- Badge Statut -->
@@ -210,9 +210,9 @@
                     @endif
                 </div>
                 <p class="text-lg font-black" style="color: {{ auth()->user()->verified_badge ? '#27AE60' : '#F39C12' }};">
-                    {{ auth()->user()->verified_badge ? 'Verifie' : 'Non Verifie' }}
+                    {{ auth()->user()->verified_badge ? __('messages.verified') : __('messages.not_verified') }}
                 </p>
-                <p class="text-sm mt-1 font-medium" style="color: #6B7B8D;">Badge Statut</p>
+                <p class="text-sm mt-1 font-medium" style="color: #6B7B8D;">{{ __('Badge Statut') }}</p>
             </div>
         </div>
     </div>
@@ -262,7 +262,7 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
-                                Acces Rapide
+                                {{ __('Acces Rapide') }}
                             </h3>
                         </div>
                         <nav class="p-4 space-y-2">
@@ -272,7 +272,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     </svg>
                                 </div>
-                                <span class="font-semibold" style="color: #1B2A4A;">Mes Annonces</span>
+                                <span class="font-semibold" style="color: #1B2A4A;">{{ __('Mes Annonces') }}</span>
                             </a>
                             <a href="{{ route('favorites.index') }}" class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl group">
                                 <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(255, 107, 107, 0.08);">
@@ -280,7 +280,7 @@
                                         <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                     </svg>
                                 </div>
-                                <span class="font-semibold" style="color: #1B2A4A;">Mes Favoris</span>
+                                <span class="font-semibold" style="color: #1B2A4A;">{{ __('Mes Favoris') }}</span>
                             </a>
                             <a href="{{ route('payments.index') }}" class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl group">
                                 <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(39, 174, 96, 0.08);">
@@ -288,7 +288,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                     </svg>
                                 </div>
-                                <span class="font-semibold" style="color: #1B2A4A;">Paiements</span>
+                                <span class="font-semibold" style="color: #1B2A4A;">{{ __('Paiements') }}</span>
                             </a>
                             <a href="{{ route('mediation.index') }}" class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl group">
                                 <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(23, 162, 184, 0.08);">
@@ -296,7 +296,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                     </svg>
                                 </div>
-                                <span class="font-semibold" style="color: #1B2A4A;">Mediation</span>
+                                <span class="font-semibold" style="color: #1B2A4A;">{{ __('Mediation') }}</span>
                             </a>
                         </nav>
                     </div>
@@ -308,13 +308,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">Creer une Annonce</h3>
-                        <p class="text-white/70 text-sm mb-4">Vendez votre bateau ou equipement rapidement</p>
+                        <h3 class="text-xl font-bold mb-2">{{ __('Creer une Annonce') }}</h3>
+                        <p class="text-white/70 text-sm mb-4">{{ __('Vendez votre bateau ou equipement rapidement') }}</p>
                         <a href="{{ route('listings.create') }}" class="inline-flex items-center px-5 py-3 bg-white rounded-xl font-bold transition-all duration-300 hover:-translate-y-0.5" style="color: #1B4F72; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
-                            Publier
+                            {{ __('Publier') }}
                         </a>
                     </div>
                 </div>
@@ -333,7 +333,7 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                Mes Informations
+                                {{ __('Mes Informations') }}
                             </button>
                             <button @click="activeTab = 'listings'"
                                     :class="activeTab === 'listings' ? 'text-white' : ''"
@@ -342,7 +342,7 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                 </svg>
-                                Mes Annonces
+                                {{ __('Mes Annonces') }}
                             </button>
                         </div>
 
@@ -370,7 +370,7 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
-                                            <span x-text="editMode ? '{{ __('messages.close_editor') }}' : '{{ __('messages.edit_details') }}'"></span>
+                                            <span x-text="editMode ? {{ \Illuminate\Support\Js::from(__('messages.close_editor')) }} : {{ \Illuminate\Support\Js::from(__('messages.edit_details')) }}"></span>
                                         </button>
 
                                         <a
@@ -433,7 +433,7 @@
                                             <div class="mt-4 space-y-4">
                                                 <div class="rounded-2xl px-4 py-3" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.08);">
                                                     <p class="text-xs uppercase tracking-[0.2em] text-white/55">{{ __('messages.profile_status') }}</p>
-                                                    <p class="text-xl font-bold mt-2">{{ $user->isVendor() ? __('messages.vendor') : 'Particulier' }}</p>
+                                                    <p class="text-xl font-bold mt-2">{{ $user->isVendor() ? __('messages.vendor') : __('Particulier') }}</p>
                                                     <p class="text-sm text-white/70 mt-2">{{ __('messages.manage_from_here') }}</p>
                                                 </div>
 
@@ -469,7 +469,7 @@
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                 </svg>
-                                                Nom Complet
+                                                {{ __('Nom Complet') }}
                                             </dt>
                                             <dd class="text-lg font-bold" style="color: #1B2A4A;">{{ $user->name }}</dd>
                                             @if($user->hidesName())
@@ -480,7 +480,7 @@
                                                         </svg>
                                                         {{ __('messages.hide_name_badge') }}
                                                     </span>
-                                                    <p class="text-xs mt-1.5" style="color: #9BA8B7;">{{ __('Les acheteurs voient') }} « {{ \App\Models\User::ANONYMOUS_NAME }} »</p>
+                                                    <p class="text-xs mt-1.5" style="color: #9BA8B7;">{{ __('Les acheteurs voient') }} « {{ __('messages.anonymous_seller') }} »</p>
                                                 </dd>
                                             @endif
                                         </div>
@@ -490,7 +490,7 @@
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                                 </svg>
-                                                Adresse Email
+                                                {{ __('Adresse Email') }}
                                             </dt>
                                             <dd class="text-lg font-bold" style="color: #1B2A4A;">{{ $user->email }}</dd>
                                         </div>
@@ -500,7 +500,7 @@
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                                 </svg>
-                                                Telephone
+                                                {{ __('Telephone') }}
                                             </dt>
                                             <dd class="text-lg font-bold" style="color: #1B2A4A;">
                                                 @if(filled($user->phone))
@@ -513,7 +513,7 @@
                                                         {{ $user->phone }}
                                                     @endif
                                                 @else
-                                                    Non renseigne
+                                                    {{ __('Non renseigne') }}
                                                 @endif
                                             </dd>
                                         </div>
@@ -533,7 +533,7 @@
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                                 </svg>
-                                                Statut Verification
+                                                {{ __('Statut Verification') }}
                                             </dt>
                                             <dd class="flex items-center gap-2">
                                                 @if($user->verified_badge)
@@ -559,7 +559,7 @@
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                Type de Compte
+                                                {{ __('Type de Compte') }}
                                             </dt>
                                             <dd class="flex items-center gap-2">
                                                 @if($user->isVendor())
@@ -574,7 +574,7 @@
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                         </svg>
-                                                        Particulier
+                                                        {{ __('Particulier') }}
                                                     </span>
                                                 @endif
                                             </dd>
@@ -645,13 +645,13 @@
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                         </svg>
-                                        Mes Annonces
+                                        {{ __('Mes Annonces') }}
                                     </h2>
                                     <a href="{{ route('listings.create') }}" class="inline-flex items-center px-4 py-2 rounded-lg font-semibold transition-all duration-200 text-white" style="background: rgba(255,255,255,0.2);">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                         </svg>
-                                        Nouvelle Annonce
+                                        {{ __('Nouvelle Annonce') }}
                                     </a>
                                 </div>
                                 <div class="p-6">
@@ -685,7 +685,7 @@
                                                                 $style = $statusStyles[$listing->status] ?? 'background: rgba(107, 123, 141, 0.9); color: white;';
                                                             @endphp
                                                             <span class="px-3 py-1 text-xs font-bold rounded-full" style="{{ $style }}">
-                                                                {{ $listing->status === 'active' ? 'Active' : ucfirst(str_replace('_', ' ', $listing->status)) }}
+                                                                {{ $listing->status_label }}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -709,7 +709,7 @@
                                                                 </span>
                                                             </div>
                                                             <a href="{{ route('listings.edit', $listing) }}" class="font-semibold text-sm transition-colors" style="color: #17A2B8;">
-                                                                Modifier
+                                                                {{ __('Modifier') }}
                                                             </a>
                                                         </div>
                                                     </div>
@@ -719,7 +719,7 @@
                                         @if(auth()->user()->listings()->count() > 6)
                                             <div class="mt-6 text-center">
                                                 <a href="{{ route('listings.my') }}" class="inline-flex items-center px-6 py-3 gradient-primary text-white rounded-xl font-bold transition-all duration-300 hover:-translate-y-0.5" style="box-shadow: 0 8px 25px rgba(27, 79, 114, 0.25);">
-                                                    Voir toutes mes annonces
+                                                    {{ __('Voir toutes mes annonces') }}
                                                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                                     </svg>
@@ -733,13 +733,13 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                                 </svg>
                                             </div>
-                                            <h3 class="text-xl font-bold mb-2" style="color: #1B2A4A;">Aucune annonce</h3>
-                                            <p class="mb-6" style="color: #6B7B8D;">Vous n'avez pas encore publie d'annonce</p>
+                                            <h3 class="text-xl font-bold mb-2" style="color: #1B2A4A;">{{ __('Aucune annonce') }}</h3>
+                                            <p class="mb-6" style="color: #6B7B8D;">{{ __('Vous n\'avez pas encore publie d\'annonce') }}</p>
                                             <a href="{{ route('listings.create') }}" class="inline-flex items-center px-6 py-3 gradient-primary text-white rounded-xl font-bold transition-all duration-300 hover:-translate-y-0.5" style="box-shadow: 0 8px 25px rgba(27, 79, 114, 0.25);">
                                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                                 </svg>
-                                                Creer ma premiere annonce
+                                                {{ __('Creer ma premiere annonce') }}
                                             </a>
                                         </div>
                                     @endif
@@ -771,11 +771,11 @@
                             // Ease-out curve
                             const eased = 1 - Math.pow(1 - progress, 3);
                             const current = Math.floor(eased * target);
-                            el.textContent = current.toLocaleString('fr-FR');
+                            el.textContent = current.toLocaleString(document.documentElement.lang);
                             if (progress < 1) {
                                 requestAnimationFrame(update);
                             } else {
-                                el.textContent = target.toLocaleString('fr-FR');
+                                el.textContent = target.toLocaleString(document.documentElement.lang);
                             }
                         }
                         requestAnimationFrame(update);

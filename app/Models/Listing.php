@@ -350,12 +350,12 @@ class Listing extends Model
         // Affichage en convention algerienne (centimes) si demande explicitement
         if ($this->currency === 'DZD' && $this->price_display_unit && $this->price_dzd > 0) {
             if ($this->price_display_unit === 'milliard') {
-                $val = $this->price_dzd / 10_000_000; // 1 Mrd centimes = 10 000 000 DA
-                return $this->formatCentimesValue($val) . ' ' . ($val >= 2 ? 'Milliards' : 'Milliard');
+                $val = round($this->price_dzd / 10_000_000, 2); // 1 Mrd centimes = 10 000 000 DA
+                return $this->formatCentimesValue($val) . ' ' . __((app()->getLocale() === 'es' ? $val != 1 : $val >= 2) ? 'Milliards' : 'Milliard');
             }
             if ($this->price_display_unit === 'million') {
-                $val = $this->price_dzd / 10_000; // 1 Mio centimes = 10 000 DA
-                return $this->formatCentimesValue($val) . ' ' . ($val >= 2 ? 'Millions' : 'Million');
+                $val = round($this->price_dzd / 10_000, 2); // 1 Mio centimes = 10 000 DA
+                return $this->formatCentimesValue($val) . ' ' . __((app()->getLocale() === 'es' ? $val != 1 : $val >= 2) ? 'Millions' : 'Million');
             }
         }
 
@@ -427,12 +427,12 @@ class Listing extends Model
                 ? number_format($rounded, 0, ',', ' ')
                 : number_format($rounded, 1, ',', ' ');
             $unit = $rounded >= 2 ? 'milliards' : 'milliard';
-            return $formatted . ' ' . $unit . ' de centimes';
+            return __(':amount :unit de centimes', ['amount' => $formatted, 'unit' => __($unit)]);
         }
 
         if ($centimes >= 100_000_000) {
             $val = round($centimes / 1_000_000);
-            return number_format($val, 0, ',', ' ') . ' millions de centimes';
+            return __(':amount millions de centimes', ['amount' => number_format($val, 0, ',', ' ')]);
         }
 
         return null;
@@ -441,10 +441,10 @@ class Listing extends Model
     public function getCategoryLabelAttribute(): string
     {
         return match($this->category) {
-            'boat' => 'Bateau',
-            'jetski' => 'Jet-ski',
-            'engine' => 'Moteur',
-            'parts' => 'Pièces détachées',
+            'boat' => __('Bateau'),
+            'jetski' => __('Jet-ski'),
+            'engine' => __('Moteur'),
+            'parts' => __('Pièces détachées'),
             default => $this->category,
         };
     }
@@ -456,20 +456,20 @@ class Listing extends Model
         }
 
         $types = self::CATEGORY_TYPES[$this->category] ?? [];
-        return $types[$this->type] ?? $this->type;
+        return isset($types[$this->type]) ? __($types[$this->type]) : $this->type;
     }
 
     public function getStatusLabelAttribute(): string
     {
         return match($this->status) {
-            'draft' => 'Brouillon',
-            'awaiting_payment' => 'En attente de paiement',
-            'pending_review' => 'En attente de validation',
-            'active' => 'Active',
-            'rejected' => 'Refusée',
-            'sold' => 'Vendue',
-            'expired' => 'Expirée',
-            'paused' => 'Suspendue',
+            'draft' => __('Brouillon'),
+            'awaiting_payment' => __('En attente de paiement'),
+            'pending_review' => __('En attente de validation'),
+            'active' => __('Active'),
+            'rejected' => __('Refusée'),
+            'sold' => __('Vendue'),
+            'expired' => __('Expirée'),
+            'paused' => __('Suspendue'),
             default => $this->status,
         };
     }
@@ -491,34 +491,34 @@ class Listing extends Model
 
     public function getConditionLabelAttribute(): string
     {
-        return self::ETAT_LABELS[$this->etat] ?? $this->etat ?? 'Non spécifié';
+        return __(self::ETAT_LABELS[$this->etat] ?? $this->etat ?? 'Non spécifié');
     }
 
     public function getEtatLabelAttribute(): string
     {
-        return self::ETAT_LABELS[$this->etat] ?? $this->etat ?? 'Non spécifié';
+        return __(self::ETAT_LABELS[$this->etat] ?? $this->etat ?? 'Non spécifié');
     }
 
     public function getEtatShortLabelAttribute(): string
     {
         return match($this->etat) {
-            'jamais_utilise' => 'Neuf',
-            'comme_neuf' => 'Comme Neuf',
-            'bon_etat' => 'Bon État',
-            'etat_moyen' => 'État Moyen',
-            'a_reviser' => 'À réviser',
-            default => 'Non spécifié',
+            'jamais_utilise' => __('Neuf'),
+            'comme_neuf' => __('Comme Neuf'),
+            'bon_etat' => __('Bon État'),
+            'etat_moyen' => __('État Moyen'),
+            'a_reviser' => __('À réviser'),
+            default => __('Non spécifié'),
         };
     }
 
     public function getTypeOffreLabelAttribute(): string
     {
-        return self::TYPE_OFFRE_LABELS[$this->type_offre] ?? $this->type_offre ?? 'Négociable';
+        return __(self::TYPE_OFFRE_LABELS[$this->type_offre] ?? $this->type_offre ?? 'Négociable');
     }
 
     public function getRemarqueEchangeLabelAttribute(): string
     {
-        return self::REMARQUE_ECHANGE_LABELS[$this->remarque_echange] ?? '';
+        return __(self::REMARQUE_ECHANGE_LABELS[$this->remarque_echange] ?? '');
     }
 
     public function getSpec(string $section, string $key, $default = null)

@@ -229,7 +229,7 @@ class User extends Authenticatable implements FilamentUser
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value) => $this->identityMasked() ? self::ANONYMOUS_NAME : $value,
+            get: fn (?string $value) => $this->identityMasked() ? __(self::ANONYMOUS_NAME) : $value,
         );
     }
 

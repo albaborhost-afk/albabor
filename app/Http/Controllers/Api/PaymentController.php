@@ -39,7 +39,7 @@ class PaymentController extends Controller
 
         if (! in_array($listing->status, ['awaiting_payment', 'draft'])) {
             return response()->json([
-                'message' => 'Cette annonce a déjà été payée ou n\'est pas éligible au paiement.',
+                'message' => __('Cette annonce a déjà été payée ou n\'est pas éligible au paiement.'),
             ], 422);
         }
 
@@ -66,7 +66,7 @@ class PaymentController extends Controller
         $listing->update(['status' => 'pending_review']);
 
         return response()->json([
-            'message' => 'Votre preuve de paiement a été soumise avec succès. Elle sera vérifiée par un administrateur.',
+            'message' => __('Votre preuve de paiement a été soumise avec succès. Elle sera vérifiée par un administrateur.'),
             'payment' => $payment,
         ], 201);
     }
@@ -80,7 +80,7 @@ class PaymentController extends Controller
 
         if ($listing->status !== 'active') {
             return response()->json([
-                'message' => 'L\'annonce doit être active pour pouvoir être mise en avant.',
+                'message' => __('L\'annonce doit être active pour pouvoir être mise en avant.'),
             ], 422);
         }
 
@@ -102,7 +102,7 @@ class PaymentController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Votre paiement pour la mise en avant a été soumis avec succès.',
+            'message' => __('Votre paiement pour la mise en avant a été soumis avec succès.'),
             'payment' => $payment,
         ], 201);
     }
@@ -139,7 +139,7 @@ class PaymentController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Votre paiement d\'abonnement a été soumis avec succès.',
+            'message' => __('Votre paiement d\'abonnement a été soumis avec succès.'),
             'payment' => $payment,
             'subscription' => $subscription,
         ], 201);
@@ -168,13 +168,13 @@ class PaymentController extends Controller
 
         if ($ticket->buyer_id !== Auth::id()) {
             return response()->json([
-                'message' => 'Vous n\'êtes pas autorisé à effectuer ce paiement.',
+                'message' => __('Vous n\'êtes pas autorisé à effectuer ce paiement.'),
             ], 403);
         }
 
         if ($ticket->payment_status !== 'unpaid') {
             return response()->json([
-                'message' => 'Les frais de médiation pour ce ticket ont déjà été payés.',
+                'message' => __('Les frais de médiation pour ce ticket ont déjà été payés.'),
             ], 422);
         }
 
@@ -185,7 +185,7 @@ class PaymentController extends Controller
 
         if ($existingPayment) {
             return response()->json([
-                'message' => 'Un paiement pour ce ticket de médiation est déjà en cours de traitement.',
+                'message' => __('Un paiement pour ce ticket de médiation est déjà en cours de traitement.'),
             ], 422);
         }
 
@@ -202,7 +202,7 @@ class PaymentController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Votre paiement des frais de médiation a été soumis avec succès.',
+            'message' => __('Votre paiement des frais de médiation a été soumis avec succès.'),
             'payment' => $payment,
         ], 201);
     }
@@ -228,7 +228,7 @@ class PaymentController extends Controller
 
         if (! in_array($listing->status, ['awaiting_payment', 'draft'])) {
             return response()->json([
-                'message' => 'Cette annonce a déjà été payée ou n\'est pas éligible au paiement.',
+                'message' => __('Cette annonce a déjà été payée ou n\'est pas éligible au paiement.'),
             ], 422);
         }
 
@@ -238,13 +238,13 @@ class PaymentController extends Controller
             ->where('status', 'approved')
             ->exists();
         if ($alreadyApproved) {
-            return response()->json(['message' => 'Cette annonce est déjà payée.'], 422);
+            return response()->json(['message' => __('Cette annonce est déjà payée.')], 422);
         }
 
         $secret = config('services.stripe.secret');
         if (! $secret) {
             Log::error('Stripe API: STRIPE_SECRET not configured');
-            return response()->json(['message' => 'Stripe n\'est pas configuré côté serveur.'], 503);
+            return response()->json(['message' => __('Stripe n\'est pas configuré côté serveur.')], 503);
         }
 
         $amountDzd  = in_array($listing->category, ['boat', 'jetski']) ? 5000 : 0;
@@ -257,7 +257,7 @@ class PaymentController extends Controller
         // (moteur, pièce) se serait fait facturer, un taux de change cassé aussi.
         if ($amountCents < 50) {
             return response()->json([
-                'message' => 'Le paiement en ligne n\'est pas disponible pour ce montant.',
+                'message' => __('Le paiement en ligne n\'est pas disponible pour ce montant.'),
             ], 422);
         }
 
@@ -272,8 +272,8 @@ class PaymentController extends Controller
                     // propose tout ce qui est activé dans le tableau de bord.
                     'line_items[0][price_data][currency]'   => 'eur',
                     'line_items[0][price_data][unit_amount]' => $amountCents,
-                    'line_items[0][price_data][product_data][name]'        => 'Publication AlBabor — ' . $listing->title,
-                    'line_items[0][price_data][product_data][description]' => 'Frais de publication (valable 365 jours)',
+                    'line_items[0][price_data][product_data][name]'        => __('Publication AlBabor — :title', ['title' => $listing->title]),
+                    'line_items[0][price_data][product_data][description]' => __('Frais de publication (valable 365 jours)'),
                     'line_items[0][quantity]'               => 1,
                     'mode'                                  => 'payment',
                     'success_url'                           => route('payments.stripe.success') . '?session_id={CHECKOUT_SESSION_ID}',
@@ -292,7 +292,7 @@ class PaymentController extends Controller
                 'listing_id' => $listing->id,
                 'error'      => $e->getMessage(),
             ]);
-            return response()->json(['message' => 'Impossible de créer la session Stripe.'], 502);
+            return response()->json(['message' => __('Impossible de créer la session Stripe.')], 502);
         }
 
         // Enregistre un paiement pending idempotent.
@@ -324,11 +324,11 @@ class PaymentController extends Controller
         $payment = Payment::where('stripe_session_id', $sessionId)->first();
 
         if (! $payment) {
-            return response()->json(['message' => 'Paiement introuvable.'], 404);
+            return response()->json(['message' => __('Paiement introuvable.')], 404);
         }
 
         if ($payment->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Non autorisé.'], 403);
+            return response()->json(['message' => __('Non autorisé.')], 403);
         }
 
         // Si déjà approuvé localement (par le webhook), on répond directement.
@@ -342,7 +342,7 @@ class PaymentController extends Controller
 
         $secret = config('services.stripe.secret');
         if (! $secret) {
-            return response()->json(['message' => 'Stripe n\'est pas configuré côté serveur.'], 503);
+            return response()->json(['message' => __('Stripe n\'est pas configuré côté serveur.')], 503);
         }
 
         // Sinon on demande à Stripe.
@@ -354,7 +354,7 @@ class PaymentController extends Controller
             $session = json_decode($response->getBody(), true);
         } catch (\Throwable $e) {
             Log::error('Stripe API session fetch failed', ['session_id' => $sessionId, 'error' => $e->getMessage()]);
-            return response()->json(['message' => 'Impossible de vérifier le paiement Stripe.'], 502);
+            return response()->json(['message' => __('Impossible de vérifier le paiement Stripe.')], 502);
         }
 
         $stripeStatus = $session['payment_status'] ?? null;

@@ -26,7 +26,7 @@ class InternationalPhoneNumber implements ValidationRule
     {
         if ($value === null || trim($value) === '') {
             if ($this->required) {
-                $fail('Le numéro de téléphone est obligatoire.');
+                $fail(__('Le numéro de téléphone est obligatoire.'));
             }
             return;
         }
@@ -43,14 +43,13 @@ class InternationalPhoneNumber implements ValidationRule
         // International: +CC followed by 6–14 digits
         if (! preg_match('/^\+\d{1,4}\d{6,14}$/', $cleaned)) {
             $fail(
-                'Le numéro de téléphone doit être au format international '
-                .'(ex: +213676085441, +33676085441).'
+                __('Le numéro de téléphone doit être au format international (ex. : +213555123456).')
             );
             return;
         }
 
         if (PhoneCountry::detectCode($cleaned) === null) {
-            $fail('Indicatif pays non reconnu. Vérifiez le numéro.');
+            $fail(__('Indicatif pays non reconnu. Vérifiez le numéro.'));
         }
     }
 

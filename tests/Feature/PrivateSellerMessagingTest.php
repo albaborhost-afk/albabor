@@ -78,6 +78,7 @@ class PrivateSellerMessagingTest extends TestCase
 
     public function test_api_messages_and_seller_replies_keep_the_seller_private(): void
     {
+        $this->withHeader('Accept-Language', 'fr');
         Notification::fake();
         $listing = $this->listing();
         $buyer = User::factory()->create();
@@ -102,6 +103,7 @@ class PrivateSellerMessagingTest extends TestCase
 
     public function test_private_mediated_listings_keep_admin_messaging_without_exposing_contacts(): void
     {
+        $this->withHeader('Accept-Language', 'fr');
         $this->withoutVite();
         $listing = $this->listing(true);
         $buyer = User::factory()->create();

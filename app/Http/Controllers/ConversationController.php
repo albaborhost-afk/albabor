@@ -96,7 +96,7 @@ class ConversationController extends Controller
 
         if ($listing->mediation_enabled) {
             return redirect()->route('mediation.create', $listing)
-                ->with('info', 'La médiation est activée. Contactez l’administration AlBabor pour cette annonce.');
+                ->with('info', __('La médiation est activée. Contactez l’administration AlBabor pour cette annonce.'));
         }
 
         $conversation = Conversation::firstOrCreate(

@@ -35,13 +35,13 @@ class SubscriptionController extends Controller
 
         if (! $subscription) {
             return response()->json([
-                'message' => 'Aucun abonnement actif.',
+                'message' => __('Aucun abonnement actif.'),
                 'subscription' => null,
             ]);
         }
 
         return response()->json([
-            'message' => 'Abonnement actif trouvé.',
+            'message' => __('Abonnement actif trouvé.'),
             'subscription' => $subscription,
         ]);
     }

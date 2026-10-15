@@ -36,6 +36,7 @@ class AdminSellerPrivacyTest extends TestCase
 
     public function test_admin_enabling_private_profile_hides_all_existing_listings_and_keeps_messaging(): void
     {
+        $this->withHeader('Accept-Language', 'fr');
         $this->withoutVite();
         Filament::setCurrentPanel(Filament::getPanel('admin'));
         $admin = User::factory()->create(['account_type' => 'admin']);
@@ -117,6 +118,7 @@ class AdminSellerPrivacyTest extends TestCase
 
     public function test_admin_listing_toggle_updates_the_sellers_profile_and_all_their_listings(): void
     {
+        $this->withHeader('Accept-Language', 'fr');
         Filament::setCurrentPanel(Filament::getPanel('admin'));
         $admin = User::factory()->create(['account_type' => 'admin']);
         $seller = User::factory()->create(['hide_name' => false]);

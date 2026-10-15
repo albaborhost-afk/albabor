@@ -120,14 +120,14 @@
                             </div>
                         </template>
                         <template x-if="messages.length === 0">
-                            <p class="text-center text-sm py-8" style="color: #9BA8B7;">Aucun message pour le moment.</p>
+                            <p class="text-center text-sm py-8" style="color: #9BA8B7;">{{ __('Aucun message pour le moment.') }}</p>
                         </template>
                     </div>
 
                     {{-- Reply form --}}
                     <form @submit.prevent="sendMessage()" class="flex gap-3 items-end">
                         <textarea x-model="newMessage" rows="2" required maxlength="2000"
-                                  placeholder="{{ __('messages.type_message') ?? 'Tapez votre message...' }}"
+                                  placeholder="{{ __('messages.type_message') }}"
                                   class="flex-1 px-4 py-3 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 transition-all duration-200"
                                   style="background: #F0F4F8; border: 1.5px solid #E0E6ED; color: #1B2A4A;"
                                   @keydown.enter.meta.prevent="sendMessage()"
@@ -137,7 +137,7 @@
                                 class="px-6 py-3 rounded-xl text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 flex-shrink-0"
                                 :class="{ 'opacity-50': sending }"
                                 style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27,79,114,0.3);">
-                            <span x-show="!sending">{{ __('messages.send') ?? 'Envoyer' }}</span>
+                            <span x-show="!sending">{{ __('messages.send') }}</span>
                             <span x-show="sending">...</span>
                         </button>
                     </form>
@@ -200,7 +200,7 @@
                                         id: Date.now(),
                                         body: body,
                                         sender_id: this.currentUserId,
-                                        sender: { name: 'Moi' },
+                                        sender: { name: {{ \Illuminate\Support\Js::from(__('Moi')) }} },
                                         created_at: new Date().toISOString()
                                     });
                                     this.$nextTick(() => this.scrollToBottom());
@@ -218,12 +218,9 @@
 
                         formatTime(iso) {
                             if (!iso) return '';
-                            const d = new Date(iso);
-                            const day = String(d.getDate()).padStart(2, '0');
-                            const month = String(d.getMonth() + 1).padStart(2, '0');
-                            const hours = String(d.getHours()).padStart(2, '0');
-                            const mins = String(d.getMinutes()).padStart(2, '0');
-                            return day + '/' + month + ' ' + hours + ':' + mins;
+                            return new Intl.DateTimeFormat(document.documentElement.lang, {
+                                day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                            }).format(new Date(iso));
                         }
                     }
                 }

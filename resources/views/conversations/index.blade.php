@@ -90,7 +90,7 @@
                                                 <h3 class="text-sm font-bold truncate" style="color: #1B2A4A;">{{ $conversation->listing?->title ?? __('messages.listing_deleted') }}</h3>
                                                 <div class="flex items-center gap-2 mt-0.5">
                                                     <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background: rgba(23,162,184,0.08); color: #17A2B8;">
-                                                        Message direct
+                                                        {{ __('Message direct') }}
                                                     </span>
                                                     <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background: {{ $isBuyer ? 'rgba(23,162,184,0.08)' : 'rgba(243,156,18,0.08)' }}; color: {{ $isBuyer ? '#17A2B8' : '#F39C12' }};">
                                                         {{ $isBuyer ? __('messages.buyer') : __('messages.seller') }}
@@ -141,7 +141,7 @@
                                                 <h3 class="text-sm font-bold truncate" style="color: #1B2A4A;">{{ $ticket->listing?->title ?? __('messages.listing_deleted') }}</h3>
                                                 <div class="flex items-center gap-2 mt-0.5">
                                                     <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background: rgba(243,156,18,0.08); color: #F39C12;">
-                                                        Mediation
+                                                        {{ __('Mediation') }}
                                                     </span>
                                                     <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background: {{ $isBuyer ? 'rgba(23,162,184,0.08)' : 'rgba(243,156,18,0.08)' }}; color: {{ $isBuyer ? '#17A2B8' : '#F39C12' }};">
                                                         {{ $isBuyer ? __('messages.buyer') : __('messages.seller') }}

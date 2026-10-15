@@ -7,16 +7,16 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    Accueil
+                    {{ __('Accueil') }}
                 </a>
                 <svg class="w-4 h-4" style="color: #E0E6ED;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <a href="{{ route('listings.my') }}" style="color: #9BA8B7;" class="hover:opacity-80">Mes Annonces</a>
+                <a href="{{ route('listings.my') }}" style="color: #9BA8B7;" class="hover:opacity-80">{{ __('Mes Annonces') }}</a>
                 <svg class="w-4 h-4" style="color: #E0E6ED;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <span style="color: #1B2A4A;" class="font-medium">Paiement</span>
+                <span style="color: #1B2A4A;" class="font-medium">{{ __('Paiement') }}</span>
             </nav>
         </div>
     </div>
@@ -32,8 +32,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-3xl font-extrabold tracking-tight text-white">Paiement</h1>
-                    <p class="mt-0.5 text-white/70">Finalisez le paiement pour publier votre annonce</p>
+                    <h1 class="text-3xl font-extrabold tracking-tight text-white">{{ __('Paiement') }}</h1>
+                    <p class="mt-0.5 text-white/70">{{ __('Finalisez le paiement pour publier votre annonce') }}</p>
                 </div>
             </div>
         </div>
@@ -74,13 +74,13 @@
                     'video'     => ['label' => 'Vidéo de présentation',        'icon' => '🎬', 'color' => '#8E44AD'],
                 ];
                 if (!empty($requestedServices)) {
-                    $servicesText = implode(' + ', array_map(fn($s) => $serviceLabels[$s]['label'] ?? $s, $requestedServices));
-                    $waText  = "Bonjour AlBabor 👋\n";
-                    $waText .= "J'ai créé l'annonce *{$listing->title}* et je souhaite activer les services suivants :\n";
+                    $servicesText = implode(' + ', array_map(fn($s) => __($serviceLabels[$s]['label'] ?? $s), $requestedServices));
+                    $waText  = __('Bonjour AlBabor 👋') . "\n";
+                    $waText .= __("J'ai créé l'annonce *:title* et je souhaite activer les services suivants :", ['title' => $listing->title]) . "\n";
                     foreach ($requestedServices as $s) {
-                        $waText .= "→ " . ($serviceLabels[$s]['label'] ?? $s) . "\n";
+                        $waText .= "→ " . (__($serviceLabels[$s]['label'] ?? $s)) . "\n";
                     }
-                    $waText .= "\nMerci de me contacter pour confirmer et planifier. 🙏";
+                    $waText .= "\n" . __('Merci de me contacter pour confirmer et planifier. 🙏');
                     $waLink  = "https://wa.me/213791807475?text=" . urlencode($waText);
                 }
 
@@ -96,17 +96,17 @@
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                     </div>
                     <div>
-                        <p class="text-white font-bold text-sm">Services AlBabor demandés</p>
-                        <p class="text-white/70 text-xs">Contactez notre équipe pour confirmer et planifier</p>
+                        <p class="text-white font-bold text-sm">{{ __('Services AlBabor demandés') }}</p>
+                        <p class="text-white/70 text-xs">{{ __('Contactez notre équipe pour confirmer et planifier') }}</p>
                     </div>
-                    <span class="ml-auto text-xs font-bold text-white bg-white/20 px-3 py-1 rounded-full">{{ count($requestedServices) }} service(s)</span>
+                    <span class="ml-auto text-xs font-bold text-white bg-white/20 px-3 py-1 rounded-full">{{ count($requestedServices) }} {{ __('service(s)') }}</span>
                 </div>
                 <div class="px-6 py-5" style="background: linear-gradient(160deg, #FFFDF5, #FEF9E7);">
                     <div class="flex flex-wrap gap-2 mb-5">
                         @foreach($requestedServices as $s)
                             @if(isset($serviceLabels[$s]))
                             <span class="inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-full" style="background: white; border: 2px solid {{ $serviceLabels[$s]['color'] }}; color: {{ $serviceLabels[$s]['color'] }}; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-                                {{ $serviceLabels[$s]['icon'] }} {{ $serviceLabels[$s]['label'] }}
+                                {{ $serviceLabels[$s]['icon'] }} {{ __($serviceLabels[$s]['label']) }}
                             </span>
                             @endif
                         @endforeach
@@ -115,7 +115,7 @@
                        class="flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-bold text-white text-sm transition-all duration-300 hover:-translate-y-1"
                        style="background: linear-gradient(135deg, #25D366, #128C7E); box-shadow: 0 8px 25px rgba(37,211,102,0.4);">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
-                        Contacter l'équipe AlBabor sur WhatsApp
+                        {{ __('Contacter l\'équipe AlBabor sur WhatsApp') }}
                     </a>
                 </div>
             </div>
@@ -127,7 +127,7 @@
                     <svg class="w-5 h-5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    Résumé de l'annonce
+                    {{ __('Résumé de l\'annonce') }}
                 </h2>
                 <div class="flex items-start gap-4">
                     <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style="background: #F0F4F8;">
@@ -152,8 +152,8 @@
             <!-- Publication Fee -->
             <div class="rounded-2xl p-5 mb-6 flex items-center justify-between" style="background: rgba(23,162,184,0.08); border: 1px solid rgba(23,162,184,0.2);">
                 <div>
-                    <p class="font-bold" style="color: #1B2A4A;">Frais de publication</p>
-                    <p class="text-xs mt-0.5" style="color: #6B7B8D;">Valable 365 jours — annonce visible sur AlBabor</p>
+                    <p class="font-bold" style="color: #1B2A4A;">{{ __('Frais de publication') }}</p>
+                    <p class="text-xs mt-0.5" style="color: #6B7B8D;">{{ __('Valable 365 jours — annonce visible sur AlBabor') }}</p>
                 </div>
                 <div class="text-right">
                     <p class="text-2xl font-black" style="color: #1B4F72;">{{ number_format($amount, 0, ',', ' ') }} DA</p>
@@ -184,9 +184,9 @@
                         <svg class="w-5 h-5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        Justificatif de paiement
+                        {{ __('Justificatif de paiement') }}
                     </h2>
-                    <p class="text-sm mb-4" style="color: #6B7B8D;">Téléversez une capture d'écran ou photo du virement effectué</p>
+                    <p class="text-sm mb-4" style="color: #6B7B8D;">{{ __('Téléversez une capture d\'écran ou photo du virement effectué') }}</p>
 
                     <div class="flex justify-center px-6 pt-5 pb-6 rounded-xl transition-colors"
                          style="border: 2px dashed #E0E6ED; background: #F8FAFC;">
@@ -196,13 +196,13 @@
                             </svg>
                             <div class="flex text-sm justify-center" style="color: #6B7B8D;">
                                 <label for="proof" class="relative cursor-pointer rounded-md font-semibold" style="color: #17A2B8;">
-                                    <span>Choisir un fichier</span>
+                                    <span>{{ __('Choisir un fichier') }}</span>
                                     <input id="proof" name="proof" type="file" class="sr-only" accept="image/*"
                                            x-bind:required="method !== ''">
                                 </label>
-                                <p class="pl-1">ou glisser-déposer</p>
+                                <p class="pl-1">{{ __('ou glisser-déposer') }}</p>
                             </div>
-                            <p class="text-xs" style="color: #9BA8B7;">PNG, JPG jusqu'à 5 MB</p>
+                            <p class="text-xs" style="color: #9BA8B7;">{{ __('PNG, JPG jusqu\'à 5 MB') }}</p>
                         </div>
                     </div>
                     <div id="proofPreview" class="mt-4 hidden">
@@ -213,18 +213,18 @@
                 <!-- Submit -->
                 <div x-show="method !== ''" x-transition class="flex justify-between items-center">
                     <a href="{{ route('listings.my') }}" class="px-5 py-3 rounded-xl font-semibold transition-all text-sm" style="color: #6B7B8D; border: 1px solid #E0E6ED;">
-                        Annuler
+                        {{ __('Annuler') }}
                     </a>
                     <button type="submit"
                             class="px-8 py-3 rounded-xl font-bold text-white text-sm transition-all duration-300 hover:-translate-y-0.5"
                             style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 8px 25px rgba(27,79,114,0.25);">
-                        Envoyer le justificatif →
+                        {{ __('Envoyer le justificatif →') }}
                     </button>
                 </div>
 
                 <div x-show="method === ''" x-transition class="flex justify-start">
                     <a href="{{ route('listings.my') }}" class="px-5 py-3 rounded-xl font-semibold transition-all text-sm" style="color: #6B7B8D; border: 1px solid #E0E6ED;">
-                        Annuler
+                        {{ __('Annuler') }}
                     </a>
                 </div>
 
@@ -234,8 +234,8 @@
             <div class="mt-6 flex items-start gap-3 px-4 py-3 rounded-xl" style="background: rgba(27,79,114,0.05); border: 1px solid rgba(27,79,114,0.1);">
                 <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: #1B4F72;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <p class="text-xs" style="color: #6B7B8D;">
-                    Les virements (BaridiMob, BEA, PayPal) sont vérifiés par notre équipe sous 24–48&nbsp;h.
-                    Le paiement en ligne est confirmé instantanément.
+                    {{ __('Les virements (BaridiMob, BEA, PayPal) sont vérifiés par notre équipe sous 24–48 h.') }}
+                    {{ __('Le paiement en ligne est confirmé instantanément.') }}
                 </p>
             </div>
 

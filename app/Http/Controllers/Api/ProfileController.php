@@ -76,7 +76,7 @@ class ProfileController extends Controller
         $user->update($validated);
 
         return response()->json([
-            'message' => 'Profil mis à jour avec succès.',
+            'message' => __('Profil mis à jour avec succès.'),
             'user' => $user->fresh()->withRealName(),
         ]);
     }
@@ -93,7 +93,7 @@ class ProfileController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Mot de passe mis à jour avec succès.',
+            'message' => __('Mot de passe mis à jour avec succès.'),
         ]);
     }
 
@@ -103,13 +103,13 @@ class ProfileController extends Controller
 
         if ($user->verification_status === 'verified') {
             return response()->json([
-                'message' => 'Votre compte est déjà vérifié.',
+                'message' => __('Votre compte est déjà vérifié.'),
             ], 422);
         }
 
         if ($user->verification_status === 'pending') {
             return response()->json([
-                'message' => 'Une demande de vérification est déjà en cours.',
+                'message' => __('Une demande de vérification est déjà en cours.'),
             ], 422);
         }
 
@@ -128,7 +128,7 @@ class ProfileController extends Controller
         $user->update(['verification_status' => 'pending']);
 
         return response()->json([
-            'message' => 'Demande de vérification soumise avec succès.',
+            'message' => __('Demande de vérification soumise avec succès.'),
         ]);
     }
 
@@ -138,14 +138,14 @@ class ProfileController extends Controller
 
         if ($user->account_type === 'vendor') {
             return response()->json([
-                'message' => 'Vous êtes déjà un vendeur.',
+                'message' => __('Vous êtes déjà un vendeur.'),
             ], 422);
         }
 
         $user->update(['account_type' => 'vendor']);
 
         return response()->json([
-            'message' => 'Votre compte a été mis à niveau en vendeur.',
+            'message' => __('Votre compte a été mis à niveau en vendeur.'),
             'user' => $user->fresh()->withRealName(),
         ]);
     }
@@ -173,7 +173,7 @@ class ProfileController extends Controller
         $user->update(['profile_picture' => $filename, 'profile_picture_data' => null]);
 
         return response()->json([
-            'message' => 'Photo de profil mise à jour.',
+            'message' => __('Photo de profil mise à jour.'),
             'profile_picture_url' => $user->fresh()->profile_picture_url,
         ]);
     }
@@ -189,7 +189,7 @@ class ProfileController extends Controller
         $user->update(['profile_picture' => null, 'profile_picture_data' => null]);
 
         return response()->json([
-            'message' => 'Photo de profil supprimée.',
+            'message' => __('Photo de profil supprimée.'),
         ]);
     }
 
@@ -226,7 +226,7 @@ class ProfileController extends Controller
         $user->delete();
 
         return response()->json([
-            'message' => 'Votre compte a été supprimé définitivement.',
+            'message' => __('Votre compte a été supprimé définitivement.'),
         ]);
     }
 }

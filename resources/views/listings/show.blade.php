@@ -206,7 +206,7 @@
                                         <button @click="goTo({{ $index }})"
                                                 class="listing-thumb flex-shrink-0 w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] md:w-[5.5rem] md:h-[5.5rem] rounded-xl overflow-hidden transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#17A2B8]"
                                                 :class="currentIndex === {{ $index }} ? 'listing-thumb-active' : 'listing-thumb-inactive'">
-                                            <img src="{{ $thumbUrl }}" alt="Image {{ $index + 1 }}" class="w-full h-full object-cover">
+                                            <img src="{{ $thumbUrl }}" alt="{{ __('Image :number', ['number' => $index + 1]) }}" class="w-full h-full object-cover">
                                         </button>
                                     @endforeach
                                 </div>
@@ -256,7 +256,7 @@
                                 <div class="p-4 sm:p-5">
                                     <h3 class="text-sm font-semibold mb-3 flex items-center gap-2" style="color: #1B2A4A;">
                                         <svg class="w-5 h-5" style="color: #E74C3C;" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><path fill="#fff" d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                                        Video
+                                        {{ __('Video') }}
                                     </h3>
                                     <div class="rounded-2xl overflow-hidden" style="aspect-ratio: 16/9;">
                                         <iframe
@@ -307,7 +307,7 @@
                                 @php $badgeClasses = ['boat' => 'badge-soft-boat', 'jetski' => 'badge-soft-jetski', 'engine' => 'badge-soft-engine', 'parts' => 'badge-soft-parts']; @endphp
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold {{ $badgeClasses[$listing->category] ?? 'bg-gray-100' }}">
                                     {!! $categoryIcons[$listing->category] ?? '' !!}
-                                    {{ $categoryLabels[$listing->category] ?? ucfirst($listing->category) }}
+                                    {{ __($categoryLabels[$listing->category] ?? ucfirst($listing->category)) }}
                                 </span>
 
                                 {{-- Type (e.g. boat type) --}}
@@ -338,7 +338,7 @@
                                 {{-- Location --}}
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold" style="background: rgba(255, 107, 107, 0.08); color: #FF6B6B; border: 1px solid rgba(255, 107, 107, 0.15);">
                                     <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                                    @if($listing->pays){{ $listing->pays }}@endif{{ $listing->wilaya ? ($listing->pays ? ', ' : '') . $listing->wilaya : '' }}{{ $listing->visible_a ? ', ' . $listing->visible_a : '' }}
+                                    @if($listing->pays){{ __($listing->pays) }}@endif{{ $listing->wilaya ? ($listing->pays ? ', ' : '') . $listing->wilaya : '' }}{{ $listing->visible_a ? ', ' . $listing->visible_a : '' }}
                                 </span>
                             </div>
                         </div>
@@ -370,7 +370,7 @@
                             <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white gradient-primary flex-shrink-0" style="box-shadow: 0 3px 8px rgba(27,79,114,0.25);">
                                 <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
                             </span>
-                            Description
+                            {{ __('Description') }}
                         </h2>
                         <div class="text-xs sm:text-sm leading-relaxed pl-9 sm:pl-[42px]" style="color: #6B7B8D; line-height: 1.65;">{!! nl2br(e($listing->description)) !!}</div>
                     </div>
@@ -405,14 +405,14 @@
                                     <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
                                         <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                             <span style="color: #9BA8B7;" class="group-hover:text-[#17A2B8] transition-colors">{!! $info['icon'] !!}</span>
-                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
+                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ __($info['label']) }}</p>
                                         </div>
                                         <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">
                                             @if($key === 'immatriculation')
                                                 @php $immatVal = $listing->getSpec('general', $key); @endphp
-                                                <span class="mr-1">{{ \App\Models\Listing::IMMATRICULATION_FLAGS[$immatVal] ?? '' }}</span>{{ $immatVal }}
+                                                <span class="mr-1">{{ \App\Models\Listing::IMMATRICULATION_FLAGS[$immatVal] ?? '' }}</span>{{ __($immatVal) }}
                                             @else
-                                                {{ $listing->getSpec('general', $key) }}
+                                                {{ in_array($key, ['type_bateau', 'type_jetski', 'part_type']) ? __($listing->getSpec('general', $key)) : $listing->getSpec('general', $key) }}
                                             @endif
                                         </p>
                                     </div>
@@ -445,9 +445,9 @@
                                     <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
                                         <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                             <span style="color: #9BA8B7;" class="group-hover:text-[#17A2B8] transition-colors">{!! $info['icon'] !!}</span>
-                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
+                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ __($info['label']) }}</p>
                                         </div>
-                                        <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('dimensions', $key) }} <span class="font-normal text-[10px] sm:text-xs" style="color: #9BA8B7;">{{ $info['unit'] }}</span></p>
+                                        <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('dimensions', $key) }} <span class="font-normal text-[10px] sm:text-xs" style="color: #9BA8B7;">{{ __($info['unit']) }}</span></p>
                                     </div>
                                 @endif
                             @endforeach
@@ -482,9 +482,9 @@
                                     <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
                                         <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                             <span style="color: #9BA8B7;" class="group-hover:text-[#17A2B8] transition-colors">{!! $info['icon'] !!}</span>
-                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
+                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ __($info['label']) }}</p>
                                         </div>
-                                        <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('motorisation', $key) }}@if($info['unit']) <span class="font-normal text-[10px] sm:text-xs" style="color: #9BA8B7;">{{ $info['unit'] }}</span>@endif</p>
+                                        <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">{{ in_array($key, ['type_helice', 'propulsion', 'type_carburant', 'refroidissement']) ? __($listing->getSpec('motorisation', $key)) : $listing->getSpec('motorisation', $key) }}@if($info['unit']) <span class="font-normal text-[10px] sm:text-xs" style="color: #9BA8B7;">{{ __($info['unit']) }}</span>@endif</p>
                                     </div>
                                 @endif
                             @endforeach
@@ -513,7 +513,7 @@
                                     <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
                                         <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                             <span style="color: #9BA8B7;" class="group-hover:text-[#17A2B8] transition-colors">{!! $info['icon'] !!}</span>
-                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ $info['label'] }}</p>
+                                            <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ __($info['label']) }}</p>
                                         </div>
                                         <p class="text-xs sm:text-sm font-semibold" style="color: #1B2A4A;">{{ $listing->getSpec('reservoirs', $key) }} <span class="font-normal text-[10px] sm:text-xs" style="color: #9BA8B7;">L</span></p>
                                     </div>
@@ -545,7 +545,7 @@
                                             {!! $info['icon'] !!}
                                         </div>
                                         <p class="text-xl sm:text-2xl font-extrabold" style="color: #1B4F72;">{{ $listing->getSpec('amenagements', $key) }}</p>
-                                        <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-0.5" style="color: #9BA8B7;">{{ $info['label'] }}</p>
+                                        <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-0.5" style="color: #9BA8B7;">{{ __($info['label']) }}</p>
                                     </div>
                                 @endif
                             @endforeach
@@ -586,13 +586,13 @@
                                 <div class="{{ !$loop->first ? 'mt-5 pt-5' : '' }}" style="{{ !$loop->first ? 'border-top: 1px solid #E0E6ED;' : '' }}">
                                     <div class="flex items-center gap-2 mb-3">
                                         <span style="color: {{ $tagInfo['color'] }};">{!! $tagInfo['icon'] !!}</span>
-                                        <p class="text-xs font-bold uppercase tracking-wider" style="color: {{ $tagInfo['color'] }};">{{ $tagInfo['label'] }}</p>
+                                        <p class="text-xs font-bold uppercase tracking-wider" style="color: {{ $tagInfo['color'] }};">{{ __($tagInfo['label']) }}</p>
                                     </div>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($tags as $tag)
                                             <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-105 cursor-default" style="background: {{ $tagInfo['color'] }}08; color: {{ $tagInfo['color'] }}; border: 1px solid {{ $tagInfo['color'] }}18;">
                                                 <svg class="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                                {{ $tag }}
+                                                {{ in_array($tag, \App\Support\ListingCatalog::EQUIPMENT[$tagKey] ?? [], true) ? __($tag) : $tag }}
                                             </span>
                                         @endforeach
                                     </div>
@@ -616,7 +616,7 @@
                                 <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
                                     <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                         <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                                        <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">Annexe</p>
+                                        <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ __('Annexe') }}</p>
                                     </div>
                                     <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ __('Oui, incluse') }}</p>
                                 </div>
@@ -625,7 +625,7 @@
                                 <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
                                     <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                         <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4"/></svg>
-                                        <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">Remorque</p>
+                                        <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ __('Remorque') }}</p>
                                     </div>
                                     <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ __('Oui') }}{{ $listing->getSpec('extras', 'marque_remorque') ? ' — ' . $listing->getSpec('extras', 'marque_remorque') : '' }}</p>
                                 </div>
@@ -634,7 +634,7 @@
                                 <div class="spec-item group p-2.5 sm:p-3.5 rounded-xl border transition-all duration-200" style="background: #FAFBFC; border-color: #EDF0F4;">
                                     <div class="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
                                         <svg class="w-4 h-4" style="color: #9BA8B7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                        <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">Place au port</p>
+                                        <p class="text-[10px] font-bold uppercase tracking-wider" style="color: #9BA8B7;">{{ __('Place au port') }}</p>
                                     </div>
                                     <p class="text-sm font-semibold" style="color: #1B2A4A;">
                                         {{ __('Oui') }}{{ $listing->getSpec('extras', 'adresse_port') ? ' — ' . $listing->getSpec('extras', 'adresse_port') : '' }}
@@ -677,12 +677,12 @@
                                             {!! $detail['icon'] !!}
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ $detail['label'] }}</p>
-                                            <p class="text-xs" style="color: #9BA8B7;">Service demande — notre equipe vous contactera</p>
+                                            <p class="text-sm font-semibold" style="color: #1B2A4A;">{{ __($detail['label']) }}</p>
+                                            <p class="text-xs" style="color: #9BA8B7;">{{ __('Service demande — notre equipe vous contactera') }}</p>
                                         </div>
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider flex-shrink-0" style="background: {{ $detail['color'] }}12; color: {{ $detail['color'] }};">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                            Demande
+                                            {{ __('Demande') }}
                                         </span>
                                     </div>
                                 @endif
@@ -986,8 +986,8 @@
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(function() {
                 const btn = document.getElementById('copyBtnText');
-                btn.textContent = 'Lien copie!';
-                setTimeout(() => { btn.textContent = 'Copier le lien'; }, 2000);
+                btn.textContent = @js(__('Lien copié'));
+                setTimeout(() => { btn.textContent = @js(__('Copier le lien'));  }, 2000);
             });
         }
 

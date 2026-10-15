@@ -506,4 +506,8 @@ return [
     'banner_cta_home_button' => 'Réserver cet emplacement',
     'banner_perk_stats_title' => 'Chiffres transparents',
     'banner_perk_stats_text' => 'Nous vous communiquons vos diffusions, vos clics et votre taux de clic.',
+
+    'mediation_already_paid' => 'Les frais de médiation pour cette demande ont déjà été payés.',
+    'mediation_payment_already_submitted' => 'Un paiement a déjà été soumis pour cette demande de médiation.',
+    'mediation_payment_submitted' => 'Votre paiement des frais de médiation a été soumis. Il est en attente de validation.',
 ];

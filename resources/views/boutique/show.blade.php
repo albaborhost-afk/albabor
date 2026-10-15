@@ -1,6 +1,6 @@
 <x-app-layout
     :title="$vendorProfile->shop_name"
-    :description="'Boutique ' . $vendorProfile->shop_name . ' — moteurs et pieces detachees nautiques en Algerie.'"
+    :description="__('Boutique :shop — moteurs et pièces détachées nautiques en Algérie.', ['shop' => $vendorProfile->shop_name])"
 >
     <!-- Breadcrumb Bar -->
     <div style="background: #FFFFFF; border-bottom: 1px solid #E0E6ED;">

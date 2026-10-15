@@ -2,6 +2,13 @@
     $labels = ['q'=>'Recherche', 'category'=>'Catégorie', 'type'=>'Type', 'price_min'=>'Prix min.', 'price_max'=>'Prix max.', 'currency'=>'Devise', 'length_min'=>'Longueur min.', 'length_max'=>'Longueur max.', 'width_min'=>'Largeur min.', 'width_max'=>'Largeur max.', 'pays'=>'Pays', 'wilaya'=>'Localisation', 'location'=>'Ville / région', 'year_min'=>'Année min.', 'year_max'=>'Année max.', 'fabricant'=>'Marque', 'etat'=>'État', 'type_offre'=>'Offre', 'propulsion'=>'Type de moteur', 'fuel_type'=>'Carburant', 'engine_count'=>'Moteurs', 'power_min'=>'Puissance min.', 'power_max'=>'Puissance max.', 'drive_type'=>'Type d’hélice', 'engine_brand'=>'Marque moteur', 'cabins_min'=>'Cabines min.', 'berths_min'=>'Couchettes min.'];
     $active = collect(request()->only(array_keys($labels)))->filter(fn ($value) => is_scalar($value) && (string) $value !== '');
     $categories = ['boat'=>'Bateaux', 'jetski'=>'Jet-Skis', 'engine'=>'Moteurs', 'parts'=>'Pièces'];
+    $valueLabels = [
+        'category' => $categories,
+        'type' => array_merge(...array_values(\App\Models\Listing::CATEGORY_TYPES)),
+        'etat' => \App\Models\Listing::ETAT_LABELS,
+        'type_offre' => \App\Models\Listing::TYPE_OFFRE_LABELS,
+        'currency' => ['DZD' => 'DZD · DA', 'EUR' => 'EUR · €', 'OTHER' => 'Autre'],
+    ];
 @endphp
 <form id="filterForm" action="{{ route('listings.index') }}" method="GET" class="listing-search bg-white rounded-2xl p-4 sm:p-6 mb-6 shadow-sm" style="color:#1B2A4A">
     <div class="flex gap-2 mb-4">
@@ -32,7 +39,7 @@
         <details>
             <summary>{{ __('Emplacement') }}</summary>
             <div class="filter-panel">
-                <label>{{ __('Pays') }}<select name="pays"><option value="">{{ __('Tous les pays') }}</option>@foreach(\App\Support\ListingCatalog::COUNTRIES as $country=>$flag)<option value="{{ $country }}" @selected(request('pays', request('wilaya')) === $country)>{{ $flag }} {{ $country }}</option>@endforeach</select></label>
+                <label>{{ __('Pays') }}<select name="pays"><option value="">{{ __('Tous les pays') }}</option>@foreach(\App\Support\ListingCatalog::COUNTRIES as $country=>$flag)<option value="{{ $country }}" @selected(request('pays', request('wilaya')) === $country)>{{ $flag }} {{ __($country) }}</option>@endforeach</select></label>
                 <label>{{ __('Ville / région') }}<input name="location" value="{{ request('location') }}" placeholder="{{ __('Alger, Oran, Alicante…') }}"></label>
             </div>
         </details>
@@ -66,7 +73,12 @@
         <button class="gradient-primary rounded-xl px-4 py-2 text-sm font-semibold text-white">{{ __('Appliquer les filtres') }}</button>
         <a href="{{ route('listings.index') }}" class="text-sm font-semibold px-2 py-2 text-cyan-700">{{ __('Réinitialiser les filtres') }}</a>
         @foreach($active as $key=>$value)
-            <a class="rounded-full bg-cyan-50 border border-cyan-200 px-3 py-1.5 text-xs text-cyan-800" href="{{ route('listings.index', request()->except([$key, 'page'])) }}" aria-label="{{ __('Retirer') }} {{ __($labels[$key]) }}">{{ __($labels[$key]) }} : {{ $categories[$value] ?? $value }} ×</a>
+            @php
+                $displayValue = isset($valueLabels[$key][$value])
+                    ? __($valueLabels[$key][$value])
+                    : (in_array($key, ['pays', 'propulsion', 'fuel_type', 'drive_type']) ? __($value) : $value);
+            @endphp
+            <a class="rounded-full bg-cyan-50 border border-cyan-200 px-3 py-1.5 text-xs text-cyan-800" href="{{ route('listings.index', request()->except([$key, 'page'])) }}" aria-label="{{ __('Retirer') }} {{ __($labels[$key]) }}">{{ __($labels[$key]) }} : {{ $displayValue }} ×</a>
         @endforeach
     </div>
 </form>

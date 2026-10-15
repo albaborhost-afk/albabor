@@ -7,16 +7,16 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    Accueil
+                    {{ __('Accueil') }}
                 </a>
                 <svg class="w-4 h-4" style="color: #E0E6ED;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <a href="{{ route('profile.show') }}" style="color: #9BA8B7;" class="hover:opacity-80">Mon Profil</a>
+                <a href="{{ route('profile.show') }}" style="color: #9BA8B7;" class="hover:opacity-80">{{ __('Mon Profil') }}</a>
                 <svg class="w-4 h-4" style="color: #E0E6ED;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <span style="color: #1B2A4A;" class="font-medium">Modifier</span>
+                <span style="color: #1B2A4A;" class="font-medium">{{ __('Modifier') }}</span>
             </nav>
         </div>
     </div>
@@ -86,24 +86,24 @@
                     <svg class="w-5 h-5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
-                    Changer le mot de passe
+                    {{ __('Changer le mot de passe') }}
                 </h2>
 
                 <div class="space-y-4">
                     <div>
-                        <label for="current_password" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">Mot de passe actuel</label>
+                        <label for="current_password" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">{{ __('Mot de passe actuel') }}</label>
                         <input type="password" name="current_password" id="current_password" required
                                class="glass-input w-full py-3 px-4 rounded-xl">
                     </div>
 
                     <div>
-                        <label for="password" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">Nouveau mot de passe</label>
+                        <label for="password" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">{{ __('Nouveau mot de passe') }}</label>
                         <input type="password" name="password" id="password" required
                                class="glass-input w-full py-3 px-4 rounded-xl">
                     </div>
 
                     <div>
-                        <label for="password_confirmation" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">Confirmer le mot de passe</label>
+                        <label for="password_confirmation" class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">{{ __('Confirmer le mot de passe') }}</label>
                         <input type="password" name="password_confirmation" id="password_confirmation" required
                                class="glass-input w-full py-3 px-4 rounded-xl">
                     </div>
@@ -112,7 +112,7 @@
                 <div class="mt-6 flex justify-end">
                     <button type="submit" class="px-6 py-3 gradient-primary rounded-xl font-bold text-white transition-all duration-300 transform hover:-translate-y-0.5"
                             style="box-shadow: 0 8px 25px rgba(27, 79, 114, 0.25);">
-                        Mettre a jour
+                        {{ __('Mettre a jour') }}
                     </button>
                 </div>
             </form>
@@ -122,7 +122,7 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
-                    Retour au profil
+                    {{ __('Retour au profil') }}
                 </a>
             </div>
         </div>

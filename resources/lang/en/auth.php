@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'failed' => 'These credentials do not match our records.',
+    'password' => 'The provided password is incorrect.',
+    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'login' => 'Log in',
+    'register' => 'Sign up',
+    'logout' => 'Log out',
+    'email' => 'Email address',
+    'password_label' => 'Password',
+    'confirm_password' => 'Confirm password',
+    'remember_me' => 'Remember me',
+    'forgot_password' => 'Forgot your password?',
+    'reset_password' => 'Reset password',
+    'send_reset_link' => 'Send password reset link',
+    'name' => 'Full name',
+    'phone' => 'Phone number',
+    'already_registered' => 'Already registered?',
+    'not_registered' => 'Not registered yet?',
+    'create_account' => 'Create an account',
+    'welcome_back' => 'Welcome back',
+    'sign_in_to_continue' => 'Log in to continue',
+    'register_to_continue' => 'Sign up to get started',
+];

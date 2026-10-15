@@ -22,10 +22,11 @@ use Illuminate\Support\Facades\Route;
 
 // Language switcher
 Route::get('/lang/{locale}', function (string $locale) {
-    if (in_array($locale, ['fr', 'en', 'es'])) {
+    if (in_array($locale, ['fr', 'en', 'es'], true)) {
         session(['locale' => $locale]);
+        return redirect()->back()->withCookie(cookie('locale', $locale, 60 * 24 * 365));
     }
-    return redirect()->back()->withInput();
+    return redirect()->back();
 })->name('lang.switch');
 
 // Home

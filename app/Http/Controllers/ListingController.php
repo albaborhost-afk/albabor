@@ -165,9 +165,9 @@ class ListingController extends Controller
                 $allowed = Listing::CATEGORY_TYPES[$category] ?? null;
                 if ($allowed === null) return; // type only applies when the category has types
                 if (empty($value)) {
-                    $fail('Le type est requis pour cette catégorie.');
+                    $fail(__('Le type est requis pour cette catégorie.'));
                 } elseif (!array_key_exists($value, $allowed)) {
-                    $fail('Le type sélectionné n\'est pas valide.');
+                    $fail(__('Le type sélectionné n\'est pas valide.'));
                 }
             }],
             'price_dzd' => 'required|numeric|min:0|max:' . $this->maxListingPriceDzd(),
@@ -248,11 +248,11 @@ class ListingController extends Controller
 
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Une erreur est survenue lors de la création de l\'annonce. Veuillez réessayer.',
+                    'message' => __('Une erreur est survenue lors de la création de l\'annonce. Veuillez réessayer.'),
                 ], 500);
             }
 
-            return back()->withInput()->withErrors(['general' => 'Une erreur est survenue lors de la création de l\'annonce. Veuillez réessayer.']);
+            return back()->withInput()->withErrors(['general' => __('Une erreur est survenue lors de la création de l\'annonce. Veuillez réessayer.')]);
         }
 
         $this->syncAnonymousPublishing($request, $user, $listing);
@@ -265,14 +265,14 @@ class ListingController extends Controller
 
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Impossible de sauvegarder les images. Veuillez réessayer.',
+                    'message' => __('Impossible de sauvegarder les images. Veuillez réessayer.'),
                     'errors' => [
-                        'images' => ['Impossible de sauvegarder les images. Veuillez réessayer.'],
+                        'images' => [__('Impossible de sauvegarder les images. Veuillez réessayer.')],
                     ],
                 ], 422);
             }
 
-            return back()->withErrors(['images' => 'Impossible de sauvegarder les images. Veuillez réessayer.'])->withInput();
+            return back()->withErrors(['images' => __('Impossible de sauvegarder les images. Veuillez réessayer.')])->withInput();
         }
 
         // Free publishing users skip payment entirely
@@ -479,9 +479,9 @@ class ListingController extends Controller
                 $allowed = Listing::CATEGORY_TYPES[$category] ?? null;
                 if ($allowed === null) return;
                 if (empty($value)) {
-                    $fail('Le type est requis pour cette catégorie.');
+                    $fail(__('Le type est requis pour cette catégorie.'));
                 } elseif (!array_key_exists($value, $allowed)) {
-                    $fail('Le type sélectionné n\'est pas valide.');
+                    $fail(__('Le type sélectionné n\'est pas valide.'));
                 }
             }],
             'price_dzd' => 'required|numeric|min:0|max:' . $this->maxListingPriceDzd(),
@@ -727,7 +727,7 @@ class ListingController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return back()->with('error', 'Une erreur est survenue. Veuillez réessayer.');
+            return back()->with('error', __('Une erreur est survenue. Veuillez réessayer.'));
         }
     }
 
@@ -771,13 +771,13 @@ class ListingController extends Controller
 
         if ($listing->status !== 'active') {
             return redirect()->route('listings.my')
-                ->with('error', 'Seules les annonces actives peuvent être remontées.');
+                ->with('error', __('Seules les annonces actives peuvent être remontées.'));
         }
 
         if (!$listing->canRenew()) {
             $days = $listing->daysUntilRenewal();
             return redirect()->route('listings.my')
-                ->with('error', "Renouvellement disponible dans {$days} jour(s).");
+                ->with('error', __('Renouvellement disponible dans :days jour(s).', ['days' => $days]));
         }
 
         $listing->update(['last_renewed_at' => now()]);

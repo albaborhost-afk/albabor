@@ -238,9 +238,9 @@
                                             </svg>
                                         </div>
                                         <div class="icon-bg w-16 h-16 sm:w-28 sm:h-28 mx-auto mb-2 rounded-xl flex items-center justify-center" style="background: #F0F4F8; transition: all 0.3s;">
-                                            <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}" class="w-14 h-14 sm:w-24 sm:h-24 object-contain">
+                                            <img src="{{ $cat['img'] }}" alt="{{ __($cat['label']) }}" class="w-14 h-14 sm:w-24 sm:h-24 object-contain">
                                         </div>
-                                        <span class="label-text text-sm font-medium" style="color: #6B7B8D; display: block; transition: all 0.3s;">{{ $cat['label'] }}</span>
+                                        <span class="label-text text-sm font-medium" style="color: #6B7B8D; display: block; transition: all 0.3s;">{{ __($cat['label']) }}</span>
                                     </div>
                                 </label>
                             @endforeach
@@ -249,12 +249,12 @@
                             <div class="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg" style="background: linear-gradient(135deg, #d4edda, #c3e6cb); border: 1px solid #28a745;">
                                 <svg class="w-5 h-5 flex-shrink-0" style="color: #155724;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
                                 <p class="text-sm font-medium" style="color: #155724;">
-                                    Votre première annonce est gratuite ! Aucun frais de publication.
+                                    {{ __('Votre première annonce est gratuite ! Aucun frais de publication.') }}
                                 </p>
                             </div>
                         @else
                             <p class="mt-3 text-xs" style="color: #9BA8B7;">
-                                Bateaux et Jet-skis : 5 000 DA de frais de publication. Moteurs et Pieces : gratuit avec abonnement.
+                                {{ __('Bateaux et Jet-skis : 5 000 DA de frais de publication. Moteurs et Pieces : gratuit avec abonnement.') }}
                             </p>
                         @endif
                     </div>
@@ -268,8 +268,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         <p class="text-sm font-medium" style="color: #856404;">
-                            Un abonnement actif est requis pour publier des moteurs et pièces.
-                            <a href="{{ route('subscription.plans') }}" class="underline font-semibold">Voir les abonnements</a>
+                            {{ __('Un abonnement actif est requis pour publier des moteurs et pièces.') }}
+                            <a href="{{ route('subscription.plans') }}" class="underline font-semibold">{{ __('Voir les abonnements') }}</a>
                         </p>
                     </div>
 
@@ -279,15 +279,15 @@
                             <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-bold" style="background: linear-gradient(135deg, #17A2B8, #48C9B0);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                             </span>
-                            Type de bateau *
+                            {{ __('Type de bateau *') }}
                         </h2>
                         <select name="type" x-model="boatType"
                                 class="glass-input w-full rounded-xl px-4 py-3 text-sm"
                                 :required="category === 'boat'"
                                 :disabled="category !== 'boat'">
-                            <option value="">-- Choisir le type de bateau --</option>
+                            <option value="">{{ __('-- Choisir le type de bateau --') }}</option>
                             @foreach(\App\Models\Listing::BOAT_TYPES as $slug => $label)
-                                <option value="{{ $slug }}" {{ old('type') == $slug ? 'selected' : '' }}>{{ $label }}</option>
+                                <option value="{{ $slug }}" {{ old('type') == $slug ? 'selected' : '' }}>{{ __($label) }}</option>
                             @endforeach
                         </select>
                         @error('type')
@@ -301,15 +301,15 @@
                             <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-bold" style="background: linear-gradient(135deg, #17A2B8, #48C9B0);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                             </span>
-                            Type de Jet-ski *
+                            {{ __('Type de Jet-ski *') }}
                         </h2>
                         <select name="type" x-model="jetskiType"
                                 class="glass-input w-full rounded-xl px-4 py-3 text-sm"
                                 :required="category === 'jetski'"
                                 :disabled="category !== 'jetski'">
-                            <option value="">-- Choisir le type de jet-ski --</option>
+                            <option value="">{{ __('-- Choisir le type de jet-ski --') }}</option>
                             @foreach(\App\Models\Listing::JETSKI_TYPES as $slug => $label)
-                                <option value="{{ $slug }}" {{ old('type') == $slug ? 'selected' : '' }}>{{ $label }}</option>
+                                <option value="{{ $slug }}" {{ old('type') == $slug ? 'selected' : '' }}>{{ __($label) }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -329,34 +329,34 @@
                     <div class="px-5 py-5">
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Titre de l'annonce *</label>
+                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Titre de l\'annonce *') }}</label>
                                 <input type="text" name="title" value="{{ old('title') }}" required
                                        class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                       placeholder="Ex: Bateau de peche 5m avec moteur">
+                                       placeholder="{{ __('Ex: Bateau de peche 5m avec moteur') }}">
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div x-show="category !== 'parts'">
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Fabricant</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Fabricant') }}</label>
                                     <input type="text" name="specs[general][fabricant]" value="{{ old('specs.general.fabricant') }}"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="Ex: Yamaha, Mercury...">
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="{{ __('Ex: Yamaha, Mercury...') }}">
                                     <x-brand-suggestions />
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Modele</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Modele') }}</label>
                                     <input type="text" name="specs[general][modele]" value="{{ old('specs.general.modele') }}"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="Ex: F150, Bayliner...">
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="{{ __('Ex: F150, Bayliner...') }}">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div x-show="category !== 'parts'">
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Annee de construction</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Annee de construction') }}</label>
                                     <input type="number" name="specs[general][annee_construction]" value="{{ old('specs.general.annee_construction') }}"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="Ex: 2020" min="1900" max="{{ date('Y') + 1 }}">
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="{{ __('Ex: 2020') }}" min="1900" max="{{ date('Y') + 1 }}">
                                 </div>
                                 <div x-show="category === 'boat' || category === 'jetski'">
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Immatriculation</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Immatriculation') }}</label>
                                     <div x-data="{ immat: '{{ old('specs.general.immatriculation', '') }}' }">
                                         <input type="hidden" name="specs[general][immatriculation]" :value="immat">
                                         <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
@@ -369,10 +369,10 @@
                                                             ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8); border: 1.5px solid #17A2B8;'
                                                             : 'border: 1.5px solid #E0E6ED; color: #1B2A4A;'"
                                                         class="flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5 transition-all hover:-translate-y-0.5"
-                                                        title="{{ $opt }}">
+                                                        title="{{ __($opt) }}">
                                                     <span class="text-2xl leading-none" aria-hidden="true">{{ $flag }}</span>
                                                     <span class="text-[10px] font-semibold leading-tight text-center"
-                                                          :style="immat === '{{ $opt }}' ? 'color: rgba(255,255,255,0.95);' : 'color: #6B7B8D;'">{{ $opt }}</span>
+                                                          :style="immat === '{{ $opt }}' ? 'color: rgba(255,255,255,0.95);' : 'color: #6B7B8D;'">{{ __($opt) }}</span>
                                                 </button>
                                             @endforeach
                                         </div>
@@ -386,7 +386,7 @@
 
                             {{-- Jet-ski: type + nombre de places --}}
                             <div x-show="category === 'jetski'" x-data="{ places: '{{ old('specs.general.nombre_places', '') }}' }">
-                                <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">Nombre de places</label>
+                                <label class="block text-xs font-semibold uppercase mb-2" style="color: #6B7B8D;">{{ __('Nombre de places') }}</label>
                                 <input type="hidden" name="specs[general][nombre_places]" :value="places">
                                 <div class="flex gap-2 flex-wrap">
                                     <template x-for="n in [1, 2, 3, 4, 5]" :key="n">
@@ -396,47 +396,47 @@
                                                 :style="places === String(n) ? 'background: linear-gradient(135deg, #1B4F72, #17A2B8); border: 1.5px solid #17A2B8;' : 'border: 1.5px solid #E0E6ED;'"
                                                 class="flex-1 min-w-[56px] rounded-xl px-3 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5">
                                             <span x-text="n"></span>
-                                            <span class="text-[10px] ml-0.5 opacity-80" x-text="n === 1 ? 'place' : 'places'"></span>
+                                            <span class="text-[10px] ml-0.5 opacity-80" x-text="n === 1 ? @js(__('place')) : @js(__('places'))"></span>
                                         </button>
                                     </template>
                                 </div>
-                                <p class="mt-1.5 text-[11px]" style="color: #9BA8B7;">Jet-ski standard : 1 à 3 places · Jet Car : jusqu'à 5 places</p>
+                                <p class="mt-1.5 text-[11px]" style="color: #9BA8B7;">{{ __('Jet-ski standard : 1 à 3 places · Jet Car : jusqu\'à 5 places') }}</p>
                             </div>
 
                             <div x-show="category === 'parts'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Categorie de piece</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Categorie de piece') }}</label>
                                     <select name="specs[general][part_type]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                        <option value="">-- Categorie --</option>
-                                        <option value="Hélice & Transmission" {{ old('specs.general.part_type') == 'Hélice & Transmission' ? 'selected' : '' }}>🔩 Hélice & Transmission</option>
-                                        <option value="Électronique & Navigation" {{ old('specs.general.part_type') == 'Électronique & Navigation' ? 'selected' : '' }}>📡 Électronique & Navigation</option>
-                                        <option value="Accastillage" {{ old('specs.general.part_type') == 'Accastillage' ? 'selected' : '' }}>⚓ Accastillage</option>
-                                        <option value="Moteur & Mécanique" {{ old('specs.general.part_type') == 'Moteur & Mécanique' ? 'selected' : '' }}>⚙️ Moteur & Mécanique</option>
-                                        <option value="Sécurité & Survie" {{ old('specs.general.part_type') == 'Sécurité & Survie' ? 'selected' : '' }}>🦺 Sécurité & Survie</option>
-                                        <option value="Pontage & Sellerie" {{ old('specs.general.part_type') == 'Pontage & Sellerie' ? 'selected' : '' }}>🪑 Pontage & Sellerie</option>
-                                        <option value="Remorquage & Accessoires" {{ old('specs.general.part_type') == 'Remorquage & Accessoires' ? 'selected' : '' }}>🔗 Remorquage & Accessoires</option>
-                                        <option value="Coque & Structure" {{ old('specs.general.part_type') == 'Coque & Structure' ? 'selected' : '' }}>🚤 Coque & Structure</option>
-                                        <option value="Voilure & Gréement" {{ old('specs.general.part_type') == 'Voilure & Gréement' ? 'selected' : '' }}>⛵ Voilure & Gréement</option>
-                                        <option value="Autre" {{ old('specs.general.part_type') == 'Autre' ? 'selected' : '' }}>Autre</option>
+                                        <option value="">{{ __('-- Categorie --') }}</option>
+                                        <option value="Hélice & Transmission" {{ old('specs.general.part_type') == 'Hélice & Transmission' ? 'selected' : '' }}>{{ __('🔩 Hélice') }} & {{ __('Transmission') }}</option>
+                                        <option value="Électronique & Navigation" {{ old('specs.general.part_type') == 'Électronique & Navigation' ? 'selected' : '' }}>{{ __('📡 Électronique') }} & {{ __('Navigation') }}</option>
+                                        <option value="Accastillage" {{ old('specs.general.part_type') == 'Accastillage' ? 'selected' : '' }}>{{ __('⚓ Accastillage') }}</option>
+                                        <option value="Moteur & Mécanique" {{ old('specs.general.part_type') == 'Moteur & Mécanique' ? 'selected' : '' }}>{{ __('⚙️ Moteur') }} & {{ __('Mécanique') }}</option>
+                                        <option value="Sécurité & Survie" {{ old('specs.general.part_type') == 'Sécurité & Survie' ? 'selected' : '' }}>{{ __('🦺 Sécurité') }} & {{ __('Survie') }}</option>
+                                        <option value="Pontage & Sellerie" {{ old('specs.general.part_type') == 'Pontage & Sellerie' ? 'selected' : '' }}>{{ __('🪑 Pontage') }} & {{ __('Sellerie') }}</option>
+                                        <option value="Remorquage & Accessoires" {{ old('specs.general.part_type') == 'Remorquage & Accessoires' ? 'selected' : '' }}>{{ __('🔗 Remorquage') }} & {{ __('Accessoires') }}</option>
+                                        <option value="Coque & Structure" {{ old('specs.general.part_type') == 'Coque & Structure' ? 'selected' : '' }}>{{ __('🚤 Coque') }} & {{ __('Structure') }}</option>
+                                        <option value="Voilure & Gréement" {{ old('specs.general.part_type') == 'Voilure & Gréement' ? 'selected' : '' }}>{{ __('⛵ Voilure') }} & {{ __('Gréement') }}</option>
+                                        <option value="Autre" {{ old('specs.general.part_type') == 'Autre' ? 'selected' : '' }}>{{ __('Autre') }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Compatible avec</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Compatible avec') }}</label>
                                     <input type="text" name="specs[general][compatible_with]" value="{{ old('specs.general.compatible_with') }}"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="Ex: Yamaha F150...">
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="{{ __('Ex: Yamaha F150...') }}">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Reference / N de piece</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Reference / N de piece') }}</label>
                                     <input type="text" name="specs[general][part_number]" value="{{ old('specs.general.part_number') }}"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="Ex: 6D8-WS24A-00-00">
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="{{ __('Ex: 6D8-WS24A-00-00') }}">
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Description *</label>
+                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Description *') }}</label>
                                 <textarea name="description" rows="4" required
                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                          placeholder="Decrivez votre annonce en detail...">{{ old('description') }}</textarea>
+                                          placeholder="{{ __('Decrivez votre annonce en detail...') }}">{{ old('description') }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -460,7 +460,7 @@
                             <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
                                 <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
-                            <p class="text-sm font-medium" style="color: #9BA8B7;">Aucune specification requise pour les pieces.</p>
+                            <p class="text-sm font-medium" style="color: #9BA8B7;">{{ __('Aucune specification requise pour les pieces.') }}</p>
                         </div>
 
                         {{-- Dimensions (boat / jetski) --}}
@@ -471,39 +471,39 @@
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                                 </div>
                                 <div>
-                                    <span class="block">Dimensions</span>
-                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">Taille et poids</span>
+                                    <span class="block">{{ __('Dimensions') }}</span>
+                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">{{ __('Taille et poids') }}</span>
                                 </div>
                             </h2>
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Longueur (m)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Longueur (m)') }}</label>
                                     <input type="number" step="0.01" name="specs[dimensions][longueur]" value="{{ old('specs.dimensions.longueur') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="5.50">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Largeur (m)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Largeur (m)') }}</label>
                                     <input type="number" step="0.01" name="specs[dimensions][largeur]" value="{{ old('specs.dimensions.largeur') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="2.30">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Poids (KG)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Poids (KG)') }}</label>
                                     <input type="number" step="0.01" name="specs[dimensions][tonnage]" value="{{ old('specs.dimensions.tonnage') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="1500">
                                     <input type="hidden" name="specs[dimensions][tonnage_unit]" value="kg">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Tonnage (T)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Tonnage (T)') }}</label>
                                     <input type="number" step="0.01" name="specs[dimensions][tonnage_t]" value="{{ old('specs.dimensions.tonnage_t') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="1.5">
                                 </div>
                                 <div x-show="category === 'boat'">
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Tirant d'eau (m)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Tirant d\'eau (m)') }}</label>
                                     <input type="number" step="0.01" name="specs[dimensions][tirant_eau]" value="{{ old('specs.dimensions.tirant_eau') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="0.80">
                                 </div>
                                 <div x-show="category === 'boat'">
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Tirant d'air (m)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Tirant d\'air (m)') }}</label>
                                     <input type="number" step="0.01" name="specs[dimensions][tirant_air]" value="{{ old('specs.dimensions.tirant_air') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="3.20">
                                 </div>
@@ -518,8 +518,8 @@
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 </div>
                                 <div>
-                                    <span class="block">Motorisation</span>
-                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">Puissance et carburant</span>
+                                    <span class="block">{{ __('Motorisation') }}</span>
+                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">{{ __('Puissance et carburant') }}</span>
                                 </div>
                             </h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -533,16 +533,16 @@
                                      }
                                  }">
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Marque du moteur</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Marque du moteur') }}</label>
                                     <input type="text" name="specs[motorisation][marque_moteur]" value="{{ old('specs.motorisation.marque_moteur') }}"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="Ex: Yamaha, Mercury...">
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="{{ __('Ex: Yamaha, Mercury...') }}">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Propulsion</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Propulsion') }}</label>
                                     <select name="specs[motorisation][propulsion]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                        <option value="">-- Choisir --</option>
+                                        <option value="">{{ __('-- Choisir --') }}</option>
                                         @foreach(\App\Models\Listing::PROPULSION_OPTIONS as $opt)
-                                            <option value="{{ $opt }}" {{ old('specs.motorisation.propulsion') == $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                                            <option value="{{ $opt }}" {{ old('specs.motorisation.propulsion') == $opt ? 'selected' : '' }}>{{ __($opt) }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -551,35 +551,35 @@
                                     <select name="specs[motorisation][type_helice]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
                                         <option value="">{{ __('Choisir') }}</option>
                                         @foreach(\App\Support\ListingCatalog::DRIVE_TYPES as $drive)
-                                            <option value="{{ $drive }}" @selected(old('specs.motorisation.type_helice', '') === $drive)>{{ $drive }}</option>
+                                            <option value="{{ $drive }}" @selected(old('specs.motorisation.type_helice', '') === $drive)>{{ __($drive) }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Type de carburant</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Type de carburant') }}</label>
                                     <select name="specs[motorisation][type_carburant]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                        <option value="">-- Choisir --</option>
+                                        <option value="">{{ __('-- Choisir --') }}</option>
                                         @foreach(\App\Models\Listing::CARBURANT_OPTIONS as $opt)
-                                            <option value="{{ $opt }}" {{ old('specs.motorisation.type_carburant') == $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                                            <option value="{{ $opt }}" {{ old('specs.motorisation.type_carburant') == $opt ? 'selected' : '' }}>{{ __($opt) }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div x-show="category === 'boat' || category === 'jetski'">
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre de moteurs</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Nombre de moteurs') }}</label>
                                     <input type="number" name="specs[motorisation][nombre_moteurs]"
                                            x-model="nbMoteurs"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="1" min="1">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Puissance par moteur (CV)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Puissance par moteur (CV)') }}</label>
                                     <input type="number" name="specs[motorisation][puissance_par_moteur]"
                                            x-model="puissanceParMoteur"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="150">
                                 </div>
                                 <div x-show="category === 'boat' || category === 'jetski'">
                                     <label class="block text-xs font-semibold uppercase mb-1.5 flex items-center gap-1.5" style="color: #6B7B8D;">
-                                        Puissance totale (CV)
-                                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md" style="background: rgba(23,162,184,0.12); color: #17A2B8;">Auto</span>
+                                        {{ __('Puissance totale (CV)') }}
+                                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md" style="background: rgba(23,162,184,0.12); color: #17A2B8;">{{ __('Auto') }}</span>
                                     </label>
                                     <input type="number" name="specs[motorisation][puissance_totale]"
                                            :value="puissanceTotale"
@@ -589,34 +589,34 @@
                                            readonly>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre d'heures</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Nombre d\'heures') }}</label>
                                     <input type="number" name="specs[motorisation][nombre_heures]" value="{{ old('specs.motorisation.nombre_heures') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="250">
                                 </div>
                                 <div x-show="category === 'engine'">
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Cylindree (cc)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Cylindree (cc)') }}</label>
                                     <input type="number" name="specs[motorisation][cylindree]" value="{{ old('specs.motorisation.cylindree') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="2670">
                                 </div>
                                 <div x-show="category === 'engine' || category === 'jetski'">
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre de cylindres</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Nombre de cylindres') }}</label>
                                     <select name="specs[motorisation][nombre_cylindres]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                        <option value="">-- Choisir --</option>
-                                        <option value="1" {{ old('specs.motorisation.nombre_cylindres') == '1' ? 'selected' : '' }}>1 cylindre</option>
-                                        <option value="2" {{ old('specs.motorisation.nombre_cylindres') == '2' ? 'selected' : '' }}>2 cylindres</option>
-                                        <option value="3" {{ old('specs.motorisation.nombre_cylindres') == '3' ? 'selected' : '' }}>3 cylindres</option>
-                                        <option value="4" {{ old('specs.motorisation.nombre_cylindres') == '4' ? 'selected' : '' }}>4 cylindres</option>
-                                        <option value="6" {{ old('specs.motorisation.nombre_cylindres') == '6' ? 'selected' : '' }}>6 cylindres</option>
-                                        <option value="8" {{ old('specs.motorisation.nombre_cylindres') == '8' ? 'selected' : '' }}>8 cylindres</option>
+                                        <option value="">{{ __('-- Choisir --') }}</option>
+                                        <option value="1" {{ old('specs.motorisation.nombre_cylindres') == '1' ? 'selected' : '' }}>{{ __('1 cylindre') }}</option>
+                                        <option value="2" {{ old('specs.motorisation.nombre_cylindres') == '2' ? 'selected' : '' }}>{{ __('2 cylindres') }}</option>
+                                        <option value="3" {{ old('specs.motorisation.nombre_cylindres') == '3' ? 'selected' : '' }}>{{ __('3 cylindres') }}</option>
+                                        <option value="4" {{ old('specs.motorisation.nombre_cylindres') == '4' ? 'selected' : '' }}>{{ __('4 cylindres') }}</option>
+                                        <option value="6" {{ old('specs.motorisation.nombre_cylindres') == '6' ? 'selected' : '' }}>{{ __('6 cylindres') }}</option>
+                                        <option value="8" {{ old('specs.motorisation.nombre_cylindres') == '8' ? 'selected' : '' }}>{{ __('8 cylindres') }}</option>
                                     </select>
                                 </div>
                                 <div x-show="category === 'engine'">
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Refroidissement</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Refroidissement') }}</label>
                                     <select name="specs[motorisation][refroidissement]" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                        <option value="">-- Choisir --</option>
-                                        <option value="Eau de mer" {{ old('specs.motorisation.refroidissement') == 'Eau de mer' ? 'selected' : '' }}>Eau de mer</option>
-                                        <option value="Eau douce (circuit fermé)" {{ old('specs.motorisation.refroidissement') == 'Eau douce (circuit fermé)' ? 'selected' : '' }}>Eau douce (circuit fermé)</option>
-                                        <option value="Air" {{ old('specs.motorisation.refroidissement') == 'Air' ? 'selected' : '' }}>Air</option>
+                                        <option value="">{{ __('-- Choisir --') }}</option>
+                                        <option value="Eau de mer" {{ old('specs.motorisation.refroidissement') == 'Eau de mer' ? 'selected' : '' }}>{{ __('Eau de mer') }}</option>
+                                        <option value="Eau douce (circuit fermé)" {{ old('specs.motorisation.refroidissement') == 'Eau douce (circuit fermé)' ? 'selected' : '' }}>{{ __('Eau douce (circuit fermé)') }}</option>
+                                        <option value="Air" {{ old('specs.motorisation.refroidissement') == 'Air' ? 'selected' : '' }}>{{ __('Air') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -638,31 +638,31 @@
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
                                 </div>
                                 <div>
-                                    <span class="block">Reservoirs</span>
-                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">Capacites — calcul automatique</span>
+                                    <span class="block">{{ __('Reservoirs') }}</span>
+                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">{{ __('Capacites — calcul automatique') }}</span>
                                 </div>
                             </h2>
 
                             <!-- Nombre de réservoirs -->
                             <div class="mb-4" x-show="category === 'boat'">
-                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Nombre de reservoirs <span class="normal-case font-normal text-[10px]" style="color: #9BA8B7;">(carburant)</span></label>
+                                <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Nombre de reservoirs') }} <span class="normal-case font-normal text-[10px]" style="color: #9BA8B7;">{{ __('(carburant)') }}</span></label>
                                 <input type="number" name="specs[reservoirs][nombre_reservoirs]" x-model.number="nbRes"
                                        class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="1" min="1" max="10">
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Carburant / reservoir (L)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Carburant / reservoir (L)') }}</label>
                                     <input type="number" name="specs[reservoirs][reservoir_carburant]" x-model.number="carb"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="200" min="0">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Eau douce (L)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Eau douce (L)') }}</label>
                                     <input type="number" name="specs[reservoirs][reservoir_eau_douce]" x-model.number="eau"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="100" min="0">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Stockage (L)</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Stockage (L)') }}</label>
                                     <input type="number" name="specs[reservoirs][stockage]" x-model.number="stk"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="50" min="0">
                                 </div>
@@ -672,14 +672,14 @@
                             <div class="mt-4 px-4 py-3 rounded-xl" style="background: rgba(26,188,156,0.08); border: 1px solid rgba(26,188,156,0.2);">
                                 <div class="flex flex-wrap items-center gap-2">
                                     <svg class="w-4 h-4 flex-shrink-0" style="color: #1ABC9C;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 7v10a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2z"/></svg>
-                                    <span class="text-xs font-semibold" style="color: #6B7B8D;">Capacite totale</span>
-                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md" style="background: rgba(26,188,156,0.15); color: #16A085;">Auto</span>
+                                    <span class="text-xs font-semibold" style="color: #6B7B8D;">{{ __('Capacite totale') }}</span>
+                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md" style="background: rgba(26,188,156,0.15); color: #16A085;">{{ __('Auto') }}</span>
                                     <span class="text-sm font-bold" style="color: #1ABC9C;" x-text="totalLitres + ' L'"></span>
                                 </div>
                                 <div x-show="totalLitres > 0" x-transition class="mt-1.5 pl-7 text-[10px] leading-relaxed" style="color: #9BA8B7;">
-                                    <span x-text="Math.max(1, parseInt(nbRes, 10) || 1) + ' rés. × ' + (parseFloat(carb) || 0) + ' L carburant = ' + totalCarbLitres + ' L'"></span>
-                                    <span x-show="(parseFloat(eau) || 0) > 0" x-text="' + ' + (parseFloat(eau) || 0) + ' L eau douce'"></span>
-                                    <span x-show="(parseFloat(stk) || 0) > 0" x-text="' + ' + (parseFloat(stk) || 0) + ' L stockage'"></span>
+                                    <span x-text="@js(__(':count rés. × :fuel L carburant = :total L')).replace(':count', Math.max(1, parseInt(nbRes, 10) || 1)).replace(':fuel', parseFloat(carb) || 0).replace(':total', totalCarbLitres)"></span>
+                                    <span x-show="(parseFloat(eau) || 0) > 0" x-text="@js(__(' + :amount L eau douce')).replace(':amount', parseFloat(eau) || 0)"></span>
+                                    <span x-show="(parseFloat(stk) || 0) > 0" x-text="@js(__(' + :amount L stockage')).replace(':amount', parseFloat(stk) || 0)"></span>
                                 </div>
                             </div>
                         </div>
@@ -692,28 +692,28 @@
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                                 </div>
                                 <div>
-                                    <span class="block">Amenagements</span>
-                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">Cabines et confort</span>
+                                    <span class="block">{{ __('Amenagements') }}</span>
+                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">{{ __('Cabines et confort') }}</span>
                                 </div>
                             </h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Couchettes</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Couchettes') }}</label>
                                     <input type="number" name="specs[amenagements][nombre_couchettes]" value="{{ old('specs.amenagements.nombre_couchettes') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="0" min="0">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Cabines</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Cabines') }}</label>
                                     <input type="number" name="specs[amenagements][nombre_cabines]" value="{{ old('specs.amenagements.nombre_cabines') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="0" min="0">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Sanitaires</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Sanitaires') }}</label>
                                     <input type="number" name="specs[amenagements][nombre_sanitaire]" value="{{ old('specs.amenagements.nombre_sanitaire') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="0" min="0">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Cuisines</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Cuisines') }}</label>
                                     <input type="number" name="specs[amenagements][nombre_cuisine]" value="{{ old('specs.amenagements.nombre_cuisine') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="0" min="0">
                                 </div>
@@ -730,49 +730,49 @@
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
                                 </div>
                                 <div>
-                                    <span class="block">Extras</span>
-                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">Remorque, port...</span>
+                                    <span class="block">{{ __('Extras') }}</span>
+                                    <span class="block text-xs font-normal" style="color: #9BA8B7;">{{ __('Remorque, port...') }}</span>
                                 </div>
                             </h2>
                             <div class="space-y-4">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Remorque</label>
+                                        <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Remorque') }}</label>
                                         <select name="specs[extras][remorque]" x-model="hasRemorque" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                            <option value="">-- Choisir --</option>
-                                            <option value="oui" {{ old('specs.extras.remorque') == 'oui' ? 'selected' : '' }}>Oui, incluse</option>
-                                            <option value="non" {{ old('specs.extras.remorque') == 'non' ? 'selected' : '' }}>Non</option>
+                                            <option value="">{{ __('-- Choisir --') }}</option>
+                                            <option value="oui" {{ old('specs.extras.remorque') == 'oui' ? 'selected' : '' }}>{{ __('Oui, incluse') }}</option>
+                                            <option value="non" {{ old('specs.extras.remorque') == 'non' ? 'selected' : '' }}>{{ __('Non') }}</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div x-show="hasRemorque === 'oui'" x-transition>
-                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Marque de la remorque</label>
+                                    <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Marque de la remorque') }}</label>
                                     <input type="text" name="specs[extras][marque_remorque]" value="{{ old('specs.extras.marque_remorque') }}"
-                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="Ex: Satellite...">
+                                           class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="{{ __('Ex: Satellite...') }}">
                                 </div>
                                 <div class="pt-4 mt-4" style="border-top: 1px solid #E0E6ED;">
-                                    <h3 class="text-xs font-semibold uppercase mb-3" style="color: #6B7B8D;">Place au port</h3>
+                                    <h3 class="text-xs font-semibold uppercase mb-3" style="color: #6B7B8D;">{{ __('Place au port') }}</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <select name="specs[extras][place_au_port]" x-model="hasPort" class="glass-input w-full rounded-xl px-4 py-3 text-sm">
-                                                <option value="">-- Choisir --</option>
-                                                <option value="oui" {{ old('specs.extras.place_au_port') == 'oui' ? 'selected' : '' }}>Oui</option>
-                                                <option value="non" {{ old('specs.extras.place_au_port') == 'non' ? 'selected' : '' }}>Non</option>
+                                                <option value="">{{ __('-- Choisir --') }}</option>
+                                                <option value="oui" {{ old('specs.extras.place_au_port') == 'oui' ? 'selected' : '' }}>{{ __('Oui') }}</option>
+                                                <option value="non" {{ old('specs.extras.place_au_port') == 'non' ? 'selected' : '' }}>{{ __('Non') }}</option>
                                             </select>
                                         </div>
                                         <div x-show="hasPort === 'oui'" x-transition>
                                             <input type="text" name="specs[extras][adresse_port]" value="{{ old('specs.extras.adresse_port') }}"
-                                                   class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="Adresse du port">
+                                                   class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="{{ __('Adresse du port') }}">
                                         </div>
                                     </div>
                                     <div x-show="hasPort === 'oui'" x-transition class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                                         <div>
-                                            <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Longueur place (m)</label>
+                                            <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Longueur place (m)') }}</label>
                                             <input type="number" step="0.01" name="specs[extras][longueur_place]" value="{{ old('specs.extras.longueur_place') }}"
                                                    class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="8.00">
                                         </div>
                                         <div>
-                                            <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">Largeur place (m)</label>
+                                            <label class="block text-xs font-semibold uppercase mb-1.5" style="color: #6B7B8D;">{{ __('Largeur place (m)') }}</label>
                                             <input type="number" step="0.01" name="specs[extras][largeur_place]" value="{{ old('specs.extras.largeur_place') }}"
                                                    class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="3.00">
                                         </div>
@@ -803,7 +803,7 @@
                             {{-- ① DEVISE --}}
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wide mb-3" style="color: #6B7B8D;">
-                                    Devise <span style="color: #E74C3C;">*</span>
+                                    {{ __('Devise') }} <span style="color: #E74C3C;">*</span>
                                 </label>
                                 <div class="grid grid-cols-3 gap-2">
                                     {{-- DZD --}}
@@ -814,7 +814,7 @@
                                                     border-gray-200 bg-gray-50 hover:border-gray-300">
                                             <span class="text-xl">🇩🇿</span>
                                             <span class="text-xs font-bold" :style="currency === 'DZD' ? 'color:#1B4F72' : 'color:#6B7B8D'">DZD</span>
-                                            <span class="text-[10px]" style="color:#9BA8B7;">Dinar</span>
+                                            <span class="text-[10px]" style="color:#9BA8B7;">{{ __('Dinar') }}</span>
                                         </div>
                                     </label>
                                     {{-- EUR --}}
@@ -825,7 +825,7 @@
                                                     border-gray-200 bg-gray-50 hover:border-gray-300">
                                             <span class="text-xl">🇪🇺</span>
                                             <span class="text-xs font-bold" :style="currency === 'EUR' ? 'color:#1B4F72' : 'color:#6B7B8D'">EUR</span>
-                                            <span class="text-[10px]" style="color:#9BA8B7;">Euro</span>
+                                            <span class="text-[10px]" style="color:#9BA8B7;">{{ __('Euro') }}</span>
                                         </div>
                                     </label>
                                     {{-- Autre --}}
@@ -835,8 +835,8 @@
                                                     peer-checked:border-[#1B4F72] peer-checked:bg-[#EBF2FA]
                                                     border-gray-200 bg-gray-50 hover:border-gray-300">
                                             <span class="text-xl">🌐</span>
-                                            <span class="text-xs font-bold" :style="currency === 'OTHER' ? 'color:#1B4F72' : 'color:#6B7B8D'">Autre</span>
-                                            <span class="text-[10px]" style="color:#9BA8B7;">Devise</span>
+                                            <span class="text-xs font-bold" :style="currency === 'OTHER' ? 'color:#1B4F72' : 'color:#6B7B8D'">{{ __('Autre') }}</span>
+                                            <span class="text-[10px]" style="color:#9BA8B7;">{{ __('Devise') }}</span>
                                         </div>
                                     </label>
                                 </div>
@@ -845,14 +845,14 @@
                                 <div x-show="currency === 'OTHER'" x-transition class="mt-2">
                                     <input type="text" name="currency_label" value="{{ old('currency_label') }}"
                                            class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                           placeholder="Ex: GBP, CHF, TND..." maxlength="10"
+                                           placeholder="{{ __('Ex: GBP, CHF, TND...') }}" maxlength="10"
                                            :required="currency === 'OTHER'">
                                 </div>
 
                                 {{-- Exchange rate --}}
                                 <div x-show="currency === 'EUR'" x-transition class="mt-2 flex items-center gap-1.5 text-xs rounded-lg px-3 py-2" style="background:#EBF8FA; color:#17A2B8;">
                                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    Taux indicatif : 1 EUR ≈ {{ number_format($exchangeRate ?? 238, 2) }} DZD
+                                    {{ __('Taux indicatif : 1 EUR ≈') }} {{ number_format($exchangeRate ?? 238, 2) }} DZD
                                 </div>
                             </div>
 
@@ -872,14 +872,16 @@
                                 },
                                 _fmtNum(v) {
                                     const r = Math.round(v * 100) / 100;
-                                    if (r === Math.floor(r)) return r.toLocaleString('fr-FR');
-                                    return r.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+                                    if (r === Math.floor(r)) return r.toLocaleString(@js(app()->getLocale()));
+                                    return r.toLocaleString(@js(app()->getLocale()), { minimumFractionDigits: 1, maximumFractionDigits: 2 });
                                 },
                                 get unitSuffix() {
                                     if (this.currency === 'EUR') return '€';
                                     if (this.currency === 'OTHER') return ($el.closest('form')?.querySelector('[name=currency_label]')?.value || '?');
-                                    if (this.unit === 'milliard') return this.actualValue >= 2 ? 'Milliards' : 'Milliard';
-                                    if (this.unit === 'million')  return this.actualValue >= 2 ? 'Millions'  : 'Million';
+                                    const locale = @js(app()->getLocale());
+                                    const plural = locale === 'es' ? this.actualValue !== 1 : locale === 'fr' && this.actualValue >= 2;
+                                    if (this.unit === 'milliard') return plural ? @js(__('Milliards')) : @js(__('Milliard'));
+                                    if (this.unit === 'million')  return plural ? @js(__('Millions')) : @js(__('Million'));
                                     return 'DA';
                                 },
                                 get displayPreview() {
@@ -896,7 +898,7 @@
 
                                  ">
                                 <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
-                                    Prix <span style="color: #E74C3C;">*</span>
+                                    {{ __('Prix') }} <span style="color: #E74C3C;">*</span>
                                     <span x-show="offertSelected" x-cloak class="ml-1 text-[10px] font-semibold normal-case" style="color:#27AE60;">{{ __('Offert : montant de l’offre reçue') }}</span>
                                 </label>
 
@@ -906,7 +908,7 @@
                                            min="0" step="any"
                                            required
 
-                                           :placeholder="unit === 'milliard' ? 'Ex: 4,5' : (unit === 'million' ? 'Ex: 900' : 'Ex: 1400000')"
+                                           :placeholder="unit === 'milliard' ? @js(__('Ex: 4,5')) : (unit === 'million' ? @js(__('Ex: 900')) : @js(__('Ex: 1400000')))"
                                            class="glass-input w-full rounded-xl px-4 py-3.5 pr-24 text-xl font-bold"
 
                                            style="color: #1B2A4A;">
@@ -928,14 +930,14 @@
                                             :style="unit === 'milliard'
                                                 ? 'background: linear-gradient(135deg, #F1C40F, #F39C12); color: white; border: 1.5px solid #F39C12; box-shadow: 0 2px 8px rgba(241,196,15,0.4);'
                                                 : 'background: linear-gradient(135deg, #FFF8E7, #FFE9B8); color: #92591C; border: 1.5px solid #F1C40F;'">
-                                        Milliard
+                                        {{ __('Milliard') }}
                                     </button>
                                     <button type="button" @click="toggleUnit('million')"
                                             class="px-3 py-3 rounded-xl text-sm font-bold transition-all hover:shadow-md active:scale-95"
                                             :style="unit === 'million'
                                                 ? 'background: linear-gradient(135deg, #F1C40F, #F39C12); color: white; border: 1.5px solid #F39C12; box-shadow: 0 2px 8px rgba(241,196,15,0.4);'
                                                 : 'background: linear-gradient(135deg, #FFF8E7, #FFE9B8); color: #92591C; border: 1.5px solid #F1C40F;'">
-                                        Million
+                                        {{ __('Million') }}
                                     </button>
                                 </div>
 
@@ -943,11 +945,11 @@
                                 <div x-show="actualValue > 0" x-transition class="mt-2 space-y-1.5">
                                     <div class="flex items-center gap-1.5 text-xs rounded-lg px-3 py-2" style="background: rgba(27,79,114,0.06); color: #1B4F72;">
                                         <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                        <span>Affiche sur l'annonce :</span>
+                                        <span>{{ __('Affiche sur l\'annonce :') }}</span>
                                         <span class="font-bold" x-text="displayPreview"></span>
                                     </div>
                                     <div x-show="currency === 'DZD' && unit" x-transition class="text-[11px] px-3 py-1.5 rounded-lg" style="background: rgba(155,168,183,0.08); color: #6B7B8D;">
-                                        <span x-text="'(equivalent : ' + dzdValue.toLocaleString('fr-FR') + ' DA)'"></span>
+                                        <span x-text="@js(__('(equivalent : :amount DA)')).replace(':amount', dzdValue.toLocaleString(@js(app()->getLocale())))"></span>
                                     </div>
                                 </div>
                             </div>
@@ -955,7 +957,7 @@
                             {{-- ③ TYPE D'OFFRE --}}
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
-                                    Type d'offre
+                                    {{ __('Type d\'offre') }}
                                 </label>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                     @foreach([
@@ -971,8 +973,8 @@
                                                         peer-checked:border-[#1B4F72] peer-checked:bg-[#EBF2FA]
                                                         border-gray-200 bg-gray-50 hover:border-gray-300">
                                                 <span class="text-lg">{{ $item['icon'] }}</span>
-                                                <span class="text-[11px] font-bold leading-tight" :style="''" style="color:#1B2A4A;">{{ $item['label'] }}</span>
-                                                <span class="text-[9px]" style="color:#9BA8B7;">{{ $item['desc'] }}</span>
+                                                <span class="text-[11px] font-bold leading-tight" :style="''" style="color:#1B2A4A;">{{ __($item['label']) }}</span>
+                                                <span class="text-[9px]" style="color:#9BA8B7;">{{ __($item['desc']) }}</span>
                                             </div>
                                         </label>
                                     @endforeach
@@ -982,14 +984,14 @@
                             {{-- ④ ÉTAT --}}
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color: #6B7B8D;">
-                                    État de l'article <span style="color: #E74C3C;">*</span>
+                                    {{ __('État de l\'article') }} <span style="color: #E74C3C;">*</span>
                                 </label>
                                 <select name="etat" required
                                         class="glass-input w-full rounded-xl px-4 py-3.5 text-sm font-medium"
                                         style="color: #1B2A4A;">
                                     @foreach(\App\Models\Listing::ETAT_LABELS as $val => $label)
                                         <option value="{{ $val }}" {{ old('etat', 'bon_etat') == $val ? 'selected' : '' }}>
-                                            {{ $label }}
+                                            {{ __($label) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -997,22 +999,22 @@
 
                             {{-- ⑤ LOCALISATION --}}
                             <div style="border-top: 1px solid #F0F4F8; padding-top: 1.25rem;">
-                                <p class="text-xs font-bold uppercase tracking-wide mb-3" style="color: #6B7B8D;">📍 Localisation</p>
+                                <p class="text-xs font-bold uppercase tracking-wide mb-3" style="color: #6B7B8D;">{{ __('📍 Localisation') }}</p>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
-                                        <label class="block text-xs font-medium mb-1.5" style="color: #6B7B8D;">Pays</label>
+                                        <label class="block text-xs font-medium mb-1.5" style="color: #6B7B8D;">{{ __('Pays') }}</label>
                                         <select name="pays" class="glass-input w-full rounded-xl px-4 py-3 text-sm" style="color: #1B2A4A;">
-                                            <option value="">— Sélectionner —</option>
+                                            <option value="">{{ __('— Sélectionner —') }}</option>
                                             @foreach(['Algérie'=>'🇩🇿','Tunisie'=>'🇹🇳','Maroc'=>'🇲🇦','Égypte'=>'🇪🇬','Espagne'=>'🇪🇸','France'=>'🇫🇷','Italie'=>'🇮🇹','Grèce'=>'🇬🇷','Croatie'=>'🇭🇷','Turquie'=>'🇹🇷','Liban'=>'🇱🇧','Malte'=>'🇲🇹','Monaco'=>'🇲🇨','Slovénie'=>'🇸🇮'] as $country => $flag)
-                                                <option value="{{ $country }}" {{ old('pays','Algérie') == $country ? 'selected' : '' }}>{{ $flag }} {{ $country }}</option>
+                                                <option value="{{ $country }}" {{ old('pays','Algérie') == $country ? 'selected' : '' }}>{{ $flag }} {{ __($country) }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-medium mb-1.5" style="color: #6B7B8D;">Ville / Région</label>
+                                        <label class="block text-xs font-medium mb-1.5" style="color: #6B7B8D;">{{ __('Ville / Région') }}</label>
                                         <input type="text" name="wilaya" value="{{ old('wilaya') }}"
                                                class="glass-input w-full rounded-xl px-4 py-3 text-sm"
-                                               placeholder="Ex: Alger, Oran, Skikda...">
+                                               placeholder="{{ __('Ex: Alger, Oran, Skikda...') }}">
                                     </div>
                                 </div>
                             </div>
@@ -1037,21 +1039,21 @@
                             <div data-old-phone="{{ old('numero_whatsapp') }}" x-data="{
                                 open: false, search: '', phoneNumber: '',
                                 countries: [
-                                    { name: 'Algerie', code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
-                                    { name: 'Maroc', code: '+212', flag: '\ud83c\uddf2\ud83c\udde6' },
-                                    { name: 'Tunisie', code: '+216', flag: '\ud83c\uddf9\ud83c\uddf3' },
-                                    { name: 'Allemagne', code: '+49', flag: '\ud83c\udde9\ud83c\uddea' },
-                                    { name: 'Autriche', code: '+43', flag: '\ud83c\udde6\ud83c\uddf9' },
-                                    { name: 'Belgique', code: '+32', flag: '\ud83c\udde7\ud83c\uddea' },
-                                    { name: 'France', code: '+33', flag: '\ud83c\uddeb\ud83c\uddf7' },
-                                    { name: 'Italie', code: '+39', flag: '\ud83c\uddee\ud83c\uddf9' },
-                                    { name: 'Espagne', code: '+34', flag: '\ud83c\uddea\ud83c\uddf8' },
-                                    { name: 'Portugal', code: '+351', flag: '\ud83c\uddf5\ud83c\uddf9' },
-                                    { name: 'Pays-Bas', code: '+31', flag: '\ud83c\uddf3\ud83c\uddf1' },
-                                    { name: 'Suede', code: '+46', flag: '\ud83c\uddf8\ud83c\uddea' },
-                                    { name: 'Grece', code: '+30', flag: '\ud83c\uddec\ud83c\uddf7' }
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('DZ')), code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('MA')), code: '+212', flag: '\ud83c\uddf2\ud83c\udde6' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('TN')), code: '+216', flag: '\ud83c\uddf9\ud83c\uddf3' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('DE')), code: '+49', flag: '\ud83c\udde9\ud83c\uddea' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('AT')), code: '+43', flag: '\ud83c\udde6\ud83c\uddf9' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('BE')), code: '+32', flag: '\ud83c\udde7\ud83c\uddea' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('FR')), code: '+33', flag: '\ud83c\uddeb\ud83c\uddf7' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('IT')), code: '+39', flag: '\ud83c\uddee\ud83c\uddf9' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('ES')), code: '+34', flag: '\ud83c\uddea\ud83c\uddf8' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('PT')), code: '+351', flag: '\ud83c\uddf5\ud83c\uddf9' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('NL')), code: '+31', flag: '\ud83c\uddf3\ud83c\uddf1' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('SE')), code: '+46', flag: '\ud83c\uddf8\ud83c\uddea' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('GR')), code: '+30', flag: '\ud83c\uddec\ud83c\uddf7' }
                                 ],
-                                selected: { name: 'Algerie', code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
+                                selected: { name: @js(\App\Support\PhoneCountry::localizedName('DZ')), code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
                                 get filteredCountries() {
                                     if (!this.search) return this.countries;
                                     const s = this.search.toLowerCase();
@@ -1078,7 +1080,7 @@
                                     if (old) {
                                         const sorted = [...this.countries].sort((a, b) => b.code.length - a.code.length);
                                         for (const c of sorted) { if (old.startsWith(c.code)) { this.selected = c; this.phoneNumber = old.substring(c.code.length); return; } }
-                                        if (old.startsWith('0')) { this.selected = { name: 'Algerie', code: '+213', flag: '🇩🇿' }; this.phoneNumber = old.substring(1); return; }
+                                        if (old.startsWith('0')) { this.selected = { name: @js(\App\Support\PhoneCountry::localizedName('DZ')), code: '+213', flag: '🇩🇿' }; this.phoneNumber = old.substring(1); return; }
                                         this.phoneNumber = old;
                                     }
                                 }
@@ -1097,7 +1099,7 @@
                                         </button>
                                         <div x-show="open" x-cloak @click.away="open = false; search = ''" x-transition class="absolute z-50 left-0 mt-1.5 w-56 rounded-xl overflow-hidden" style="background: white; border: 1px solid #E0E6ED; box-shadow: 0 20px 40px rgba(0,0,0,0.12);">
                                             <div class="p-2" style="border-bottom: 1px solid #E0E6ED;">
-                                                <input type="text" x-model="search" @keydown.escape="open = false" placeholder="Rechercher..." class="w-full px-3 py-2 text-xs rounded-lg" style="border: 1px solid #E0E6ED; outline: none; color: #1B2A4A;">
+                                                <input type="text" x-model="search" @keydown.escape="open = false" placeholder="{{ __('Rechercher...') }}" class="w-full px-3 py-2 text-xs rounded-lg" style="border: 1px solid #E0E6ED; outline: none; color: #1B2A4A;">
                                             </div>
                                             <div class="overflow-y-auto" style="max-height: min(70vh, 480px); scrollbar-width: thin;">
                                                 <template x-for="country in filteredCountries" :key="'ws-'+country.code">
@@ -1118,19 +1120,19 @@
                             <div data-old-phone="{{ old('numero_mobile', auth()->user()->phone) }}" x-data="{
                                 open: false, search: '', phoneNumber: '',
                                 countries: [
-                                    { name: 'Algerie', code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
-                                    { name: 'Maroc', code: '+212', flag: '\ud83c\uddf2\ud83c\udde6' },
-                                    { name: 'Tunisie', code: '+216', flag: '\ud83c\uddf9\ud83c\uddf3' },
-                                    { name: 'Allemagne', code: '+49', flag: '\ud83c\udde9\ud83c\uddea' },
-                                    { name: 'France', code: '+33', flag: '\ud83c\uddeb\ud83c\uddf7' },
-                                    { name: 'Italie', code: '+39', flag: '\ud83c\uddee\ud83c\uddf9' },
-                                    { name: 'Espagne', code: '+34', flag: '\ud83c\uddea\ud83c\uddf8' },
-                                    { name: 'Portugal', code: '+351', flag: '\ud83c\uddf5\ud83c\uddf9' },
-                                    { name: 'Pays-Bas', code: '+31', flag: '\ud83c\uddf3\ud83c\uddf1' },
-                                    { name: 'Suede', code: '+46', flag: '\ud83c\uddf8\ud83c\uddea' },
-                                    { name: 'Grece', code: '+30', flag: '\ud83c\uddec\ud83c\uddf7' }
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('DZ')), code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('MA')), code: '+212', flag: '\ud83c\uddf2\ud83c\udde6' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('TN')), code: '+216', flag: '\ud83c\uddf9\ud83c\uddf3' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('DE')), code: '+49', flag: '\ud83c\udde9\ud83c\uddea' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('FR')), code: '+33', flag: '\ud83c\uddeb\ud83c\uddf7' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('IT')), code: '+39', flag: '\ud83c\uddee\ud83c\uddf9' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('ES')), code: '+34', flag: '\ud83c\uddea\ud83c\uddf8' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('PT')), code: '+351', flag: '\ud83c\uddf5\ud83c\uddf9' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('NL')), code: '+31', flag: '\ud83c\uddf3\ud83c\uddf1' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('SE')), code: '+46', flag: '\ud83c\uddf8\ud83c\uddea' },
+                                    { name: @js(\App\Support\PhoneCountry::localizedName('GR')), code: '+30', flag: '\ud83c\uddec\ud83c\uddf7' }
                                 ],
-                                selected: { name: 'Algerie', code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
+                                selected: { name: @js(\App\Support\PhoneCountry::localizedName('DZ')), code: '+213', flag: '\ud83c\udde9\ud83c\uddff' },
                                 get filteredCountries() {
                                     if (!this.search) return this.countries;
                                     const s = this.search.toLowerCase();
@@ -1157,14 +1159,14 @@
                                     if (old) {
                                         const sorted = [...this.countries].sort((a, b) => b.code.length - a.code.length);
                                         for (const c of sorted) { if (old.startsWith(c.code)) { this.selected = c; this.phoneNumber = old.substring(c.code.length); return; } }
-                                        if (old.startsWith('0')) { this.selected = { name: 'Algerie', code: '+213', flag: '🇩🇿' }; this.phoneNumber = old.substring(1); return; }
+                                        if (old.startsWith('0')) { this.selected = { name: @js(\App\Support\PhoneCountry::localizedName('DZ')), code: '+213', flag: '🇩🇿' }; this.phoneNumber = old.substring(1); return; }
                                         this.phoneNumber = old;
                                     }
                                 }
                             }">
                                 <label class="block text-xs font-semibold uppercase mb-1.5 flex items-center gap-1" style="color: #6B7B8D;">
                                     <svg class="w-3.5 h-3.5" style="color: #2471A3;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                                    Mobile
+                                    {{ __('Mobile') }}
                                 </label>
                                 <input type="hidden" name="numero_mobile" :value="fullPhone">
                                 <div class="flex gap-2">
@@ -1176,7 +1178,7 @@
                                         </button>
                                         <div x-show="open" x-cloak @click.away="open = false; search = ''" x-transition class="absolute z-50 left-0 mt-1.5 w-56 rounded-xl overflow-hidden" style="background: white; border: 1px solid #E0E6ED; box-shadow: 0 20px 40px rgba(0,0,0,0.12);">
                                             <div class="p-2" style="border-bottom: 1px solid #E0E6ED;">
-                                                <input type="text" x-model="search" @keydown.escape="open = false" placeholder="Rechercher..." class="w-full px-3 py-2 text-xs rounded-lg" style="border: 1px solid #E0E6ED; outline: none; color: #1B2A4A;">
+                                                <input type="text" x-model="search" @keydown.escape="open = false" placeholder="{{ __('Rechercher...') }}" class="w-full px-3 py-2 text-xs rounded-lg" style="border: 1px solid #E0E6ED; outline: none; color: #1B2A4A;">
                                             </div>
                                             <div class="overflow-y-auto" style="max-height: min(70vh, 480px); scrollbar-width: thin;">
                                                 <template x-for="country in filteredCountries" :key="'mb-'+country.code">
@@ -1197,10 +1199,10 @@
                         <div class="mt-4">
                             <label class="block text-xs font-semibold uppercase mb-1.5 flex items-center gap-1" style="color: #6B7B8D;">
                                 <svg class="w-3.5 h-3.5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                Email
+                                {{ __('Email') }}
                             </label>
                             <input type="email" name="contact_email" value="{{ old('contact_email', auth()->user()->email) }}"
-                                   class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="exemple@email.com">
+                                   class="glass-input w-full rounded-xl px-4 py-3 text-sm" placeholder="{{ __('exemple@email.com') }}">
                         </div>
 
                         <div class="mt-5 pt-5" style="border-top: 1px solid #E0E6ED;">
@@ -1210,8 +1212,8 @@
                                        {{ old('mediation_enabled') ? 'checked' : '' }}
                                        class="mt-1 rounded text-[#17A2B8] focus:ring-[#17A2B8]/30" style="border-color: #E0E6ED;">
                                 <span>
-                                    <span class="text-sm font-medium" style="color: #1B2A4A;">Activer la mediation AlBabor</span>
-                                    <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Les acheteurs passeront par nous. Votre numero restera masque.</span>
+                                    <span class="text-sm font-medium" style="color: #1B2A4A;">{{ __('Activer la mediation AlBabor') }}</span>
+                                    <span class="block text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Les acheteurs passeront par nous. Votre numero restera masque.') }}</span>
                                 </span>
                             </label>
                         </div>
@@ -1258,8 +1260,8 @@
                                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                     </div>
                                     <div>
-                                        <h3 class="text-sm font-bold" style="color: #1B2A4A;">Médiation activée</h3>
-                                        <p class="text-xs" style="color: #6B7B8D;">Les acheteurs passeront par AlBabor — votre numéro reste confidentiel</p>
+                                        <h3 class="text-sm font-bold" style="color: #1B2A4A;">{{ __('Médiation activée') }}</h3>
+                                        <p class="text-xs" style="color: #6B7B8D;">{{ __('Les acheteurs passeront par AlBabor — votre numéro reste confidentiel') }}</p>
                                     </div>
                                 </div>
 
@@ -1268,9 +1270,9 @@
                                     <div class="flex items-start gap-3 p-3 rounded-xl" style="background: rgba(27,79,114,0.05);">
                                         <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                         <div>
-                                            <p class="text-xs font-semibold" style="color: #1B2A4A;">Comment ça marche ?</p>
+                                            <p class="text-xs font-semibold" style="color: #1B2A4A;">{{ __('Comment ça marche ?') }}</p>
                                             <p class="text-xs mt-1" style="color: #6B7B8D; line-height: 1.6;">
-                                                Un acheteur intéressé ouvrira un ticket de médiation. Notre équipe AlBabor servira d'intermédiaire entre vous et l'acheteur pour une transaction sécurisée.
+                                                {{ __('Un acheteur intéressé ouvrira un ticket de médiation. Notre équipe AlBabor servira d\'intermédiaire entre vous et l\'acheteur pour une transaction sécurisée.') }}
                                             </p>
                                         </div>
                                     </div>
@@ -1278,11 +1280,11 @@
                                     <div class="flex items-start gap-3 p-3 rounded-xl" style="background: rgba(39,174,96,0.06);">
                                         <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #27AE60;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                         <div>
-                                            <p class="text-xs font-semibold" style="color: #1B2A4A;">Vos avantages</p>
+                                            <p class="text-xs font-semibold" style="color: #1B2A4A;">{{ __('Vos avantages') }}</p>
                                             <ul class="text-xs mt-1 space-y-1" style="color: #6B7B8D;">
-                                                <li>• Votre numéro de téléphone reste masqué</li>
-                                                <li>• Transaction sécurisée par AlBabor</li>
-                                                <li>• Protection contre les arnaques</li>
+                                                <li>{{ __('• Votre numéro de téléphone reste masqué') }}</li>
+                                                <li>{{ __('• Transaction sécurisée par AlBabor') }}</li>
+                                                <li>{{ __('• Protection contre les arnaques') }}</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -1294,14 +1296,14 @@
                                         <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
                                     </div>
                                     <div class="flex-1">
-                                        <p class="text-xs font-bold text-white">Des questions ? Contactez-nous sur WhatsApp</p>
+                                        <p class="text-xs font-bold text-white">{{ __('Des questions ? Contactez-nous sur WhatsApp') }}</p>
                                         <p class="text-sm font-black text-white mt-0.5">+213 791 807 475</p>
                                     </div>
                                     <a href="https://wa.me/213791807475?text=Bonjour%2C%20j%27ai%20une%20question%20sur%20la%20m%C3%A9diation%20AlBabor" target="_blank"
                                        class="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:scale-105"
                                        style="background: rgba(255,255,255,0.25); color: white; backdrop-filter: blur(4px);"
                                        @click.stop>
-                                        Écrire →
+                                        {{ __('Écrire →') }}
                                     </a>
                                 </div>
                             </div>
@@ -1333,7 +1335,7 @@
                             <label class="block text-sm font-semibold mb-2" style="color: #1B2A4A;">
                                 <span class="flex items-center gap-2">
                                     <svg class="w-4 h-4" style="color: #E74C3C;" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><path fill="#fff" d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                                    Video YouTube (optionnel)
+                                    {{ __('Video YouTube (optionnel)') }}
                                 </span>
                             </label>
                             <input type="url"
@@ -1344,7 +1346,7 @@
                                    style="border: 1.5px solid #E0E6ED; color: #1B2A4A; background: #F8FAFC; outline: none;"
                                    onfocus="this.style.borderColor='#17A2B8'; this.style.boxShadow='0 0 0 3px rgba(23,162,184,0.1)'"
                                    onblur="this.style.borderColor='#E0E6ED'; this.style.boxShadow='none'">
-                            <p class="mt-1.5 text-xs" style="color: #9BA8B7;">Ajoutez un lien YouTube pour presenter votre annonce en video</p>
+                            <p class="mt-1.5 text-xs" style="color: #9BA8B7;">{{ __('Ajoutez un lien YouTube pour presenter votre annonce en video') }}</p>
                         </div>
                     </div>
                 </div>
@@ -1362,8 +1364,8 @@
                     </div>
                     <p class="text-[11px] mt-2" style="color: #6B7B8D;"
                        x-text="uploadPhase === 'processing'
-                            ? 'Photos reçues — traitement en cours. Ne fermez pas cette page.'
-                            : `Envoi des photos… ${uploadProgress}%`"></p>
+                            ? @js(__('Photos reçues — traitement en cours. Ne fermez pas cette page.'))
+                            : @js(__('Envoi des photos… :progress%')).replace(':progress', uploadProgress)"></p>
                 </div>
 
                 <div class="flex justify-between items-center px-5 py-4" style="border-top: 1px solid #EDF0F4;">
@@ -1371,7 +1373,7 @@
                        @click="clearDraft()"
                        class="px-4 py-2.5 rounded-xl text-xs font-medium transition-all hover:bg-gray-50"
                        style="color: #9BA8B7; border: 1.5px solid #E0E6ED;">
-                        Annuler
+                        {{ __('Annuler') }}
                     </a>
 
                     <div class="flex gap-2">
@@ -1381,7 +1383,7 @@
                                 @click="prevStep()"
                                 class="px-5 py-2.5 rounded-xl text-xs font-semibold transition-all hover:-translate-y-0.5"
                                 style="border: 2px solid #17A2B8; color: #17A2B8; background: white;">
-                            ← Precedent
+                            {{ __('← Precedent') }}
                         </button>
 
                         {{-- Bouton Suivant --}}
@@ -1394,7 +1396,7 @@
                                     : 'hover:-translate-y-0.5 hover:shadow-lg'"
                                 class="px-6 py-2.5 rounded-xl text-white text-xs font-semibold transition-all"
                                 style="background: linear-gradient(135deg, #1B4F72, #17A2B8); box-shadow: 0 4px 15px rgba(27,79,114,0.3);">
-                            Suivant →
+                            {{ __('Suivant →') }}
                         </button>
 
                         {{-- Bouton Soumettre (dernier step) --}}
@@ -1407,11 +1409,11 @@
                             <span x-show="!submitting && !photosProcessing" x-text="submitButtonLabel"></span>
                             <span x-show="photosProcessing && !submitting" class="flex items-center gap-2">
                                 <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                                Optimisation...
+                                {{ __('Optimisation...') }}
                             </span>
                             <span x-show="submitting" class="flex items-center gap-2">
                                 <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                                <span x-text="uploadPhase === 'processing' ? 'Traitement...' : `Envoi ${uploadProgress}%`"></span>
+                                <span x-text="uploadPhase === 'processing' ? @js(__('Traitement...')) : @js(__('Envoi :progress%')).replace(':progress', uploadProgress)"></span>
                             </span>
                         </button>
                     </div>
@@ -1605,7 +1607,7 @@
                 applyServerValidationErrors(errors = {}) {
                     const entries = Object.entries(errors || {});
                     if (!entries.length) {
-                        this.stepErrors = ['Une erreur est survenue lors de l\'envoi de l\'annonce.'];
+                        this.stepErrors = [@js(__('Une erreur est survenue lors de l\'envoi de l\'annonce.'))];
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                         return;
                     }
@@ -1779,7 +1781,7 @@
 
                         this.uploadPhase = 'idle';
                         this.submitting = false;
-                        this.stepErrors = [response.payload?.message || 'Une erreur est survenue lors de l\'envoi de l\'annonce.'];
+                        this.stepErrors = [response.payload?.message || @js(__('Une erreur est survenue lors de l\'envoi de l\'annonce.'))];
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     } catch (e) {
                         // Connexion coupée pendant l'envoi : c'est le cas où le
@@ -1792,19 +1794,19 @@
 
                         this.uploadPhase = 'idle';
                         this.submitting = false;
-                        this.stepErrors = ['La connexion a été interrompue pendant l’envoi. Votre brouillon est conservé — vérifiez « Mes annonces » avant de renvoyer.'];
+                        this.stepErrors = [@js(__('La connexion a été interrompue pendant l’envoi. Votre brouillon est conservé — vérifiez « Mes annonces » avant de renvoyer.'))];
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 },
 
                 get stepsList() {
                     return [
-                        { n: 1, label: 'Categorie' },
-                        { n: 2, label: 'Infos' },
-                        { n: 3, label: 'Specs' },
-                        { n: 4, label: 'Prix' },
-                        { n: 5, label: 'Contact' },
-                        { n: 6, label: 'Photos' },
+                        { n: 1, label: @js(__('Categorie')) },
+                        { n: 2, label: @js(__('Infos')) },
+                        { n: 3, label: @js(__('Specs')) },
+                        { n: 4, label: @js(__('Prix')) },
+                        { n: 5, label: @js(__('Contact')) },
+                        { n: 6, label: @js(__('Photos')) },
                     ];
                 },
 
@@ -1828,12 +1830,12 @@
                 },
                 get currentStepLabel() {
                     const labels = {
-                        1: 'Categorie',
-                        2: 'Informations generales',
-                        3: 'Specifications',
-                        4: 'Prix, Etat & Localisation',
-                        5: 'Contact & Services',
-                        6: 'Photos',
+                        1: @js(__('Categorie')),
+                        2: @js(__('Informations generales')),
+                        3: @js(__('Specifications')),
+                        4: @js(__('Prix, Etat & Localisation')),
+                        5: @js(__('Contact & Services')),
+                        6: @js(__('Photos')),
                     };
                     return labels[this.currentStep] || '';
                 },
@@ -1851,7 +1853,7 @@
                 },
 
                 get submitButtonLabel() {
-                    return this.requiresPayment ? 'Continuer vers le paiement' : 'Publier l’annonce';
+                    return this.requiresPayment ? @js(__('Continuer vers le paiement')) : @js(__('Publier l’annonce'));
                 },
 
                 // ── Validation helpers ──
@@ -1880,32 +1882,32 @@
 
                     if (step === 1) {
                         if (!this.category) {
-                            errors.push('Veuillez choisir une catégorie.');
+                            errors.push(@js(__('Veuillez choisir une catégorie.')));
                         } else if (this.category === 'boat' && !this.boatType) {
-                            errors.push('Veuillez choisir le type de bateau.');
+                            errors.push(@js(__('Veuillez choisir le type de bateau.')));
                             this.markField('type');
                         } else if (this.category === 'jetski' && !this.jetskiType) {
-                            errors.push('Veuillez choisir le type de jet-ski.');
+                            errors.push(@js(__('Veuillez choisir le type de jet-ski.')));
                             this.markField('type');
                         } else if ((this.category === 'engine' || this.category === 'parts') && !this.canPublishEngineOrParts) {
-                            errors.push('Un abonnement actif est requis pour publier des moteurs et pièces.');
+                            errors.push(@js(__('Un abonnement actif est requis pour publier des moteurs et pièces.')));
                         }
                     }
                     if (step === 2) {
-                        if (!val('title')) { errors.push('Le titre de l\'annonce est obligatoire.'); this.markField('title'); }
-                        if (!val('description')) { errors.push('La description est obligatoire.'); this.markField('description'); }
+                        if (!val('title')) { errors.push(@js(__('Le titre de l\'annonce est obligatoire.'))); this.markField('title'); }
+                        if (!val('description')) { errors.push(@js(__('La description est obligatoire.'))); this.markField('description'); }
                     }
                     if (step === 4) {
                         const offer = this.$root.querySelector('input[name=\"type_offre\"]:checked')?.value || '';
                         const price = val('price_dzd');
                         if (offer === 'offert') {
                             if (parseFloat(price || '0') < 0) {
-                                errors.push('Prix invalide pour une annonce offerte.');
+                                errors.push(@js(__('Prix invalide pour une annonce offerte.')));
                                 this.markField('price_dzd');
                             }
                         } else {
                             if (!price || parseFloat(price) <= 0) {
-                                errors.push('Le prix est obligatoire.');
+                                errors.push(@js(__('Le prix est obligatoire.')));
                                 this.markField('price_dzd');
                             }
                         }
@@ -1923,7 +1925,7 @@
                                 .reduce((total, input) => total + (input.files?.length || 0), 0);
 
                         if (readyPhotos === 0) {
-                            errors.push('Veuillez ajouter au moins une photo.');
+                            errors.push(@js(__('Veuillez ajouter au moins une photo.')));
                         }
                     }
                     return errors;

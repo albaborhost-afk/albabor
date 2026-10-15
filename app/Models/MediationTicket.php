@@ -57,11 +57,11 @@ class MediationTicket extends Model
     public function getStatusLabelAttribute(): string
     {
         return match($this->status) {
-            'new' => 'Nouveau',
-            'in_progress' => 'En cours',
-            'awaiting_payment' => 'En attente de paiement',
-            'closed' => 'Terminé',
-            'cancelled' => 'Annulé',
+            'new' => __('Nouveau'),
+            'in_progress' => __('En cours'),
+            'awaiting_payment' => __('En attente de paiement'),
+            'closed' => __('Terminé'),
+            'cancelled' => __('Annulé'),
             default => $this->status,
         };
     }
@@ -69,9 +69,9 @@ class MediationTicket extends Model
     public function getPaymentStatusLabelAttribute(): string
     {
         return match($this->payment_status) {
-            'unpaid' => 'Non payé',
-            'paid' => 'Payé',
-            'waived' => 'Exonéré',
+            'unpaid' => __('Non payé'),
+            'paid' => __('Payé'),
+            'waived' => __('Exonéré'),
             default => $this->payment_status,
         };
     }

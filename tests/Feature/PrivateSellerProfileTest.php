@@ -187,6 +187,7 @@ class PrivateSellerProfileTest extends TestCase
 
     public function test_the_api_hides_the_contact_details_of_a_private_seller(): void
     {
+        $this->withHeader('Accept-Language', 'fr');
         $listing = $this->listing($this->seller());
 
         $response = $this->getJson('/api/v1/listings/'.$listing->id)->assertOk();
@@ -337,6 +338,7 @@ class PrivateSellerProfileTest extends TestCase
 
     public function test_the_conversation_api_does_not_reveal_the_private_sellers_phone(): void
     {
+        $this->withHeader('Accept-Language', 'fr');
         $seller  = $this->seller();
         $listing = $this->listing($seller);
         $buyer   = User::factory()->create(['phone' => '0555000001']);
@@ -432,6 +434,7 @@ class PrivateSellerProfileTest extends TestCase
 
     public function test_an_admin_editing_the_listing_changes_only_the_sellers_privacy(): void
     {
+        $this->withHeader('Accept-Language', 'fr');
         $seller  = $this->seller(false);
         $listing = $this->listing($seller);
         $otherListing = $this->listing($seller);

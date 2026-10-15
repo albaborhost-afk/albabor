@@ -8,7 +8,7 @@
 
 <x-app-layout
     :title="$sellerName"
-    :description="$sellerName . ' — ' . trans_choice('{0}aucune annonce|{1}:count annonce|[2,*]:count annonces', $stats['active_listings'], ['count' => $stats['active_listings']]) . ' sur AlBabor.'"
+    :description="__(':seller — :listings sur AlBabor.', ['seller' => $sellerName, 'listings' => trans_choice('{0}aucune annonce|{1}:count annonce|[2,*]:count annonces', $stats['active_listings'], ['count' => $stats['active_listings']])])"
 >
     <!-- Breadcrumb Bar -->
     <div style="background: #FFFFFF; border-bottom: 1px solid #E0E6ED;">

@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\TrackSiteVisit::class,
         ]);
+        $middleware->api(append: [\App\Http\Middleware\SetLocale::class]);
         $middleware->validateCsrfTokens(except: [
             'stripe/webhook',
         ]);

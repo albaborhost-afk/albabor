@@ -232,15 +232,31 @@ class PhoneCountry
         return $info['flag'].' '.$code;
     }
 
+    public static function localizedName(string $iso, ?string $fallback = null): string
+    {
+        if (class_exists(\Locale::class)) {
+            return \Locale::getDisplayRegion('und_'.$iso, app()->getLocale());
+        }
+
+        return __($fallback ?? $iso);
+    }
+
+    public static function localizedCountries(): array
+    {
+        return array_map(fn (array $country) => array_replace($country, [
+            'name' => self::localizedName($country['iso'], $country['name']),
+        ]), self::COUNTRIES);
+    }
+
     /**
-     * Filament SelectFilter / form options keyed by code, label "🇩🇿 +213 — Algerie".
+     * Filament SelectFilter / form options keyed by code, label "🇩🇿 +213 — Algérie".
      *
      * @return array<string,string>
      */
     public static function options(): array
     {
         $options = [];
-        foreach (self::COUNTRIES as $code => $info) {
+        foreach (self::localizedCountries() as $code => $info) {
             $options[$code] = $info['flag'].'  '.$code.'  — '.$info['name'];
         }
         return $options;

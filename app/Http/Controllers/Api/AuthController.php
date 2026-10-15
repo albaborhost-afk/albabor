@@ -29,7 +29,7 @@ class AuthController extends Controller
 
         if (! Auth::attempt($credentials)) {
             return response()->json([
-                'message' => 'Adresse e-mail ou mot de passe incorrect.',
+                'message' => __('Adresse e-mail ou mot de passe incorrect.'),
             ], 401);
         }
 
@@ -39,7 +39,7 @@ class AuthController extends Controller
             Auth::logout();
 
             return response()->json([
-                'message' => 'Votre compte a été bloqué. Veuillez contacter l\'administration.',
+                'message' => __('Votre compte a été bloqué. Veuillez contacter l\'administration.'),
             ], 403);
         }
 
@@ -96,7 +96,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Déconnexion réussie.',
+            'message' => __('Déconnexion réussie.'),
         ]);
     }
 
@@ -116,12 +116,12 @@ class AuthController extends Controller
 
         if ($status === Password::RESET_LINK_SENT) {
             return response()->json([
-                'message' => 'Un lien de réinitialisation a été envoyé à votre adresse e-mail.',
+                'message' => __('Un lien de réinitialisation a été envoyé à votre adresse e-mail.'),
             ]);
         }
 
         return response()->json([
-            'message' => 'Impossible d\'envoyer le lien de réinitialisation.',
+            'message' => __('Impossible d\'envoyer le lien de réinitialisation.'),
             'errors' => ['email' => [__($status)]],
         ], 422);
     }

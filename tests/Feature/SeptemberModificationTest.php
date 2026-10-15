@@ -94,6 +94,7 @@ class SeptemberModificationTest extends TestCase
 
     public function test_private_messages_notify_the_recipient_without_revealing_identity(): void
     {
+        $this->withHeader('Accept-Language', 'fr');
         Notification::fake();
         $seller = User::factory()->create(['hide_name' => true]);
         $listing = $this->listing(['user_id' => $seller->id]);
@@ -123,6 +124,7 @@ class SeptemberModificationTest extends TestCase
     }
     public function test_country_groups_preserve_private_contact_protection(): void
     {
+        $this->withHeader('Accept-Language', 'fr');
         $seller = User::factory()->create(['hide_name' => true, 'name' => 'Private Seller']);
         $this->listing(['user_id' => $seller->id, 'numero_mobile' => '+213555123456', 'contact_email' => 'secret@example.test']);
         $response = $this->getJson('/api/v1/listings/countries')->assertOk();

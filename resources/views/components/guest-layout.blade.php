@@ -91,7 +91,7 @@
                 </a>
                 <a href="{{ url('/') }}" class="text-sm font-medium transition-all duration-300 hover:text-[#1B4F72]" style="color: #6B7B8D;">
                     <svg class="w-4 h-4 inline -mt-0.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Retour
+                    {{ __('Retour') }}
                 </a>
             </div>
         </div>

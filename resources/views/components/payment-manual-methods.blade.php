@@ -29,10 +29,10 @@
         <svg class="w-5 h-5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
         </svg>
-        {{ $title }}
+        {{ __($title) }}
     </h2>
     <p class="text-sm mb-4" style="color: #6B7B8D;">
-        Effectuez le virement, puis téléversez le justificatif. Notre équipe le vérifie sous 24–48&nbsp;h.
+        {{ __('Effectuez le virement, puis téléversez le justificatif. Notre équipe le vérifie sous 24–48 h.') }}
     </p>
 
     <div class="space-y-3">
@@ -50,13 +50,13 @@
                 {{-- Tuile logo, comme sur Yachtei : le moyen se reconnaît d'un coup d'œil --}}
                 <span class="flex h-10 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl p-2"
                       style="background: #FFFFFF; border: 1px solid #E8EEF4; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);">
-                    <img src="{{ $m['logo'] }}" alt="{{ $m['name'] }}" class="max-h-full max-w-full object-contain">
+                    <img src="{{ $m['logo'] }}" alt="{{ __($m['name']) }}" class="max-h-full max-w-full object-contain">
                 </span>
 
                 <span class="min-w-0 flex-1">
-                    <span class="block font-semibold text-sm sm:text-base" style="color: #1B2A4A;">{{ $m['name'] }}</span>
-                    <span x-show="method === '{{ $m['key'] }}'" x-cloak class="block text-xs sm:text-sm mt-0.5 {{ $m['mono'] ? 'font-mono break-all' : 'break-all' }}" style="color: #6B7B8D;">{{ $m['detail'] }}</span>
-                    <span x-show="method === '{{ $m['key'] }}'" x-cloak class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : {{ $holder }}</span>
+                    <span class="block font-semibold text-sm sm:text-base" style="color: #1B2A4A;">{{ __($m['name']) }}</span>
+                    <span x-show="method === '{{ $m['key'] }}'" x-cloak class="block text-xs sm:text-sm mt-0.5 {{ $m['mono'] ? 'font-mono break-all' : 'break-all' }}" style="color: #6B7B8D;">{{ str_starts_with($m['detail'], 'Numéro : ') ? __('Numéro : :number', ['number' => Str::after($m['detail'], 'Numéro : ')]) : __($m['detail']) }}</span>
+                    <span x-show="method === '{{ $m['key'] }}'" x-cloak class="block text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Titulaire : :holder', ['holder' => $holder]) }}</span>
                 </span>
 
                 <svg class="w-5 h-5 flex-shrink-0 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"

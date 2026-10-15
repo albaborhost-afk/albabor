@@ -55,7 +55,7 @@ class ConversationController extends Controller
 
         if ($listing->mediation_enabled) {
             return response()->json([
-                'message' => 'La médiation est activée. Contactez l’administration AlBabor pour cette annonce.',
+                'message' => __('La médiation est activée. Contactez l’administration AlBabor pour cette annonce.'),
                 'code' => 'mediation_required',
             ], 422);
         }

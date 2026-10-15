@@ -1,6 +1,6 @@
 <x-app-layout
-    title="Nos boutiques"
-    description="Decouvrez les boutiques professionnelles de moteurs et pieces detachees nautiques en Algerie."
+    title="{{ __('Nos boutiques') }}"
+    description="{{ __('Decouvrez les boutiques professionnelles de moteurs et pieces detachees nautiques en Algerie.') }}"
 >
     <!-- Breadcrumb Bar -->
     <div style="background: #FFFFFF; border-bottom: 1px solid #E0E6ED;">

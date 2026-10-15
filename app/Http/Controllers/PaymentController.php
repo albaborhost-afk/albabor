@@ -63,7 +63,7 @@ class PaymentController extends Controller
 
         $proofPath = $this->storeProof($request);
         if ($proofPath === false) {
-            return back()->withInput()->with('error', 'Erreur lors du téléversement du justificatif. Veuillez réessayer.');
+            return back()->withInput()->with('error', __('Erreur lors du téléversement du justificatif. Veuillez réessayer.'));
         }
 
         Payment::create([
@@ -99,7 +99,7 @@ class PaymentController extends Controller
 
         $proofPath = $this->storeProof($request);
         if ($proofPath === false) {
-            return back()->withInput()->with('error', 'Erreur lors du téléversement du justificatif. Veuillez réessayer.');
+            return back()->withInput()->with('error', __('Erreur lors du téléversement du justificatif. Veuillez réessayer.'));
         }
 
         Payment::create([
@@ -143,7 +143,7 @@ class PaymentController extends Controller
 
         $proofPath = $this->storeProof($request);
         if ($proofPath === false) {
-            return back()->withInput()->with('error', 'Erreur lors du téléversement du justificatif. Veuillez réessayer.');
+            return back()->withInput()->with('error', __('Erreur lors du téléversement du justificatif. Veuillez réessayer.'));
         }
 
         Payment::create([
@@ -192,7 +192,7 @@ class PaymentController extends Controller
 
         $proofPath = $this->storeProof($request);
         if ($proofPath === false) {
-            return back()->withInput()->with('error', 'Erreur lors du téléversement du justificatif. Veuillez réessayer.');
+            return back()->withInput()->with('error', __('Erreur lors du téléversement du justificatif. Veuillez réessayer.'));
         }
 
         Payment::create([
@@ -227,7 +227,7 @@ class PaymentController extends Controller
             ->first();
         if ($existing && $existing->status === 'approved') {
             return redirect()->route('listings.my')
-                ->with('info', 'Votre annonce est déjà payée.');
+                ->with('info', __('Votre annonce est déjà payée.'));
         }
 
         $amountDzd = in_array($listing->category, ['boat', 'jetski']) ? 5000 : 0;
@@ -241,7 +241,7 @@ class PaymentController extends Controller
         // le montant à 50 centimes au lieu de s'arrêter : une annonce gratuite
         // (moteur, pièce) se serait fait facturer, un taux de change cassé aussi.
         if ($amountCents < 50) {
-            return back()->with('error', 'Le paiement en ligne n\'est pas disponible pour ce montant. Utilisez un virement.');
+            return back()->with('error', __('Le paiement en ligne n\'est pas disponible pour ce montant. Utilisez un virement.'));
         }
 
         try {
@@ -258,8 +258,8 @@ class PaymentController extends Controller
                     // l'appareil du visiteur sait présenter.
                     'line_items[0][price_data][currency]'   => 'eur',
                     'line_items[0][price_data][unit_amount]' => $amountCents,
-                    'line_items[0][price_data][product_data][name]' => 'Publication AlBabor — ' . $listing->title,
-                    'line_items[0][price_data][product_data][description]' => 'Frais de publication (valable 365 jours)',
+                    'line_items[0][price_data][product_data][name]' => __('Publication AlBabor — :title', ['title' => $listing->title]),
+                    'line_items[0][price_data][product_data][description]' => __('Frais de publication (valable 365 jours)'),
                     'line_items[0][quantity]'               => 1,
                     'mode'                                  => 'payment',
                     'success_url'                           => route('payments.stripe.success') . '?session_id={CHECKOUT_SESSION_ID}',
@@ -290,7 +290,7 @@ class PaymentController extends Controller
                 'listing_id' => $listing->id,
                 'error'      => $e->getMessage(),
             ]);
-            return back()->with('error', 'Erreur Stripe : ' . $e->getMessage());
+            return back()->with('error', __('Impossible de créer la session Stripe.'));
         }
     }
 
@@ -299,7 +299,7 @@ class PaymentController extends Controller
         $sessionId = $request->get('session_id');
 
         if (!$sessionId) {
-            return redirect()->route('listings.my')->with('error', 'Session de paiement invalide.');
+            return redirect()->route('listings.my')->with('error', __('Session de paiement invalide.'));
         }
 
         try {
@@ -311,12 +311,12 @@ class PaymentController extends Controller
             $session = json_decode($response->getBody(), true);
         } catch (\Exception $e) {
             Log::error('Stripe session retrieval failed', ['session_id' => $sessionId, 'error' => $e->getMessage()]);
-            return redirect()->route('listings.my')->with('error', 'Impossible de vérifier le paiement Stripe.');
+            return redirect()->route('listings.my')->with('error', __('Impossible de vérifier le paiement Stripe.'));
         }
 
         if (($session['payment_status'] ?? '') !== 'paid') {
             return redirect()->route('listings.my')
-                ->with('error', 'Le paiement Stripe n\'a pas été complété.');
+                ->with('error', __('Le paiement Stripe n\'a pas été complété.'));
         }
 
         $payment = Payment::where('stripe_session_id', $sessionId)->first();
@@ -324,18 +324,18 @@ class PaymentController extends Controller
         if (!$payment) {
             Log::error('Stripe success: payment record not found', ['session_id' => $sessionId]);
             return redirect()->route('listings.my')
-                ->with('error', 'Paiement introuvable — contactez le support.');
+                ->with('error', __('Paiement introuvable — contactez le support.'));
         }
 
         if ($payment->status === 'approved') {
             return redirect()->route('listings.my')
-                ->with('success', 'Paiement déjà confirmé — votre annonce est en cours de vérification.');
+                ->with('success', __('Paiement déjà confirmé — votre annonce est en cours de vérification.'));
         }
 
         $this->activateStripePayment($payment, $session['payment_intent'] ?? null);
 
         return redirect()->route('listings.my')
-            ->with('success', '✅ Paiement Stripe confirmé ! Votre annonce est en cours de vérification par notre équipe.');
+            ->with('success', __('✅ Paiement Stripe confirmé ! Votre annonce est en cours de vérification par notre équipe.'));
     }
 
     public function stripeWebhook(Request $request)

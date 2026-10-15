@@ -7,12 +7,12 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    Accueil
+                    {{ __('Accueil') }}
                 </a>
                 <svg class="w-4 h-4" style="color: #E0E6ED;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <a href="{{ route('listings.my') }}" style="color: #9BA8B7;" class="hover:opacity-80">Mes Annonces</a>
+                <a href="{{ route('listings.my') }}" style="color: #9BA8B7;" class="hover:opacity-80">{{ __('Mes Annonces') }}</a>
                 <svg class="w-4 h-4" style="color: #E0E6ED;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
@@ -140,7 +140,7 @@
                             <span class="ml-3">
                                 <span class="block font-semibold" style="color: #1B2A4A;">BaridiMob</span>
                                 <span class="block text-sm" style="color: #6B7B8D;"><span class="font-mono break-all">00799999002543569223</span></span>
-                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
+                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Titulaire : DJAMAA BILEL') }}</span>
                             </span>
                         </label>
 
@@ -149,8 +149,8 @@
                             <img src="/images/bea.png" alt="BEA" class="ml-3 h-8 w-auto object-contain flex-shrink-0">
                             <span class="ml-3">
                                 <span class="block font-semibold" style="color: #1B2A4A;">BEA – Banque Extérieure d'Algérie</span>
-                                <span class="block text-sm" style="color: #6B7B8D;">🇩🇿 RIB : <span class="font-mono break-all">00200090090220206690</span></span>
-                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
+                                <span class="block text-sm" style="color: #6B7B8D;">{{ __('🇩🇿 RIB :') }} <span class="font-mono break-all">00200090090220206690</span></span>
+                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Titulaire : DJAMAA BILEL') }}</span>
                             </span>
                         </label>
 
@@ -160,7 +160,7 @@
                             <span class="ml-3">
                                 <span class="block font-semibold" style="color: #1B2A4A;">PayPal</span>
                                 <span class="block text-sm" style="color: #6B7B8D;">albabordz@gmail.com</span>
-                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
+                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Titulaire : DJAMAA BILEL') }}</span>
                             </span>
                         </label>
 
@@ -168,9 +168,9 @@
                             <input type="radio" name="method" value="card" style="accent-color: #17A2B8; margin-top: 3px;">
                             <img src="/images/mastercard-visa.webp" alt="Mastercard Visa" class="ml-3 h-8 w-8 object-contain flex-shrink-0 rounded-lg">
                             <span class="ml-3">
-                                <span class="block font-semibold" style="color: #1B2A4A;">Carte Bancaire – Mastercard / Visa</span>
-                                <span class="block text-sm" style="color: #6B7B8D;">💳 Paiement international sécurisé</span>
-                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">Titulaire : DJAMAA BILEL</span>
+                                <span class="block font-semibold" style="color: #1B2A4A;">{{ __('Carte Bancaire – Mastercard / Visa') }}</span>
+                                <span class="block text-sm" style="color: #6B7B8D;">{{ __('💳 Paiement international sécurisé') }}</span>
+                                <span class="block text-xs mt-0.5" style="color: #9BA8B7;">{{ __('Titulaire : DJAMAA BILEL') }}</span>
                             </span>
                         </label>
 

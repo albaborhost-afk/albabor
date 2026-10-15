@@ -32,13 +32,13 @@ class GoogleMobileAuthController extends Controller
             ->get('https://oauth2.googleapis.com/tokeninfo', ['id_token' => $request->id_token]);
 
         if (! $response->successful()) {
-            return response()->json(['message' => 'Token Google invalide'], 401);
+            return response()->json(['message' => __('Token Google invalide')], 401);
         }
 
         $claims = $response->json();
 
         if (! is_array($claims) || isset($claims['error'])) {
-            return response()->json(['message' => 'Token Google invalide'], 401);
+            return response()->json(['message' => __('Token Google invalide')], 401);
         }
 
         if ($rejection = $this->rejectionReason($claims)) {
@@ -48,7 +48,7 @@ class GoogleMobileAuthController extends Controller
                 'iss'    => $claims['iss'] ?? null,
             ]);
 
-            return response()->json(['message' => 'Token Google invalide'], 401);
+            return response()->json(['message' => __('Token Google invalide')], 401);
         }
 
         $googleId = $claims['sub'];
@@ -85,7 +85,7 @@ class GoogleMobileAuthController extends Controller
         }
 
         if ($user->isBlocked()) {
-            return response()->json(['message' => 'Votre compte a été bloqué.'], 403);
+            return response()->json(['message' => __('Votre compte a été bloqué.')], 403);
         }
 
         $token = $user->createToken('mobile-google')->plainTextToken;

@@ -112,7 +112,7 @@ class ListingController extends Controller
             $user = $request->user();
             if (!$user || ($user->id !== $listing->user_id && !$user->isAdmin())) {
                 return response()->json([
-                    'message' => 'Annonce introuvable.',
+                    'message' => __('Annonce introuvable.'),
                 ], 404);
             }
         }
@@ -184,7 +184,7 @@ class ListingController extends Controller
 
             if ($alreadySubmitted) {
                 return response()->json([
-                    'message'          => 'Cette annonce a déjà été envoyée.',
+                    'message'          => __('Cette annonce a déjà été envoyée.'),
                     'listing'          => $alreadySubmitted->load(['user', 'media']),
                     'publish_price'    => $alreadySubmitted->status === 'awaiting_payment'
                         ? $this->getPublishPrice($alreadySubmitted->category)
@@ -200,9 +200,9 @@ class ListingController extends Controller
         if (in_array($category, ['engine', 'parts'])) {
             if (!$user->canPublishEngineOrParts()) {
                 return response()->json([
-                    'message' => 'Un abonnement vendeur actif est requis pour publier dans cette catégorie.',
+                    'message' => __('Un abonnement vendeur actif est requis pour publier dans cette catégorie.'),
                     'errors' => [
-                        'category' => ['Un abonnement vendeur actif est requis pour publier des moteurs ou pièces détachées.'],
+                        'category' => [__('Un abonnement vendeur actif est requis pour publier des moteurs ou pièces détachées.')],
                     ],
                 ], 403);
             }
@@ -217,9 +217,9 @@ class ListingController extends Controller
                 $allowed = Listing::CATEGORY_TYPES[$category] ?? null;
                 if ($allowed === null) return; // type only applies when the category has types
                 if (empty($value)) {
-                    $fail('Le type est requis pour cette catégorie.');
+                    $fail(__('Le type est requis pour cette catégorie.'));
                 } elseif (!array_key_exists($value, $allowed)) {
-                    $fail('Le type sélectionné n\'est pas valide.');
+                    $fail(__('Le type sélectionné n\'est pas valide.'));
                 }
             }],
             'price_dzd' => 'required|numeric|min:0',
@@ -286,7 +286,7 @@ class ListingController extends Controller
             $listing->delete();
 
             return response()->json([
-                'message' => 'Impossible de traiter les images. Veuillez réessayer avec d\'autres fichiers.',
+                'message' => __('Impossible de traiter les images. Veuillez réessayer avec d\'autres fichiers.'),
             ], 422);
         }
 
@@ -305,7 +305,7 @@ class ListingController extends Controller
             $listing->load(['user', 'media']);
 
             return response()->json([
-                'message' => 'Votre annonce a été créée et sera examinée par notre équipe.',
+                'message' => __('Votre annonce a été créée et sera examinée par notre équipe.'),
                 'listing' => $listing,
                 'publish_price' => 0,
                 'is_first_listing' => false,
@@ -322,7 +322,7 @@ class ListingController extends Controller
             $listing->load(['user', 'media']);
 
             return response()->json([
-                'message' => 'Votre annonce vendeur a été créée et sera examinée par notre équipe.',
+                'message' => __('Votre annonce vendeur a été créée et sera examinée par notre équipe.'),
                 'listing' => $listing,
                 'publish_price' => 0,
                 'is_first_listing' => false,
@@ -344,7 +344,7 @@ class ListingController extends Controller
             $listing->load(['user', 'media']);
 
             return response()->json([
-                'message' => 'Félicitations ! Votre première annonce est gratuite et sera examinée par notre équipe.',
+                'message' => __('Félicitations ! Votre première annonce est gratuite et sera examinée par notre équipe.'),
                 'listing' => $listing,
                 'publish_price' => 0,
                 'is_first_listing' => true,
@@ -357,7 +357,7 @@ class ListingController extends Controller
         $listing->load(['user', 'media']);
 
         return response()->json([
-            'message' => 'Annonce créée avec succès. Un paiement est requis pour la publier.',
+            'message' => __('Annonce créée avec succès. Un paiement est requis pour la publier.'),
             'listing' => $listing,
             'publish_price' => $amount,
             'is_first_listing' => false,
@@ -378,9 +378,9 @@ class ListingController extends Controller
         if (in_array($newCategory, ['engine', 'parts']) && !in_array($listing->category, ['engine', 'parts'])) {
             if (!$user->canPublishEngineOrParts()) {
                 return response()->json([
-                    'message' => 'Un abonnement vendeur actif est requis pour publier dans cette catégorie.',
+                    'message' => __('Un abonnement vendeur actif est requis pour publier dans cette catégorie.'),
                     'errors' => [
-                        'category' => ['Un abonnement vendeur actif est requis pour publier des moteurs ou pièces détachées.'],
+                        'category' => [__('Un abonnement vendeur actif est requis pour publier des moteurs ou pièces détachées.')],
                     ],
                 ], 403);
             }
@@ -395,9 +395,9 @@ class ListingController extends Controller
                 $allowed = Listing::CATEGORY_TYPES[$category] ?? null;
                 if ($allowed === null) return; // type only applies when the category has types
                 if (empty($value)) {
-                    $fail('Le type est requis pour cette catégorie.');
+                    $fail(__('Le type est requis pour cette catégorie.'));
                 } elseif (!array_key_exists($value, $allowed)) {
-                    $fail('Le type sélectionné n\'est pas valide.');
+                    $fail(__('Le type sélectionné n\'est pas valide.'));
                 }
             }],
             'price_dzd' => 'required|numeric|min:0',
@@ -484,7 +484,7 @@ class ListingController extends Controller
 
             if ($maxNew <= 0) {
                 return response()->json([
-                    'message' => 'Nombre maximum d\'images atteint (' . Listing::MAX_IMAGES . '). Supprimez des images avant d\'en ajouter.',
+                    'message' => __('Nombre maximum d’images atteint (:count). Supprimez des images avant d’en ajouter.', ['count' => Listing::MAX_IMAGES]),
                     'listing' => $listing->load(['user', 'media']),
                 ], 422);
             }
@@ -536,7 +536,7 @@ class ListingController extends Controller
         $listing->load(['user', 'media']);
 
         return response()->json([
-            'message' => 'Annonce mise à jour avec succès.',
+            'message' => __('Annonce mise à jour avec succès.'),
             'listing' => $listing,
         ]);
     }
@@ -551,7 +551,7 @@ class ListingController extends Controller
         // Empêcher la suppression si des paiements sont en attente
         if ($listing->payments()->where('status', 'pending')->exists()) {
             return response()->json([
-                'message' => 'Impossible de supprimer cette annonce car elle a des paiements en attente.',
+                'message' => __('Impossible de supprimer cette annonce car elle a des paiements en attente.'),
             ], 409);
         }
 
@@ -566,7 +566,7 @@ class ListingController extends Controller
         $listing->delete();
 
         return response()->json([
-            'message' => 'Annonce supprimée avec succès.',
+            'message' => __('Annonce supprimée avec succès.'),
         ]);
     }
 
@@ -580,7 +580,7 @@ class ListingController extends Controller
         $listing->update(['status' => 'sold']);
 
         return response()->json([
-            'message' => 'Annonce marquée comme vendue.',
+            'message' => __('Annonce marquée comme vendue.'),
             'listing' => $listing,
         ]);
     }
@@ -594,14 +594,14 @@ class ListingController extends Controller
 
         if ($listing->status !== 'active') {
             return response()->json([
-                'message' => 'Seule une annonce active peut être mise en pause.',
+                'message' => __('Seule une annonce active peut être mise en pause.'),
             ], 422);
         }
 
         $listing->update(['status' => 'paused']);
 
         return response()->json([
-            'message' => 'Annonce mise en pause.',
+            'message' => __('Annonce mise en pause.'),
             'listing' => $listing,
         ]);
     }
@@ -615,14 +615,14 @@ class ListingController extends Controller
 
         if ($listing->status !== 'paused') {
             return response()->json([
-                'message' => 'Seule une annonce en pause peut être réactivée.',
+                'message' => __('Seule une annonce en pause peut être réactivée.'),
             ], 422);
         }
 
         $listing->update(['status' => 'active']);
 
         return response()->json([
-            'message' => 'Annonce réactivée avec succès.',
+            'message' => __('Annonce réactivée avec succès.'),
             'listing' => $listing,
         ]);
     }
@@ -637,7 +637,7 @@ class ListingController extends Controller
 
         if ($listing->status !== 'active') {
             return response()->json([
-                'message' => 'Seules les annonces actives peuvent être remontées.',
+                'message' => __('Seules les annonces actives peuvent être remontées.'),
             ], 422);
         }
 
@@ -645,7 +645,7 @@ class ListingController extends Controller
             $nextRenewal = $listing->last_renewed_at->copy()->addDays(7);
             $daysLeft = max(1, (int) ceil(now()->diffInHours($nextRenewal, false) / 24));
             return response()->json([
-                'message' => "Renouvellement disponible dans {$daysLeft} jour(s).",
+                'message' => __('Renouvellement disponible dans :days jour(s).', ['days' => $daysLeft]),
                 'next_renewal_at' => $nextRenewal->toISOString(),
                 'can_renew_in_days' => $daysLeft,
             ], 429);
@@ -656,7 +656,7 @@ class ListingController extends Controller
         $nextRenewal = now()->addDays(7);
 
         return response()->json([
-            'message' => 'Annonce remontée avec succès.',
+            'message' => __('Annonce remontée avec succès.'),
             'next_renewal_at' => $nextRenewal->toISOString(),
         ]);
     }

@@ -20,7 +20,7 @@
     $isFeatured = $listing->isFeatured();
     $annee = $listing->getSpec('general', 'annee_construction');
     $puissance = $listing->getSpec('motorisation', 'puissance_totale');
-    $location = collect([$listing->wilaya, $listing->pays])->filter()->implode(', ');
+    $location = collect([$listing->wilaya, $listing->pays ? __($listing->pays) : null])->filter()->implode(', ');
 
     $cardInlineStyle = $isFeatured
         ? 'box-shadow: 0 0 0 1.5px rgba(255,184,0,0.35), 0 2px 12px rgba(0,0,0,0.08);'
@@ -131,7 +131,7 @@
                 @endif
                 @if($puissance)
                     <span class="text-xs font-semibold px-2.5 py-1 rounded-full" style="background: #F0F4F8; color: #1B2A4A;">
-                        {{ $puissance }} CV
+                        {{ $puissance }} {{ __('CV') }}
                     </span>
                 @endif
             </div>

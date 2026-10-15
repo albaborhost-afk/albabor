@@ -71,10 +71,10 @@
     <div class="mb-5">
         <div class="flex items-center justify-between mb-2">
             <p class="text-xs font-semibold uppercase tracking-wider" style="color:#6B7B8D;">
-                Photos actuelles
+                {{ __('Photos actuelles') }}
             </p>
             <span class="text-[11px] px-2 py-0.5 rounded-full font-medium" style="background:#F0F4F8; color:#6B7B8D;">
-                {{ $existingCount }} photo{{ $existingCount > 1 ? 's' : '' }}
+                {{ $existingCount }} {{ __('photo') }}{{ $existingCount > 1 ? 's' : '' }}
             </span>
         </div>
 
@@ -83,7 +83,7 @@
             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:#17A2B8;">
                 <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
             </svg>
-            Cliquez sur une photo pour la définir comme photo principale
+            {{ __('Cliquez sur une photo pour la définir comme photo principale') }}
         </p>
 
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
@@ -121,7 +121,7 @@
                         <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                         </svg>
-                        Principale
+                        {{ __('Principale') }}
                     </div>
 
                     {{-- « Définir principale » : visible au survol sur ordinateur,
@@ -132,16 +132,16 @@
                         <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" style="color:white;">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                         </svg>
-                        <span class="text-[9px] font-bold" style="color:white;">Définir principale</span>
+                        <span class="text-[9px] font-bold" style="color:white;">{{ __('Définir principale') }}</span>
                     </div>
                 </div>
 
                 {{-- Delete button: instant removal --}}
-                <button type="button"
+                <button type="button" data-remove-existing-photo
                         @click.stop="if (!removed) { removed = true; $nextTick(() => handleExistingRemoval({{ $media->id }})); }"
                         class="absolute -top-2 -right-2 w-8 h-8 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 z-10"
                         style="background:#E74C3C; color:white;"
-                        title="Supprimer cette photo">
+                        title="{{ __('Supprimer cette photo') }}">
                     <svg class="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -152,8 +152,8 @@
                         @click.stop="$dispatch('open-blur-existing', { id: {{ $media->id }}, url: '{{ $media->url }}' })"
                         class="photo-action absolute bottom-1.5 right-1 w-7 h-7 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
                         style="background:rgba(27,79,114,0.95); color:white; box-shadow:0 2px 6px rgba(0,0,0,0.35), 0 0 0 1.5px rgba(255,255,255,0.9);"
-                        title="Flouter une zone privée"
-                        aria-label="Flouter une zone privée">
+                        title="{{ __('Flouter une zone privée') }}"
+                        aria-label="{{ __('Flouter une zone privée') }}">
                     <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6.536-6.536a2.5 2.5 0 013.536 3.536L12 15H9v-3l.232-.232z"/>
                     </svg>
@@ -165,9 +165,9 @@
 
     <div x-show="slotsLeft > 0" class="h-px w-full mb-5" style="background:linear-gradient(90deg, transparent, #E0E6ED, transparent);"></div>
     <p x-show="slotsLeft > 0" class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#6B7B8D;">
-        Ajouter de nouvelles photos
+        {{ __('Ajouter de nouvelles photos') }}
         <span class="ml-1 font-normal normal-case" style="color:#9BA8B7;">
-            (<span x-text="slotsLeft"></span> slot<span x-show="slotsLeft > 1">s</span> disponible<span x-show="slotsLeft > 1">s</span>)
+            (<span x-text="(slotsLeft === 1 ? @js(__('1 emplacement disponible')) : @js(__(':count emplacements disponibles'))).replace(':count', slotsLeft)"></span>)
         </span>
     </p>
     @endif
@@ -209,17 +209,17 @@
                     </svg>
                 </div>
                 <p class="text-sm font-medium" :style="isDragging ? 'color:#17A2B8;' : 'color:#1B2A4A;'">
-                    <span x-show="!isDragging">Cliquez ou glissez vos photos ici</span>
-                    <span x-show="isDragging">Lâchez pour ajouter</span>
+                    <span x-show="!isDragging">{{ __('Cliquez ou glissez vos photos ici') }}</span>
+                    <span x-show="isDragging">{{ __('Lâchez pour ajouter') }}</span>
                 </p>
-                <p class="text-[11px] mt-1" style="color:#9BA8B7;">JPEG, PNG, WebP, HEIC · Max 15 Mo · <span x-text="maxFiles"></span> photo<span x-show="maxFiles > 1">s</span> max</p>
+                <p class="text-[11px] mt-1" style="color:#9BA8B7;">{{ __('JPEG, PNG, WebP, HEIC · Max 15 Mo ·') }} <span x-text="@js(__(':count photos maximum')).replace(':count', maxFiles)"></span></p>
                 <p
                     x-show="!supportsManagedFiles"
                     x-cloak
                     class="text-[11px] mt-1.5"
                     style="color:#F39C12;"
                 >
-                    Sur certains navigateurs mobiles, ajoutez toutes vos photos en une seule sélection.
+                    {{ __('Sur certains navigateurs mobiles, ajoutez toutes vos photos en une seule sélection.') }}
                 </p>
             </label>
 
@@ -228,16 +228,16 @@
                 {{-- Counter bar --}}
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-semibold" style="color:#1B2A4A;">
-                        <span x-text="files.length"></span> / <span x-text="maxFiles"></span> photo<span x-show="files.length > 1">s</span>
+                        <span x-text="@js(__(':count / :max photos')).replace(':count', files.length).replace(':max', maxFiles)"></span>
                     </span>
                     <span
                         class="text-[11px] px-2.5 py-0.5 rounded-full font-medium"
                         :style="slotsLeft === 0 ? 'background:#FEF2F2; color:#E74C3C;' : 'background:#F0FDF4; color:#27AE60;'"
                     >
                         <span x-show="slotsLeft > 0">
-                            <span x-text="slotsLeft"></span> slot<span x-show="slotsLeft > 1">s</span> restant<span x-show="slotsLeft > 1">s</span>
+                            <span x-text="(slotsLeft === 1 ? @js(__('1 emplacement restant')) : @js(__(':count emplacements restants'))).replace(':count', slotsLeft)"></span>
                         </span>
-                        <span x-show="slotsLeft === 0">Limite atteinte</span>
+                        <span x-show="slotsLeft === 0">{{ __('Limite atteinte') }}</span>
                     </span>
                 </div>
 
@@ -250,7 +250,7 @@
                     <svg class="w-3.5 h-3.5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24" style="color:#17A2B8;">
                         <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                     </svg>
-                    <span><strong>Photo principale :</strong> touchez ou cliquez une autre vignette pour la mettre en première position (badge « Principale »).</span>
+                    <span><strong>{{ __('Photo principale :') }}</strong> {{ __('touchez ou cliquez une autre vignette pour la mettre en première position (badge « Principale »).') }}</span>
                 </p>
 
                 {{-- Previews --}}
@@ -266,7 +266,7 @@
                                     ? 'ring-2 ring-[#17A2B8] ring-offset-1 shadow-[0_0_0_1px_rgba(23,162,184,0.35)]'
                                     : 'ring-1 ring-[#E0E6ED] group-hover:ring-[#17A2B8]/70 cursor-pointer'"
                                 @click="moveToFront(index); setCoverNew(0)"
-                                :title="(index === 0 && cover === 'new:0') ? 'Photo principale de l\'annonce' : 'Définir comme photo principale'"
+                                :title="(index === 0 && cover === 'new:0') ? @js(__('Photo principale de l\'annonce')) : @js(__('Définir comme photo principale'))"
                             >
                                 <img :src="file.preview" class="w-full h-full object-cover pointer-events-none" alt="">
 
@@ -276,7 +276,7 @@
                                     class="photo-hint absolute inset-0 flex flex-col items-center justify-end pb-2 px-1 bg-gradient-to-t from-black/55 via-black/10 to-transparent pointer-events-none"
                                 >
                                     <span class="text-[8px] font-bold text-white text-center leading-tight drop-shadow-sm">
-                                        Principale
+                                        {{ __('Principale') }}
                                     </span>
                                 </div>
                             </div>
@@ -290,7 +290,7 @@
                                 class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-lg text-[9px] font-bold text-white"
                                 :class="coverPulse ? 'animate-pulse' : ''"
                                 style="background:rgba(23,162,184,0.9); backdrop-filter: blur(4px);"
-                            >Principale</div>
+                            >{{ __('Principale') }}</div>
 
                             {{-- Supprimer — toujours visible, y compris sur tablette --}}
                             <button
@@ -298,8 +298,8 @@
                                 @click.stop="removeFile(index); handleNewRemoval(index)"
                                 class="photo-action absolute top-1.5 right-1.5 w-7 h-7 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
                                 style="background:rgba(231,76,60,0.97); color:white; box-shadow:0 2px 6px rgba(0,0,0,0.35), 0 0 0 1.5px rgba(255,255,255,0.9);"
-                                title="Supprimer cette photo"
-                                aria-label="Supprimer cette photo"
+                                title="{{ __('Supprimer cette photo') }}"
+                                aria-label="{{ __('Supprimer cette photo') }}"
                             >
                                 <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
@@ -312,8 +312,8 @@
                                 @click.stop="openBlurEditor(index)"
                                 class="photo-action absolute bottom-5 right-1 w-7 h-7 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
                                 style="background:rgba(27,79,114,0.95); color:white; box-shadow:0 2px 6px rgba(0,0,0,0.35), 0 0 0 1.5px rgba(255,255,255,0.9);"
-                                title="Flouter une zone privée"
-                                aria-label="Flouter une zone privée"
+                                title="{{ __('Flouter une zone privée') }}"
+                                aria-label="{{ __('Flouter une zone privée') }}"
                             >
                                 <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6.536-6.536a2.5 2.5 0 013.536 3.536L12 15H9v-3l.232-.232z"/>
@@ -326,7 +326,7 @@
                                 x-cloak
                                 class="absolute bottom-5 left-1.5 px-1.5 py-0.5 rounded-lg text-[9px] font-bold text-white"
                                 style="background:rgba(27,79,114,0.9); backdrop-filter:blur(4px);"
-                            >🔒 Flou</div>
+                            >{{ __('🔒 Flou') }}</div>
 
                             {{-- File size --}}
                             <p class="text-[9px] text-center mt-0.5 truncate px-0.5" style="color:#9BA8B7;" x-text="formatSize(file.size)"></p>
@@ -347,7 +347,7 @@
                             <span
                                 class="text-[9px] font-medium"
                                 style="color:#9BA8B7;"
-                                x-text="supportsManagedFiles ? 'Ajouter' : 'Remplacer'"
+                                x-text="supportsManagedFiles ? @js(__('Ajouter')) : @js(__('Remplacer'))"
                             ></span>
                         </label>
                     </template>
@@ -355,8 +355,8 @@
 
                 {{-- Drag hint --}}
                 <p class="text-[10px] text-center" style="color:#C5D0DB;">
-                    <span x-show="supportsManagedFiles">La vignette en première position est la photo principale — réorganisez en touchant une autre image.</span>
-                    <span x-show="!supportsManagedFiles" x-cloak>La première photo de votre sélection sera la principale. Pour en changer, sélectionnez à nouveau les fichiers dans l’ordre souhaité.</span>
+                    <span x-show="supportsManagedFiles">{{ __('La vignette en première position est la photo principale — réorganisez en touchant une autre image.') }}</span>
+                    <span x-show="!supportsManagedFiles" x-cloak>{{ __('La première photo de votre sélection sera la principale. Pour en changer, sélectionnez à nouveau les fichiers dans l’ordre souhaité.') }}</span>
                 </p>
             </div>
 
@@ -370,7 +370,7 @@
                     <svg class="w-10 h-10 mx-auto mb-2" style="color:#17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                     </svg>
-                    <p class="text-sm font-semibold" style="color:#17A2B8;">Lâchez pour ajouter</p>
+                    <p class="text-sm font-semibold" style="color:#17A2B8;">{{ __('Lâchez pour ajouter') }}</p>
                 </div>
             </div>
         </div>
@@ -389,9 +389,9 @@
                         <span class="absolute inset-0 flex items-center justify-center text-[9px] font-bold" style="color:#1B4F72;" x-text="progressPercent + '%'"></span>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold" style="color:#1B2A4A;">Optimisation des photos...</p>
+                        <p class="text-sm font-bold" style="color:#1B2A4A;">{{ __('Optimisation des photos...') }}</p>
                         <p class="text-xs mt-0.5" style="color:#6B7B8D;">
-                            <span x-text="processedCount"></span> / <span x-text="totalToProcess"></span> photos traitees
+                            <span x-text="@js(__(':count / :max photos traitées')).replace(':count', processedCount).replace(':max', totalToProcess)"></span>
                         </p>
                     </div>
                 </div>
@@ -452,8 +452,8 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <p class="text-white font-semibold text-sm leading-tight">Protéger une zone</p>
-                <p class="text-[11px] leading-tight" style="color:#6B8CA8;">Peignez sur l’immatriculation ou info privée</p>
+                <p class="text-white font-semibold text-sm leading-tight">{{ __('Protéger une zone') }}</p>
+                <p class="text-[11px] leading-tight" style="color:#6B8CA8;">{{ __('Peignez sur l’immatriculation ou info privée') }}</p>
             </div>
         </div>
         <button type="button" @click="blurOpen = false"
@@ -486,24 +486,24 @@
     <div class="flex-shrink-0 px-4" style="border-top:1px solid rgba(255,255,255,0.07);padding-bottom:max(16px,env(safe-area-inset-bottom));">
         {{-- Brush size --}}
         <div class="flex items-center gap-2 py-3">
-            <span class="text-[11px] font-medium flex-shrink-0" style="color:#6B8CA8;">Pinceau :</span>
+            <span class="text-[11px] font-medium flex-shrink-0" style="color:#6B8CA8;">{{ __('Pinceau :') }}</span>
             <button type="button" @click="blurBrushLevel=0" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-xs font-semibold" :style="blurBrushLevel===0?'background:#17A2B8;color:white;':'background:rgba(255,255,255,.07);color:#CBD5E1;'">
-                <span class="inline-block rounded-full" style="width:4px;height:4px;background:currentColor;"></span>Très petit
+                <span class="inline-block rounded-full" style="width:4px;height:4px;background:currentColor;"></span>{{ __('Très petit') }}
             </button>
             <button type="button" @click="blurBrushLevel=1"
                     class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
                     :style="blurBrushLevel===1?'background:linear-gradient(135deg,#1B4F72,#17A2B8);color:white;':'background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);'">
-                <span class="inline-block rounded-full" style="width:7px;height:7px;background:currentColor;"></span>Petit
+                <span class="inline-block rounded-full" style="width:7px;height:7px;background:currentColor;"></span>{{ __('Petit') }}
             </button>
             <button type="button" @click="blurBrushLevel=2"
                     class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
                     :style="blurBrushLevel===2?'background:linear-gradient(135deg,#1B4F72,#17A2B8);color:white;':'background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);'">
-                <span class="inline-block rounded-full" style="width:11px;height:11px;background:currentColor;"></span>Moyen
+                <span class="inline-block rounded-full" style="width:11px;height:11px;background:currentColor;"></span>{{ __('Moyen') }}
             </button>
             <button type="button" @click="blurBrushLevel=3"
                     class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
                     :style="blurBrushLevel===3?'background:linear-gradient(135deg,#1B4F72,#17A2B8);color:white;':'background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);'">
-                <span class="inline-block rounded-full" style="width:16px;height:16px;background:currentColor;"></span>Grand
+                <span class="inline-block rounded-full" style="width:16px;height:16px;background:currentColor;"></span>{{ __('Grand') }}
             </button>
         </div>
         {{-- Actions --}}
@@ -514,7 +514,7 @@
                     :class="blurHistory.length<=1?'opacity-30 pointer-events-none':''">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
-                </svg>Annuler
+                </svg>{{ __('Annuler') }}
             </button>
             <button type="button" @click="blurReset()"
                     class="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-95"
@@ -522,10 +522,10 @@
                     :class="blurHistory.length<=1?'opacity-30 pointer-events-none':''">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                </svg>Reset
+                </svg>{{ __('Reset') }}
             </button>
             <div class="flex-1"></div>
-            <span x-show="blurHistory.length>1" x-text="(blurHistory.length-1)+' trait'+(blurHistory.length>2?'s':'')"
+            <span x-show="blurHistory.length>1" x-text="(blurHistory.length === 2 ? @js(__('1 trait')) : @js(__(':count traits'))).replace(':count', blurHistory.length - 1)"
                   class="text-[10px] font-semibold px-2 py-1 rounded-lg flex-shrink-0"
                   style="background:rgba(23,162,184,0.15);color:#17A2B8;"></span>
             <button type="button" @click="blurSave()"
@@ -533,7 +533,7 @@
                     style="background:linear-gradient(135deg,#1B4F72,#17A2B8);box-shadow:0 4px 14px rgba(23,162,184,0.35);">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                </svg>Enregistrer
+                </svg>{{ __('Enregistrer') }}
             </button>
         </div>
     </div>
@@ -701,7 +701,7 @@ if (typeof photoUploader === 'undefined') {
                             if (this.isRequired && selectedCount === 0) {
                                 e.preventDefault();
                                 e.stopImmediatePropagation();
-                                this.errors = ['Veuillez ajouter au moins une photo.'];
+                                this.errors = [@js(__('Veuillez ajouter au moins une photo.'))];
                                 this.$el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             }
                         }, { capture: true });
@@ -912,7 +912,7 @@ if (typeof photoUploader === 'undefined') {
                     .filter(f => f.type.startsWith('image/'));
 
                 if (!this.supportsManagedFiles) {
-                    this.errors = ['Veuillez utiliser le sélecteur de photos sur ce navigateur mobile.'];
+                    this.errors = [@js(__('Veuillez utiliser le sélecteur de photos sur ce navigateur mobile.'))];
                     return;
                 }
 
@@ -1028,19 +1028,19 @@ if (typeof photoUploader === 'undefined') {
                         // Le sélecteur natif ne peut pas être plafonné depuis le web :
                         // on garde les premières plutôt que de tout refuser.
                         limitNotice = replace
-                            ? `Vous avez sélectionné ${incoming.length} photos. Seules les ${this.maxFiles} premières ont été conservées.`
-                            : `Limite de ${this.maxFiles} photo(s) atteinte.`;
+                            ? @js(__('Vous avez sélectionné :count photos. Seules les :max premières ont été conservées.')).replace(':count', incoming.length).replace(':max', this.maxFiles)
+                            : @js(__('Limite de :max photo(s) atteinte.')).replace(':max', this.maxFiles);
                         break;
                     }
                     if (file.size > 15 * 1024 * 1024) {
                         // `continue` et non un abandon global : une photo trop
                         // lourde ne doit pas emporter les 19 autres.
-                        this.errors.push(`"${file.name}" dépasse la limite de 15 Mo.`);
+                        this.errors.push(@js(__('« :file » dépasse la limite de 15 Mo.')).replace(':file', () => file.name));
                         continue;
                     }
                     const allowed = ['image/jpeg','image/jpg','image/png','image/webp','image/heic','image/heif',''];
                     if (!allowed.includes(file.type) && !this.isHeic(file)) {
-                        this.errors.push(`"${file.name}" : format non supporté.`);
+                        this.errors.push(@js(__('« :file » : format non supporté.')).replace(':file', () => file.name));
                         continue;
                     }
                     accepted.push(file);
@@ -1067,7 +1067,7 @@ if (typeof photoUploader === 'undefined') {
                     try {
                         working = await this.convertHeicIfNeeded(file);
                     } catch (e) {
-                        this.errors.push(`"${file.name}" : conversion HEIC impossible. Réessayez en JPEG.`);
+                        this.errors.push(@js(__('« :file » : conversion HEIC impossible. Réessayez en JPEG.')).replace(':file', () => file.name));
                         this.processedCount++;
                         continue;
                     }
@@ -1239,8 +1239,8 @@ if (typeof photoUploader === 'undefined') {
             },
 
             formatSize(bytes) {
-                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' Ko';
-                return (bytes / (1024 * 1024)).toFixed(1) + ' Mo';
+                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' ' + @js(__('Ko'));
+                return (bytes / (1024 * 1024)).toFixed(1) + ' ' + @js(__('Mo'));
             },
 
             // ── Blur / Pixelate editor ──────────────────────────────────────
@@ -1308,7 +1308,7 @@ if (typeof photoUploader === 'undefined') {
                 };
                 img.onerror = () => {
                     this.blurOpen = false;
-                    alert('Impossible de charger cette photo pour l\'édition. Veuillez réessayer.');
+                    alert(@js(__('Impossible de charger cette photo pour l\'édition. Veuillez réessayer.')));
                 };
                 img.src = url;
             },
@@ -1442,7 +1442,7 @@ if (typeof photoUploader === 'undefined') {
                         // Trigger tile removal: enables delete_images[] input and hides the tile
                         const tile = this.$el.querySelector(`[data-existing-id="${mediaId}"]`);
                         if (tile) {
-                            const deleteBtn = tile.querySelector('button[title="Supprimer cette photo"]');
+                            const deleteBtn = tile.querySelector('[data-remove-existing-photo]');
                             if (deleteBtn) {
                                 deleteBtn.click();
                             } else {

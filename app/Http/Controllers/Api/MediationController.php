@@ -44,21 +44,21 @@ class MediationController extends Controller
         // Vérifier que la médiation est activée pour cette annonce
         if (!$listing->mediation_enabled) {
             return response()->json([
-                'message' => 'La médiation n\'est pas disponible pour cette annonce.',
+                'message' => __('La médiation n\'est pas disponible pour cette annonce.'),
             ], 403);
         }
 
         // Vérifier que l'annonce est active
         if ($listing->status !== 'active') {
             return response()->json([
-                'message' => 'Cette annonce n\'est plus disponible.',
+                'message' => __('Cette annonce n\'est plus disponible.'),
             ], 403);
         }
 
         // Vérifier que l'utilisateur n'est pas le propriétaire
         if ($listing->user_id === $user->id) {
             return response()->json([
-                'message' => 'Vous ne pouvez pas ouvrir une médiation sur votre propre annonce.',
+                'message' => __('Vous ne pouvez pas ouvrir une médiation sur votre propre annonce.'),
             ], 403);
         }
 
@@ -70,7 +70,7 @@ class MediationController extends Controller
 
         if ($existingTicket) {
             return response()->json([
-                'message' => 'Vous avez déjà un ticket de médiation ouvert pour cette annonce.',
+                'message' => __('Vous avez déjà un ticket de médiation ouvert pour cette annonce.'),
                 'ticket' => $existingTicket,
             ], 409);
         }
@@ -96,7 +96,7 @@ class MediationController extends Controller
         $ticket->load(['listing.media', 'buyer', 'seller']);
 
         return response()->json([
-            'message' => 'Ticket de médiation créé avec succès.',
+            'message' => __('Ticket de médiation créé avec succès.'),
             'ticket' => $ticket,
         ], 201);
     }
@@ -111,7 +111,7 @@ class MediationController extends Controller
         // Seuls l'acheteur, le vendeur ou un admin peuvent voir le ticket
         if ($ticket->buyer_id !== $user->id && $ticket->seller_id !== $user->id && !$user->isAdmin()) {
             return response()->json([
-                'message' => 'Vous n\'êtes pas autorisé à voir ce ticket.',
+                'message' => __('Vous n\'êtes pas autorisé à voir ce ticket.'),
             ], 403);
         }
 
@@ -132,14 +132,14 @@ class MediationController extends Controller
         // Seuls l'acheteur, le vendeur ou un admin peuvent envoyer un message
         if ($ticket->buyer_id !== $user->id && $ticket->seller_id !== $user->id && !$user->isAdmin()) {
             return response()->json([
-                'message' => 'Vous n\'êtes pas autorisé à envoyer un message sur ce ticket.',
+                'message' => __('Vous n\'êtes pas autorisé à envoyer un message sur ce ticket.'),
             ], 403);
         }
 
         // Impossible d'ajouter un message à un ticket fermé ou annulé
         if (in_array($ticket->status, ['closed', 'cancelled'])) {
             return response()->json([
-                'message' => 'Ce ticket est fermé, vous ne pouvez plus envoyer de messages.',
+                'message' => __('Ce ticket est fermé, vous ne pouvez plus envoyer de messages.'),
             ], 403);
         }
 
@@ -157,7 +157,7 @@ class MediationController extends Controller
         $ticket->update(['messages' => $messages]);
 
         return response()->json([
-            'message' => 'Message envoyé avec succès.',
+            'message' => __('Message envoyé avec succès.'),
             'ticket' => $ticket->fresh(),
         ]);
     }
@@ -172,21 +172,21 @@ class MediationController extends Controller
         // Seul l'acheteur peut annuler
         if ($ticket->buyer_id !== $user->id) {
             return response()->json([
-                'message' => 'Seul l\'acheteur peut annuler ce ticket.',
+                'message' => __('Seul l\'acheteur peut annuler ce ticket.'),
             ], 403);
         }
 
         // Annulation possible uniquement si le statut est 'new'
         if ($ticket->status !== 'new') {
             return response()->json([
-                'message' => 'Ce ticket ne peut plus être annulé.',
+                'message' => __('Ce ticket ne peut plus être annulé.'),
             ], 403);
         }
 
         $ticket->update(['status' => 'cancelled']);
 
         return response()->json([
-            'message' => 'Ticket de médiation annulé avec succès.',
+            'message' => __('Ticket de médiation annulé avec succès.'),
             'ticket' => $ticket->fresh(),
         ]);
     }

@@ -17,8 +17,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h1 class="text-3xl md:text-4xl font-black text-white">Créer une annonce</h1>
-                            <p class="text-white/80 mt-1">Vendez votre bateau, jet-ski, moteur ou pièces en quelques clics</p>
+                            <h1 class="text-3xl md:text-4xl font-black text-white">{{ __('Créer une annonce') }}</h1>
+                            <p class="text-white/80 mt-1">{{ __('Vendez votre bateau, jet-ski, moteur ou pièces en quelques clics') }}</p>
                         </div>
                     </div>
 
@@ -27,7 +27,7 @@
                         @foreach(['Catégorie', 'Détails', 'Prix', 'Photos'] as $step)
                             <div class="flex items-center gap-2">
                                 <span class="px-4 py-2 rounded-full text-sm font-semibold bg-white/10 backdrop-blur-sm text-white border border-white/20">
-                                    {{ $loop->iteration }}. {{ $step }}
+                                    {{ $loop->iteration }}. {{ __($step) }}
                                 </span>
                                 @if(!$loop->last)
                                     <svg class="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,7 +49,7 @@
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <h3 class="font-bold text-red-900 mb-1">Erreurs de validation</h3>
+                            <h3 class="font-bold text-red-900 mb-1">{{ __('Erreurs de validation') }}</h3>
                             <ul class="text-sm text-red-700 space-y-1">
                                 @foreach($errors->all() as $error)
                                     <li>• {{ $error }}</li>
@@ -73,8 +73,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-2xl font-black text-gray-900">Choisissez une catégorie</h2>
-                            <p class="text-gray-600">Sélectionnez le type d'article que vous souhaitez vendre</p>
+                            <h2 class="text-2xl font-black text-gray-900">{{ __('Choisissez une catégorie') }}</h2>
+                            <p class="text-gray-600">{{ __('Sélectionnez le type d\'article que vous souhaitez vendre') }}</p>
                         </div>
                     </div>
 
@@ -109,14 +109,14 @@
                                     <div class="relative mb-4 mx-auto w-20 h-20 rounded-2xl {{ $cat['bg'] }}
                                                 flex items-center justify-center transition-all duration-500
                                                 group-hover:scale-110 peer-checked:scale-110 peer-checked:{{ $cat['bg'] }}">
-                                        <img src="{{ $cat['img'] }}" alt="{{ $cat['label'] }}" class="w-14 h-14 object-contain">
+                                        <img src="{{ $cat['img'] }}" alt="{{ __($cat['label']) }}" class="w-14 h-14 object-contain">
                                     </div>
 
                                     {{-- Label --}}
                                     <p class="text-center font-bold text-gray-700 transition-all duration-300
                                               peer-checked:text-lg peer-checked:bg-gradient-to-r peer-checked:{{ $cat['color'] }}
                                               peer-checked:bg-clip-text peer-checked:text-transparent">
-                                        {{ $cat['label'] }}
+                                        {{ __($cat['label']) }}
                                     </p>
                                 </div>
                             </label>
@@ -129,7 +129,7 @@
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                             </svg>
                             <p class="text-sm text-blue-800">
-                                <span class="font-bold">Tarifs :</span> Bateaux et Jet-skis : 5 000 DA • Moteurs et Pièces : gratuit avec abonnement
+                                <span class="font-bold">{{ __('Tarifs :') }}</span> {{ __('Bateaux et Jet-skis : 5 000 DA • Moteurs et Pièces : gratuit avec abonnement') }}
                             </p>
                         </div>
                     </div>
@@ -145,45 +145,45 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-2xl font-black text-gray-900">Informations générales</h2>
-                            <p class="text-gray-600">Décrivez votre article en détail</p>
+                            <h2 class="text-2xl font-black text-gray-900">{{ __('Informations générales') }}</h2>
+                            <p class="text-gray-600">{{ __('Décrivez votre article en détail') }}</p>
                         </div>
                     </div>
 
                     <div class="space-y-6">
                         {{-- Title --}}
                         <div class="group">
-                            <label class="block text-sm font-bold text-gray-700 mb-2">Titre de l'annonce *</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">{{ __('Titre de l\'annonce *') }}</label>
                             <input type="text" name="title" value="{{ old('title') }}" required
                                    class="w-full px-5 py-4 rounded-xl border-2 border-gray-200 bg-white
                                           focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100 focus:outline-none
                                           transition-all duration-300 text-gray-900 font-medium placeholder-gray-400"
-                                   placeholder="Ex: Magnifique bateau de pêche 6m avec moteur Yamaha 150CV">
+                                   placeholder="{{ __('Ex: Magnifique bateau de pêche 6m avec moteur Yamaha 150CV') }}">
                         </div>
 
                         {{-- Description --}}
                         <div class="group">
-                            <label class="block text-sm font-bold text-gray-700 mb-2">Description *</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">{{ __('Description *') }}</label>
                             <textarea name="description" rows="5" required
                                       class="w-full px-5 py-4 rounded-xl border-2 border-gray-200 bg-white
                                              focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100 focus:outline-none
                                              transition-all duration-300 text-gray-900 placeholder-gray-400"
-                                      placeholder="Décrivez votre article : état, équipements, historique...">{{ old('description') }}</textarea>
+                                      placeholder="{{ __('Décrivez votre article : état, équipements, historique...') }}">{{ old('description') }}</textarea>
                         </div>
 
                         {{-- Quick specs grid --}}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div x-show="category !== 'parts'">
-                                <label class="block text-sm font-bold text-gray-700 mb-2">Fabricant</label>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">{{ __('Fabricant') }}</label>
                                 <input type="text" name="specs[general][fabricant]" value="{{ old('specs.general.fabricant') }}"
                                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100 focus:outline-none transition-all"
-                                       placeholder="Ex: Yamaha, Mercury...">
+                                       placeholder="{{ __('Ex: Yamaha, Mercury...') }}">
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">Modèle</label>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">{{ __('Modèle') }}</label>
                                 <input type="text" name="specs[general][modele]" value="{{ old('specs.general.modele') }}"
                                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100 focus:outline-none transition-all"
-                                       placeholder="Ex: F150, Bayliner...">
+                                       placeholder="{{ __('Ex: F150, Bayliner...') }}">
                             </div>
                         </div>
                     </div>
@@ -199,15 +199,15 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-2xl font-black text-gray-900">Prix & Localisation</h2>
-                            <p class="text-gray-600">Définissez votre prix et où se trouve l'article</p>
+                            <h2 class="text-2xl font-black text-gray-900">{{ __('Prix') }} & {{ __('Localisation') }}</h2>
+                            <p class="text-gray-600">{{ __('Définissez votre prix et où se trouve l\'article') }}</p>
                         </div>
                     </div>
 
                     <div class="space-y-6">
                         {{-- Currency --}}
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-3">Devise *</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-3">{{ __('Devise *') }}</label>
                             <div class="grid grid-cols-2 gap-4">
                                 @foreach(['DZD' => '🇩🇿', 'EUR' => '🇪🇺'] as $curr => $flag)
                                     <label class="cursor-pointer">
@@ -225,7 +225,7 @@
 
                         {{-- Price --}}
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2">Prix *</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">{{ __('Prix *') }}</label>
                             <div class="relative">
                                 <input type="number" name="price_dzd" value="{{ old('price_dzd') }}" required min="0"
                                        class="w-full pl-6 pr-24 py-5 rounded-2xl border-3 border-gray-200 bg-white
@@ -237,12 +237,12 @@
 
                         {{-- Wilaya --}}
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2">Wilaya *</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">{{ __('Wilaya *') }}</label>
                             <select name="wilaya" required
                                     class="w-full px-5 py-4 rounded-xl border-2 border-gray-200 bg-white
                                            focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100 focus:outline-none
                                            transition-all font-medium">
-                                <option value="">-- Choisir la wilaya --</option>
+                                <option value="">{{ __('-- Choisir la wilaya --') }}</option>
                                 @foreach($wilayas as $code => $name)
                                     <option value="{{ $code }}">{{ $code }} - {{ $name }}</option>
                                 @endforeach
@@ -261,8 +261,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-2xl font-black text-gray-900">Photos de l'article *</h2>
-                            <p class="text-gray-600">Ajoutez jusqu'à 10 photos de qualité</p>
+                            <h2 class="text-2xl font-black text-gray-900">{{ __('Photos de l\'article *') }}</h2>
+                            <p class="text-gray-600">{{ __('Ajoutez jusqu\'à 10 photos de qualité') }}</p>
                         </div>
                     </div>
 
@@ -275,9 +275,9 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                                 </svg>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Cliquez pour ajouter des photos</h3>
-                            <p class="text-gray-600">ou glissez-déposez vos images ici</p>
-                            <p class="text-sm text-gray-500 mt-4">JPEG, PNG, WebP, HEIC • Max 15 Mo • 20 photos max</p>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('Cliquez pour ajouter des photos') }}</h3>
+                            <p class="text-gray-600">{{ __('ou glissez-déposez vos images ici') }}</p>
+                            <p class="text-sm text-gray-500 mt-4">{{ __('JPEG, PNG, WebP, HEIC • Max 15 Mo • 20 photos max') }}</p>
                         </div>
                         <input id="images" name="images[]" type="file" class="sr-only" multiple accept="image/*" required>
                     </label>
@@ -289,13 +289,13 @@
                 <div x-show="category" x-transition.duration.500ms class="flex justify-between items-center pt-4">
                     <a href="{{ route('listings.my') }}"
                        class="px-8 py-4 rounded-2xl font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all duration-300 hover:scale-105">
-                        Annuler
+                        {{ __('Annuler') }}
                     </a>
                     <button type="submit"
                             class="px-10 py-4 rounded-2xl font-black text-white bg-gradient-to-r from-cyan-500 to-blue-600
                                    hover:from-cyan-600 hover:to-blue-700 shadow-xl hover:shadow-2xl
                                    transition-all duration-300 hover:scale-105 hover:-translate-y-1">
-                        Continuer vers le paiement →
+                        {{ __('Continuer vers le paiement →') }}
                     </button>
                 </div>
             </form>

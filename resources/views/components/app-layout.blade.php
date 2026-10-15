@@ -6,23 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ isset($title) ? $title . ' — AlBabor' : 'AlBabor — Marketplace Nautique en Algérie' }}</title>
-    <meta name="description" content="{{ $description ?? 'Achetez et vendez des bateaux, jet-skis, moteurs et pièces détachées en Algérie. La marketplace nautique de confiance avec paiement sécurisé.' }}">
+    <title>{{ isset($title) ? $title . ' — AlBabor' : __('AlBabor — Marketplace Nautique en Algérie') }}</title>
+    <meta name="description" content="{{ $description ?? __('Achetez et vendez des bateaux, jet-skis, moteurs et pièces détachées en Algérie. La marketplace nautique de confiance avec paiement sécurisé.') }}">
     <meta name="keywords" content="bateau algérie, jet-ski, moteur hors-bord, vente bateau, achat bateau, nautisme algérie, albabor">
     <meta name="robots" content="index, follow">
 
     {{-- Open Graph --}}
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="AlBabor">
-    <meta property="og:title" content="{{ isset($title) ? $title . ' — AlBabor' : 'AlBabor — Marketplace Nautique en Algérie' }}">
-    <meta property="og:description" content="{{ $description ?? 'Achetez et vendez des bateaux, jet-skis, moteurs et pièces détachées en Algérie.' }}">
+    <meta property="og:title" content="{{ isset($title) ? $title . ' — AlBabor' : __('AlBabor — Marketplace Nautique en Algérie') }}">
+    <meta property="og:description" content="{{ $description ?? __('Achetez et vendez des bateaux, jet-skis, moteurs et pièces détachées en Algérie.') }}">
     <meta property="og:image" content="{{ $ogImage ?? asset('images/og-image.png') }}">
     <meta property="og:url" content="{{ url()->current() }}">
 
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ isset($title) ? $title . ' — AlBabor' : 'AlBabor' }}">
-    <meta name="twitter:description" content="{{ $description ?? 'La marketplace nautique en Algérie.' }}">
+    <meta name="twitter:description" content="{{ $description ?? __('La marketplace nautique en Algérie.') }}">
     <meta name="twitter:image" content="{{ $ogImage ?? asset('images/og-image.png') }}">
 
     <link rel="icon" type="image/png" href="/favicon.png?v=5">
@@ -369,7 +369,7 @@
                         <img src="/images/logo-full.png" alt="AlBabor" style="height: 34px; filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.3));">
                     </div>
                     <p class="leading-relaxed text-sm mb-7" style="color: rgba(255,255,255,0.45); line-height: 1.7;">
-                        La marketplace nautique en Algerie. Achetez et vendez bateaux, jet-skis, moteurs et pieces en toute confiance.
+                        {{ __('La marketplace nautique en Algerie. Achetez et vendez bateaux, jet-skis, moteurs et pieces en toute confiance.') }}
                     </p>
                     <!-- Social Links -->
                     <div class="flex items-center gap-3">
@@ -441,7 +441,7 @@
                                 <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(23,162,184,0.1);">
                                     <svg class="w-3.5 h-3.5" style="color: #17A2B8;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                 </div>
-                                Alger, Algerie
+                                {{ __('Alger, Algerie') }}
                             </li>
                             <li class="flex items-center gap-3 text-sm" style="color: rgba(255,255,255,0.4);">
                                 <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(23,162,184,0.1);">
@@ -478,7 +478,7 @@
                     <div class="flex items-center gap-3 px-5 py-3 rounded-xl" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
                         <img src="/images/mastercard-visa.webp" alt="Mastercard Visa" class="w-8 h-8 object-contain">
                         <div>
-                            <p class="text-xs font-bold" style="color: rgba(255,255,255,0.75);">Carte Bancaire</p>
+                            <p class="text-xs font-bold" style="color: rgba(255,255,255,0.75);">{{ __('Carte Bancaire') }}</p>
                             <p class="text-[10px]" style="color: rgba(255,255,255,0.35);">Mastercard · Visa</p>
                         </div>
                     </div>
@@ -488,7 +488,7 @@
 
             <!-- Bottom bar -->
             <div class="pt-7 flex flex-col sm:flex-row items-center justify-between gap-4" style="border-top: 1px solid rgba(255,255,255,0.06);">
-                <p class="text-xs font-medium" style="color: rgba(255,255,255,0.25);">&copy; {{ date('Y') }} AlBabor. Tous droits reserves.</p>
+                <p class="text-xs font-medium" style="color: rgba(255,255,255,0.25);">&copy; {{ date('Y') }} AlBabor. {{ __('Tous droits réservés.') }}</p>
             </div>
         </div>
     </footer>

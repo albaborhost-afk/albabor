@@ -139,7 +139,7 @@
                             </label>
                             <input type="email" name="email" id="email" required maxlength="255"
                                    value="{{ old('email', auth()->user()?->email) }}"
-                                   placeholder="contact@exemple.com"
+                                   placeholder="{{ __('contact@exemple.com') }}"
                                    class="glass-input w-full py-3 px-4 rounded-xl">
                         </div>
 
@@ -152,7 +152,7 @@
                                 <select name="whatsapp_country_code" id="whatsapp_country_code" required
                                         autocomplete="tel-country-code"
                                         class="glass-input w-32 shrink-0 py-3 pl-3 pr-7 rounded-xl text-sm">
-                                    @foreach(\App\Support\PhoneCountry::COUNTRIES as $code => $country)
+                                    @foreach(\App\Support\PhoneCountry::localizedCountries() as $code => $country)
                                         <option value="{{ $code }}" @selected($whatsappCountryCode === $code)>{{ $country['flag'] }} {{ $code }} — {{ $country['name'] }}</option>
                                     @endforeach
                                 </select>
