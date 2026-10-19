@@ -666,7 +666,7 @@
                                     <input id="phone_number" type="tel" x-model="phoneNumber" required autocomplete="tel"
                                            @input="handlePhoneInput()"
                                            class="auth-input w-full px-4 py-3 text-sm font-medium @error('phone') !border-red-400 @enderror"
-                                           placeholder="00000000">
+                                           placeholder="550 XXX XXX">
                                 </div>
                             </div>
                             @error('phone')
