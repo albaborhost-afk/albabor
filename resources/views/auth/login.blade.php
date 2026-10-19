@@ -108,6 +108,7 @@
         .auth-input:-webkit-autofill { -webkit-text-fill-color: #1B2A4A; box-shadow: 0 0 0 1000px #F7FAFD inset; }
         .auth-input::placeholder {
             color: #9BA8B7;
+            -webkit-text-fill-color: #9BA8B7;
         }
 
         /* ---- Submit Button ---- */
