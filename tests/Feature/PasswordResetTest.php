@@ -5,8 +5,11 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Mail\Transport\ResendTransport;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 
 /**
@@ -168,5 +171,40 @@ class PasswordResetTest extends TestCase
             ->assertOk();
 
         Notification::assertSentTo($user, ResetPassword::class);
+    }
+
+    public function test_the_resend_mail_transport_can_be_created(): void
+    {
+        config(['services.resend.key' => 're_test_not_a_real_key']);
+
+        $this->assertInstanceOf(ResendTransport::class, Mail::mailer('resend')->getSymfonyTransport());
+    }
+
+    public function test_the_mobile_request_renders_a_usable_email_with_the_configured_sender(): void
+    {
+        config([
+            'mail.default' => 'array',
+            'mail.from.address' => 'no-reply@albabor.com',
+            'mail.from.name' => 'AlBabor',
+        ]);
+
+        $user = $this->user();
+
+        $this->postJson('https://albabor.com/api/v1/auth/forgot-password', ['email' => '  KARIM@EXEMPLE.COM  '])
+            ->assertOk();
+
+        $messages = Mail::mailer('array')->getSymfonyTransport()->messages();
+        $this->assertCount(1, $messages);
+
+        $email = $messages->first()->getOriginalMessage();
+        $this->assertSame('no-reply@albabor.com', $email->getFrom()[0]->getAddress());
+        $this->assertSame('AlBabor', $email->getFrom()[0]->getName());
+        $this->assertSame($user->email, $email->getTo()[0]->getAddress());
+        $this->assertNotEmpty($email->getHtmlBody());
+
+        preg_match('~https://albabor[.]com/reset-password/([a-zA-Z0-9]+)[?]email=([^[:space:])]+)~', $email->getTextBody(), $link);
+        $this->assertNotEmpty($link, 'The email must contain an HTTPS reset link on albabor.com.');
+        $this->assertSame($user->email, rawurldecode($link[2]));
+        $this->assertTrue(Password::tokenExists($user, $link[1]));
     }
 }
