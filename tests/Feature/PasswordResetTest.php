@@ -6,10 +6,14 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Mail\Transport\ResendTransport;
+use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
+use Mockery;
+use Symfony\Component\Mailer\Exception\TransportException;
+use Symfony\Component\Mailer\Transport\TransportInterface;
 use Tests\TestCase;
 
 /**
@@ -206,5 +210,45 @@ class PasswordResetTest extends TestCase
         $this->assertNotEmpty($link, 'The email must contain an HTTPS reset link on albabor.com.');
         $this->assertSame($user->email, rawurldecode($link[2]));
         $this->assertTrue(Password::tokenExists($user, $link[1]));
+    }
+
+    private function failMailDelivery(): void
+    {
+        Exceptions::fake();
+        config(['mail.default' => 'array']);
+
+        $transport = Mockery::mock(TransportInterface::class);
+        $transport->shouldReceive('send')->once()
+            ->andThrow(new TransportException('The albabor.com domain is not verified.'));
+
+        Mail::mailer('array')->setSymfonyTransport($transport);
+    }
+
+    public function test_a_mail_provider_failure_returns_to_the_web_form_with_an_error(): void
+    {
+        $user = $this->user();
+        $this->failMailDelivery();
+
+        $this->from(route('password.request'))
+            ->post(route('password.email'), ['email' => $user->email])
+            ->assertRedirect(route('password.request'))
+            ->assertSessionHasErrors(['email' => __('passwords.mail_unavailable')])
+            ->assertSessionHasInput('email', $user->email)
+            ->assertSessionMissing('status');
+
+        Exceptions::assertReported(TransportException::class);
+    }
+
+    public function test_a_mail_provider_failure_returns_a_useful_mobile_error(): void
+    {
+        $user = $this->user();
+        $this->failMailDelivery();
+
+        $this->postJson('/api/v1/auth/forgot-password', ['email' => $user->email])
+            ->assertStatus(503)
+            ->assertJsonPath('errors.email.0', __('passwords.mail_unavailable'))
+            ->assertDontSee('domain is not verified');
+
+        Exceptions::assertReported(TransportException::class);
     }
 }

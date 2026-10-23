@@ -6,4 +6,5 @@ return [
     'throttled' => 'Please wait before trying again.',
     'token' => 'This password reset token is invalid.',
     'user' => 'No user was found with this email address.',
+    'mail_unavailable' => 'Password reset emails are temporarily unavailable. Please try again in a few minutes.',
 ];

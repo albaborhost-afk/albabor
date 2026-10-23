@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rules;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class AuthController extends Controller
 {
@@ -110,9 +111,12 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'exists:users,email'],
         ]);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        try {
+            $status = Password::sendResetLink($request->only('email'));
+        } catch (TransportExceptionInterface $exception) {
+            report($exception);
+            $status = 'passwords.mail_unavailable';
+        }
 
         if ($status === Password::RESET_LINK_SENT) {
             return response()->json([
@@ -123,6 +127,6 @@ class AuthController extends Controller
         return response()->json([
             'message' => __('Impossible d\'envoyer le lien de réinitialisation.'),
             'errors' => ['email' => [__($status)]],
-        ], 422);
+        ], $status === 'passwords.mail_unavailable' ? 503 : 422);
     }
 }
