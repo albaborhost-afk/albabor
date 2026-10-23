@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Mockery;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Tests\TestCase;
@@ -210,6 +211,42 @@ class PasswordResetTest extends TestCase
         $this->assertNotEmpty($link, 'The email must contain an HTTPS reset link on albabor.com.');
         $this->assertSame($user->email, rawurldecode($link[2]));
         $this->assertTrue(Password::tokenExists($user, $link[1]));
+    }
+
+    public static function emailLocales(): array
+    {
+        return [
+            'French' => ['fr', 'Réinitialisez votre mot de passe AlBabor', 'Reprenons le cap ensemble.'],
+            'English' => ['en', 'Reset your AlBabor password', 'Let’s get you back on board.'],
+            'Spanish' => ['es', 'Restablece tu contraseña de AlBabor', 'Volvamos a navegar juntos.'],
+        ];
+    }
+
+    #[DataProvider('emailLocales')]
+    public function test_the_reset_email_uses_the_brand_and_requested_language(string $locale, string $subject, string $title): void
+    {
+        config([
+            'app.url' => 'https://albabor.com',
+            'mail.default' => 'array',
+            'auth.passwords.users.expire' => 17,
+        ]);
+        $user = $this->user();
+
+        $this->withHeader('Accept-Language', $locale)
+            ->postJson('https://albabor.com/api/v1/auth/forgot-password', ['email' => $user->email])
+            ->assertOk();
+
+        $email = Mail::mailer('array')->getSymfonyTransport()->messages()->sole()->getOriginalMessage();
+
+        $this->assertSame($subject, $email->getSubject());
+        $this->assertStringContainsString('lang="'.$locale.'"', $email->getHtmlBody());
+        $this->assertStringContainsString('src="https://albabor.com/images/logo-full.png"', $email->getHtmlBody());
+        $this->assertStringContainsString('alt="AlBabor"', $email->getHtmlBody());
+        $this->assertStringContainsString($title, $email->getHtmlBody());
+        $this->assertStringContainsString($title, $email->getTextBody());
+        $this->assertMatchesRegularExpression('/17 (minutes|minutos)/', $email->getTextBody());
+        $this->assertStringNotContainsString('passwords.email.', $email->getHtmlBody());
+        $this->assertStringNotContainsString('<table', $email->getTextBody());
     }
 
     private function failMailDelivery(): void
